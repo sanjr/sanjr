@@ -1,48 +1,8 @@
-<!DOCTYPE html>
-<html lang="en-IN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php
+require __DIR__ . '/includes/functions.php';
 
-  <!-- ===== Primary SEO ===== -->
-  <title>ITI Exam 2026: Mock Test, Previous Papers, Study Material | ITIExam.com</title>
-  <meta name="description" content="Free ITI mock tests, NCVT ITI previous year question papers, Employability Skills MCQ, study material PDF, ITI jobs, apprenticeship (NAPS/NATS), admit card &amp; result updates for COPA, Electrician, Fitter, Turner, Welder &amp; all ITI trades.">
-  <meta name="keywords" content="ITI exam, ITI mock test, ITI online test, ITI CBT exam, NCVT ITI exam 2026, ITI previous year question paper, ITI question paper PDF, Employability Skills MCQ, COPA mock test, Electrician ITI test, Fitter ITI question, ITI study material, ITI notes PDF, ITI jobs, ITI apprenticeship, NAPS, NATS, ITI admit card, ITI result, Maharashtra ITI, DVET, NCVT MIS">
-  <meta name="author" content="ITIExam.com">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <link rel="canonical" href="https://www.itiexam.com/">
-  <meta name="theme-color" content="#0b2a6f">
-
-  <!-- ===== Open Graph / Social ===== -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ITIExam.com">
-  <meta property="og:locale" content="en_IN">
-  <meta property="og:title" content="ITIExam.com – Your Complete Platform for ITI Exam Preparation">
-  <meta property="og:description" content="Free ITI mock tests, previous year papers, study material, ITI jobs and apprenticeship updates for all 30+ ITI trades.">
-  <meta property="og:url" content="https://www.itiexam.com/">
-  <meta property="og:image" content="https://www.itiexam.com/assets/img/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ITIExam.com – ITI Mock Tests, Papers &amp; Jobs">
-  <meta name="twitter:description" content="Practice. Learn. Improve. Succeed. Free ITI exam preparation for all trades.">
-  <meta name="twitter:image" content="https://www.itiexam.com/assets/img/og-image.png">
-
-  <!-- ===== Icons & PWA ===== -->
-  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/assets/img/favicon.svg">
-  <link rel="manifest" href="/site.webmanifest">
-
-  <!-- ===== Performance ===== -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
-  <script src="assets/js/main.js" defer></script>
-
-  <!-- ===== Structured Data (JSON-LD) ===== -->
-  <script type="application/ld+json">
-  {
+$ld = json_decode(str_replace('https://www.itiexam.com', SITE_URL, <<<'JSON'
+{
     "@context": "https://schema.org",
     "@graph": [
       {
@@ -119,112 +79,27 @@
       }
     ]
   }
-  </script>
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to content</a>
+JSON), true);
+// Trade list in structured data follows the trades the admin has published
+foreach ($ld['@graph'] as &$node) {
+    if ($node['@type'] === 'ItemList') {
+        $node['itemListElement'] = [];
+        foreach (trades(true) as $i => $t) {
+            $node['itemListElement'][] = ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $t['name'], 'url' => SITE_URL . trade_url($t)];
+        }
+    }
+}
+unset($node);
 
-  <!-- ===== SVG Icon Sprite ===== -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
-      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
-      <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
-      <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
-      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
-      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
-      <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></symbol>
-      <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h6"/></symbol>
-      <symbol id="i-clip" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l2 2 4-4M9 16h6"/></symbol>
-      <symbol id="i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
-      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5a5 5 0 0 1 5.5 5.5"/></symbol>
-      <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 5a2 2 0 0 1 2-2h6l2 2 2-2h6a2 2 0 0 1 2 2v14h-8l-2 2-2-2H2z"/><path d="M12 5v14"/></symbol>
-      <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
-      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
-      <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/></symbol>
-      <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
-      <symbol id="i-cap" viewBox="0 0 24 24"><path d="M2 9 12 4l10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6"/></symbol>
-      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
-      <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 15h2a1.5 1.5 0 0 0 0-3H8v5M14 12v5"/></symbol>
-      <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/></symbol>
-      <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3M7 15h10"/></symbol>
-      <symbol id="i-open" viewBox="0 0 24 24"><path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2zM22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/></symbol>
-      <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></symbol>
-      <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></symbol>
-      <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8M3 21l6-6M6.3 3.3 9 6l-3 3-2.7-2.7A4 4 0 0 1 6.3 3.3z"/></symbol>
-      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></symbol>
-      <symbol id="i-building" viewBox="0 0 24 24"><rect x="4" y="3" width="10" height="18"/><path d="M14 9h6v12h-6M7 7h1M10 7h1M7 11h1M10 11h1M7 15h1M10 15h1M17 13h1M17 17h1"/></symbol>
-      <symbol id="i-yt" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.8 15.1V8.9L15.6 12z"/></symbol>
-      <symbol id="i-fb" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M14 8.5V6.6c0-.9.6-1.1 1-1.1h2.6V1.6L14 1.5c-4 0-4.8 3-4.8 4.9v2.1H6.8v4h2.4v10h4.8v-10h3.2l.4-4z"/></symbol>
-      <symbol id="i-tg" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M21.9 3.6 18.6 19.3c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6 12.8 1 11.3c-1.1-.3-1.1-1.1.2-1.6L20.6 2.2c.9-.3 1.7.2 1.3 1.4z"/></symbol>
-      <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12 1.5A10.4 10.4 0 0 0 3 17.2L1.5 22.5l5.4-1.4A10.4 10.4 0 1 0 12 1.5zm5.1 14.6c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1a15 15 0 0 1-1.5-.6 12 12 0 0 1-4.6-4c-.3-.5-1.2-1.6-1.2-3s.8-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .7.5l.9 2.2c.1.2.1.4 0 .6l-.3.5-.5.5c-.1.2-.3.3-.1.6.2.3.7 1.2 1.5 1.9 1 .9 1.9 1.2 2.1 1.3.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.1.1.6-.1 1.2z"/></symbol>
-    </defs>
-  </svg>
-
-  <!-- ===== Header ===== -->
-  <header class="site-header" id="top">
-    <div class="container nav-wrap">
-      <a href="/" class="logo" aria-label="ITIExam.com home">
-        <svg class="logo-mark" viewBox="0 0 48 40" aria-hidden="true"><path d="M24 4 2 14l22 10 22-10z" fill="#0b2a6f"/><path d="M11 19v9c7 6 19 6 26 0v-9l-13 6z" fill="#0b2a6f"/><path d="M44 15v10" stroke="#0b2a6f" stroke-width="2.5"/><circle cx="44" cy="27" r="2.5" fill="#2563eb"/></svg>
-        <span class="logo-text"><strong>ITI<span>Exam</span>.com</strong><small>Your ITI Exam Preparation Partner</small></span>
-      </a>
-
-      <nav class="main-nav" id="main-nav" aria-label="Main navigation">
-        <ul>
-          <li><a href="/" class="active" aria-current="page">Home</a></li>
-          <li class="has-dd"><button type="button" aria-expanded="false">Trades <svg class="ic"><use href="#i-chev"/></svg></button>
-            <ul class="dd">
-              <li><a href="/trades/copa/">COPA</a></li><li><a href="/trades/electrician/">Electrician</a></li>
-              <li><a href="/trades/fitter/">Fitter</a></li><li><a href="/trades/turner/">Turner</a></li>
-              <li><a href="/trades/welder/">Welder</a></li><li><a href="/trades/">All Trades</a></li>
-            </ul></li>
-          <li class="has-dd"><button type="button" aria-expanded="false">Mock Tests <svg class="ic"><use href="#i-chev"/></svg></button>
-            <ul class="dd">
-              <li><a href="/mock-test/trade-theory/">Trade Theory</a></li><li><a href="/mock-test/employability-skills/">Employability Skills</a></li>
-              <li><a href="/mock-test/workshop-calculation-science/">Workshop Calc. &amp; Science</a></li><li><a href="/mock-test/engineering-drawing/">Engineering Drawing</a></li>
-            </ul></li>
-          <li class="has-dd"><button type="button" aria-expanded="false">Previous Papers <svg class="ic"><use href="#i-chev"/></svg></button>
-            <ul class="dd">
-              <li><a href="/previous-papers/1st-year/">1st Year Papers</a></li><li><a href="/previous-papers/2nd-year/">2nd Year Papers</a></li>
-              <li><a href="/previous-papers/cbt/">CBT Papers with Answers</a></li>
-            </ul></li>
-          <li class="has-dd"><button type="button" aria-expanded="false">Employability Skills <svg class="ic"><use href="#i-chev"/></svg></button>
-            <ul class="dd">
-              <li><a href="/employability-skills/1st-year/">1st Year</a></li><li><a href="/employability-skills/2nd-year/">2nd Year</a></li>
-            </ul></li>
-          <li class="has-dd"><button type="button" aria-expanded="false">Study Material <svg class="ic"><use href="#i-chev"/></svg></button>
-            <ul class="dd">
-              <li><a href="/study-material/notes/">Theory Notes</a></li><li><a href="/study-material/mcq/">MCQ Bank</a></li>
-              <li><a href="/study-material/syllabus/">Syllabus</a></li>
-            </ul></li>
-          <li class="has-dd"><button type="button" aria-expanded="false">Jobs <svg class="ic"><use href="#i-chev"/></svg></button>
-            <ul class="dd">
-              <li><a href="/jobs/government/">Government Jobs</a></li><li><a href="/jobs/private/">Private Jobs</a></li>
-              <li><a href="/jobs/campus/">Campus Placement</a></li>
-            </ul></li>
-          <li class="has-dd"><button type="button" aria-expanded="false">Apprenticeship <svg class="ic"><use href="#i-chev"/></svg></button>
-            <ul class="dd">
-              <li><a href="/apprenticeship/naps/">NAPS</a></li><li><a href="/apprenticeship/nats/">NATS</a></li>
-              <li><a href="/apprenticeship/how-to-apply/">How to Apply</a></li>
-            </ul></li>
-          <li class="has-dd"><button type="button" aria-expanded="false">Exam Info <svg class="ic"><use href="#i-chev"/></svg></button>
-            <ul class="dd">
-              <li><a href="/exam/date/">Exam Date</a></li><li><a href="/exam/admit-card/">Admit Card</a></li>
-              <li><a href="/exam/result/">Result</a></li><li><a href="/exam/pattern/">Exam Pattern</a></li>
-            </ul></li>
-          <li class="has-dd"><button type="button" aria-expanded="false">About <svg class="ic"><use href="#i-chev"/></svg></button>
-            <ul class="dd">
-              <li><a href="/about/">About Us</a></li><li><a href="/contact/">Contact</a></li>
-            </ul></li>
-        </ul>
-      </nav>
-
-      <div class="nav-actions">
-        <a href="#hero-search" class="icon-btn" aria-label="Search"><svg class="ic"><use href="#i-search"/></svg></a>
-        <button type="button" class="icon-btn menu-toggle" aria-label="Open menu" aria-controls="main-nav" aria-expanded="false"><svg class="ic"><use href="#i-menu"/></svg></button>
-      </div>
-    </div>
-  </header>
+$meta = [
+    'title' => setting('home_title', 'ITI Exam 2026: Mock Test, Previous Papers, Study Material | ITIExam.com'),
+    'description' => setting('site_description'),
+    'keywords' => setting('home_keywords'),
+    'path' => '/',
+    'jsonld' => [$ld],
+];
+require __DIR__ . '/includes/header.php';
+?>
 
   <main id="main">
     <!-- ===== Hero ===== -->
@@ -281,14 +156,9 @@
           <a href="/trades/" class="view-all">View All Trades <svg class="ic"><use href="#i-arrow"/></svg></a>
         </div>
         <div class="trades">
-          <a class="trade t1" href="/trades/copa/"><span class="emo" aria-hidden="true">🖥️</span><h3>COPA</h3><p>Computer Operator and Programming Assistant</p><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-          <a class="trade t2" href="/trades/electrician/"><span class="emo" aria-hidden="true">💡</span><h3>Electrician</h3><p>Installation, Maintenance and Repair</p><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-          <a class="trade t3" href="/trades/fitter/"><span class="emo" aria-hidden="true">🔧</span><h3>Fitter</h3><p>Mechanical Fitting and Assembly</p><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-          <a class="trade t4" href="/trades/turner/"><span class="emo" aria-hidden="true">⚙️</span><h3>Turner</h3><p>Lathe Machine Operations</p><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-          <a class="trade t5" href="/trades/welder/"><span class="emo" aria-hidden="true">🥽</span><h3>Welder</h3><p>Welding and Fabrication</p><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-          <a class="trade t6" href="/trades/mmv/"><span class="emo" aria-hidden="true">🚗</span><h3>MMV</h3><p>Mechanic Motor Vehicle</p><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-          <a class="trade t7" href="/trades/plumber/"><span class="emo" aria-hidden="true">🚰</span><h3>Plumber</h3><p>Plumbing and Pipe Fitting</p><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-          <a class="trade t8" href="/trades/wireman/"><span class="emo" aria-hidden="true">🔌</span><h3>Wireman</h3><p>Electrical Wiring and Installation</p><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
+<?php foreach (trades(true) as $t): ?>
+          <a class="trade" href="<?= e(trade_url($t)) ?>" style="--tbg:<?= e($t['card_color']) ?>"><?php if ($t['image']): ?><img class="timg" src="<?= e(upload_url($t['image'])) ?>" alt="<?= e($t['name']) ?> ITI trade" width="64" height="64" loading="lazy"><?php else: ?><span class="emo" aria-hidden="true"><?= e($t['emoji'] ?: '🛠️') ?></span><?php endif; ?><h3><?= e($t['name']) ?></h3><p><?= e($t['short_desc']) ?></p><span class="go"><?= icon('arrow') ?></span></a>
+<?php endforeach; ?>
         </div>
       </div>
     </section>
@@ -417,36 +287,4 @@
     </section>
   </main>
 
-  <!-- ===== Footer ===== -->
-  <footer class="site-footer">
-    <div class="container foot-grid">
-      <div class="foot-brand">
-        <a href="/" class="logo light" aria-label="ITIExam.com home">
-          <svg class="logo-mark" viewBox="0 0 48 40" aria-hidden="true"><path d="M24 4 2 14l22 10 22-10z" fill="#fff"/><path d="M11 19v9c7 6 19 6 26 0v-9l-13 6z" fill="#fff"/><path d="M44 15v10" stroke="#fff" stroke-width="2.5"/><circle cx="44" cy="27" r="2.5" fill="#60a5fa"/></svg>
-          <span class="logo-text"><strong>ITI<span>Exam</span>.com</strong><small>Your ITI Exam Preparation Partner</small></span>
-        </a>
-        <p>Online Mock Tests, Previous Year Questions, Study Material, Jobs, Apprenticeship and Expert Content for all ITI Trades.</p>
-        <div class="social">
-          <a href="https://www.youtube.com/@itiexam" class="yt" aria-label="YouTube" rel="noopener" target="_blank"><svg class="ic"><use href="#i-yt"/></svg></a>
-          <a href="https://www.facebook.com/itiexam" class="fb" aria-label="Facebook" rel="noopener" target="_blank"><svg class="ic"><use href="#i-fb"/></svg></a>
-          <a href="https://t.me/itiexam" class="tg" aria-label="Telegram" rel="noopener" target="_blank"><svg class="ic"><use href="#i-tg"/></svg></a>
-          <a href="https://whatsapp.com/channel/itiexam" class="wa" aria-label="WhatsApp" rel="noopener" target="_blank"><svg class="ic"><use href="#i-wa"/></svg></a>
-        </div>
-      </div>
-      <nav aria-label="Quick links"><h3>Quick Links</h3><ul>
-        <li><a href="/">Home</a></li><li><a href="/trades/">All Trades</a></li><li><a href="/mock-test/">Mock Tests</a></li><li><a href="/previous-papers/">Previous Papers</a></li><li><a href="/employability-skills/">Employability Skills</a></li><li><a href="/study-material/">Study Material</a></li><li><a href="/jobs/">Jobs</a></li><li><a href="/apprenticeship/">Apprenticeship</a></li><li><a href="/exam/">Exam Info</a></li><li><a href="/about/">About Us</a></li></ul></nav>
-      <nav aria-label="Popular trades"><h3>Popular Trades</h3><ul>
-        <li><a href="/trades/copa/">COPA</a></li><li><a href="/trades/electrician/">Electrician</a></li><li><a href="/trades/fitter/">Fitter</a></li><li><a href="/trades/turner/">Turner</a></li><li><a href="/trades/welder/">Welder</a></li><li><a href="/trades/mmv/">MMV</a></li><li><a href="/trades/plumber/">Plumber</a></li><li><a href="/trades/wireman/">Wireman</a></li><li><a href="/trades/machinist/">Machinist</a></li><li><a href="/trades/diesel-mechanic/">Diesel Mechanic</a></li></ul></nav>
-      <nav aria-label="Useful resources"><h3>Useful Resources</h3><ul>
-        <li><a href="https://www.ncvtmis.gov.in/" rel="noopener" target="_blank">NCVT MIS</a></li><li><a href="https://dvet.gov.in/" rel="noopener" target="_blank">DVET Maharashtra</a></li><li><a href="https://www.apprenticeshipindia.gov.in/" rel="noopener" target="_blank">Apprenticeship Portal</a></li><li><a href="https://admission.dvet.gov.in/" rel="noopener" target="_blank">ITI Admission</a></li><li><a href="https://bharatskills.gov.in/" rel="noopener" target="_blank">Bharat Skills</a></li><li><a href="https://nimi.gov.in/" rel="noopener" target="_blank">NIMI</a></li><li><a href="/videos/">Mahaskill Videos</a></li><li><a href="/career-guidance/">Career Guidance</a></li><li><a href="/faq/">FAQ</a></li><li><a href="/contact/">Contact Us</a></li></ul></nav>
-      <div class="foot-quote" aria-hidden="true">“Skilled ITI Students<br>Build a Stronger India”</div>
-    </div>
-    <div class="container foot-bottom">
-      <p>© <span id="yr">2026</span> ITIExam.com. All Rights Reserved.</p>
-      <ul><li><a href="/privacy-policy/">Privacy Policy</a></li><li><a href="/terms/">Terms &amp; Conditions</a></li><li><a href="/disclaimer/">Disclaimer</a></li><li><a href="/contact/">Contact Us</a></li></ul>
-    </div>
-  </footer>
-
-  <a href="#top" class="to-top" aria-label="Back to top"><svg class="ic"><use href="#i-chev"/></svg></a>
-</body>
-</html>
+<?php require __DIR__ . '/includes/footer.php'; ?>

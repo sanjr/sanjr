@@ -39,13 +39,37 @@
     }
   });
 
-  // Header search icon focuses hero search
-  var sLink = document.querySelector('.nav-actions a[href="#hero-search"]');
-  if (sLink) sLink.addEventListener("click", function () { setTimeout(function () { document.getElementById("q").focus(); }, 350); });
+  // Header search icon focuses the hero search when it is on this page
+  var sLink = document.querySelector('.nav-actions a[href="/#hero-search"]');
+  var q = document.getElementById("q");
+  if (sLink && q) sLink.addEventListener("click", function (e) {
+    e.preventDefault();
+    document.getElementById("hero-search").scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(function () { q.focus(); }, 350);
+  });
+
+  // Related trades carousel arrows
+  document.querySelectorAll("[data-scroll]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var track = document.getElementById(btn.getAttribute("data-target"));
+      track.scrollBy({ left: Number(btn.getAttribute("data-scroll")) * track.clientWidth * 0.8, behavior: "smooth" });
+    });
+  });
+
+  // Trade page tabs: highlight the section in view
+  var tabs = document.querySelectorAll(".trade-tabs a, .tmenu a");
+  if (tabs.length && "IntersectionObserver" in window) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        tabs.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id); });
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    document.querySelectorAll(".tsec[id]").forEach(function (s) { spy.observe(s); });
+  }
 
   // Back to top
   var top = document.querySelector(".to-top");
   window.addEventListener("scroll", function () { top.classList.toggle("show", window.scrollY > 600); }, { passive: true });
 
-  document.getElementById("yr").textContent = new Date().getFullYear();
 })();
