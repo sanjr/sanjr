@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '7';
+const SCHEMA_VERSION = '8';
 
 function db(): PDO
 {
@@ -106,6 +106,7 @@ function db_migrate(PDO $pdo): void
     }
     // One-time fixes for sites installed with an older version (missing starter pages, old menu links)
     if ((int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() > 0) upgrade_content();
+    if (setting('footer_credit', "\0") === "\0") setting_set('footer_credit', 'Created & Developed by – Sanjay L. Rathod');
 
     $pdo->prepare('DELETE FROM settings WHERE skey = ?')->execute(['schema_version']);
     $pdo->prepare('INSERT INTO settings (skey, svalue) VALUES (?, ?)')->execute(['schema_version', SCHEMA_VERSION]);

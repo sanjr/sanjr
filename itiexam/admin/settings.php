@@ -25,6 +25,7 @@ $groups = [
         'stat_tests'     => ['Homepage number: Mock Tests', 'input', '100+'],
         'stat_students'  => ['Homepage number: Students Learning', 'input', '1,00,000+'],
         'footer_about'   => ['Footer about text', 'textarea', 0],
+        'footer_credit'  => ['Footer credit line (leave empty to hide)', 'input', 'Created & Developed by – Sanjay L. Rathod'],
     ],
     'Social media' => [
         'social_youtube'  => ['YouTube URL', 'input', 'https://www.youtube.com/@…'],

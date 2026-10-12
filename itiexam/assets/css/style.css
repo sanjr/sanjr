@@ -1078,3 +1078,16 @@ a:hover .btn-sm, .btn-sm:hover { background: linear-gradient(135deg, var(--blue-
   .prose .trades.sc .tt { font-size: 16px; }
   .prose .trades.sc .td { font-size: 12px; }
 }
+
+/* Homepage Study Material: 3 per row, bigger cards */
+@media (min-width: 560px) {
+  .study { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .st { padding: 24px 16px; display: flex; flex-direction: column; align-items: center; }
+  .sti { width: 64px; height: 64px; font-size: 30px; border-radius: 16px; margin-bottom: 14px; }
+  .st h3 { font-size: 17px; }
+  .st p { font-size: 13.5px; margin-top: 6px; }
+}
+/* footer credit */
+.foot-credit { color: #cbd5e1; }
+.foot-credit b { color: #fff; font-weight: 600; }
+@media (min-width: 768px) { .foot-bottom p { text-align: left; line-height: 1.7; } }
