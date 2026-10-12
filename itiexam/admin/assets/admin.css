@@ -109,3 +109,9 @@ code { background: #eef2ff; padding: 1px 5px; border-radius: 4px; font-size: 12p
 .adstxt { background: #0f172a; color: #e2e8f0; padding: 10px 12px; border-radius: 9px; font-size: 12.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
 
 h1, h2, .brand, .btn, .stat b { font-family: "Poppins", "Inter", system-ui, sans-serif; }
+h2.grp { font-size: 15px; margin: 22px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--navy); }
+h2.grp:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
+.brand-prev { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.brand-prev img { border-radius: 12px; border: 1px solid var(--line); background: #fff; object-fit: contain; }
+.side .brand { display: flex; align-items: center; gap: 10px; }
+.side .brand img { background: #fff; border-radius: 9px; padding: 2px; }

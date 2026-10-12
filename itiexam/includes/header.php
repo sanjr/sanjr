@@ -7,7 +7,7 @@ $meta = $meta ?? [];
 $title = $meta['title'] ?? SITE_NAME;
 $desc = $meta['description'] ?? setting('site_description');
 $canonical = SITE_URL . ($meta['path'] ?? '/');
-$ogImage = $meta['image'] ?? (SITE_URL . '/assets/img/og-image.png');
+$ogImage = $meta['image'] ?? (SITE_URL . '/assets/img/og-image.jpg');
 if ($ogImage && !is_external($ogImage)) $ogImage = SITE_URL . $ogImage;
 $currentPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
 ?><!DOCTYPE html>
@@ -33,15 +33,23 @@ $currentPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
   <meta name="twitter:title" content="<?= e($title) ?>">
   <meta name="twitter:description" content="<?= e($desc) ?>">
   <meta name="twitter:image" content="<?= e($ogImage) ?>">
-  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/assets/img/favicon.svg">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="<?= e(favicon_url()) ?>" type="image/png" sizes="48x48">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<?php if ($v = setting('google_verification')): ?>  <meta name="google-site-verification" content="<?= e($v) ?>">
+<?php endif; if ($v = setting('bing_verification')): ?>  <meta name="msvalidate.01" content="<?= e($v) ?>">
+<?php endif; ?>
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
   <?= adsense_head() ?>
-  <link rel="stylesheet" href="/assets/css/style.css?v=7">
-  <script src="/assets/js/main.js?v=5" defer></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=8">
+  <script src="/assets/js/main.js?v=6" defer></script>
+<?php if (($ga = setting('ga4_id')) && preg_match('/^G-[A-Z0-9]{4,15}$/', $ga) && empty($_SESSION['admin'])): ?>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($ga) ?>"></script>
+  <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '<?= e($ga) ?>');</script>
+<?php endif; ?>
 <?php foreach (($meta['jsonld'] ?? []) as $ld): ?>
   <script type="application/ld+json"><?= json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
 <?php endforeach; ?>
@@ -52,10 +60,7 @@ $currentPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
 
   <header class="site-header" id="top">
     <div class="container nav-wrap">
-      <a href="/" class="logo" aria-label="<?= e(SITE_NAME) ?> home">
-        <svg class="logo-mark" viewBox="0 0 48 40" aria-hidden="true"><path d="M24 4 2 14l22 10 22-10z" fill="#0b2a6f"/><path d="M11 19v9c7 6 19 6 26 0v-9l-13 6z" fill="#0b2a6f"/><path d="M44 15v10" stroke="#0b2a6f" stroke-width="2.5"/><circle cx="44" cy="27" r="2.5" fill="#2563eb"/></svg>
-        <span class="logo-text"><strong>ITI<span>Exam</span>.com</strong><small>Your ITI Exam Preparation Partner</small></span>
-      </a>
+      <?= site_logo() ?>
 
       <nav class="main-nav" id="main-nav" aria-label="Main navigation">
         <ul>

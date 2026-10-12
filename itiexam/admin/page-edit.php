@@ -5,6 +5,7 @@ require_login();
 
 $id = (int)($_GET['id'] ?? 0);
 $p = ['title' => '', 'slug' => '', 'content' => '', 'meta_title' => '', 'meta_description' => '', 'meta_keywords' => '', 'status' => 'published', 'category' => $_GET['category'] ?? '', 'excerpt' => '', 'image' => ''];
+if (!empty($_GET['slug'])) $p['slug'] = slugify((string)$_GET['slug'], true);
 if ($id) {
     $st = db()->prepare('SELECT * FROM pages WHERE id = ?');
     $st->execute([$id]);

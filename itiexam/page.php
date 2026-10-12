@@ -22,9 +22,9 @@ $ld = [['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemLi
 $ld[] = $isPost
     ? ['@context' => 'https://schema.org', '@type' => $p['category'] === 'exam-update' ? 'NewsArticle' : 'Article', 'headline' => $p['title'], 'description' => $desc,
        'datePublished' => date('c', strtotime($p['created_at'])), 'dateModified' => date('c', strtotime($p['updated_at'])), 'mainEntityOfPage' => SITE_URL . $path,
-       'image' => SITE_URL . ($p['image'] ? upload_url($p['image']) : '/assets/img/og-image.png'),
+       'image' => SITE_URL . ($p['image'] ? upload_url($p['image']) : '/assets/img/og-image.jpg'),
        'author' => ['@type' => 'Organization', 'name' => SITE_NAME, 'url' => SITE_URL . '/'],
-       'publisher' => ['@type' => 'Organization', 'name' => SITE_NAME, 'logo' => ['@type' => 'ImageObject', 'url' => SITE_URL . '/assets/img/favicon.svg']]]
+       'publisher' => ['@type' => 'Organization', 'name' => SITE_NAME, 'logo' => ['@type' => 'ImageObject', 'url' => SITE_URL . '/assets/img/logo.png']]]
     : ['@context' => 'https://schema.org', '@type' => 'WebPage', 'name' => $p['title'], 'url' => SITE_URL . $path,
        'dateModified' => date('c', strtotime($p['updated_at'])), 'publisher' => ['@type' => 'Organization', 'name' => SITE_NAME]];
 
@@ -37,6 +37,7 @@ if ($isPost) {
     $m->execute([$p['category'], $p['id']]);
     $more = $m->fetchAll();
 }
+$noWaCta = str_contains($p['content'], '[whatsapp]');
 require __DIR__ . '/includes/header.php';
 ?>
 <main id="main">

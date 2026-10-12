@@ -9,6 +9,7 @@ function admin_header(string $title, string $active = ''): void
         'pages'     => ['/admin/pages.php', 'Pages & Articles', 'doc'],
         'menus'     => ['/admin/menus.php', 'Menus & Links', 'link'],
         'ads'       => ['/admin/ads.php', 'Ads (AdSense)', 'rupee'],
+        'links'     => ['/admin/links.php', 'Link Checker', 'alert'],
         'settings'  => ['/admin/settings.php', 'Settings', 'gear'],
     ];
     ?><!DOCTYPE html>
@@ -18,7 +19,7 @@ function admin_header(string $title, string $active = ''): void
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title><?= e($title) ?> – <?= e(SITE_NAME) ?> Admin</title>
-  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/img/favicon-48.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/assets/admin.css?v=1">
 </head>
@@ -27,7 +28,7 @@ function admin_header(string $title, string $active = ''): void
 <?php if (admin_user()): ?>
   <input type="checkbox" id="nav-t" class="nav-t" aria-label="Toggle menu">
   <aside class="side">
-    <a href="/admin/" class="brand"><strong>ITI<span>Exam</span></strong> Admin</a>
+    <a href="/admin/" class="brand"><img src="<?= e(logo_url()) ?>" alt="" width="34" height="34"><span><strong>ITI<span>Exam</span></strong> Admin</span></a>
     <nav>
 <?php foreach ($nav as $k => [$u, $l, $i]): ?>
       <a href="<?= $u ?>"<?= $k === $active ? ' class="on"' : '' ?>><?= icon($i) ?><?= $l ?></a>

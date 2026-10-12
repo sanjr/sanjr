@@ -15,11 +15,15 @@ It runs on any normal shared hosting (Hostinger, GoDaddy, BigRock, cPanel).
 | **Pages & Articles** | Create any page at any URL (e.g. `/about/` or `/blog/my-post/`). Set its type to **Exam Update** or **Article** and it appears on the homepage automatically. Shortcodes: `[trades]`, `[trades section="mock-tests"]`, `[jobs type="apprentice" limit="6"]`, `[jobs trade="COPA"]`, `[posts category="article"]`. |
 | **Menus & Links** | Edit the header menu (with dropdowns) and footer links. Pick any trade or page from a list, or type any URL. |
 | **Ads (AdSense)** | Paste your AdSense Publisher ID and switch ads on. Works with **Auto ads**, and you can also add fixed ad units in 9 places (homepage, trade pages, jobs list, job details, articles, sidebar, above footer). `/ads.txt` is created automatically. Ads are hidden while you are logged in as admin. |
-| **Settings** | Homepage title and description for Google, homepage numbers (questions, tests, students), footer text, social media links, change password. |
+| **Link Checker** | Lists every menu, trade, page or job link that opens “Page not found”, and the missing addresses visitors reached (404 log), with Fix / Create page buttons. |
+| **Settings** | **WhatsApp group link** (join box on every page + floating button), contact email, **logo & favicon upload**, Google Search Console / Bing verification, Google Analytics 4 ID, homepage title/description, homepage numbers, footer text, social links, change password. |
 
 New trades and pages are added to `/sitemap.xml` automatically. Each trade page also shows the latest jobs for that trade.
 
 **Before launch:** setup adds 6 **sample jobs** and starter pages so you can see the design. The dashboard reminds you about sample jobs until you edit or delete them. Never leave fake job listings live.
+
+## Updating an existing website
+Upload the new files (keep the `data` and `uploads` folders). On the first page load the site upgrades itself: missing starter pages are created, old menu links are corrected, and the starter About/Contact pages are refreshed if you never edited them. Then open **Admin → Link Checker** to confirm nothing is broken.
 
 ## Google AdSense setup
 1. Admin → **Ads (AdSense)** → paste your Publisher ID (`ca-pub-…`) → tick **Show ads on the website** → Save.

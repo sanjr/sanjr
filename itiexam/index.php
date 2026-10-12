@@ -1,6 +1,15 @@
 <?php
 require __DIR__ . '/includes/functions.php';
 
+$faqs = [
+    ['Are ITI mock tests on ITI Exam free?', 'Yes. All ITI mock tests, previous year question papers and study material are 100% free for students of every trade. No sign-up is needed.'],
+    ['Is the ITI exam conducted in CBT mode?', 'Yes. NCVT ITI Trade Theory, Employability Skills and Workshop Calculation & Science exams are Computer Based Tests (CBT) with multiple choice questions. Our mock tests follow the same pattern.'],
+    ['Which ITI trades are covered?', 'COPA, Electrician, Fitter, Turner, Welder, MMV, Plumber, Wireman, Machinist, Diesel Mechanic and more, for both 1st year and 2nd year.'],
+    ['Where can I check my ITI result?', 'NCVT ITI results and marksheets are published on the official Skill India Digital (SIDH) portal and NCVT MIS. Check our Exam Updates section for the latest information.'],
+    ['How can I apply for ITI apprenticeship?', 'Register on the official Apprenticeship India portal (NAPS). Our step-by-step apprenticeship guide covers registration, eligibility, documents and company-wise openings.'],
+    ['How do I get daily ITI job alerts?', 'Open the ITI Jobs page for the latest government, private and apprentice jobs, and join our WhatsApp group to get new jobs and exam updates on your phone.'],
+];
+
 $ld = json_decode(str_replace('https://www.itiexam.com', SITE_URL, <<<'JSON'
 {
     "@context": "https://schema.org",
@@ -11,19 +20,17 @@ $ld = json_decode(str_replace('https://www.itiexam.com', SITE_URL, <<<'JSON'
         "name": "ITIExam.com",
         "alternateName": "ITI Exam",
         "url": "https://www.itiexam.com/",
-        "logo": "https://www.itiexam.com/assets/img/favicon.svg",
-        "slogan": "Your ITI Exam Preparation Partner",
-        "sameAs": [
-          "https://www.youtube.com/@itiexam",
-          "https://www.facebook.com/itiexam",
-          "https://t.me/itiexam"
-        ]
+        "logo": { "@type": "ImageObject", "url": "https://www.itiexam.com/assets/img/logo.png", "width": 600, "height": 600 },
+        "image": "https://www.itiexam.com/assets/img/og-image.jpg",
+        "slogan": "Learn • Test • Get Jobs",
+        "description": "Free ITI exam preparation for all NCVT trades: mock tests, previous year question papers, study material, ITI jobs and apprenticeship updates."
       },
       {
         "@type": "WebSite",
         "@id": "https://www.itiexam.com/#website",
         "url": "https://www.itiexam.com/",
         "name": "ITIExam.com",
+        "alternateName": ["ITI Exam", "ITIExam", "ITI Exam Preparation"],
         "inLanguage": "en-IN",
         "publisher": { "@id": "https://www.itiexam.com/#org" },
         "potentialAction": {
@@ -80,8 +87,17 @@ $ld = json_decode(str_replace('https://www.itiexam.com', SITE_URL, <<<'JSON'
     ]
   }
 JSON), true);
-// Trade list in structured data follows the trades the admin has published
+// Social profiles and email come from Admin → Settings; trade list follows the published trades
 foreach ($ld['@graph'] as &$node) {
+    if ($node['@type'] === 'FAQPage') {
+        $node['mainEntity'] = array_map(fn($f) => ['@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], $faqs);
+    }
+    if ($node['@type'] === 'Organization') {
+        $node['email'] = contact_email();
+        $node['contactPoint'] = ['@type' => 'ContactPoint', 'contactType' => 'customer support', 'email' => contact_email(), 'areaServed' => 'IN', 'availableLanguage' => ['English', 'Hindi', 'Marathi']];
+        $same = array_values(array_filter([setting('social_youtube'), setting('social_facebook'), setting('social_telegram'), setting('social_whatsapp'), whatsapp_group()]));
+        if ($same) $node['sameAs'] = $same;
+    }
     if ($node['@type'] === 'ItemList') {
         $node['itemListElement'] = [];
         foreach (trades(true) as $i => $t) {
@@ -99,7 +115,7 @@ $articles = latest_posts('article', 4);
 $tradeCount = count(trades());
 
 $meta = [
-    'title' => setting('home_title', 'ITI Exam 2026: Mock Test, Previous Papers, Study Material | ITIExam.com'),
+    'title' => setting('home_title') ?: 'ITI Exam ' . date('Y') . ': Free ITI Mock Test, Question Paper PDF & Jobs | ITI Exam',
     'description' => setting('site_description'),
     'keywords' => setting('home_keywords'),
     'path' => '/',
@@ -125,8 +141,8 @@ require __DIR__ . '/includes/header.php';
 
           <ul class="hero-stats">
             <li><a href="/trades/"><span class="si c-purple"><?= icon('list') ?></span><b><?= $tradeCount ?>+</b><small>ITI Trades</small></a></li>
-            <li><a href="/mock-test/"><span class="si c-blue"><?= icon('doc') ?></span><b><?= e(setting('stat_questions', '10,000+')) ?></b><small>Practice Questions</small></a></li>
-            <li><a href="/mock-test/"><span class="si c-orange"><?= icon('clip') ?></span><b><?= e(setting('stat_tests', '100+')) ?></b><small>Mock Tests</small></a></li>
+            <li><a href="/mock-test/"><span class="si c-blue"><?= icon('doc') ?></span><b><?= e(setting('stat_questions') ?: '10,000+') ?></b><small>Practice Questions</small></a></li>
+            <li><a href="/mock-test/"><span class="si c-orange"><?= icon('clip') ?></span><b><?= e(setting('stat_tests') ?: '100+') ?></b><small>Mock Tests</small></a></li>
             <li><a href="/jobs/"><span class="si c-green"><?= icon('brief') ?></span><b>Latest</b><small>Job Updates</small></a></li>
             <li><a href="/apprenticeship/"><span class="si c-pink"><?= icon('users') ?></span><b>Apprenticeship</b><small>NAPS / NATS</small></a></li>
             <li><a href="/study-material/"><span class="si c-yellow"><?= icon('book') ?></span><b>Study Material</b><small>Notes, PDFs, MCQs</small></a></li>
@@ -267,16 +283,20 @@ require __DIR__ . '/includes/header.php';
     <section class="section pt0" aria-labelledby="about-h">
       <div class="container cols-2-1">
         <div class="seo-text card">
-          <h2 id="about-h">Free ITI Exam Preparation for All Trades</h2>
-          <p><strong>ITIExam.com</strong> is a free online platform for ITI students preparing for the <strong>NCVT / SCVT ITI CBT exam</strong>. Practise trade-wise <strong>ITI mock tests</strong>, solve <strong>ITI previous year question papers with answers</strong>, and revise with module-wise notes and <strong>MCQ question banks</strong> for Trade Theory, <strong>Employability Skills</strong>, Workshop Calculation &amp; Science and Engineering Drawing.</p>
-          <p>Whether you are in COPA, Electrician, Fitter, Turner, Welder, MMV, Plumber, Wireman, Machinist or Diesel Mechanic, you get exam-pattern questions for 1st year and 2nd year, along with the latest <strong>ITI jobs</strong>, <strong>apprenticeship (NAPS / NATS)</strong> openings, <strong>admit card</strong> and <strong>ITI result</strong> updates, including Maharashtra DVET.</p>
+          <h2 id="about-h">ITI Exam <?= date('Y') ?> – Free Mock Test, Question Paper &amp; Study Material</h2>
+          <p><strong>ITI Exam</strong> is a free website for ITI students preparing for the <strong>NCVT / SCVT ITI CBT exam <?= date('Y') ?></strong>. Practise trade-wise <strong>ITI mock tests</strong> and <strong>ITI online tests</strong>, solve <strong>ITI previous year question papers with answers (PDF)</strong>, and revise with module-wise notes and <strong>MCQ question banks</strong> for Trade Theory, <strong>Employability Skills</strong>, Workshop Calculation &amp; Science and Engineering Drawing.</p>
+          <h3>All ITI trades in one place</h3>
+          <p>Find <a href="/trades/copa/">COPA MCQ</a>, <a href="/trades/electrician/">Electrician mock test</a>, <a href="/trades/fitter/">Fitter question paper</a>, Turner, Welder, MMV, Plumber, Wireman, Machinist and Diesel Mechanic material for <strong>1st year and 2nd year</strong>. Every trade page has a mock test, syllabus, notes, previous papers and important questions. See <a href="/trades/">all ITI trades</a>.</p>
+          <h3>ITI jobs, apprenticeship and results</h3>
+          <p>Get the latest <a href="/jobs/">ITI jobs</a> – <a href="/jobs/government/">government jobs</a>, <a href="/jobs/apprentice/">railway &amp; PSU apprentice</a>, private company and campus placement – plus <a href="/apprenticeship/">apprenticeship (NAPS / NATS)</a> guides and <a href="/exam/">ITI exam date, admit card and result</a> updates for every state, including Maharashtra DVET.</p>
+          <p lang="mr">आयटीआय परीक्षा तयारीसाठी मोफत मॉक टेस्ट, प्रश्नपत्रिका, नोट्स आणि ITI नोकरी अपडेट्स – सर्व एका ठिकाणी.</p>
+          <p lang="hi">आईटीआई परीक्षा की तैयारी के लिए मुफ्त मॉक टेस्ट, प्रश्न पत्र, नोट्स और आईटीआई जॉब अपडेट – सब एक जगह।</p>
         </div>
         <div class="card faq">
           <h2>Frequently Asked Questions</h2>
-          <details><summary>Are ITI mock tests on ITIExam.com free?</summary><p>Yes. All ITI mock tests, previous year papers and study material are 100% free for students of every trade.</p></details>
-          <details><summary>Is the ITI exam conducted in CBT mode?</summary><p>Yes. NCVT ITI theory, Employability Skills and Workshop Calculation &amp; Science exams are Computer Based Tests with MCQs. Our mock tests follow the same pattern.</p></details>
-          <details><summary>Which ITI trades are covered?</summary><p>30+ trades including COPA, Electrician, Fitter, Turner, Welder, MMV, Plumber, Wireman, Machinist, Diesel Mechanic and more, for 1st and 2nd year.</p></details>
-          <details><summary>How can I apply for ITI apprenticeship?</summary><p>Register on the official Apprenticeship India portal (NAPS). Our step-by-step guide covers registration, eligibility, documents and company-wise openings.</p></details>
+<?php foreach ($faqs as [$q, $ans]): ?>
+          <details><summary><?= e($q) ?></summary><p><?= e($ans) ?></p></details>
+<?php endforeach; ?>
         </div>
       </div>
     </section>
@@ -292,8 +312,8 @@ require __DIR__ . '/includes/header.php';
         <span class="rocket" aria-hidden="true">🚀</span>
         <ul class="cta-stats">
           <li class="s-blue"><b><?= $tradeCount ?>+</b><small>ITI Trades</small></li>
-          <li class="s-green"><b><?= e(setting('stat_questions', '10,000+')) ?></b><small>Practice Questions</small></li>
-          <li class="s-orange"><b><?= e(setting('stat_students', '1,00,000+')) ?></b><small>Students Learning</small></li>
+          <li class="s-green"><b><?= e(setting('stat_questions') ?: '10,000+') ?></b><small>Practice Questions</small></li>
+          <li class="s-orange"><b><?= e(setting('stat_students') ?: '1,00,000+') ?></b><small>Students Learning</small></li>
           <li class="s-purple"><b>100%</b><small>Free Access</small></li>
         </ul>
       </div>

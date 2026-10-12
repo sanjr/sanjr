@@ -53,9 +53,10 @@ function section_card(string $key, string $heading, array $list, string $style, 
 }
 
 /* ---------- SEO ---------- */
-$title = $t['meta_title'] ?: "ITI $name Trade: Mock Test, Syllabus, Notes PDF & Previous Papers | " . SITE_NAME;
+$yr = date('Y');
+$title = $t['meta_title'] ?: "ITI $name Mock Test $yr – MCQ, Question Paper PDF & Syllabus | ITI Exam";
 $desc = $t['meta_description'] ?: trim("ITI $name ({$t['full_name']}) trade – free mock tests, NCVT syllabus, theory notes PDF, practical exercises, previous year question papers and important questions.");
-$keywords = $t['meta_keywords'] ?: "ITI $name, $name trade, ITI $name mock test, ITI $name syllabus, $name notes PDF, ITI $name question paper, {$t['full_name']}";
+$keywords = $t['meta_keywords'] ?: "ITI $name mock test, ITI $name MCQ, ITI $name question paper PDF, ITI $name previous year paper, ITI $name online test, ITI $name syllabus $yr, ITI $name notes PDF, $name 1st year MCQ, $name 2nd year MCQ, ITI $name jobs, {$t['full_name']}";
 
 $ld = [
     ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => [

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '2';
+const SCHEMA_VERSION = '3';
 
 function db(): PDO
 {
@@ -85,6 +85,16 @@ function db_migrate(PDO $pdo): void
     add_column($pdo, 'pages', 'category', "VARCHAR(30) NOT NULL DEFAULT ''");
     add_column($pdo, 'pages', 'excerpt', "VARCHAR(400) NOT NULL DEFAULT ''");
     add_column($pdo, 'pages', 'image', "VARCHAR(255) NOT NULL DEFAULT ''");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS not_found_log (
+        id $id, path VARCHAR(300) NOT NULL UNIQUE, hits INT NOT NULL DEFAULT 1, referrer VARCHAR(300) NOT NULL DEFAULT '',
+        last_seen VARCHAR(20) NOT NULL)$engine");
+
+    // One-time fixes for sites installed with an older version (missing starter pages, old menu links)
+    if ((int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() > 0) {
+        require_once __DIR__ . '/../admin/inc/seed.php';
+        upgrade_content();
+    }
 
     $pdo->prepare('DELETE FROM settings WHERE skey = ?')->execute(['schema_version']);
     $pdo->prepare('INSERT INTO settings (skey, svalue) VALUES (?, ?)')->execute(['schema_version', SCHEMA_VERSION]);

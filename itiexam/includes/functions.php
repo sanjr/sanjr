@@ -222,7 +222,9 @@ function latest_posts(string $category, int $limit = 4): array
  */
 function render_shortcodes(string $html): string
 {
-    return preg_replace_callback('/\[(trades|jobs|posts)([^\]]*)\]/', function ($m) {
+    return preg_replace_callback('/\[(trades|jobs|posts|contact|whatsapp)([^\]]*)\]/', function ($m) {
+        if ($m[1] === 'contact') return contact_block();
+        if ($m[1] === 'whatsapp') return whatsapp_cta('inline');
         preg_match_all('/(\w+)="([^"]*)"/', $m[2], $kv, PREG_SET_ORDER);
         $a = [];
         foreach ($kv as $p) $a[$p[1]] = $p[2];
@@ -339,4 +341,78 @@ function ads_txt(): string
     if (preg_match('/(pub-\d{10,20})/', setting('adsense_client'), $m)) $out .= "google.com, {$m[1]}, DIRECT, f08c47fec0942fa0\n";
     $extra = trim(setting('ads_txt_extra'));
     return $out . ($extra !== '' ? $extra . "\n" : '');
+}
+
+/* =========================================================
+   Brand: logo, favicon, contact, WhatsApp group (Admin → Settings)
+   ========================================================= */
+function logo_url(): string { return ($f = setting('logo_file')) ? upload_url($f) : '/assets/img/logo-mark.webp'; }
+function favicon_url(): string { return ($f = setting('favicon_file')) ? upload_url($f) : '/assets/img/favicon-48.png'; }
+function contact_email(): string { return setting('contact_email', 'contact@itiexam.com') ?: 'contact@itiexam.com'; }
+function whatsapp_group(): string { $u = trim(setting('whatsapp_group')); return preg_match('~^https://~', $u) ? $u : ''; }
+function telegram_channel(): string { $u = trim(setting('social_telegram')); return preg_match('~^https://~', $u) ? $u : ''; }
+
+/** Logo used in header and footer. */
+function site_logo(bool $light = false): string
+{
+    return '<a href="/" class="logo' . ($light ? ' light' : '') . '" aria-label="' . e(SITE_NAME) . ' home">'
+        . '<img class="logo-img" src="' . e(logo_url()) . '" alt="" width="46" height="46" decoding="async">'
+        . '<span class="logo-text"><strong><b class="l-i1">I</b><b class="l-t">T</b><b class="l-i2">I</b><span>Exam</span></strong><small>Learn • Test • Get Jobs</small></span></a>';
+}
+
+/** "Join our WhatsApp group" card ('' when the admin has not added a group link). */
+function whatsapp_cta(string $class = ''): string
+{
+    $wa = whatsapp_group();
+    if ($wa === '') return '';
+    $tg = telegram_channel();
+    return '<section class="wa-cta ' . e($class) . '" aria-label="Join WhatsApp group"><span class="wa-ic">' . icon('wa') . '</span>'
+        . '<div class="wa-txt"><b>' . e(setting('whatsapp_title') ?: 'Get daily ITI job & exam alerts') . '</b><small>' . e(setting('whatsapp_subtitle') ?: 'Join our free WhatsApp group – new jobs, results and mock tests every day.') . '</small></div>'
+        . '<span class="wa-btns"><a class="wa-btn" href="' . e($wa) . '" target="_blank" rel="noopener">' . icon('wa') . ' Join WhatsApp Group</a>'
+        . ($tg ? '<a class="tg-btn" href="' . e($tg) . '" target="_blank" rel="noopener">' . icon('tg') . ' Telegram</a>' : '') . '</span></section>';
+}
+
+/** Contact details block for the Contact page: [contact] */
+function contact_block(): string
+{
+    $mail = contact_email();
+    $out = '<div class="contact-grid"><a class="cbox" href="mailto:' . e($mail) . '"><span class="ri c-blue">' . icon('chat') . '</span><span><small>Email us</small><b>' . e($mail) . '</b></span></a>';
+    if ($wa = whatsapp_group()) $out .= '<a class="cbox" href="' . e($wa) . '" target="_blank" rel="noopener"><span class="ri c-green">' . icon('wa') . '</span><span><small>WhatsApp group</small><b>Join for daily updates</b></span></a>';
+    if ($tg = telegram_channel()) $out .= '<a class="cbox" href="' . e($tg) . '" target="_blank" rel="noopener"><span class="ri c-cyan">' . icon('tg') . '</span><span><small>Telegram</small><b>Join our channel</b></span></a>';
+    return $out . '</div>';
+}
+
+
+/* =========================================================
+   404 log + internal link checking (Admin → Link Checker)
+   ========================================================= */
+function log_not_found(): void
+{
+    $path = mb_substr(strtok($_SERVER['REQUEST_URI'] ?? '', '?') ?: '', 0, 290);
+    if ($path === '' || preg_match('~\.(php|env|git|sql|bak|zip)|wp-|xmlrpc~i', $path)) return;   // ignore hacker bots
+    $ref = mb_substr((string)($_SERVER['HTTP_REFERER'] ?? ''), 0, 290);
+    try {
+        $u = db()->prepare('UPDATE not_found_log SET hits = hits + 1, last_seen = ?, referrer = CASE WHEN ? <> \'\' THEN ? ELSE referrer END WHERE path = ?');
+        $u->execute([now(), $ref, $ref, $path]);
+        if (!$u->rowCount()) db()->prepare('INSERT INTO not_found_log (path, referrer, last_seen) VALUES (?, ?, ?)')->execute([$path, $ref, now()]);
+    } catch (PDOException $e) { /* logging must never break the page */ }
+}
+
+/** True when an internal URL (starting with /) opens a real page on this site. */
+function internal_url_ok(string $url): bool
+{
+    $path = strtok(strtok($url, '#') ?: '/', '?') ?: '/';
+    if (in_array($path, ['/', '/trades/', '/jobs/', '/search/', '/sitemap.xml', '/ads.txt', '/robots.txt', '/admin/'], true)) return true;
+    $root = dirname(__DIR__);
+    if (is_file($root . $path) && !str_contains($path, '..')) return true;
+    $p = trim($path, '/');
+    if (preg_match('~^trades/([a-z0-9-]+)$~', $p, $m)) {
+        $st = db()->prepare("SELECT COUNT(*) FROM trades WHERE slug = ? AND status = 'published'"); $st->execute([$m[1]]); return (bool)$st->fetchColumn();
+    }
+    if (preg_match('~^jobs/([a-z0-9-]+)$~', $p, $m)) {
+        if (isset(JOB_TYPES[$m[1]])) return true;
+        $st = db()->prepare("SELECT COUNT(*) FROM jobs WHERE slug = ? AND status = 'published'"); $st->execute([$m[1]]); return (bool)$st->fetchColumn();
+    }
+    $st = db()->prepare("SELECT COUNT(*) FROM pages WHERE slug = ? AND status = 'published'"); $st->execute([$p]);
+    return (bool)$st->fetchColumn();
 }

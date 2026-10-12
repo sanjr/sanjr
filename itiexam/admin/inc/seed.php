@@ -9,10 +9,11 @@ function seed_site(): void
     seed_pages();
     $defaults = [
         'site_description' => 'Free ITI mock tests, NCVT ITI previous year question papers, Employability Skills MCQ, study material PDF, ITI jobs, apprenticeship (NAPS/NATS), admit card & result updates for COPA, Electrician, Fitter, Turner, Welder & all ITI trades.',
-        'home_title' => 'ITI Exam 2026: Mock Test, Previous Papers, Study Material | ITIExam.com',
+        'home_title' => 'ITI Exam ' . date('Y') . ': Free ITI Mock Test, Question Paper PDF & Jobs | ITI Exam',
         'home_keywords' => 'ITI exam, ITI mock test, ITI online test, ITI CBT exam, NCVT ITI exam 2026, ITI previous year question paper, Employability Skills MCQ, COPA mock test, ITI study material, ITI jobs, ITI apprenticeship, NAPS, NATS, ITI result, Maharashtra ITI, DVET',
         'footer_about' => 'Online Mock Tests, Previous Year Questions, Study Material, Jobs, Apprenticeship and Expert Content for all ITI Trades.',
         'social_youtube' => '', 'social_facebook' => '', 'social_telegram' => '', 'social_whatsapp' => '',
+        'contact_email' => 'contact@itiexam.com', 'whatsapp_float' => '1', 'whatsapp_group' => '',
     ];
     foreach ($defaults as $k => $v) if (setting($k, "\0") === "\0") setting_set($k, $v);
 }
@@ -43,7 +44,7 @@ function seed_menus(): void
     foreach ([['Home', '/'], ['All Trades', '/trades/'], ['Mock Tests', '/mock-test/'], ['Previous Papers', '/previous-papers/'], ['Employability Skills', '/employability-skills/'],
               ['Study Material', '/study-material/'], ['Jobs & Career', '/jobs/'], ['Apprenticeship', '/apprenticeship/'], ['Exam Info', '/exam/'], ['About Us', '/about/']] as $i => [$l, $u]) $add('footer_quick', $l, $u, $i);
     foreach ([['NCVT MIS', 'https://www.ncvtmis.gov.in/'], ['DVET Maharashtra', 'https://dvet.gov.in/'], ['Apprenticeship Portal', 'https://www.apprenticeshipindia.gov.in/'],
-              ['ITI Admission', 'https://admission.dvet.gov.in/'], ['Bharat Skills', 'https://bharatskills.gov.in/'], ['NIMI', 'https://nimi.gov.in/'], ['Career Guidance', '/career-guidance/'], ['FAQ', '/faq/'], ['Contact Us', '/contact/']] as $i => [$l, $u]) $add('footer_resources', $l, $u, $i);
+              ['ITI Admission', 'https://admission.dvet.gov.in/'], ['Skill India Digital (Results)', 'https://www.skillindiadigital.gov.in/'], ['Bharat Skills', 'https://bharatskills.gov.in/'], ['NIMI', 'https://nimi.gov.in/'], ['Career Guidance', '/career-guidance/'], ['FAQ', '/faq/'], ['Contact Us', '/contact/']] as $i => [$l, $u]) $add('footer_resources', $l, $u, $i);
     foreach ([['Privacy Policy', '/privacy-policy/'], ['Terms & Conditions', '/terms/'], ['Disclaimer', '/disclaimer/'], ['Contact Us', '/contact/']] as $i => [$l, $u]) $add('footer_legal', $l, $u, $i);
 }
 
@@ -160,10 +161,8 @@ function seed_pages(): void
          "<p>Latest updates on <strong>NCVT ITI exam dates</strong>, <strong>admit cards</strong> and <strong>results</strong>. Always confirm on the official portal <a href=\"https://www.ncvtmis.gov.in/\" target=\"_blank\" rel=\"noopener\">NCVT MIS</a>.</p>[posts category=\"exam-update\" limit=\"20\"]"],
         ['blog', 'ITI Preparation Tips & Articles', '', 'Study tips, exam strategy and career articles for ITI students.',
          "<p>Tips and guides to help you prepare for the ITI exam and plan your career.</p>[posts category=\"article\" limit=\"20\"]"],
-        ['about', 'About Us', '', "About $site – free ITI exam preparation platform.",
-         "<p><strong>$site</strong> is a free online platform for ITI students. We publish mock tests, previous year papers, study material, job updates and apprenticeship guides for all ITI trades.</p><p>Our goal is simple: help every ITI student pass the CBT exam with good marks and find the right job or apprenticeship.</p>"],
-        ['contact', 'Contact Us', '', "Contact the $site team.",
-         "<p>Have a question, found a mistake, or want to suggest a topic? Write to us.</p><p><strong>Email:</strong> contact@itiexam.com</p><p>We usually reply within 2 working days.</p>"],
+        ['about', 'About ITI Exam', '', 'ITI Exam is a free online platform for ITI students: trade-wise mock tests, previous year papers, study material, ITI jobs and apprenticeship updates.', about_html()],
+        ['contact', 'Contact Us', '', "Contact the $site team by email or WhatsApp.", contact_html()],
         ['faq', 'Frequently Asked Questions', '', 'Answers to common questions about ITI exams, mock tests and jobs.',
          "<h3>Are the mock tests free?</h3><p>Yes, all mock tests and study material are free.</p><h3>Is the ITI exam conducted in CBT mode?</h3><p>Yes. Theory, Employability Skills and Workshop Calculation &amp; Science are computer based tests with MCQs.</p><h3>Where can I check my ITI result?</h3><p>Results are published on the official NCVT MIS portal. See our <a href=\"/exam/\">exam updates</a>.</p><h3>How do I apply for apprenticeship?</h3><p>Read our <a href=\"/apprenticeship/\">apprenticeship guide</a>.</p>"],
         ['privacy-policy', 'Privacy Policy', '', "How $site collects and uses information.",
@@ -177,7 +176,7 @@ function seed_pages(): void
         ['exam/iti-admit-card', 'ITI Admit Card – How to Download Hall Ticket', 'exam-update', 'Steps to download the ITI CBT admit card (hall ticket).',
          "<p>The ITI admit card (hall ticket) is released a few days before the CBT exam.</p><h2>Steps</h2><ol><li>Visit the NCVT MIS portal.</li><li>Open the Hall Ticket / Admit Card link.</li><li>Enter your roll number or registration details.</li><li>Download and print the admit card.</li></ol><p>Check your name, photo, trade and exam centre. Report any mistake to your ITI immediately.</p>"],
         ['exam/maharashtra-iti-result', 'Maharashtra ITI Result – How to Check & Download Marksheet', 'exam-update', 'How to check the Maharashtra ITI result and download the e-marksheet.',
-         "<p>Maharashtra ITI students can check results on the NCVT MIS portal and DVET updates.</p><ol><li>Open NCVT MIS → Results / Marksheet.</li><li>Enter your roll number and year.</li><li>Download the e-marksheet.</li></ol><p>For admission and DVET notices visit <a href=\"https://dvet.gov.in/\" target=\"_blank\" rel=\"noopener\">dvet.gov.in</a>.</p>"],
+         "<p>NCVT ITI results and e-marksheets are published on the official <a href=\"https://www.skillindiadigital.gov.in/\" target=\"_blank\" rel=\"noopener\">Skill India Digital (SIDH)</a> portal and on NCVT MIS. Log in with your PRN and date of birth.</p><ol><li>Open Skill India Digital or NCVT MIS → Results / Marksheet.</li><li>Enter your roll number and year.</li><li>Download the e-marksheet.</li></ol><p>For admission and DVET notices visit <a href=\"https://dvet.gov.in/\" target=\"_blank\" rel=\"noopener\">dvet.gov.in</a>.</p>"],
         ['exam/apprenticeship-registration-process', 'Apprenticeship Registration Process – Step by Step', 'exam-update', 'Step-by-step apprenticeship registration on the Apprenticeship India portal.',
          "<p>Follow these steps to register for apprenticeship after ITI.</p><ol><li>Open apprenticeshipindia.gov.in and click Register → Candidate.</li><li>Verify your mobile number and email.</li><li>Fill education details and upload documents.</li><li>Apply to openings in your trade.</li></ol><p>Read the full <a href=\"/apprenticeship/\">apprenticeship guide</a>.</p>"],
         ['blog/how-to-prepare-for-iti-cbt-exam', 'How to Prepare for ITI CBT Exam?', 'article', 'A simple plan to prepare for the ITI computer based test.',
@@ -194,5 +193,110 @@ function seed_pages(): void
         if ($exists->fetchColumn()) continue;
         $t = date('Y-m-d H:i:s', strtotime('-' . $i . ' hours'));
         $ins->execute([$slug, $title, $html, $excerpt, $cat, $excerpt, 'published', $t, $t]);
+    }
+}
+
+
+function about_html(): string
+{
+    return <<<'HTML'
+<p><strong>ITI Exam</strong> (ITIExam.com) is a free online platform made for <strong>ITI students across India</strong>. We help you prepare for the <strong>NCVT / SCVT ITI CBT exam</strong>, find the latest <strong>ITI jobs</strong> and get an <strong>apprenticeship</strong> – all in one place, in simple language, on your mobile.</p>
+<p>Our motto is <strong>Learn • Test • Get Jobs</strong>.</p>
+
+<h2>What you get on ITI Exam</h2>
+<ul>
+<li><strong>ITI Mock Tests</strong> – trade-wise and module-wise online tests in the real CBT pattern, with a timer.</li>
+<li><strong>Previous Year Question Papers</strong> – NCVT ITI papers with answers for 1st and 2nd year.</li>
+<li><strong>Study Material</strong> – module-wise theory notes, MCQ question bank, syllabus and model papers.</li>
+<li><strong>Employability Skills</strong> – notes and MCQs for this common subject of every trade.</li>
+<li><strong>ITI Jobs</strong> – government jobs, private company jobs, campus placement and walk-in interviews for ITI pass candidates.</li>
+<li><strong>Apprenticeship</strong> – NAPS / NATS guides, registration steps and company-wise openings.</li>
+<li><strong>Exam updates</strong> – ITI exam date, admit card and result information.</li>
+</ul>
+
+<h2>Trades we cover</h2>
+<p>COPA, Electrician, Fitter, Turner, Welder, Mechanic Motor Vehicle (MMV), Plumber, Wireman, Machinist, Diesel Mechanic and many more ITI trades. We add new trades and questions regularly.</p>
+
+<h2>Who is this website for?</h2>
+<ul>
+<li>ITI 1st year and 2nd year students preparing for the CBT exam</li>
+<li>ITI pass candidates looking for jobs or apprenticeship</li>
+<li>Students in Maharashtra (DVET) and every other state following the NCVT syllabus</li>
+<li>Instructors who want ready practice material for their class</li>
+</ul>
+
+<h2>Why students trust us</h2>
+<ul>
+<li><strong>100% free</strong> – no sign-up and no payment needed to study.</li>
+<li><strong>Exam-focused</strong> – questions follow the latest NCVT syllabus and CBT pattern.</li>
+<li><strong>Mobile first</strong> – the website is fast and easy to use on any phone.</li>
+<li><strong>Verified job updates</strong> – every job links to its official notification and apply page.</li>
+</ul>
+
+<h2>आमच्याबद्दल (मराठी)</h2>
+<p>ITI Exam ही ITI विद्यार्थ्यांसाठी पूर्णपणे मोफत वेबसाइट आहे. येथे सर्व ट्रेडसाठी मॉक टेस्ट, मागील वर्षांचे प्रश्नपत्रिका, नोट्स, ITI नोकऱ्या आणि अप्रेंटिसशिपची माहिती मिळते.</p>
+
+<h2>हमारे बारे में (हिंदी)</h2>
+<p>ITI Exam आईटीआई छात्रों के लिए पूरी तरह मुफ्त वेबसाइट है। यहाँ सभी ट्रेड के मॉक टेस्ट, पिछले वर्ष के प्रश्न पत्र, नोट्स, आईटीआई जॉब्स और अप्रेंटिसशिप की जानकारी मिलती है।</p>
+
+<h2>Important note</h2>
+<p>ITI Exam is an independent educational website. It is not connected to NCVT, DGT, DVET or any government department. Always confirm exam dates, results and job details on the official websites. We never ask for money for any job or apprenticeship.</p>
+
+<h2>Contact us</h2>
+[contact]
+[whatsapp]
+HTML;
+}
+
+function contact_html(): string
+{
+    return <<<'HTML'
+<p>Have a question, found a mistake in a question, or want us to add your trade? We are happy to help.</p>
+[contact]
+<h2>Before you write</h2>
+<ul>
+<li>For exam dates, admit cards and results, also check the official <a href="https://www.ncvtmis.gov.in/" target="_blank" rel="noopener">NCVT MIS</a> portal.</li>
+<li>For job applications, use the apply link given on each job page.</li>
+<li>Mention your trade and year so we can reply faster.</li>
+</ul>
+<p>We usually reply within 2 working days.</p>
+[whatsapp]
+HTML;
+}
+
+/**
+ * Runs once when an older installation is upgraded: adds missing starter pages,
+ * points old menu links to pages that exist, and refreshes untouched About/Contact pages.
+ */
+function upgrade_content(): void
+{
+    $pdo = db();
+    seed_pages();
+
+    $remap = ['/study-material/notes/' => '/study-material/', '/study-material/mcq/' => '/mock-test/', '/study-material/syllabus/' => '/syllabus/',
+              '/exam/date/' => '/exam/ncvt-iti-exam-date/', '/exam/admit-card/' => '/exam/iti-admit-card/', '/exam/result/' => '/exam/maharashtra-iti-result/',
+              '/exam/pattern/' => '/blog/ncvt-iti-exam-pattern-syllabus/', '/apprenticeship/how-to-apply/' => '/apprenticeship/'];
+    $up = $pdo->prepare('UPDATE menu_items SET url = ? WHERE url = ?');
+    foreach ($remap as $old => $new) $up->execute([$new, $old]);
+    $gone = ['/mock-test/trade-theory/', '/mock-test/employability-skills/', '/mock-test/workshop-calculation-science/', '/mock-test/engineering-drawing/',
+             '/previous-papers/1st-year/', '/previous-papers/2nd-year/', '/previous-papers/cbt/', '/employability-skills/1st-year/', '/employability-skills/2nd-year/', '/videos/'];
+    $del = $pdo->prepare('DELETE FROM menu_items WHERE url = ? AND parent_id <> 0');
+    foreach ($gone as $u) $del->execute([$u]);
+
+    // Refresh About / Contact only if they still have the old starter text
+    $pg = $pdo->prepare('SELECT id, content FROM pages WHERE slug = ?');
+    $set = $pdo->prepare('UPDATE pages SET title = ?, content = ?, excerpt = ?, meta_description = ?, updated_at = ? WHERE id = ?');
+    $pg->execute(['about']);
+    if (($r = $pg->fetch()) && str_contains($r['content'], 'Our goal is simple') && strlen($r['content']) < 700) {
+        $ex = 'ITI Exam is a free online platform for ITI students: trade-wise mock tests, previous year papers, study material, ITI jobs and apprenticeship updates.';
+        $set->execute(['About ITI Exam', about_html(), $ex, $ex, now(), $r['id']]);
+    }
+    $pg->execute(['contact']);
+    if (($r = $pg->fetch()) && str_contains($r['content'], 'We usually reply within 2 working days') && strlen($r['content']) < 400) {
+        $set->execute(['Contact Us', contact_html(), 'Contact the ITI Exam team by email or WhatsApp.', 'Contact the ITI Exam team by email or WhatsApp.', now(), $r['id']]);
+    }
+    if (setting('contact_email', "\0") === "\0") setting_set('contact_email', 'contact@itiexam.com');
+    if (setting('home_title') === 'ITI Exam 2026: Mock Test, Previous Papers, Study Material | ITIExam.com') {
+        setting_set('home_title', 'ITI Exam ' . date('Y') . ': Free ITI Mock Test, Question Paper PDF & Jobs | ITI Exam');
     }
 }
