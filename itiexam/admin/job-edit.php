@@ -125,8 +125,8 @@ admin_header($id ? 'Edit Job' : 'Add New Job', 'jobs');
       </div>
       <section class="box">
         <h2>Full job details</h2>
-        <p class="muted">Eligibility, important dates, selection process, how to apply. HTML allowed (&lt;h3&gt;, &lt;p&gt;, &lt;ul&gt;&lt;li&gt;, &lt;table&gt;, &lt;a href&gt;).</p>
-        <textarea name="description" rows="14" class="code"><?= e($j['description']) ?></textarea>
+        <p class="muted">Eligibility, important dates, selection process, how to apply. Use the toolbar for headings, lists, tables, photos and PDF links.</p>
+        <textarea name="description" rows="14" class="code" data-editor><?= e($j['description']) ?></textarea>
       </section>
       <section class="box">
         <h2>Google SEO</h2>

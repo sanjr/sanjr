@@ -57,7 +57,13 @@ const MENU_LOCATIONS = [
     'footer_quick'     => 'Footer – Quick Links',
     'footer_resources' => 'Footer – Useful Resources',
     'footer_legal'     => 'Footer – Bottom links',
+    'home_quick'       => 'Homepage – Hero quick links (right box)',
+    'home_career'      => 'Homepage – Jobs & Career list',
+    'home_apprentice'  => 'Homepage – Apprenticeship list',
+    'home_study'       => 'Homepage – Study Material tiles',
 ];
+/** Menu locations whose links also have a subtitle and an icon. */
+function menu_has_extras(string $loc): bool { return str_starts_with($loc, 'home_'); }
 
 /** Returns menu items as a tree: each item has 'children'. */
 function menu(string $location): array

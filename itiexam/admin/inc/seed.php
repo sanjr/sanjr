@@ -4,6 +4,7 @@ function seed_site(): void
 {
     $pdo = db();
     if ((int)$pdo->query('SELECT COUNT(*) FROM menu_items')->fetchColumn() === 0) seed_menus();
+    seed_home_lists();
     if ((int)$pdo->query('SELECT COUNT(*) FROM trades')->fetchColumn() === 0) seed_trades();
     if ((int)$pdo->query('SELECT COUNT(*) FROM employers')->fetchColumn() === 0) seed_jobs();
     seed_pages();
@@ -272,6 +273,7 @@ function upgrade_content(): void
 {
     $pdo = db();
     seed_pages();
+    seed_home_lists();
 
     $remap = ['/study-material/notes/' => '/study-material/', '/study-material/mcq/' => '/mock-test/', '/study-material/syllabus/' => '/syllabus/',
               '/exam/date/' => '/exam/ncvt-iti-exam-date/', '/exam/admit-card/' => '/exam/iti-admit-card/', '/exam/result/' => '/exam/maharashtra-iti-result/',
@@ -299,4 +301,26 @@ function upgrade_content(): void
     if (setting('home_title') === 'ITI Exam 2026: Mock Test, Previous Papers, Study Material | ITIExam.com') {
         setting_set('home_title', 'ITI Exam ' . date('Y') . ': Free ITI Mock Test, Question Paper PDF & Jobs | ITI Exam');
     }
+}
+
+
+/** Editable homepage lists (Admin → Menus & Links → Homepage …). Added once. */
+function seed_home_lists(): void
+{
+    $pdo = db();
+    if ((int)$pdo->query("SELECT COUNT(*) FROM menu_items WHERE location LIKE 'home_%'")->fetchColumn() > 0) return;
+    $ins = $pdo->prepare('INSERT INTO menu_items (location, parent_id, label, url, subtitle, icon, sort_order) VALUES (?, 0, ?, ?, ?, ?, ?)');
+    $lists = [
+        'home_quick' => [['Mock Tests', '/mock-test/', 'Trade & Module-wise', 'doc'], ['Previous Papers', '/previous-papers/', 'With Solutions', 'clip'],
+            ['Employability Skills', '/employability-skills/', '1st Year & 2nd Year', 'target'], ['Study Material', '/study-material/', 'Notes, PDFs, MCQs', 'book'],
+            ['Jobs & Career', '/jobs/', 'Latest Job Updates', 'brief'], ['Apprenticeship', '/apprenticeship/', 'NAPS / NATS', 'cap'], ['All ITI Trades', '/trades/', 'Explore Now', 'grid']],
+        'home_career' => [['Government Jobs', '/jobs/government/', 'ITI Recruitment, Sarkari Naukri', 'bank'], ['Private Company Jobs', '/jobs/private/', 'Latest ITI Job Vacancies', 'brief'],
+            ['Campus Placement', '/jobs/campus/', 'ITI Campus Drive & Walk-in', 'users'], ['Career Guidance', '/career-guidance/', 'Resume, Interview Tips, Preparation', 'target']],
+        'home_apprentice' => [['NAPS Apprenticeship', '/apprenticeship/naps/', 'National Apprenticeship Promotion Scheme', 'cap'], ['NATS Apprenticeship', '/apprenticeship/nats/', 'National Apprenticeship Training Scheme', 'cap'],
+            ['ITI Apprenticeship', '/apprenticeship/', 'Apply Online, Eligibility & Process', 'doc'], ['Company-wise Openings', '/jobs/apprentice/', 'Latest Apprenticeship Opportunities', 'building']],
+        'home_study' => [['Theory Notes', '/study-material/', 'Module-wise PDF Notes', 'pdf'], ['MCQ Question Bank', '/mock-test/', 'Questions with Answers', 'help'],
+            ['Previous Year Papers', '/previous-papers/', 'Solved Papers with Explanation', 'doc'], ['Practical Notes', '/practical/', 'Step-by-step Guides', 'flask'],
+            ['Syllabus & Curriculum', '/syllabus/', 'Latest NCVT Syllabus', 'open'], ['Employability Skills', '/employability-skills/', '1st & 2nd Year', 'target']],
+    ];
+    foreach ($lists as $loc => $rows) foreach ($rows as $i => [$l, $u, $sub, $ic]) $ins->execute([$loc, $l, $u, $sub, $ic, $i]);
 }

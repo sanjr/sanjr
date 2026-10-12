@@ -6,7 +6,7 @@ require_login();
 
 $loc = array_key_exists($_GET['loc'] ?? '', MENU_LOCATIONS) ? $_GET['loc'] : 'header';
 $self = '/admin/menus.php?loc=' . $loc;
-$edit = ['id' => 0, 'label' => '', 'url' => '', 'parent_id' => 0, 'sort_order' => 0];
+$edit = ['id' => 0, 'label' => '', 'url' => '', 'parent_id' => 0, 'sort_order' => 0, 'subtitle' => '', 'icon' => ''];
 if (!empty($_GET['item'])) {
     $q = db()->prepare('SELECT * FROM menu_items WHERE id = ?');
     $q->execute([(int)$_GET['item']]);
@@ -20,15 +20,16 @@ if (is_post()) {
         db()->prepare('DELETE FROM menu_items WHERE id = ? OR parent_id = ?')->execute([$mid, $mid]);
         flash('Link deleted.'); redirect($self);
     }
-    $m = ['label' => post('label'), 'url' => post('url') ?: post('pick'), 'parent_id' => $loc === 'header' ? (int)post('parent_id') : 0, 'sort_order' => (int)post('sort_order')];
+    $m = ['label' => post('label'), 'url' => post('url') ?: post('pick'), 'parent_id' => $loc === 'header' ? (int)post('parent_id') : 0, 'sort_order' => (int)post('sort_order'),
+          'subtitle' => post('subtitle'), 'icon' => in_array(post('icon'), ICONS, true) ? post('icon') : ''];
     if ($m['label'] === '') $err = 'Link text is required.';
     elseif (!preg_match('~^(https?://|/|#)~i', $m['url'])) $err = 'Link must start with / (your page), https:// (other website) or #.';
     elseif ($m['parent_id'] && $m['parent_id'] === (int)post('item_id')) $err = 'A link cannot be inside itself.';
     if (!$err) {
         if ($mid = (int)post('item_id')) {
-            db()->prepare('UPDATE menu_items SET label = ?, url = ?, parent_id = ?, sort_order = ? WHERE id = ?')->execute([...array_values($m), $mid]);
+            db()->prepare('UPDATE menu_items SET label = ?, url = ?, parent_id = ?, sort_order = ?, subtitle = ?, icon = ? WHERE id = ?')->execute([...array_values($m), $mid]);
         } else {
-            db()->prepare('INSERT INTO menu_items (label, url, parent_id, sort_order, location) VALUES (?, ?, ?, ?, ?)')->execute([...array_values($m), $loc]);
+            db()->prepare('INSERT INTO menu_items (label, url, parent_id, sort_order, subtitle, icon, location) VALUES (?, ?, ?, ?, ?, ?, ?)')->execute([...array_values($m), $loc]);
         }
         flash('Link saved.'); redirect($self);
     }
@@ -51,7 +52,7 @@ admin_header('Menus & Links', 'menus');
 <?php if ($loc === 'header'): ?><p class="muted">Links with sub-links become dropdowns. The “Popular Trades” footer column fills automatically from your trades.</p><?php endif; ?>
         <table><tbody>
 <?php $row = function ($m, $child = false) use ($self) { ?>
-          <tr<?= $child ? ' class="child"' : '' ?>><td><?= (int)$m['sort_order'] ?></td><td><?= $child ? '↳ ' : '' ?><b><?= e($m['label']) ?></b></td><td class="url"><a href="<?= e($m['url']) ?>" target="_blank"><?= e($m['url']) ?></a></td>
+          <tr<?= $child ? ' class="child"' : '' ?>><td><?= (int)$m['sort_order'] ?></td><td><?= $child ? '↳ ' : '' ?><?= !empty($m['icon']) ? icon($m['icon']) . ' ' : '' ?><b><?= e($m['label']) ?></b><?= !empty($m['subtitle']) ? '<br><small class="muted">' . e($m['subtitle']) . '</small>' : '' ?></td><td class="url"><a href="<?= e($m['url']) ?>" target="_blank"><?= e($m['url']) ?></a></td>
             <td class="acts"><a class="btn sm alt" href="<?= $self ?>&amp;item=<?= $m['id'] ?>#form">Edit</a>
             <form method="post" action="<?= $self ?>" data-confirm="Delete “<?= e($m['label']) ?>”<?= $child ? '' : ' and its sub-links' ?>?"><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="item_id" value="<?= $m['id'] ?>"><button class="btn sm danger">Delete</button></form></td></tr>
 <?php };
@@ -75,6 +76,10 @@ if (!$tree): ?><tr><td class="muted">No links yet.</td></tr><?php endif; ?>
         <label>…or type any URL <input name="url" value="<?= e($edit['url']) ?>" placeholder="/jobs/ or https://ncvtmis.gov.in/"></label>
 <?php if ($loc === 'header'): ?>
         <label>Show inside dropdown of <select name="parent_id"><option value="0">— Top level —</option><?php foreach ($tree as $m): if ($m['id'] == $edit['id']) continue; ?><option value="<?= $m['id'] ?>"<?= $m['id'] == $edit['parent_id'] ? ' selected' : '' ?>><?= e($m['label']) ?></option><?php endforeach; ?></select></label>
+<?php endif; ?>
+<?php if (menu_has_extras($loc)): ?>
+        <label>Small text under the title <input name="subtitle" value="<?= e($edit['subtitle']) ?>" maxlength="255"></label>
+        <label>Icon <select name="icon"><option value="">Default</option><?php foreach (ICONS as $ic): ?><option<?= $edit['icon'] === $ic ? ' selected' : '' ?>><?= $ic ?></option><?php endforeach; ?></select></label>
 <?php endif; ?>
         <label>Order <input type="number" name="sort_order" value="<?= (int)$edit['sort_order'] ?>"></label>
         <div class="bar"><?php if ($edit['id']): ?><a href="<?= $self ?>" class="btn alt">Cancel</a><?php endif; ?><button class="btn"><?= $edit['id'] ? 'Save link' : '+ Add link' ?></button></div>

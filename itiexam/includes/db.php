@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '3';
+const SCHEMA_VERSION = '4';
 
 function db(): PDO
 {
@@ -85,6 +85,8 @@ function db_migrate(PDO $pdo): void
     add_column($pdo, 'pages', 'category', "VARCHAR(30) NOT NULL DEFAULT ''");
     add_column($pdo, 'pages', 'excerpt', "VARCHAR(400) NOT NULL DEFAULT ''");
     add_column($pdo, 'pages', 'image', "VARCHAR(255) NOT NULL DEFAULT ''");
+    add_column($pdo, 'menu_items', 'subtitle', "VARCHAR(255) NOT NULL DEFAULT ''");
+    add_column($pdo, 'menu_items', 'icon', "VARCHAR(40) NOT NULL DEFAULT ''");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS not_found_log (
         id $id, path VARCHAR(300) NOT NULL UNIQUE, hits INT NOT NULL DEFAULT 1, referrer VARCHAR(300) NOT NULL DEFAULT '',

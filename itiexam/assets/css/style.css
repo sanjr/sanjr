@@ -959,3 +959,5 @@ a:hover .btn-sm, .btn-sm:hover { background: linear-gradient(135deg, var(--blue-
 .nf-links a:hover { background: rgba(255, 255, 255, .22); }
 .thero.nf .search { margin: 20px auto 0; }
 .wa-txt small { display: block; line-height: 1.5; margin-top: 2px; }
+/* admin-uploaded hero photo */
+.hero-photo { position: absolute; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 100%; max-height: 360px; object-fit: contain; filter: drop-shadow(0 20px 30px rgba(0, 0, 0, .35)); }

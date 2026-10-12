@@ -9,6 +9,10 @@ $faqs = [
     ['How can I apply for ITI apprenticeship?', 'Register on the official Apprenticeship India portal (NAPS). Our step-by-step apprenticeship guide covers registration, eligibility, documents and company-wise openings.'],
     ['How do I get daily ITI job alerts?', 'Open the ITI Jobs page for the latest government, private and apprentice jobs, and join our WhatsApp group to get new jobs and exam updates on your phone.'],
 ];
+if ($custom = json_decode(setting('home_faq'), true)) {   // FAQ edited in Admin → Homepage
+    $custom = array_values(array_filter($custom, fn($f) => trim($f[0] ?? '') !== '' && trim($f[1] ?? '') !== ''));
+    if ($custom) $faqs = $custom;
+}
 
 $ld = json_decode(str_replace('https://www.itiexam.com', SITE_URL, <<<'JSON'
 {
@@ -113,6 +117,18 @@ $homeJobs = latest_jobs(4);
 $examUpdates = latest_posts('exam-update', 4);
 $articles = latest_posts('article', 4);
 $tradeCount = count(trades());
+$H = fn(string $k, string $def) => setting($k) ?: $def;          // homepage text set in Admin → Homepage
+$show = fn(string $k) => setting('home_show_' . $k, '1') !== '0';  // section on/off
+/** List rows (title + subtitle + icon) for a homepage list managed in Admin → Menus & Links. */
+function home_rows(string $loc, int $offset = 0): string
+{
+    $out = '';
+    foreach (menu($loc) as $i => $m) {
+        $out .= '<li><a href="' . e($m['url']) . '"' . link_attrs($m['url']) . '><span class="ri ' . chip_color($i + $offset) . '">' . icon($m['icon'] ?: 'doc') . '</span><span class="rt"><b>'
+            . e($m['label']) . '</b>' . ($m['subtitle'] !== '' ? '<small>' . e($m['subtitle']) . '</small>' : '') . '</span>' . icon('chev-r', 'ic chev') . '</a></li>';
+    }
+    return $out;
+}
 
 $meta = [
     'title' => setting('home_title') ?: 'ITI Exam ' . date('Y') . ': Free ITI Mock Test, Question Paper PDF & Jobs | ITI Exam',
@@ -129,8 +145,8 @@ require __DIR__ . '/includes/header.php';
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <h1><span class="h1-sm">Your Complete Platform for</span> ITI Exam <span class="grad">Preparation</span></h1>
-          <p class="lead">Online <strong>ITI Mock Tests</strong>, <strong>Previous Year Questions</strong>, Study Material, Jobs, Apprenticeship and Expert Content for all ITI Trades.</p>
+          <h1><span class="h1-sm"><?= e($H('home_hero_small', 'Your Complete Platform for')) ?></span> <?= e($H('home_hero_title', 'ITI Exam')) ?> <span class="grad"><?= e($H('home_hero_highlight', 'Preparation')) ?></span></h1>
+          <p class="lead"><?= e($H('home_hero_text', 'Online ITI Mock Tests, Previous Year Questions, Study Material, Jobs, Apprenticeship and Expert Content for all ITI Trades.')) ?></p>
 
           <form class="search" id="hero-search" role="search" action="/search/" method="get">
             <label for="q" class="sr-only">Search ITI trade, subject or topic</label>
@@ -150,29 +166,30 @@ require __DIR__ . '/includes/header.php';
         </div>
 
         <div class="hero-art" aria-hidden="true">
-          <p class="quote">“Practice<br>Learn<br>Improve<br>Succeed”</p>
+          <p class="quote"><?= nl2br(e($H('home_quote', "“Practice\nLearn\nImprove\nSucceed”"))) ?></p>
+<?php if ($heroImg = setting('home_hero_image')): ?>
+          <img class="hero-photo" src="<?= e(upload_url($heroImg)) ?>" alt="" fetchpriority="high">
+<?php else: ?>
           <div class="art-circle">
             <div class="art-book"><span>ITI</span></div>
             <div class="art-badge b1">✔ 25/25</div>
             <div class="art-badge b2">🏆 Top Rank</div>
             <div class="art-thumb">👍</div>
           </div>
+<?php endif; ?>
         </div>
 
         <aside class="quick-links" aria-label="Quick links">
-          <a href="/mock-test/"><span class="qi c-blue"><svg class="ic"><use href="#i-doc"/></svg></span><span><b>Mock Tests</b><small>Trade &amp; Module-wise</small></span></a>
-          <a href="/previous-papers/"><span class="qi c-green"><svg class="ic"><use href="#i-clip"/></svg></span><span><b>Previous Papers</b><small>With Solutions</small></span></a>
-          <a href="/employability-skills/"><span class="qi c-orange"><svg class="ic"><use href="#i-target"/></svg></span><span><b>Employability Skills</b><small>1st Year &amp; 2nd Year</small></span></a>
-          <a href="/study-material/"><span class="qi c-purple"><svg class="ic"><use href="#i-book"/></svg></span><span><b>Study Material</b><small>Notes, PDFs, MCQs</small></span></a>
-          <a href="/jobs/"><span class="qi c-red"><svg class="ic"><use href="#i-brief"/></svg></span><span><b>Jobs &amp; Career</b><small>Latest Job Updates</small></span></a>
-          <a href="/apprenticeship/"><span class="qi c-teal"><svg class="ic"><use href="#i-cap"/></svg></span><span><b>Apprenticeship</b><small>NAPS / NATS</small></span></a>
-          <a href="/trades/"><span class="qi c-navy"><svg class="ic"><use href="#i-grid"/></svg></span><span><b>All ITI Trades</b><small>Explore Now</small></span></a>
+<?php foreach (menu('home_quick') as $i => $m): ?>
+          <a href="<?= e($m['url']) ?>"<?= link_attrs($m['url']) ?>><span class="qi <?= ['c-blue', 'c-green', 'c-orange', 'c-purple', 'c-red', 'c-teal', 'c-navy'][$i % 7] ?>"><?= icon($m['icon'] ?: 'doc') ?></span><span><b><?= e($m['label']) ?></b><?php if ($m['subtitle'] !== ''): ?><small><?= e($m['subtitle']) ?></small><?php endif; ?></span></a>
+<?php endforeach; ?>
         </aside>
       </div>
     </section>
 
     <div class="container"><?= ad('home_top', 'wide') ?></div>
 
+<?php if ($show('trades')): ?>
     <!-- ===== Popular Trades ===== -->
     <section class="section" aria-labelledby="trades-h">
       <div class="container">
@@ -187,7 +204,9 @@ require __DIR__ . '/includes/header.php';
         </div>
       </div>
     </section>
+<?php endif; ?>
 
+<?php if ($show('row1')): ?>
     <!-- ===== Mock Tests / Jobs / Apprenticeship ===== -->
     <section class="section pt0">
       <div class="container cols-3">
@@ -204,38 +223,27 @@ require __DIR__ . '/includes/header.php';
 
         <article class="card" aria-labelledby="jobs-h">
           <div class="sec-head sm"><h2 id="jobs-h">Jobs &amp; Career</h2><a href="/jobs/" class="view-all">View All <?= icon('arrow') ?></a></div>
-          <ul class="rows">
-            <li><a href="/jobs/government/"><span class="ri c-orange"><?= icon('bank') ?></span><span class="rt"><b>Government Jobs</b><small>ITI Recruitment, Sarkari Naukri</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
-            <li><a href="/jobs/private/"><span class="ri c-red"><?= icon('brief') ?></span><span class="rt"><b>Private Company Jobs</b><small>Latest ITI Job Vacancies</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
-            <li><a href="/jobs/campus/"><span class="ri c-green"><?= icon('users') ?></span><span class="rt"><b>Campus Placement</b><small>ITI Campus Drive &amp; Walk-in</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
-            <li><a href="/career-guidance/"><span class="ri c-red"><?= icon('target') ?></span><span class="rt"><b>Career Guidance</b><small>Resume, Interview Tips, Preparation</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
-          </ul>
+          <ul class="rows"><?= home_rows('home_career', 3) ?></ul>
         </article>
 
         <article class="card" aria-labelledby="app-h">
           <div class="sec-head sm"><h2 id="app-h">Apprenticeship</h2><a href="/apprenticeship/" class="view-all">View All <?= icon('arrow') ?></a></div>
-          <ul class="rows">
-            <li><a href="/apprenticeship/naps/"><span class="ri c-blue"><?= icon('cap') ?></span><span class="rt"><b>NAPS Apprenticeship</b><small>National Apprenticeship Promotion Scheme</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
-            <li><a href="/apprenticeship/nats/"><span class="ri c-purple"><?= icon('cap') ?></span><span class="rt"><b>NATS Apprenticeship</b><small>National Apprenticeship Training Scheme</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
-            <li><a href="/apprenticeship/"><span class="ri c-green"><?= icon('doc') ?></span><span class="rt"><b>ITI Apprenticeship</b><small>Apply Online, Eligibility &amp; Process</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
-            <li><a href="/jobs/apprentice/"><span class="ri c-orange"><?= icon('building') ?></span><span class="rt"><b>Company-wise Openings</b><small>Latest Apprenticeship Opportunities</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
-          </ul>
+          <ul class="rows"><?= home_rows('home_apprentice', 6) ?></ul>
         </article>
       </div>
     </section>
+<?php endif; ?>
 
+<?php if ($show('row2')): ?>
     <!-- ===== Study Material + Exam Updates ===== -->
     <section class="section pt0">
       <div class="container cols-2-1">
         <div aria-labelledby="study-h">
           <div class="sec-head"><h2 id="study-h">Study Material</h2><a href="/study-material/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <div class="study">
-            <a href="/study-material/" class="st"><span class="sti c-red"><?= icon('pdf') ?></span><h3>Theory Notes</h3><p>Module-wise PDF Notes</p></a>
-            <a href="/mock-test/" class="st"><span class="sti c-purple"><?= icon('help') ?></span><h3>MCQ Question Bank</h3><p>Questions with Answers</p></a>
-            <a href="/previous-papers/" class="st"><span class="sti c-blue"><?= icon('doc') ?></span><h3>Previous Year Papers</h3><p>Solved Papers with Explanation</p></a>
-            <a href="/practical/" class="st"><span class="sti c-green"><?= icon('flask') ?></span><h3>Practical Notes</h3><p>Step-by-step Guides</p></a>
-            <a href="/syllabus/" class="st"><span class="sti c-orange"><?= icon('open') ?></span><h3>Syllabus &amp; Curriculum</h3><p>Latest NCVT Syllabus</p></a>
-            <a href="/employability-skills/" class="st"><span class="sti c-cyan"><?= icon('target') ?></span><h3>Employability Skills</h3><p>1st &amp; 2nd Year</p></a>
+<?php foreach (menu('home_study') as $i => $m): ?>
+            <a href="<?= e($m['url']) ?>"<?= link_attrs($m['url']) ?> class="st"><span class="sti <?= ['c-red', 'c-purple', 'c-blue', 'c-green', 'c-orange', 'c-cyan'][$i % 6] ?>"><?= icon($m['icon'] ?: 'doc') ?></span><h3><?= e($m['label']) ?></h3><?php if ($m['subtitle'] !== ''): ?><p><?= e($m['subtitle']) ?></p><?php endif; ?></a>
+<?php endforeach; ?>
           </div>
         </div>
 
@@ -251,9 +259,11 @@ require __DIR__ . '/includes/header.php';
         </article>
       </div>
     </section>
+<?php endif; ?>
 
     <div class="container"><?= ad('home_middle', 'wide') ?></div>
 
+<?php if ($show('row3')): ?>
     <!-- ===== Jobs + Articles ===== -->
     <section class="section pt0">
       <div class="container cols-2-1">
@@ -278,10 +288,15 @@ require __DIR__ . '/includes/header.php';
         </article>
       </div>
     </section>
+<?php endif; ?>
 
+<?php if ($show('seo')): ?>
     <!-- ===== SEO content + FAQ ===== -->
     <section class="section pt0" aria-labelledby="about-h">
       <div class="container cols-2-1">
+<?php if ($seoHtml = trim(setting('home_seo_html'))): ?>
+        <div class="seo-text card prose"><?= render_shortcodes($seoHtml) /* written by the admin */ ?></div>
+<?php else: ?>
         <div class="seo-text card">
           <h2 id="about-h">ITI Exam <?= date('Y') ?> – Free Mock Test, Question Paper &amp; Study Material</h2>
           <p><strong>ITI Exam</strong> is a free website for ITI students preparing for the <strong>NCVT / SCVT ITI CBT exam <?= date('Y') ?></strong>. Practise trade-wise <strong>ITI mock tests</strong> and <strong>ITI online tests</strong>, solve <strong>ITI previous year question papers with answers (PDF)</strong>, and revise with module-wise notes and <strong>MCQ question banks</strong> for Trade Theory, <strong>Employability Skills</strong>, Workshop Calculation &amp; Science and Engineering Drawing.</p>
@@ -292,6 +307,7 @@ require __DIR__ . '/includes/header.php';
           <p lang="mr">आयटीआय परीक्षा तयारीसाठी मोफत मॉक टेस्ट, प्रश्नपत्रिका, नोट्स आणि ITI नोकरी अपडेट्स – सर्व एका ठिकाणी.</p>
           <p lang="hi">आईटीआई परीक्षा की तैयारी के लिए मुफ्त मॉक टेस्ट, प्रश्न पत्र, नोट्स और आईटीआई जॉब अपडेट – सब एक जगह।</p>
         </div>
+<?php endif; ?>
         <div class="card faq">
           <h2>Frequently Asked Questions</h2>
 <?php foreach ($faqs as [$q, $ans]): ?>
@@ -300,14 +316,16 @@ require __DIR__ . '/includes/header.php';
         </div>
       </div>
     </section>
+<?php endif; ?>
 
+<?php if ($show('cta')): ?>
     <!-- ===== CTA band ===== -->
     <section class="cta">
       <div class="container cta-grid">
         <div class="cta-art" aria-hidden="true">🧑‍💻</div>
         <div class="cta-copy">
-          <h2>Empowering ITI Students for a Brighter Future</h2>
-          <p>Access free mock tests, study material, job updates and apprenticeship opportunities – all in one place.</p>
+          <h2><?= e($H('home_cta_title', 'Empowering ITI Students for a Brighter Future')) ?></h2>
+          <p><?= e($H('home_cta_text', 'Access free mock tests, study material, job updates and apprenticeship opportunities – all in one place.')) ?></p>
         </div>
         <span class="rocket" aria-hidden="true">🚀</span>
         <ul class="cta-stats">
@@ -318,6 +336,7 @@ require __DIR__ . '/includes/header.php';
         </ul>
       </div>
     </section>
+<?php endif; ?>
   </main>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

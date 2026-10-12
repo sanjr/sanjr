@@ -52,8 +52,8 @@ admin_header($id ? 'Edit Page' : 'Add New Page', 'pages');
       <section class="box">
         <label>Page title * <input id="ptitle" name="title" required value="<?= e($p['title']) ?>" placeholder="e.g. ITI Government Jobs 2026"></label>
         <label>URL <span class="hint">e.g. <b>about</b> or <b>jobs/government</b> → /jobs/government/</span><input name="slug" data-slug-from="ptitle" value="<?= e($p['slug']) ?>"></label>
-        <label>Content (HTML) <textarea name="content" rows="18" class="code" placeholder="<p>Write the page content here…</p>"><?= e($p['content']) ?></textarea></label>
-        <p class="muted">Tags you can use: &lt;h2&gt; &lt;h3&gt; &lt;p&gt; &lt;ul&gt;&lt;li&gt; &lt;ol&gt; &lt;strong&gt; &lt;a href="…"&gt; &lt;img src="…" alt="…"&gt; &lt;table&gt;. Use one topic per page and real headings for better Google ranking.</p>
+        <div class="fld"><span class="flabel">Content</span><textarea name="content" rows="18" class="code" data-editor><?= e($p['content']) ?></textarea></div>
+        <p class="muted">Use the toolbar for headings, lists, photos (from the Media Library), PDF links and tables. Use real headings and one topic per page for better Google ranking.</p>
         <div class="grid2 tight">
           <label>Type <select name="category"><?php foreach (PAGE_CATEGORIES as $k => $l): ?><option value="<?= e($k) ?>"<?= $p['category'] === $k ? ' selected' : '' ?>><?= e($l) ?></option><?php endforeach; ?></select></label>
           <label>Image (optional) <input type="file" name="image" accept="image/*"></label>

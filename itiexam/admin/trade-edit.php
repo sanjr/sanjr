@@ -91,8 +91,8 @@ admin_header($id ? 'Edit Trade: ' . $t['name'] : 'Add New Trade', 'trades');
       </div>
       <section class="box">
         <h2>About this trade (SEO content)</h2>
-        <p class="muted">Write unique, useful content for this trade (300+ words helps Google ranking). HTML allowed: &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;&lt;li&gt;, &lt;strong&gt;, &lt;a href&gt;, &lt;img&gt;, &lt;table&gt;.</p>
-        <textarea name="content" rows="10" class="code"><?= e($t['content']) ?></textarea>
+        <p class="muted">Write unique, useful content for this trade (300+ words helps Google ranking). Use the toolbar to add headings, lists, photos and tables.</p>
+        <textarea name="content" rows="10" class="code" data-editor><?= e($t['content']) ?></textarea>
       </section>
       <section class="box">
         <h2>Google SEO</h2>
