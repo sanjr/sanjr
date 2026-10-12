@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '4';
+const SCHEMA_VERSION = '6';
 
 function db(): PDO
 {
@@ -87,6 +87,12 @@ function db_migrate(PDO $pdo): void
     add_column($pdo, 'pages', 'image', "VARCHAR(255) NOT NULL DEFAULT ''");
     add_column($pdo, 'menu_items', 'subtitle', "VARCHAR(255) NOT NULL DEFAULT ''");
     add_column($pdo, 'menu_items', 'icon', "VARCHAR(40) NOT NULL DEFAULT ''");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS cbt_tests (
+        id $id, folder VARCHAR(60) NOT NULL UNIQUE, title VARCHAR(255) NOT NULL, trade_id INT NOT NULL DEFAULT 0,
+        entry VARCHAR(255) NOT NULL DEFAULT 'index.html', questions INT NOT NULL DEFAULT 0, minutes INT NOT NULL DEFAULT 0,
+        description VARCHAR(500) NOT NULL DEFAULT '', status VARCHAR(20) NOT NULL DEFAULT 'published',
+        created_at VARCHAR(20) NOT NULL, updated_at VARCHAR(20) NOT NULL)$engine");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS not_found_log (
         id $id, path VARCHAR(300) NOT NULL UNIQUE, hits INT NOT NULL DEFAULT 1, referrer VARCHAR(300) NOT NULL DEFAULT '',

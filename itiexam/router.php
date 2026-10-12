@@ -18,6 +18,8 @@ if (preg_match('~^/trades/([a-z0-9-]+)/?$~', $path, $m)) { $_GET['slug'] = $m[1]
 if (preg_match('~^/jobs/?$~', $path)) { require __DIR__ . '/jobs.php'; return true; }
 if (preg_match('~^/jobs/([a-z0-9-]+)/?$~', $path, $m)) { $_GET['seg'] = $m[1]; require __DIR__ . '/jobs.php'; return true; }
 if (preg_match('~^/search/?$~', $path)) { require __DIR__ . '/search.php'; return true; }
+if (preg_match('~^/cbt/([a-z0-9-]+)/play/(.+)$~', $path, $m)) { $_GET['f'] = $m[1]; $_GET['p'] = $m[2]; require __DIR__ . '/cbt.php'; return true; }
+if (preg_match('~^/cbt/([a-z0-9-]+)/?$~', $path, $m)) { $_GET['f'] = $m[1]; require __DIR__ . '/cbt.php'; return true; }
 if ($path === '/') { require __DIR__ . '/index.php'; return true; }
 $_GET['slug'] = trim($path, '/');
 require __DIR__ . '/page.php';

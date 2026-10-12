@@ -139,7 +139,7 @@ function seed_pages(): void
     $site = SITE_NAME;
     $pages = [
         ['mock-test', 'ITI Mock Test – Free Online Test for All Trades', '', 'Choose your trade and start a free ITI mock test based on the latest NCVT CBT pattern.',
-         "<p>Practise free <strong>ITI online mock tests</strong> for Trade Theory, Employability Skills and Workshop Calculation &amp; Science. Every test follows the NCVT CBT pattern with multiple choice questions and a timer.</p><h2>Select your trade</h2>[trades section=\"mock-tests\"]<h2>How to use mock tests</h2><ul><li>Take one full test every day and note the wrong answers.</li><li>Revise the topic from theory notes, then attempt the next set.</li><li>Before the exam, attempt previous year papers under the same time limit.</li></ul>"],
+         "<p>Practise free <strong>ITI online mock tests</strong> for Trade Theory, Employability Skills and Workshop Calculation &amp; Science. Every test follows the NCVT CBT pattern with multiple choice questions and a timer.</p><h2>Latest online tests</h2>[tests limit=\"12\"]<h2>Select your trade</h2>[trades section=\"mock-tests\"]<h2>How to use mock tests</h2><ul><li>Take one full test every day and note the wrong answers.</li><li>Revise the topic from theory notes, then attempt the next set.</li><li>Before the exam, attempt previous year papers under the same time limit.</li></ul>"],
         ['previous-papers', 'ITI Previous Year Question Papers with Answers', '', 'NCVT ITI previous year CBT question papers with solutions for every trade.',
          "<p>Solving <strong>ITI previous year question papers</strong> is the fastest way to understand the exam pattern and the topics that are asked again and again.</p><h2>Select your trade</h2>[trades section=\"previous-papers\"]"],
         ['study-material', 'ITI Study Material – Theory Notes PDF, MCQ & Model Papers', '', 'Module-wise ITI theory notes, MCQ question bank and model papers for all trades.',
@@ -298,6 +298,12 @@ function upgrade_content(): void
         $set->execute(['Contact Us', contact_html(), 'Contact the ITI Exam team by email or WhatsApp.', 'Contact the ITI Exam team by email or WhatsApp.', now(), $r['id']]);
     }
     if (setting('contact_email', "\0") === "\0") setting_set('contact_email', 'contact@itiexam.com');
+    // Mock Test page: also list the uploaded online tests
+    $mt = $pdo->prepare("SELECT id, content FROM pages WHERE slug = 'mock-test'");
+    $mt->execute();
+    if (($r = $mt->fetch()) && !str_contains($r['content'], '[tests')) {
+        $pdo->prepare('UPDATE pages SET content = ?, updated_at = ? WHERE id = ?')->execute([str_replace('<h2>Select your trade</h2>', '<h2>Latest online tests</h2>[tests limit="12"]<h2>Select your trade</h2>', $r['content']), now(), $r['id']]);
+    }
     if (setting('home_title') === 'ITI Exam 2026: Mock Test, Previous Papers, Study Material | ITIExam.com') {
         setting_set('home_title', 'ITI Exam ' . date('Y') . ': Free ITI Mock Test, Question Paper PDF & Jobs | ITI Exam');
     }

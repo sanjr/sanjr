@@ -228,8 +228,13 @@ function latest_posts(string $category, int $limit = 4): array
  */
 function render_shortcodes(string $html): string
 {
-    return preg_replace_callback('/\[(trades|jobs|posts|contact|whatsapp)([^\]]*)\]/', function ($m) {
+    return preg_replace_callback('/\[(trades|jobs|posts|contact|whatsapp|tests)([^\]]*)\]/', function ($m) {
         if ($m[1] === 'contact') return contact_block();
+        if ($m[1] === 'tests') {
+            preg_match_all('/(\w+)="([^"]*)"/', $m[2], $kv, PREG_SET_ORDER);
+            $a = []; foreach ($kv as $p) $a[$p[1]] = $p[2];
+            return cbt_list((int)($a['limit'] ?? 20), $a['trade'] ?? '');
+        }
         if ($m[1] === 'whatsapp') return whatsapp_cta('inline');
         preg_match_all('/(\w+)="([^"]*)"/', $m[2], $kv, PREG_SET_ORDER);
         $a = [];
@@ -415,10 +420,49 @@ function internal_url_ok(string $url): bool
     if (preg_match('~^trades/([a-z0-9-]+)$~', $p, $m)) {
         $st = db()->prepare("SELECT COUNT(*) FROM trades WHERE slug = ? AND status = 'published'"); $st->execute([$m[1]]); return (bool)$st->fetchColumn();
     }
+    if (preg_match('~^cbt/([a-z0-9-]+)$~', $p, $m)) {
+        $st = db()->prepare("SELECT COUNT(*) FROM cbt_tests WHERE folder = ? AND status = 'published'"); $st->execute([$m[1]]); return (bool)$st->fetchColumn();
+    }
     if (preg_match('~^jobs/([a-z0-9-]+)$~', $p, $m)) {
         if (isset(JOB_TYPES[$m[1]])) return true;
         $st = db()->prepare("SELECT COUNT(*) FROM jobs WHERE slug = ? AND status = 'published'"); $st->execute([$m[1]]); return (bool)$st->fetchColumn();
     }
     $st = db()->prepare("SELECT COUNT(*) FROM pages WHERE slug = ? AND status = 'published'"); $st->execute([$p]);
     return (bool)$st->fetchColumn();
+}
+
+
+/* =========================================================
+   Ready-made HTML CBT tests (Admin → CBT Tests)
+   ========================================================= */
+const CBT_TYPES = ['html' => 'text/html; charset=utf-8', 'htm' => 'text/html; charset=utf-8', 'css' => 'text/css', 'js' => 'application/javascript',
+    'json' => 'application/json', 'txt' => 'text/plain; charset=utf-8', 'png' => 'image/png', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'gif' => 'image/gif',
+    'webp' => 'image/webp', 'svg' => 'image/svg+xml', 'ico' => 'image/x-icon', 'woff' => 'font/woff', 'woff2' => 'font/woff2', 'ttf' => 'font/ttf',
+    'mp3' => 'audio/mpeg', 'wav' => 'audio/wav', 'mp4' => 'video/mp4', 'pdf' => 'application/pdf'];
+
+function cbt_url(array $t): string { return '/cbt/' . $t['folder'] . '/'; }
+function cbt_play_url(array $t): string { return '/cbt/' . $t['folder'] . '/play/' . implode('/', array_map('rawurlencode', explode('/', $t['entry']))); }
+
+/** Sandbox rules for a test page: scripts run, but the test cannot reach the website, its cookies or the admin panel. */
+function cbt_sandbox(): string
+{
+    return 'allow-scripts allow-forms allow-popups allow-modals allow-downloads' . (setting('cbt_allow_storage') === '1' ? ' allow-same-origin' : '');
+}
+
+
+/** List of uploaded HTML tests (newest first), optionally for one trade name. */
+function cbt_list(int $limit = 20, string $trade = ''): string
+{
+    $sql = "SELECT c.*, t.name AS tname FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id WHERE c.status = 'published'";
+    $args = [];
+    if ($trade !== '') { $sql .= ' AND t.name = ?'; $args[] = $trade; }
+    $st = db()->prepare($sql . ' ORDER BY c.created_at DESC LIMIT ' . max(1, $limit));
+    $st->execute($args);
+    $out = '';
+    foreach ($st as $i => $c) {
+        $info = trim(($c['questions'] ? (int)$c['questions'] . ' Questions' : '') . ($c['questions'] && $c['minutes'] ? ' · ' : '') . ($c['minutes'] ? (int)$c['minutes'] . ' Minutes' : ''));
+        $out .= '<li><a href="' . e(cbt_url($c)) . '" class="row-mock"><span class="ri ' . chip_color($i) . ' solid">' . icon('clip') . '</span><span class="rt"><b>'
+            . ($c['tname'] ? e($c['tname']) . ' – ' : '') . e($c['title']) . '</b>' . ($info ? '<small>' . e($info) . '</small>' : '') . '</span><span class="btn-sm">Start Test</span></a></li>';
+    }
+    return $out ? '<ul class="rows sc">' . $out . '</ul>' : '<p>New online tests are coming soon.</p>';
 }

@@ -4,6 +4,7 @@ function admin_header(string $title, string $active = ''): void
     $nav = [
         'dashboard' => ['/admin/', 'Dashboard', 'grid'],
         'trades'    => ['/admin/trades.php', 'Trades', 'tool'],
+        'cbt'       => ['/admin/cbt.php', 'CBT Tests (HTML)', 'clip'],
         'jobs'      => ['/admin/jobs.php', 'Jobs', 'brief'],
         'employers' => ['/admin/employers.php', 'Employers', 'building'],
         'pages'     => ['/admin/pages.php', 'Pages & Articles', 'doc'],

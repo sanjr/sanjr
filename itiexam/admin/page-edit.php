@@ -61,7 +61,7 @@ admin_header($id ? 'Edit Page' : 'Add New Page', 'pages');
 <?php if ($p['image']): ?>        <div class="preview"><img src="<?= e(upload_url($p['image'])) ?>" alt=""><label class="check"><input type="checkbox" name="remove_image"> Remove image</label></div>
 <?php endif; ?>
         <label>Short summary (for lists) <input name="excerpt" value="<?= e($p['excerpt']) ?>" maxlength="400"></label>
-        <p class="muted">Shortcodes: <code>[trades]</code> · <code>[trades section="mock-tests"]</code> · <code>[jobs type="apprentice" limit="6"]</code> · <code>[jobs trade="COPA"]</code> · <code>[posts category="article"]</code></p>
+        <p class="muted">Shortcodes: <code>[trades]</code> · <code>[trades section="mock-tests"]</code> · <code>[jobs type="apprentice" limit="6"]</code> · <code>[jobs trade="COPA"]</code> · <code>[posts category="article"]</code> · <code>[tests]</code> · <code>[tests trade="COPA"]</code></p>
         <label>Status <select name="status"><option value="published"<?= $p['status'] === 'published' ? ' selected' : '' ?>>Published</option><option value="draft"<?= $p['status'] === 'draft' ? ' selected' : '' ?>>Draft (hidden)</option></select></label>
       </section>
       <section class="box">

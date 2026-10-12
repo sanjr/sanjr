@@ -120,6 +120,8 @@ admin_header('Content: ' . $t['name'], 'trades');
 
       <form method="post" action="<?= $self ?>" enctype="multipart/form-data" class="box form" id="form">
         <h2><?= $edit['id'] ? 'Edit item' : 'Add item' ?></h2>
+<?php if ($sec === 'mock_tests'): ?>        <p class="flash">Have a test made as an HTML page? <a href="/admin/cbt.php?trade=<?= $id ?>#form">Upload it in CBT Tests</a> – it is added to this list automatically.</p>
+<?php endif; ?>
 <?php if ($err): ?><div class="flash err"><?= e($err) ?></div><?php endif; ?>
         <?= csrf_field() ?>
         <input type="hidden" name="action" value="save"><input type="hidden" name="item_id" value="<?= (int)$edit['id'] ?>">

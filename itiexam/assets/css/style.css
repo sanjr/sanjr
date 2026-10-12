@@ -961,3 +961,27 @@ a:hover .btn-sm, .btn-sm:hover { background: linear-gradient(135deg, var(--blue-
 .wa-txt small { display: block; line-height: 1.5; margin-top: 2px; }
 /* admin-uploaded hero photo */
 .hero-photo { position: absolute; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 100%; max-height: 360px; object-fit: contain; filter: drop-shadow(0 20px 30px rgba(0, 0, 0, .35)); }
+
+/* =========================================================
+   HTML CBT test page
+   ========================================================= */
+.cbt-hero { padding-bottom: 26px; }
+.cbt-hero h1 { font-size: clamp(24px, 4vw, 36px); }
+.cbt-trade { display: inline-block; font-size: .5em; vertical-align: middle; background: var(--green); color: #fff; padding: 4px 12px; border-radius: 8px; margin-right: 6px; }
+.cbt-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; color: #dbeafe; font-size: 14px; }
+.cbt-meta span { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, .1); padding: 6px 12px; border-radius: 999px; }
+.cbt-sec { padding-top: 20px; }
+.cbt-sec .container { display: grid; gap: 16px; }
+.cbt-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn-sm.ghost-b { background: #fff; color: var(--blue); border: 1px solid #c7d6fb; box-shadow: none; }
+.btn-sm.ghost-b:hover { background: var(--tint); }
+.cbt-frame { position: relative; background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--line); overflow: hidden; }
+.cbt-frame iframe { display: block; width: 100%; height: max(620px, calc(100vh - 170px)); border: 0; background: #fff; }
+.cbt-frame:fullscreen, .cbt-frame.max { border-radius: 0; }
+.cbt-frame:fullscreen iframe { height: 100vh; }
+.cbt-frame.max { position: fixed; inset: 0; z-index: 200; }
+.cbt-frame.max iframe { height: 100%; }
+.cbt-desc { color: var(--text); }
+@media (max-width: 1023px) { .cbt-frame iframe { height: calc(100vh - 150px); min-height: 560px; } }
+.cbt-close { display: none; position: absolute; top: 10px; right: 10px; z-index: 2; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(11, 20, 48, .75); color: #fff; font-size: 18px; cursor: pointer; }
+.cbt-frame:fullscreen .cbt-close, .cbt-frame.max .cbt-close { display: block; }
