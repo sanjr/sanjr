@@ -35,5 +35,19 @@
   </footer>
 
   <a href="#top" class="to-top" aria-label="Back to top"><?= icon('chev') ?></a>
+
+  <!-- Phone bottom navigation -->
+  <nav class="bnav" aria-label="Quick navigation">
+<?php
+$cp = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+foreach ([['/', 'Home', 'home'], ['/trades/', 'Trades', 'grid'], ['/mock-test/', 'Tests', 'clip'], ['/jobs/', 'Jobs', 'brief'], ['/search/', 'Search', 'search']] as [$u, $l, $ic]):
+    $on = $u === '/' ? $cp === '/' : str_starts_with($cp, $u); ?>
+    <a href="<?= $u ?>"<?= $on ? ' class="on" aria-current="page"' : '' ?>><?= icon($ic) ?><span><?= $l ?></span></a>
+<?php endforeach; ?>
+  </nav>
+  <div class="nav-overlay" hidden></div>
+
+  <!-- Faster page changes: the browser fetches a page as soon as a finger or mouse heads to its link -->
+  <script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/admin/*","/search/*","/*\\?*","/uploads/*"]}}]},"eagerness":"moderate"}]}</script>
 </body>
 </html>

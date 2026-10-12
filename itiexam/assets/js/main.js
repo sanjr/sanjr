@@ -5,14 +5,24 @@
   var toggle = document.querySelector(".menu-toggle");
   var desktop = window.matchMedia("(min-width: 1280px)");
 
+  var overlay = document.querySelector(".nav-overlay");
   function setMenu(open) {
     nav.classList.toggle("open", open);
+    if (overlay) overlay.hidden = !open;
     document.body.classList.toggle("nav-open", open);
     toggle.setAttribute("aria-expanded", String(open));
     toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     toggle.querySelector("use").setAttribute("href", open ? "#i-close" : "#i-menu");
   }
   toggle.addEventListener("click", function () { setMenu(!nav.classList.contains("open")); });
+  if (overlay) overlay.addEventListener("click", function () { setMenu(false); });
+  nav.addEventListener("click", function (e) { if (e.target.closest("a")) setMenu(false); });
+
+  // Header gets a shadow once the page is scrolled
+  var header = document.querySelector(".site-header");
+  function onScrollHeader() { header.classList.toggle("scrolled", window.scrollY > 8); }
+  window.addEventListener("scroll", onScrollHeader, { passive: true });
+  onScrollHeader();
   desktop.addEventListener("change", function () { setMenu(false); });
 
   // Dropdowns: tap to open on mobile, keyboard on desktop
