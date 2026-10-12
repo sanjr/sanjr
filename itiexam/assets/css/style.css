@@ -1061,3 +1061,20 @@ a:hover .btn-sm, .btn-sm:hover { background: linear-gradient(135deg, var(--blue-
   .logo-text small { display: none; }
   .nav-actions .icon-btn { width: 38px; }
 }
+
+/* Trade cards inside pages ([trades] shortcode): 4 per row, bigger */
+.prose .trades.sc { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.prose .trades.sc .trade { padding: 22px 12px 58px; min-height: 210px; justify-content: flex-start; }
+.prose .trades.sc .emo { font-size: 62px; margin-bottom: 12px; }
+.prose .trades.sc .timg { width: 72px; height: 72px; margin-bottom: 12px; }
+.prose .trades.sc .tt { font-size: 18px; line-height: 1.25; }
+.prose .trades.sc .td { display: block; margin-top: 6px; font-size: 13px; line-height: 1.4; color: var(--muted); }
+.prose .trades.sc .go { width: 32px; height: 32px; bottom: 16px; }
+@media (max-width: 899px) { .prose .trades.sc { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 599px) {
+  .prose .trades.sc { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .prose .trades.sc .trade { min-height: 180px; padding: 18px 10px 52px; }
+  .prose .trades.sc .emo { font-size: 50px; }
+  .prose .trades.sc .tt { font-size: 16px; }
+  .prose .trades.sc .td { font-size: 12px; }
+}
