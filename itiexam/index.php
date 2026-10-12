@@ -170,11 +170,16 @@ require __DIR__ . '/includes/header.php';
 <?php if ($heroImg = setting('home_hero_image')): ?>
           <img class="hero-photo" src="<?= e(upload_url($heroImg)) ?>" alt="" fetchpriority="high">
 <?php else: ?>
-          <div class="art-circle">
-            <div class="art-book"><span>ITI</span></div>
-            <div class="art-badge b1">✔ 25/25</div>
-            <div class="art-badge b2">🏆 Top Rank</div>
-            <div class="art-thumb">👍</div>
+          <div class="art-stage">
+            <span class="art-glow"></span>
+            <span class="art-ring r1"></span><span class="art-ring r2"></span>
+            <img class="art-emblem" src="/assets/img/hero-emblem.webp" alt="ITI Exam – learn, test and get jobs" width="260" height="260" fetchpriority="high">
+            <span class="orb o1"><?= icon('tool') ?></span>
+            <span class="orb o2"><?= icon('monitor') ?></span>
+            <span class="orb o3"><?= icon('bulb') ?></span>
+            <div class="fcard f1"><span class="fi c-green"><?= icon('target') ?></span><span><b>25/25</b><small>Mock test score</small></span></div>
+            <div class="fcard f2"><span class="fi c-amber"><?= icon('star') ?></span><span><b>Top Rank</b><small>In your trade</small></span></div>
+            <div class="fcard f4"><span class="fi c-orange"><?= icon('brief') ?></span><span><b>New Job Alert</b><small>ITI Apprentice</small></span></div>
           </div>
 <?php endif; ?>
         </div>

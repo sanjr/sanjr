@@ -985,3 +985,34 @@ a:hover .btn-sm, .btn-sm:hover { background: linear-gradient(135deg, var(--blue-
 @media (max-width: 1023px) { .cbt-frame iframe { height: calc(100vh - 150px); min-height: 560px; } }
 .cbt-close { display: none; position: absolute; top: 10px; right: 10px; z-index: 2; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(11, 20, 48, .75); color: #fff; font-size: 18px; cursor: pointer; }
 .cbt-frame:fullscreen .cbt-close, .cbt-frame.max .cbt-close { display: block; }
+
+/* =========================================================
+   Hero illustration: logo emblem with orbiting icons and floating cards
+   ========================================================= */
+.c-amber { --c: var(--amber); }
+.art-stage { position: absolute; inset: 0; }
+.art-glow { position: absolute; left: 50%; top: 56%; width: 280px; height: 280px; transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, .35), rgba(79, 124, 255, .35) 45%, transparent 70%); filter: blur(6px); }
+.art-ring { position: absolute; left: 50%; top: 56%; border-radius: 50%; border: 2px dashed rgba(255, 255, 255, .28); transform: translate(-50%, -50%); }
+.art-ring.r1 { width: 250px; height: 250px; animation: spin 40s linear infinite; }
+.art-ring.r2 { width: 310px; height: 310px; border-style: solid; border-color: rgba(255, 255, 255, .12); }
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.art-emblem { position: absolute; left: 50%; top: 56%; width: 205px; height: 205px; transform: translate(-50%, -50%); border-radius: 50%;
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, .18), 0 24px 50px rgba(2, 8, 30, .45); animation: emblemFloat 6s ease-in-out infinite; }
+@keyframes emblemFloat { 50% { transform: translate(-50%, calc(-50% - 8px)); } }
+.orb { position: absolute; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; color: #fff; font-size: 19px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .3); animation: float 4.5s ease-in-out infinite; }
+.orb.o1 { left: 2%; top: 50%; background: linear-gradient(135deg, var(--orange), var(--amber)); }
+.orb.o2 { right: 3%; top: 36%; background: linear-gradient(135deg, var(--blue-l), var(--blue-d)); animation-delay: .8s; }
+.orb.o3 { left: 46%; bottom: -1%; background: linear-gradient(135deg, var(--green), #46c95a); animation-delay: 1.6s; }
+.fcard { position: absolute; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 8px 12px 8px 8px; border-radius: 14px; background: rgba(255, 255, 255, .96);
+  color: var(--ink); box-shadow: 0 12px 28px rgba(2, 8, 30, .3); white-space: nowrap; animation: float 5s ease-in-out infinite; }
+.fcard .fi { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; border-radius: 10px; color: #fff; background: var(--c); font-size: 17px; }
+.fcard b { display: block; font: 700 13px/1.1 var(--font-head); }
+.fcard small { display: block; font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.fcard.f1 { left: -22px; top: 14%; }
+.fcard.f2 { right: -26px; bottom: 15%; animation-delay: 1.2s; }
+.fcard.f4 { left: -30px; bottom: 9%; animation-delay: .6s; }
+.hero-art .quote { z-index: 3; right: 0; top: -10px; font-size: 25px; text-shadow: 0 2px 10px rgba(0, 0, 0, .25); }
+.hero-art { height: 400px; }
+@media (min-width: 1200px) and (max-width: 1340px) { .fcard.f2 { right: -10px; } .fcard.f1, .fcard.f4 { left: -10px; } }
