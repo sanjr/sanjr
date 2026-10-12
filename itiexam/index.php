@@ -28,7 +28,7 @@ $ld = json_decode(str_replace('https://www.itiexam.com', SITE_URL, <<<'JSON'
         "publisher": { "@id": "https://www.itiexam.com/#org" },
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://www.itiexam.com/search?q={search_term_string}",
+          "target": "https://www.itiexam.com/search/?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       },
@@ -91,6 +91,13 @@ foreach ($ld['@graph'] as &$node) {
 }
 unset($node);
 
+$mockTests = db()->query("SELECT i.*, t.name AS tname, t.slug AS tslug FROM trade_items i JOIN trades t ON t.id = i.trade_id
+    WHERE i.section = 'mock_tests' AND t.status = 'published' ORDER BY i.is_new DESC, i.id DESC LIMIT 4")->fetchAll();
+$homeJobs = latest_jobs(4);
+$examUpdates = latest_posts('exam-update', 4);
+$articles = latest_posts('article', 4);
+$tradeCount = count(trades());
+
 $meta = [
     'title' => setting('home_title', 'ITI Exam 2026: Mock Test, Previous Papers, Study Material | ITIExam.com'),
     'description' => setting('site_description'),
@@ -109,7 +116,7 @@ require __DIR__ . '/includes/header.php';
           <h1><span class="h1-sm">Your Complete Platform for</span> ITI Exam <span class="grad">Preparation</span></h1>
           <p class="lead">Online <strong>ITI Mock Tests</strong>, <strong>Previous Year Questions</strong>, Study Material, Jobs, Apprenticeship and Expert Content for all ITI Trades.</p>
 
-          <form class="search" id="hero-search" role="search" action="/search" method="get">
+          <form class="search" id="hero-search" role="search" action="/search/" method="get">
             <label for="q" class="sr-only">Search ITI trade, subject or topic</label>
             <svg class="ic"><use href="#i-search"/></svg>
             <input id="q" name="q" type="search" placeholder="Search Trade, Subject or Topic (e.g. COPA, Electrician, MS Word, Employability Skills...)" autocomplete="off">
@@ -117,12 +124,12 @@ require __DIR__ . '/includes/header.php';
           </form>
 
           <ul class="hero-stats">
-            <li><span class="si c-purple"><svg class="ic"><use href="#i-list"/></svg></span><b>30+</b><small>ITI Trades</small></li>
-            <li><span class="si c-blue"><svg class="ic"><use href="#i-doc"/></svg></span><b>10,000+</b><small>Practice Questions</small></li>
-            <li><span class="si c-orange"><svg class="ic"><use href="#i-clip"/></svg></span><b>100+</b><small>Mock Tests</small></li>
-            <li><span class="si c-green"><svg class="ic"><use href="#i-brief"/></svg></span><b>Latest</b><small>Job Updates</small></li>
-            <li><span class="si c-pink"><svg class="ic"><use href="#i-users"/></svg></span><b>Apprenticeship</b><small>NAPS / NATS</small></li>
-            <li><span class="si c-yellow"><svg class="ic"><use href="#i-book"/></svg></span><b>Study Material</b><small>Notes, PDFs, MCQs</small></li>
+            <li><a href="/trades/"><span class="si c-purple"><?= icon('list') ?></span><b><?= $tradeCount ?>+</b><small>ITI Trades</small></a></li>
+            <li><a href="/mock-test/"><span class="si c-blue"><?= icon('doc') ?></span><b><?= e(setting('stat_questions', '10,000+')) ?></b><small>Practice Questions</small></a></li>
+            <li><a href="/mock-test/"><span class="si c-orange"><?= icon('clip') ?></span><b><?= e(setting('stat_tests', '100+')) ?></b><small>Mock Tests</small></a></li>
+            <li><a href="/jobs/"><span class="si c-green"><?= icon('brief') ?></span><b>Latest</b><small>Job Updates</small></a></li>
+            <li><a href="/apprenticeship/"><span class="si c-pink"><?= icon('users') ?></span><b>Apprenticeship</b><small>NAPS / NATS</small></a></li>
+            <li><a href="/study-material/"><span class="si c-yellow"><?= icon('book') ?></span><b>Study Material</b><small>Notes, PDFs, MCQs</small></a></li>
           </ul>
         </div>
 
@@ -167,32 +174,33 @@ require __DIR__ . '/includes/header.php';
     <section class="section pt0">
       <div class="container cols-3">
         <article class="card" aria-labelledby="mock-h">
-          <div class="sec-head sm"><h2 id="mock-h">Latest Mock Tests</h2><a href="/mock-test/" class="view-all">View All <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+          <div class="sec-head sm"><h2 id="mock-h">Latest Mock Tests</h2><a href="/mock-test/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <ul class="rows">
-            <li><a href="/mock-test/copa-computer-fundamentals-set-1/"><span class="ri c-green"><svg class="ic"><use href="#i-layout"/></svg></span><span class="rt"><b>COPA – Computer Fundamentals (Set 1)</b><small><svg class="ic"><use href="#i-doc"/></svg>25 Questions <svg class="ic"><use href="#i-clock"/></svg>30 Minutes <em class="new">New</em></small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/mock-test/electrician-basic-electrical-set-1/"><span class="ri c-yellow"><svg class="ic"><use href="#i-bulb"/></svg></span><span class="rt"><b>Electrician – Basic Electrical (Set 1)</b><small><svg class="ic"><use href="#i-doc"/></svg>25 Questions <svg class="ic"><use href="#i-clock"/></svg>30 Minutes <em class="new">New</em></small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/mock-test/fitter-fitting-tools-set-1/"><span class="ri c-indigo"><svg class="ic"><use href="#i-tool"/></svg></span><span class="rt"><b>Fitter – Fitting Tools (Set 1)</b><small><svg class="ic"><use href="#i-doc"/></svg>25 Questions <svg class="ic"><use href="#i-clock"/></svg>30 Minutes <em class="new">New</em></small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/mock-test/employability-skills-communication-set-1/"><span class="ri c-teal"><svg class="ic"><use href="#i-chat"/></svg></span><span class="rt"><b>Employability Skills – Communication (Set 1)</b><small><svg class="ic"><use href="#i-doc"/></svg>25 Questions <svg class="ic"><use href="#i-clock"/></svg>30 Minutes <em class="new">New</em></small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
+<?php foreach ($mockTests as $i => $m): $href = $m['url'] && $m['url'][0] !== '#' ? $m['url'] : '/trades/' . $m['tslug'] . '/#mock-tests'; ?>
+            <li><a href="<?= e($href) ?>"<?= link_attrs($href) ?>><span class="ri <?= chip_color($i + 5) ?>"><?= icon($m['icon'] ?: 'clip') ?></span><span class="rt"><b><?= e($m['tname']) ?> – <?= e($m['title']) ?></b><small><?= $m['questions'] ? icon('doc') . (int)$m['questions'] . ' Questions ' : '' ?><?= $m['minutes'] ? icon('clock') . (int)$m['minutes'] . ' Minutes ' : '' ?><?= $m['is_new'] ? '<em class="new">New</em>' : '' ?></small></span><?= icon('chev-r', 'ic chev') ?></a></li>
+<?php endforeach; if (!$mockTests): ?>
+            <li class="muted-row">Mock tests will appear here once added from the admin panel.</li>
+<?php endif; ?>
           </ul>
         </article>
 
         <article class="card" aria-labelledby="jobs-h">
-          <div class="sec-head sm"><h2 id="jobs-h">Jobs &amp; Career</h2><a href="/jobs/" class="view-all">View All <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+          <div class="sec-head sm"><h2 id="jobs-h">Jobs &amp; Career</h2><a href="/jobs/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <ul class="rows">
-            <li><a href="/jobs/government/"><span class="ri c-orange"><svg class="ic"><use href="#i-bank"/></svg></span><span class="rt"><b>Government Jobs</b><small>ITI Recruitment, Sarkari Naukri</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/jobs/private/"><span class="ri c-red"><svg class="ic"><use href="#i-brief"/></svg></span><span class="rt"><b>Private Company Jobs</b><small>Latest ITI Job Vacancies</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/jobs/campus/"><span class="ri c-green"><svg class="ic"><use href="#i-users"/></svg></span><span class="rt"><b>Campus Placement</b><small>ITI Campus Drive &amp; Walk-in</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/career-guidance/"><span class="ri c-red"><svg class="ic"><use href="#i-target"/></svg></span><span class="rt"><b>Career Guidance</b><small>Resume, Interview Tips, Preparation</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
+            <li><a href="/jobs/government/"><span class="ri c-orange"><?= icon('bank') ?></span><span class="rt"><b>Government Jobs</b><small>ITI Recruitment, Sarkari Naukri</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
+            <li><a href="/jobs/private/"><span class="ri c-red"><?= icon('brief') ?></span><span class="rt"><b>Private Company Jobs</b><small>Latest ITI Job Vacancies</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
+            <li><a href="/jobs/campus/"><span class="ri c-green"><?= icon('users') ?></span><span class="rt"><b>Campus Placement</b><small>ITI Campus Drive &amp; Walk-in</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
+            <li><a href="/career-guidance/"><span class="ri c-red"><?= icon('target') ?></span><span class="rt"><b>Career Guidance</b><small>Resume, Interview Tips, Preparation</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
           </ul>
         </article>
 
         <article class="card" aria-labelledby="app-h">
-          <div class="sec-head sm"><h2 id="app-h">Apprenticeship</h2><a href="/apprenticeship/" class="view-all">View All <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+          <div class="sec-head sm"><h2 id="app-h">Apprenticeship</h2><a href="/apprenticeship/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <ul class="rows">
-            <li><a href="/apprenticeship/naps/"><span class="ri c-blue"><svg class="ic"><use href="#i-cap"/></svg></span><span class="rt"><b>NAPS Apprenticeship</b><small>National Apprenticeship Promotion Scheme</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/apprenticeship/nats/"><span class="ri c-purple"><svg class="ic"><use href="#i-cap"/></svg></span><span class="rt"><b>NATS Apprenticeship</b><small>National Apprenticeship Training Scheme</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/apprenticeship/how-to-apply/"><span class="ri c-green"><svg class="ic"><use href="#i-doc"/></svg></span><span class="rt"><b>ITI Apprenticeship</b><small>Apply Online, Eligibility &amp; Process</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/apprenticeship/company-wise/"><span class="ri c-orange"><svg class="ic"><use href="#i-building"/></svg></span><span class="rt"><b>Company-wise Openings</b><small>Latest Apprenticeship Opportunities</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
+            <li><a href="/apprenticeship/naps/"><span class="ri c-blue"><?= icon('cap') ?></span><span class="rt"><b>NAPS Apprenticeship</b><small>National Apprenticeship Promotion Scheme</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
+            <li><a href="/apprenticeship/nats/"><span class="ri c-purple"><?= icon('cap') ?></span><span class="rt"><b>NATS Apprenticeship</b><small>National Apprenticeship Training Scheme</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
+            <li><a href="/apprenticeship/"><span class="ri c-green"><?= icon('doc') ?></span><span class="rt"><b>ITI Apprenticeship</b><small>Apply Online, Eligibility &amp; Process</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
+            <li><a href="/jobs/apprentice/"><span class="ri c-orange"><?= icon('building') ?></span><span class="rt"><b>Company-wise Openings</b><small>Latest Apprenticeship Opportunities</small></span><?= icon('chev-r', 'ic chev') ?></a></li>
           </ul>
         </article>
       </div>
@@ -202,24 +210,25 @@ require __DIR__ . '/includes/header.php';
     <section class="section pt0">
       <div class="container cols-2-1">
         <div aria-labelledby="study-h">
-          <div class="sec-head"><h2 id="study-h">Study Material</h2><a href="/study-material/" class="view-all">View All <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+          <div class="sec-head"><h2 id="study-h">Study Material</h2><a href="/study-material/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <div class="study">
-            <a href="/study-material/notes/" class="st"><span class="sti c-red"><svg class="ic"><use href="#i-pdf"/></svg></span><h3>Theory Notes</h3><p>Module-wise PDF Notes</p></a>
-            <a href="/study-material/mcq/" class="st"><span class="sti c-purple"><svg class="ic"><use href="#i-help"/></svg></span><h3>MCQ Question Bank</h3><p>1000+ Questions with Answers</p></a>
-            <a href="/previous-papers/" class="st"><span class="sti c-blue"><svg class="ic"><use href="#i-doc"/></svg></span><h3>Previous Year Papers</h3><p>Solved Papers with Explanation</p></a>
-            <a href="/study-material/practical/" class="st"><span class="sti c-green"><svg class="ic"><use href="#i-flask"/></svg></span><h3>Practical Notes</h3><p>Step-by-step Guides</p></a>
-            <a href="/study-material/syllabus/" class="st"><span class="sti c-orange"><svg class="ic"><use href="#i-open"/></svg></span><h3>Syllabus &amp; Curriculum</h3><p>Latest NCVT Syllabus</p></a>
-            <a href="/study-material/model-papers/" class="st"><span class="sti c-cyan"><svg class="ic"><use href="#i-layout"/></svg></span><h3>Model Question Papers</h3><p>Exam Pattern &amp; Blueprint</p></a>
+            <a href="/study-material/" class="st"><span class="sti c-red"><?= icon('pdf') ?></span><h3>Theory Notes</h3><p>Module-wise PDF Notes</p></a>
+            <a href="/mock-test/" class="st"><span class="sti c-purple"><?= icon('help') ?></span><h3>MCQ Question Bank</h3><p>Questions with Answers</p></a>
+            <a href="/previous-papers/" class="st"><span class="sti c-blue"><?= icon('doc') ?></span><h3>Previous Year Papers</h3><p>Solved Papers with Explanation</p></a>
+            <a href="/practical/" class="st"><span class="sti c-green"><?= icon('flask') ?></span><h3>Practical Notes</h3><p>Step-by-step Guides</p></a>
+            <a href="/syllabus/" class="st"><span class="sti c-orange"><?= icon('open') ?></span><h3>Syllabus &amp; Curriculum</h3><p>Latest NCVT Syllabus</p></a>
+            <a href="/employability-skills/" class="st"><span class="sti c-cyan"><?= icon('target') ?></span><h3>Employability Skills</h3><p>1st &amp; 2nd Year</p></a>
           </div>
         </div>
 
         <article class="card" aria-labelledby="upd-h">
-          <div class="sec-head sm"><h2 id="upd-h">Exam Updates</h2><a href="/exam/" class="view-all">View All <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+          <div class="sec-head sm"><h2 id="upd-h">Exam Updates</h2><a href="/exam/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <ul class="rows upd">
-            <li><a href="/exam/date/"><time class="date d-blue" datetime="2026-10-15"><b>15</b>OCT</time><span class="rt"><b>NCVT ITI Exam Date 2026 (Expected)</b><small>Check latest exam schedule and details</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/exam/admit-card/"><time class="date d-red" datetime="2026-10-10"><b>10</b>OCT</time><span class="rt"><b>ITI Admit Card Latest Update</b><small>Download admit card information</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/exam/result/maharashtra/"><time class="date d-orange" datetime="2026-10-05"><b>05</b>OCT</time><span class="rt"><b>Maharashtra ITI Result 2026</b><small>Check result and merit list</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/apprenticeship/registration-process/"><time class="date d-teal" datetime="2026-09-28"><b>28</b>SEP</time><span class="rt"><b>Apprenticeship Registration Process</b><small>Step-by-step registration guide</small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
+<?php foreach ($examUpdates as $i => $u): $ts = strtotime($u['created_at']); ?>
+            <li><a href="/<?= e($u['slug']) ?>/"><time class="date <?= ['d-blue', 'd-red', 'd-orange', 'd-teal'][$i % 4] ?>" datetime="<?= date('Y-m-d', $ts) ?>"><b><?= date('d', $ts) ?></b><?= strtoupper(date('M', $ts)) ?></time><span class="rt"><b><?= e($u['title']) ?></b><?php if ($u['excerpt']): ?><small><?= e(mb_strimwidth($u['excerpt'], 0, 60, '…')) ?></small><?php endif; ?></span><?= icon('chev-r', 'ic chev') ?></a></li>
+<?php endforeach; if (!$examUpdates): ?>
+            <li class="muted-row">No exam updates yet.</li>
+<?php endif; ?>
           </ul>
         </article>
       </div>
@@ -229,22 +238,22 @@ require __DIR__ . '/includes/header.php';
     <section class="section pt0">
       <div class="container cols-2-1">
         <div aria-labelledby="jobop-h">
-          <div class="sec-head"><h2 id="jobop-h">Latest Job Opportunities</h2><a href="/jobs/" class="view-all">View All <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+          <div class="sec-head"><h2 id="jobop-h">Latest Job Opportunities</h2><a href="/jobs/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <div class="jobs">
-            <a href="/jobs/bel-iti-apprentice/" class="job"><span class="jl" style="--c:#1d4ed8">BEL</span><span><h3>BEL</h3><p class="role">ITI Apprentice</p><p class="muted">Multiple Trades</p><p class="last">Last Date: 20 Oct 2026</p></span><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-            <a href="/jobs/indian-railway-iti-apprentice/" class="job"><span class="jl" style="--c:#dc2626">IR</span><span><h3>Indian Railway</h3><p class="role">ITI Apprentice</p><p class="muted">Various Trades</p><p class="last">Last Date: 25 Oct 2026</p></span><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-            <a href="/jobs/tata-motors-iti-trainee/" class="job"><span class="jl" style="--c:#0b5cab">TM</span><span><h3>Tata Motors</h3><p class="role">ITI Trainee</p><p class="muted">Fitter, Electrician, MMV</p><p class="last">Last Date: 18 Oct 2026</p></span><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
-            <a href="/jobs/lt-iti-apprentice/" class="job"><span class="jl" style="--c:#0f172a">L&amp;T</span><span><h3>L&amp;T</h3><p class="role">ITI Apprentice</p><p class="muted">COPA, Fitter, Electrician</p><p class="last">Last Date: 22 Oct 2026</p></span><span class="go"><svg class="ic"><use href="#i-arrow"/></svg></span></a>
+<?php foreach ($homeJobs as $j): ?>
+            <a href="<?= e(job_url($j)) ?>" class="job"><?= employer_logo($j) ?><span><h3><?= e(company_name($j)) ?></h3><p class="role"><?= e($j['title']) ?></p><p class="muted"><?= e($j['trades']) ?></p><?php if ($j['last_date']): ?><p class="last">Last Date: <?= e(nice_date($j['last_date'])) ?></p><?php endif; ?></span><span class="go"><?= icon('arrow') ?></span></a>
+<?php endforeach; ?>
           </div>
+<?php if (!$homeJobs): ?>          <p class="card muted-row">New jobs will appear here soon. <a href="/jobs/">See all jobs</a></p>
+<?php endif; ?>
         </div>
 
         <article class="card" aria-labelledby="art-h">
-          <div class="sec-head sm"><h2 id="art-h">Recent Articles</h2><a href="/blog/" class="view-all">View All <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+          <div class="sec-head sm"><h2 id="art-h">Recent Articles</h2><a href="/blog/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <ul class="rows arts">
-            <li><a href="/blog/how-to-prepare-for-iti-cbt-exam/"><span class="thumb th1" aria-hidden="true">📝</span><span class="rt"><b>How to Prepare for ITI CBT Exam?</b><small><svg class="ic"><use href="#i-cal"/></svg><time datetime="2026-10-12">12 Oct 2026</time></small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/blog/important-topics-employability-skills/"><span class="thumb th2" aria-hidden="true">📚</span><span class="rt"><b>Important Topics for Employability Skills</b><small><svg class="ic"><use href="#i-cal"/></svg><time datetime="2026-10-10">10 Oct 2026</time></small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/blog/ncvt-iti-exam-pattern-syllabus/"><span class="thumb th3" aria-hidden="true">📋</span><span class="rt"><b>NCVT ITI Exam Pattern and Syllabus 2026</b><small><svg class="ic"><use href="#i-cal"/></svg><time datetime="2026-10-08">08 Oct 2026</time></small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
-            <li><a href="/blog/tips-to-score-high-in-iti-exams/"><span class="thumb th4" aria-hidden="true">🎯</span><span class="rt"><b>Tips to Score High in ITI Exams</b><small><svg class="ic"><use href="#i-cal"/></svg><time datetime="2026-10-05">05 Oct 2026</time></small></span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>
+<?php foreach ($articles as $i => $a) echo '            ', post_row($a, $i), "\n"; if (!$articles): ?>
+            <li class="muted-row">No articles yet.</li>
+<?php endif; ?>
           </ul>
         </article>
       </div>
@@ -278,9 +287,9 @@ require __DIR__ . '/includes/header.php';
         </div>
         <span class="rocket" aria-hidden="true">🚀</span>
         <ul class="cta-stats">
-          <li class="s-blue"><b data-count="30">30+</b><small>ITI Trades</small></li>
-          <li class="s-green"><b data-count="10000">10,000+</b><small>Practice Questions</small></li>
-          <li class="s-orange"><b data-count="100000">1,00,000+</b><small>Students Learning</small></li>
+          <li class="s-blue"><b><?= $tradeCount ?>+</b><small>ITI Trades</small></li>
+          <li class="s-green"><b><?= e(setting('stat_questions', '10,000+')) ?></b><small>Practice Questions</small></li>
+          <li class="s-orange"><b><?= e(setting('stat_students', '1,00,000+')) ?></b><small>Students Learning</small></li>
           <li class="s-purple"><b>100%</b><small>Free Access</small></li>
         </ul>
       </div>

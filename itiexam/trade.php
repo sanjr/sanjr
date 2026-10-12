@@ -90,6 +90,9 @@ $stats = array_filter([
     ['target', 'Exam Pattern', $t['exam_pattern'], 'c-orange'],
 ], fn($s) => $s[2] !== '');
 
+$tradeJobs = latest_jobs(4, $name);
+if ($tradeJobs) $nav[] = ['jobs', $name . ' Jobs', 'brief'];
+
 $related = array_values(array_filter(trades(), fn($r) => $r['id'] !== $t['id']));
 
 require __DIR__ . '/includes/header.php';
@@ -181,6 +184,13 @@ foreach ($rowsDef as $row) {
     if ($cards) echo '      <div class="trow n' . count($cards) . '">' . implode('', $cards) . "</div>\n";
 }
 ?>
+
+<?php if ($tradeJobs): ?>
+      <section class="card tsec" id="jobs" aria-labelledby="tj-h">
+        <div class="sec-head sm"><h2 id="tj-h">Latest <?= e($name) ?> Jobs</h2><a href="/jobs/?trade=<?= e(rawurlencode($name)) ?>" class="view-all">View All Jobs <?= icon('arrow') ?></a></div>
+        <div class="job-list"><?php foreach ($tradeJobs as $j) echo job_card($j); ?></div>
+      </section>
+<?php endif; ?>
 
 <?php if ($t['content']): ?>
       <article class="card tsec prose" id="about">

@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/config.php';
 
+const SCHEMA_VERSION = '2';
+
 function db(): PDO
 {
     static $pdo = null;
@@ -22,6 +24,9 @@ function db(): PDO
 /** Creates tables on first run (works for SQLite and MySQL). */
 function db_migrate(PDO $pdo): void
 {
+    try {   // skip when the schema is already current
+        if ($pdo->query("SELECT svalue FROM settings WHERE skey = 'schema_version'")->fetchColumn() === SCHEMA_VERSION) return;
+    } catch (PDOException $e) { /* first run: settings table does not exist yet */ }
     $mysql = DB_DRIVER === 'mysql';
     $id = $mysql ? 'INT AUTO_INCREMENT PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
     $txt = $mysql ? 'MEDIUMTEXT' : 'TEXT';
@@ -59,4 +64,36 @@ function db_migrate(PDO $pdo): void
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS settings (
         skey VARCHAR(80) NOT NULL PRIMARY KEY, svalue $txt)$engine");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS employers (
+        id $id, name VARCHAR(160) NOT NULL, short_name VARCHAR(20) NOT NULL DEFAULT '', logo VARCHAR(255) NOT NULL DEFAULT '',
+        color VARCHAR(20) NOT NULL DEFAULT '#2563eb', website VARCHAR(500) NOT NULL DEFAULT '', is_featured INT NOT NULL DEFAULT 1,
+        sort_order INT NOT NULL DEFAULT 0)$engine");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS jobs (
+        id $id, slug VARCHAR(180) NOT NULL UNIQUE, title VARCHAR(255) NOT NULL, employer_id INT NOT NULL DEFAULT 0,
+        company VARCHAR(160) NOT NULL DEFAULT '', job_type VARCHAR(30) NOT NULL DEFAULT 'private',
+        trades VARCHAR(500) NOT NULL DEFAULT '', qualification VARCHAR(255) NOT NULL DEFAULT '', experience VARCHAR(20) NOT NULL DEFAULT 'fresher',
+        location VARCHAR(160) NOT NULL DEFAULT '', vacancies VARCHAR(60) NOT NULL DEFAULT '', salary_min INT NOT NULL DEFAULT 0, salary_max INT NOT NULL DEFAULT 0,
+        salary_text VARCHAR(160) NOT NULL DEFAULT '', age_limit VARCHAR(120) NOT NULL DEFAULT '', last_date VARCHAR(10) NOT NULL DEFAULT '',
+        apply_url VARCHAR(500) NOT NULL DEFAULT '', notification_url VARCHAR(500) NOT NULL DEFAULT '', summary VARCHAR(400) NOT NULL DEFAULT '',
+        description $txt, is_featured INT NOT NULL DEFAULT 0, mark_new INT NOT NULL DEFAULT 1,
+        meta_title VARCHAR(255) NOT NULL DEFAULT '', meta_description VARCHAR(400) NOT NULL DEFAULT '',
+        status VARCHAR(20) NOT NULL DEFAULT 'published', posted_at VARCHAR(20) NOT NULL, updated_at VARCHAR(20) NOT NULL)$engine");
+
+    // Columns added after the first release
+    add_column($pdo, 'pages', 'category', "VARCHAR(30) NOT NULL DEFAULT ''");
+    add_column($pdo, 'pages', 'excerpt', "VARCHAR(400) NOT NULL DEFAULT ''");
+    add_column($pdo, 'pages', 'image', "VARCHAR(255) NOT NULL DEFAULT ''");
+
+    $pdo->prepare('DELETE FROM settings WHERE skey = ?')->execute(['schema_version']);
+    $pdo->prepare('INSERT INTO settings (skey, svalue) VALUES (?, ?)')->execute(['schema_version', SCHEMA_VERSION]);
+}
+
+function add_column(PDO $pdo, string $table, string $col, string $def): void
+{
+    $cols = DB_DRIVER === 'mysql'
+        ? $pdo->query("SHOW COLUMNS FROM $table")->fetchAll(PDO::FETCH_COLUMN)
+        : array_column($pdo->query("PRAGMA table_info($table)")->fetchAll(PDO::FETCH_ASSOC), 'name');
+    if (!in_array($col, $cols, true)) $pdo->exec("ALTER TABLE $table ADD COLUMN $col $def");
 }

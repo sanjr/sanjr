@@ -5,6 +5,8 @@ function seed_site(): void
     $pdo = db();
     if ((int)$pdo->query('SELECT COUNT(*) FROM menu_items')->fetchColumn() === 0) seed_menus();
     if ((int)$pdo->query('SELECT COUNT(*) FROM trades')->fetchColumn() === 0) seed_trades();
+    if ((int)$pdo->query('SELECT COUNT(*) FROM employers')->fetchColumn() === 0) seed_jobs();
+    seed_pages();
     $defaults = [
         'site_description' => 'Free ITI mock tests, NCVT ITI previous year question papers, Employability Skills MCQ, study material PDF, ITI jobs, apprenticeship (NAPS/NATS), admit card & result updates for COPA, Electrician, Fitter, Turner, Welder & all ITI trades.',
         'home_title' => 'ITI Exam 2026: Mock Test, Previous Papers, Study Material | ITIExam.com',
@@ -25,23 +27,23 @@ function seed_menus(): void
     $header = [
         ['Home', '/', []],
         ['Trades', '/trades/', [['COPA', '/trades/copa/'], ['Electrician', '/trades/electrician/'], ['Fitter', '/trades/fitter/'], ['Turner', '/trades/turner/'], ['Welder', '/trades/welder/']]],
-        ['Mock Tests', '/mock-test/', [['Trade Theory', '/mock-test/trade-theory/'], ['Employability Skills', '/mock-test/employability-skills/'], ['Workshop Calc. & Science', '/mock-test/workshop-calculation-science/'], ['Engineering Drawing', '/mock-test/engineering-drawing/']]],
-        ['Previous Papers', '/previous-papers/', [['1st Year Papers', '/previous-papers/1st-year/'], ['2nd Year Papers', '/previous-papers/2nd-year/']]],
-        ['Employability Skills', '/employability-skills/', [['1st Year', '/employability-skills/1st-year/'], ['2nd Year', '/employability-skills/2nd-year/']]],
-        ['Study Material', '/study-material/', [['Theory Notes', '/study-material/notes/'], ['MCQ Bank', '/study-material/mcq/'], ['Syllabus', '/study-material/syllabus/']]],
-        ['Jobs', '/jobs/', [['Government Jobs', '/jobs/government/'], ['Private Jobs', '/jobs/private/'], ['Campus Placement', '/jobs/campus/']]],
-        ['Apprenticeship', '/apprenticeship/', [['NAPS', '/apprenticeship/naps/'], ['NATS', '/apprenticeship/nats/']]],
-        ['Exam Info', '/exam/', [['Exam Date', '/exam/date/'], ['Admit Card', '/exam/admit-card/'], ['Result', '/exam/result/']]],
-        ['About', '/about/', [['Contact', '/contact/']]],
+        ['Mock Tests', '/mock-test/', []],
+        ['Previous Papers', '/previous-papers/', []],
+        ['Employability Skills', '/employability-skills/', []],
+        ['Study Material', '/study-material/', [['Theory Notes', '/study-material/'], ['Syllabus', '/syllabus/'], ['Practical', '/practical/']]],
+        ['Jobs', '/jobs/', [['Government Jobs', '/jobs/government/'], ['Private Company Jobs', '/jobs/private/'], ['Campus Placement', '/jobs/campus/'], ['Walk-in Interview', '/jobs/walk-in/'], ['Career Guidance', '/career-guidance/']]],
+        ['Apprenticeship', '/apprenticeship/', [['NAPS', '/apprenticeship/naps/'], ['NATS', '/apprenticeship/nats/'], ['Apprentice Jobs', '/jobs/apprentice/']]],
+        ['Exam Info', '/exam/', [['Exam Updates', '/exam/'], ['Articles & Tips', '/blog/']]],
+        ['About', '/about/', [['Contact', '/contact/'], ['FAQ', '/faq/']]],
     ];
     foreach ($header as $i => [$l, $u, $kids]) {
         $pid = $add('header', $l, $u, $i);
         foreach ($kids as $j => [$cl, $cu]) $add('header', $cl, $cu, $j, $pid);
     }
     foreach ([['Home', '/'], ['All Trades', '/trades/'], ['Mock Tests', '/mock-test/'], ['Previous Papers', '/previous-papers/'], ['Employability Skills', '/employability-skills/'],
-              ['Study Material', '/study-material/'], ['Jobs', '/jobs/'], ['Apprenticeship', '/apprenticeship/'], ['Exam Info', '/exam/'], ['About Us', '/about/']] as $i => [$l, $u]) $add('footer_quick', $l, $u, $i);
+              ['Study Material', '/study-material/'], ['Jobs & Career', '/jobs/'], ['Apprenticeship', '/apprenticeship/'], ['Exam Info', '/exam/'], ['About Us', '/about/']] as $i => [$l, $u]) $add('footer_quick', $l, $u, $i);
     foreach ([['NCVT MIS', 'https://www.ncvtmis.gov.in/'], ['DVET Maharashtra', 'https://dvet.gov.in/'], ['Apprenticeship Portal', 'https://www.apprenticeshipindia.gov.in/'],
-              ['ITI Admission', 'https://admission.dvet.gov.in/'], ['Bharat Skills', 'https://bharatskills.gov.in/'], ['NIMI', 'https://nimi.gov.in/'], ['FAQ', '/faq/'], ['Contact Us', '/contact/']] as $i => [$l, $u]) $add('footer_resources', $l, $u, $i);
+              ['ITI Admission', 'https://admission.dvet.gov.in/'], ['Bharat Skills', 'https://bharatskills.gov.in/'], ['NIMI', 'https://nimi.gov.in/'], ['Career Guidance', '/career-guidance/'], ['FAQ', '/faq/'], ['Contact Us', '/contact/']] as $i => [$l, $u]) $add('footer_resources', $l, $u, $i);
     foreach ([['Privacy Policy', '/privacy-policy/'], ['Terms & Conditions', '/terms/'], ['Disclaimer', '/disclaimer/'], ['Contact Us', '/contact/']] as $i => [$l, $u]) $add('footer_legal', $l, $u, $i);
 }
 
@@ -91,4 +93,106 @@ function seed_trades(): void
         ['What is the exam pattern for COPA?', 'Trade Theory, Employability Skills and Workshop Calculation are Computer Based Tests (MCQ); the practical exam is held at the ITI.'],
         ['What jobs can I get after ITI COPA?', 'Computer operator, data entry operator, office assistant, junior web designer, IT support and apprenticeship in government and private companies.']]);
     $pdo->prepare('UPDATE trades SET content = ? WHERE id = ?')->execute(['<p>The <strong>ITI COPA (Computer Operator and Programming Assistant)</strong> trade is a one-year NCVT course in the IT &amp; ITES sector. Students learn computer fundamentals, Windows and Linux, MS Office, internet and networking, HTML, CSS, JavaScript, Python, databases and cyber security.</p><p>Use the mock tests above to practise for the CBT exam, read module-wise theory notes, and solve previous year papers with solutions to score high.</p>', $copa]);
+}
+
+/** Employers + sample jobs. Sample jobs are flagged so the dashboard reminds the admin to replace them. */
+function seed_jobs(): void
+{
+    $pdo = db();
+    $emps = [['BEL', 'BEL', '#1d4ed8'], ['Indian Railways', 'IR', '#dc2626'], ['Tata Motors', 'TM', '#0b5cab'], ['Larsen & Toubro', 'L&T', '#0f172a'],
+             ['Maruti Suzuki', 'MSIL', '#1e3a8a'], ['Adani Group', 'ADANI', '#7c3aed'], ['JSW Steel', 'JSW', '#b91c1c'], ['Ashok Leyland', 'AL', '#0369a1'],
+             ['Hyundai Motor India', 'HMI', '#1e40af'], ['Mahindra & Mahindra', 'M&M', '#be123c']];
+    $ins = $pdo->prepare('INSERT INTO employers (name, short_name, color, is_featured, sort_order) VALUES (?, ?, ?, 1, ?)');
+    foreach ($emps as $i => $e) $ins->execute([...$e, $i]);
+    $eid = fn($n) => (int)$pdo->query('SELECT id FROM employers WHERE name = ' . $pdo->quote($n))->fetchColumn();
+
+    $d = fn($days) => date('Y-m-d', strtotime("+$days days"));
+    $note = '<p><strong>This is a sample job added during setup.</strong> Replace it with real notification details, or delete it from Admin → Jobs.</p>';
+    $jobs = [
+        ['ITI Apprentice Recruitment', 'BEL', 'government', 'Multiple Trades', 'ITI Pass', 'Across India', $d(8), 1],
+        ['ITI Apprentice', 'Indian Railways', 'government', 'Multiple Trades', 'ITI Pass', 'All India', $d(13), 1],
+        ['ITI Trainee Recruitment', 'Tata Motors', 'private', 'Fitter, Electrician, MMV', 'ITI Pass', 'Pune, Maharashtra', $d(6), 0],
+        ['ITI Apprentice', 'Larsen & Toubro', 'apprentice', 'COPA, Fitter, Electrician, Welder', 'ITI Pass', 'Chennai, Tamil Nadu', $d(10), 0],
+        ['ITI Trainee', 'Maruti Suzuki', 'private', 'Fitter, Electrician, MMV, Welder', 'ITI Pass', 'Gurugram, Haryana', $d(16), 0],
+        ['ITI Apprentice / Trainee', 'Adani Group', 'apprentice', 'Multiple Trades', 'ITI Pass', 'Ahmedabad, Gujarat', $d(18), 0],
+    ];
+    $ji = $pdo->prepare('INSERT INTO jobs (slug, title, employer_id, company, job_type, trades, qualification, location, last_date, is_featured, salary_text, summary, description, posted_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $ids = [];
+    foreach ($jobs as $i => [$title, $co, $type, $trades, $qual, $loc, $last, $feat]) {
+        $posted = date('Y-m-d H:i:s', strtotime("-$i days"));
+        $ji->execute([slugify("$co $title " . date('Y')), $title . ' ' . date('Y'), $eid($co), $co, $type, $trades, $qual, $loc, $last, $feat,
+            $type === 'apprentice' || $type === 'government' ? 'Stipend as per Apprentices Act' : '', "$co is hiring ITI pass candidates. Check eligibility and last date.", $note, $posted, $posted]);
+        $ids[] = (int)$pdo->lastInsertId();
+    }
+    setting_set('sample_job_ids', implode(',', $ids));
+}
+
+/** Starter pages so every menu and homepage link opens a real page. Skips any URL that already exists. */
+function seed_pages(): void
+{
+    $pdo = db();
+    $exists = $pdo->prepare('SELECT COUNT(*) FROM pages WHERE slug = ?');
+    $ins = $pdo->prepare('INSERT INTO pages (slug, title, content, excerpt, category, meta_description, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $site = SITE_NAME;
+    $pages = [
+        ['mock-test', 'ITI Mock Test – Free Online Test for All Trades', '', 'Choose your trade and start a free ITI mock test based on the latest NCVT CBT pattern.',
+         "<p>Practise free <strong>ITI online mock tests</strong> for Trade Theory, Employability Skills and Workshop Calculation &amp; Science. Every test follows the NCVT CBT pattern with multiple choice questions and a timer.</p><h2>Select your trade</h2>[trades section=\"mock-tests\"]<h2>How to use mock tests</h2><ul><li>Take one full test every day and note the wrong answers.</li><li>Revise the topic from theory notes, then attempt the next set.</li><li>Before the exam, attempt previous year papers under the same time limit.</li></ul>"],
+        ['previous-papers', 'ITI Previous Year Question Papers with Answers', '', 'NCVT ITI previous year CBT question papers with solutions for every trade.',
+         "<p>Solving <strong>ITI previous year question papers</strong> is the fastest way to understand the exam pattern and the topics that are asked again and again.</p><h2>Select your trade</h2>[trades section=\"previous-papers\"]"],
+        ['study-material', 'ITI Study Material – Theory Notes PDF, MCQ & Model Papers', '', 'Module-wise ITI theory notes, MCQ question bank and model papers for all trades.',
+         "<p>Read module-wise <strong>ITI theory notes</strong>, practise the <strong>MCQ question bank</strong> and download model papers for your trade.</p><h2>Select your trade</h2>[trades section=\"study-material\"]"],
+        ['syllabus', 'ITI Syllabus – NCVT Trade-wise Syllabus & Modules', '', 'Latest NCVT syllabus and module list for each ITI trade.',
+         "<p>Check the latest <strong>NCVT syllabus</strong> and module-wise topics for your trade.</p>[trades section=\"syllabus\"]"],
+        ['practical', 'ITI Practical Exercises – Step-by-step Guides', '', 'Practical exercises and step-by-step guides for ITI trades.',
+         "<p>Step-by-step practical exercises for your ITI trade.</p>[trades section=\"practical\"]"],
+        ['employability-skills', 'Employability Skills MCQ – ITI 1st & 2nd Year', '', 'Employability Skills notes and MCQ for ITI 1st and 2nd year CBT exam.',
+         "<p><strong>Employability Skills (ES)</strong> is a common subject for all ITI trades. It covers English literacy, IT literacy, communication skills, entrepreneurship, productivity, occupational safety and labour welfare.</p><h2>Topics</h2><ul><li>Introduction to Employability Skills</li><li>Constitution values and citizenship</li><li>Communication skills and English</li><li>Basic IT literacy</li><li>Entrepreneurship and financial literacy</li><li>Occupational safety, health and environment</li></ul><p>Use the mock tests on each trade page to practise ES questions.</p>"],
+        ['apprenticeship', 'ITI Apprenticeship 2026 – NAPS, NATS & How to Apply', '', 'Apprenticeship guide for ITI pass students: NAPS, NATS, eligibility, registration and latest openings.',
+         "<p>After ITI, an <strong>apprenticeship</strong> gives you paid on-the-job training in a company and improves your chances of a permanent job.</p><h2>Schemes</h2><ul><li><a href=\"/apprenticeship/naps/\">NAPS</a> – National Apprenticeship Promotion Scheme (for ITI pass students)</li><li><a href=\"/apprenticeship/nats/\">NATS</a> – National Apprenticeship Training Scheme (for diploma and graduates)</li></ul><h2>How to register</h2><ol><li>Open the official portal <a href=\"https://www.apprenticeshipindia.gov.in/\" target=\"_blank\" rel=\"noopener\">apprenticeshipindia.gov.in</a>.</li><li>Register as a candidate with your mobile number and email.</li><li>Complete your profile and upload ITI marksheet and Aadhaar.</li><li>Search for openings by trade and location and apply.</li></ol><h2>Latest apprentice openings</h2>[jobs type=\"apprentice\" limit=\"6\"]"],
+        ['apprenticeship/naps', 'NAPS Apprenticeship – National Apprenticeship Promotion Scheme', '', 'What NAPS is, who can apply and how ITI students can register.',
+         "<p>The <strong>National Apprenticeship Promotion Scheme (NAPS)</strong> encourages companies to engage apprentices. ITI pass candidates can apply through the Apprenticeship India portal.</p><h2>Eligibility</h2><ul><li>ITI pass in the relevant trade (or appearing, as per the opening)</li><li>Minimum age 14 years (18 for hazardous trades)</li></ul><p>See the <a href=\"/apprenticeship/\">apprenticeship guide</a> for registration steps.</p>"],
+        ['apprenticeship/nats', 'NATS Apprenticeship – National Apprenticeship Training Scheme', '', 'NATS apprenticeship for diploma holders and graduates.',
+         "<p>The <strong>National Apprenticeship Training Scheme (NATS)</strong> is for diploma holders and graduates in engineering and other streams. Registration is done on the official NATS portal.</p><p>ITI pass students should apply under <a href=\"/apprenticeship/naps/\">NAPS</a>.</p>"],
+        ['career-guidance', 'Career Guidance for ITI Students – Resume & Interview Tips', '', 'Resume format, interview tips and career options after ITI.',
+         "<h2>Career options after ITI</h2><ul><li>Apprenticeship in government or private companies</li><li>Government jobs: Railways, PSUs, state electricity boards</li><li>Private company jobs and campus placement</li><li>Lateral entry to diploma (2nd year)</li><li>Self-employment in your trade</li></ul><h2>Resume tips</h2><ul><li>Keep it to one page: trade, ITI name, year, marks, skills and practical experience.</li><li>Mention machines, tools and software you can use.</li></ul><h2>Interview tips</h2><ul><li>Revise basic trade theory and safety rules.</li><li>Carry ITI marksheet, NCVT certificate, Aadhaar and photos.</li></ul><h2>Latest jobs</h2>[jobs limit=\"4\"]"],
+        ['exam', 'ITI Exam Updates – Exam Date, Admit Card & Result', '', 'Latest ITI exam date, admit card and result updates.',
+         "<p>Latest updates on <strong>NCVT ITI exam dates</strong>, <strong>admit cards</strong> and <strong>results</strong>. Always confirm on the official portal <a href=\"https://www.ncvtmis.gov.in/\" target=\"_blank\" rel=\"noopener\">NCVT MIS</a>.</p>[posts category=\"exam-update\" limit=\"20\"]"],
+        ['blog', 'ITI Preparation Tips & Articles', '', 'Study tips, exam strategy and career articles for ITI students.',
+         "<p>Tips and guides to help you prepare for the ITI exam and plan your career.</p>[posts category=\"article\" limit=\"20\"]"],
+        ['about', 'About Us', '', "About $site – free ITI exam preparation platform.",
+         "<p><strong>$site</strong> is a free online platform for ITI students. We publish mock tests, previous year papers, study material, job updates and apprenticeship guides for all ITI trades.</p><p>Our goal is simple: help every ITI student pass the CBT exam with good marks and find the right job or apprenticeship.</p>"],
+        ['contact', 'Contact Us', '', "Contact the $site team.",
+         "<p>Have a question, found a mistake, or want to suggest a topic? Write to us.</p><p><strong>Email:</strong> contact@itiexam.com</p><p>We usually reply within 2 working days.</p>"],
+        ['faq', 'Frequently Asked Questions', '', 'Answers to common questions about ITI exams, mock tests and jobs.',
+         "<h3>Are the mock tests free?</h3><p>Yes, all mock tests and study material are free.</p><h3>Is the ITI exam conducted in CBT mode?</h3><p>Yes. Theory, Employability Skills and Workshop Calculation &amp; Science are computer based tests with MCQs.</p><h3>Where can I check my ITI result?</h3><p>Results are published on the official NCVT MIS portal. See our <a href=\"/exam/\">exam updates</a>.</p><h3>How do I apply for apprenticeship?</h3><p>Read our <a href=\"/apprenticeship/\">apprenticeship guide</a>.</p>"],
+        ['privacy-policy', 'Privacy Policy', '', "How $site collects and uses information.",
+         "<p>This website does not require you to create an account. We may collect anonymous usage data (pages visited, device type) through analytics to improve the site. We do not sell personal information.</p><p>If you contact us by email, we use your address only to reply.</p><p>Third-party services such as analytics or advertising may use cookies. You can disable cookies in your browser settings.</p>"],
+        ['terms', 'Terms & Conditions', '', "Terms of use for $site.",
+         "<p>Content on this website is for educational purposes. You may use it for personal study. Copying content to other websites without permission is not allowed.</p><p>We try to keep information accurate, but always confirm exam and job details on the official websites.</p>"],
+        ['disclaimer', 'Disclaimer', '', "Disclaimer for $site.",
+         "<p>$site is not an official website of NCVT, DGT or any government body. Job and exam information is collected from official notifications and other public sources. Always check the official notification before applying.</p><p>We never charge money for any job or apprenticeship. Beware of fraud calls asking for payment.</p>"],
+        ['exam/ncvt-iti-exam-date', 'NCVT ITI Exam Date ' . date('Y') . ' – How to Check the Schedule', 'exam-update', 'Where and how to check the official NCVT ITI CBT exam schedule.',
+         "<p>The NCVT publishes the ITI CBT exam schedule on the <a href=\"https://www.ncvtmis.gov.in/\" target=\"_blank\" rel=\"noopener\">NCVT MIS portal</a>. Your ITI also displays the time table on its notice board.</p><h2>How to check</h2><ol><li>Open NCVT MIS and go to the Exam section.</li><li>Open the latest CBT exam schedule notice.</li><li>Note the dates for Trade Theory, Employability Skills and Workshop Calculation &amp; Science.</li></ol><p>Start revising with <a href=\"/mock-test/\">free mock tests</a>.</p>"],
+        ['exam/iti-admit-card', 'ITI Admit Card – How to Download Hall Ticket', 'exam-update', 'Steps to download the ITI CBT admit card (hall ticket).',
+         "<p>The ITI admit card (hall ticket) is released a few days before the CBT exam.</p><h2>Steps</h2><ol><li>Visit the NCVT MIS portal.</li><li>Open the Hall Ticket / Admit Card link.</li><li>Enter your roll number or registration details.</li><li>Download and print the admit card.</li></ol><p>Check your name, photo, trade and exam centre. Report any mistake to your ITI immediately.</p>"],
+        ['exam/maharashtra-iti-result', 'Maharashtra ITI Result – How to Check & Download Marksheet', 'exam-update', 'How to check the Maharashtra ITI result and download the e-marksheet.',
+         "<p>Maharashtra ITI students can check results on the NCVT MIS portal and DVET updates.</p><ol><li>Open NCVT MIS → Results / Marksheet.</li><li>Enter your roll number and year.</li><li>Download the e-marksheet.</li></ol><p>For admission and DVET notices visit <a href=\"https://dvet.gov.in/\" target=\"_blank\" rel=\"noopener\">dvet.gov.in</a>.</p>"],
+        ['exam/apprenticeship-registration-process', 'Apprenticeship Registration Process – Step by Step', 'exam-update', 'Step-by-step apprenticeship registration on the Apprenticeship India portal.',
+         "<p>Follow these steps to register for apprenticeship after ITI.</p><ol><li>Open apprenticeshipindia.gov.in and click Register → Candidate.</li><li>Verify your mobile number and email.</li><li>Fill education details and upload documents.</li><li>Apply to openings in your trade.</li></ol><p>Read the full <a href=\"/apprenticeship/\">apprenticeship guide</a>.</p>"],
+        ['blog/how-to-prepare-for-iti-cbt-exam', 'How to Prepare for ITI CBT Exam?', 'article', 'A simple plan to prepare for the ITI computer based test.',
+         "<h2>1. Know the pattern</h2><p>The CBT has MCQs for Trade Theory, Employability Skills and Workshop Calculation &amp; Science. There is no negative marking in most papers, so attempt every question.</p><h2>2. Make a daily plan</h2><ul><li>45 minutes theory notes</li><li>30 minutes mock test</li><li>15 minutes revising wrong answers</li></ul><h2>3. Practise on a computer</h2><p>Take <a href=\"/mock-test/\">online mock tests</a> so you get used to the screen and the timer.</p><h2>4. Solve previous papers</h2><p>Many questions repeat. Solve <a href=\"/previous-papers/\">previous year papers</a> in the last two weeks.</p>"],
+        ['blog/important-topics-employability-skills', 'Important Topics for Employability Skills', 'article', 'High-weightage Employability Skills topics for the ITI exam.',
+         "<p>Employability Skills is common for every trade, so it is an easy subject to score in.</p><h2>Important topics</h2><ul><li>Communication skills and listening</li><li>Basic computer and internet</li><li>Entrepreneurship and government schemes</li><li>Occupational safety and first aid</li><li>Labour welfare and social security</li><li>Quality tools and productivity</li></ul><p>Read <a href=\"/employability-skills/\">Employability Skills notes</a>.</p>"],
+        ['blog/ncvt-iti-exam-pattern-syllabus', 'NCVT ITI Exam Pattern and Syllabus', 'article', 'Subject-wise ITI CBT exam pattern and where to find the syllabus.',
+         "<h2>Subjects</h2><ul><li>Trade Theory (CBT)</li><li>Workshop Calculation &amp; Science (CBT)</li><li>Engineering Drawing (for engineering trades)</li><li>Employability Skills (CBT)</li><li>Trade Practical (at ITI)</li></ul><p>Trade-wise modules are listed on each <a href=\"/trades/\">trade page</a> and in our <a href=\"/syllabus/\">syllabus section</a>.</p>"],
+        ['blog/tips-to-score-high-in-iti-exams', 'Tips to Score High in ITI Exams', 'article', 'Practical tips that help ITI students score better marks.',
+         "<ul><li>Revise safety, tools and measuring instruments – they are asked every year.</li><li>Learn formulas for Workshop Calculation on a single sheet.</li><li>Attempt one full mock test daily for the last 15 days.</li><li>Do not leave any question blank.</li><li>Sleep well before the exam and reach the centre early.</li></ul><p>Start with a <a href=\"/mock-test/\">free mock test</a> today.</p>"],
+    ];
+    foreach ($pages as $i => [$slug, $title, $cat, $excerpt, $html]) {
+        $exists->execute([$slug]);
+        if ($exists->fetchColumn()) continue;
+        $t = date('Y-m-d H:i:s', strtotime('-' . $i . ' hours'));
+        $ins->execute([$slug, $title, $html, $excerpt, $cat, $excerpt, 'published', $t, $t]);
+    }
 }

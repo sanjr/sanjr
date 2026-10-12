@@ -68,6 +68,10 @@
     document.querySelectorAll(".tsec[id]").forEach(function (s) { spy.observe(s); });
   }
 
+  // Job filters start collapsed on phones and tablets
+  var filters = document.getElementById("filters");
+  if (filters && window.matchMedia("(max-width: 1199px)").matches) filters.removeAttribute("open");
+
   // Back to top
   var top = document.querySelector(".to-top");
   window.addEventListener("scroll", function () { top.classList.toggle("show", window.scrollY > 600); }, { passive: true });

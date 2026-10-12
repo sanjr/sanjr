@@ -6,6 +6,8 @@ require_login();
 $keys = [
     'home_title' => ['Homepage title (Google)', 'input', 60], 'site_description' => ['Site description (Google)', 'textarea', 160],
     'home_keywords' => ['Homepage keywords', 'textarea', 0], 'footer_about' => ['Footer about text', 'textarea', 0],
+    'stat_questions' => ['Homepage number: Practice Questions', 'input', 0], 'stat_tests' => ['Homepage number: Mock Tests', 'input', 0],
+    'stat_students' => ['Homepage number: Students Learning', 'input', 0],
     'social_youtube' => ['YouTube URL', 'input', 0], 'social_facebook' => ['Facebook URL', 'input', 0],
     'social_telegram' => ['Telegram URL', 'input', 0], 'social_whatsapp' => ['WhatsApp channel URL', 'input', 0],
 ];

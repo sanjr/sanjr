@@ -10,17 +10,25 @@ It runs on any normal shared hosting (Hostinger, GoDaddy, BigRock, cPanel).
 |---|---|
 | **Trades** | Add, edit or delete trades (name, full name, description, duration, NSQF level, sector, exam pattern, image or emoji, card colour, SEO title/description/keywords, “About trade” content). Every trade page uses the **same design** automatically. |
 | **Trades → Content** | Each trade has its **own** content, split into sections: Quick Links, Feature Tiles, Mock Tests, Syllabus & Modules, Study Material, Practical, Previous Year Papers, Important Questions, Videos, Resources, FAQ. Each item can link to a page, another website, a `#section` or an **uploaded PDF/image**. A section with no items is hidden on the page. You can **copy a section from another trade** as a starting point. |
-| **Pages** | Create any new page at any URL, e.g. `/about/` or `/jobs/government/`, with your own HTML content and SEO fields. |
+| **Jobs** | Add, edit, copy or delete jobs: company, job type (Government, Private, Campus, Walk-in, Apprentice, Contract, Fresher), trades, qualification, experience, location, vacancies, salary, age limit, last date, apply link, notification PDF, full details, Featured/New badges and SEO. After the last date, a job is shown as **Closed** and drops out of the listings automatically. |
+| **Employers** | Companies with logo (or coloured short-name badge). Featured employers appear on the Jobs page. |
+| **Pages & Articles** | Create any page at any URL (e.g. `/about/` or `/blog/my-post/`). Set its type to **Exam Update** or **Article** and it appears on the homepage automatically. Shortcodes: `[trades]`, `[trades section="mock-tests"]`, `[jobs type="apprentice" limit="6"]`, `[jobs trade="COPA"]`, `[posts category="article"]`. |
 | **Menus & Links** | Edit the header menu (with dropdowns) and footer links. Pick any trade or page from a list, or type any URL. |
-| **Settings** | Homepage title and description for Google, footer text, social media links, change password. |
+| **Settings** | Homepage title and description for Google, homepage numbers (questions, tests, students), footer text, social media links, change password. |
 
-New trades and pages are added to `/sitemap.xml` automatically.
+New trades and pages are added to `/sitemap.xml` automatically. Each trade page also shows the latest jobs for that trade.
+
+**Before launch:** setup adds 6 **sample jobs** and starter pages so you can see the design. The dashboard reminds you about sample jobs until you edit or delete them. Never leave fake job listings live.
 
 ## Website URLs
 - `/` – homepage (Popular Trades come from the admin)
 - `/trades/` – list of all trades
 - `/trades/{slug}/` – trade page (e.g. `/trades/copa/`)
-- `/{any-page}/` – pages created by the admin
+- `/jobs/` – all jobs with filters (type, trade, location, qualification, experience, salary), sorting and pagination
+- `/jobs/government/`, `/jobs/private/`, `/jobs/campus/`, `/jobs/walk-in/`, `/jobs/apprentice/` … – job categories
+- `/jobs/{slug}/` – job details page with Google for Jobs data (JobPosting)
+- `/search/?q=` – search across trades, jobs and pages
+- `/{any-page}/` – pages and articles created by the admin
 - `/sitemap.xml` – sitemap that updates itself
 
 ## Upload to hosting

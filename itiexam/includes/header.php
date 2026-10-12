@@ -39,8 +39,8 @@ $currentPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css?v=2">
-  <script src="/assets/js/main.js?v=2" defer></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=4">
+  <script src="/assets/js/main.js?v=3" defer></script>
 <?php foreach (($meta['jsonld'] ?? []) as $ld): ?>
   <script type="application/ld+json"><?= json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
 <?php endforeach; ?>

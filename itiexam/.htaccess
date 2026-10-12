@@ -18,6 +18,9 @@ RewriteRule ^(data|includes)(/|$) - [F,L]
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 RewriteRule ^trades/?$ trades.php [L]
 RewriteRule ^trades/([a-z0-9-]+)/?$ trade.php?slug=$1 [L,QSA]
+RewriteRule ^jobs/?$ jobs.php [L,QSA]
+RewriteRule ^jobs/([a-z0-9-]+)/?$ jobs.php?seg=$1 [L,QSA]
+RewriteRule ^search/?$ search.php [L,QSA]
 
 # Add trailing slash to page URLs
 RewriteCond %{REQUEST_FILENAME} !-f
