@@ -42,7 +42,7 @@
 $cp = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
 foreach ([['/', 'Home', 'home'], ['/trades/', 'Trades', 'grid'], ['/mock-test/', 'Tests', 'clip'], ['/jobs/', 'Jobs', 'brief'], ['/search/', 'Search', 'search']] as [$u, $l, $ic]):
     $on = $u === '/' ? $cp === '/' : str_starts_with($cp, $u); ?>
-    <a href="<?= $u ?>"<?= $on ? ' class="on" aria-current="page"' : '' ?>><?= icon($ic) ?><span><?= $l ?></span></a>
+    <a href="<?= $u ?>" class="<?= $u === '/mock-test/' ? 'fab' : '' ?><?= $on ? ' on' : '' ?>"<?= $on ? ' aria-current="page"' : '' ?>><span class="bi"><?= icon($ic) ?></span><span class="bl"><?= $l ?></span></a>
 <?php endforeach; ?>
   </nav>
   <div class="nav-overlay" hidden></div>

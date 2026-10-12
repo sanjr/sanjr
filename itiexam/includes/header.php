@@ -40,8 +40,8 @@ $currentPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
   <?= adsense_head() ?>
-  <link rel="stylesheet" href="/assets/css/style.css?v=6">
-  <script src="/assets/js/main.js?v=4" defer></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=7">
+  <script src="/assets/js/main.js?v=5" defer></script>
 <?php foreach (($meta['jsonld'] ?? []) as $ld): ?>
   <script type="application/ld+json"><?= json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
 <?php endforeach; ?>

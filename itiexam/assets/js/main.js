@@ -82,6 +82,21 @@
   var filters = document.getElementById("filters");
   if (filters && window.matchMedia("(max-width: 1199px)").matches) filters.removeAttribute("open");
 
+  // Phone bottom bar: hides while scrolling down, comes back on scroll up or at the page end
+  var bnav = document.querySelector(".bnav");
+  if (bnav) {
+    var lastY = window.scrollY, ticking = false;
+    window.addEventListener("scroll", function () {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(function () {
+        var y = window.scrollY, atEnd = window.innerHeight + y >= document.documentElement.scrollHeight - 40;
+        if (Math.abs(y - lastY) > 6) { bnav.classList.toggle("hide", y > lastY && y > 160 && !atEnd); lastY = y; }
+        ticking = false;
+      });
+    }, { passive: true });
+    bnav.addEventListener("click", function () { if (navigator.vibrate) navigator.vibrate(8); });
+  }
+
   // Back to top
   var top = document.querySelector(".to-top");
   window.addEventListener("scroll", function () { top.classList.toggle("show", window.scrollY > 600); }, { passive: true });
