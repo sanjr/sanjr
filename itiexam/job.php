@@ -112,9 +112,10 @@ require __DIR__ . '/includes/header.php';
         </dl>
       </section>
 <?php endif; ?>
+      <?= ad('job_detail') ?>
 <?php if ($j['description']): ?>
       <article class="card prose">
-        <?= render_shortcodes($j['description']) /* trusted HTML written by the admin */ ?>
+        <?= insert_article_ad(render_shortcodes($j['description'])) /* trusted HTML written by the admin */ ?>
       </article>
 <?php endif; ?>
       <section class="card jd-share">
@@ -127,6 +128,7 @@ require __DIR__ . '/includes/header.php';
     </div>
 
     <aside class="jd-side">
+      <?= ad('sidebar', 'side') ?>
 <?php if ($j['apply_url'] && !$expired): ?>
       <section class="card apply-card">
         <h2>Ready to apply?</h2>

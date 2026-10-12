@@ -663,3 +663,16 @@ img.thumb { object-fit: cover; }
   .jcard { align-items: start; padding: 14px; }
   .jcard .jl { width: 44px; height: 44px; font-size: 11px; border-radius: 12px; }
 }
+
+/* =========================================================
+   Ads – space is reserved so the page does not jump when an ad loads
+   ========================================================= */
+.ad-box { margin: 20px 0; text-align: center; min-height: 120px; }
+.ad-box.wide { margin: 8px 0 24px; min-height: 100px; }
+.ad-box.side { margin: 0; min-height: 250px; background: #fff; border-radius: var(--radius); padding: 8px; border: 1px solid rgba(15, 42, 111, .06); }
+.ad-box.in-content { margin: 18px 0; }
+.ad-label { display: block; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.tmain > .ad-box, .job-list > .ad-box, .jd-main > .ad-box { margin: 0; }
+.post-side { display: grid; gap: 20px; align-content: start; }
+/* Hide the reserved space when Google has no ad to show */
+.ad-box:has(ins[data-ad-status="unfilled"]) { display: none; }

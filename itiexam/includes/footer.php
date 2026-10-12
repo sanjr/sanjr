@@ -1,3 +1,5 @@
+<?php if (($meta['robots'] ?? '') === '' || !str_contains($meta['robots'] ?? '', 'noindex')): ?>  <div class="container"><?= ad('footer_top', 'wide') ?></div>
+<?php endif; ?>
   <footer class="site-footer">
     <div class="container foot-grid">
       <div class="foot-brand">

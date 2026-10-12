@@ -8,6 +8,7 @@ function admin_header(string $title, string $active = ''): void
         'employers' => ['/admin/employers.php', 'Employers', 'building'],
         'pages'     => ['/admin/pages.php', 'Pages & Articles', 'doc'],
         'menus'     => ['/admin/menus.php', 'Menus & Links', 'link'],
+        'ads'       => ['/admin/ads.php', 'Ads (AdSense)', 'rupee'],
         'settings'  => ['/admin/settings.php', 'Settings', 'gear'],
     ];
     ?><!DOCTYPE html>

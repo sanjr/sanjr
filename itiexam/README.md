@@ -14,11 +14,22 @@ It runs on any normal shared hosting (Hostinger, GoDaddy, BigRock, cPanel).
 | **Employers** | Companies with logo (or coloured short-name badge). Featured employers appear on the Jobs page. |
 | **Pages & Articles** | Create any page at any URL (e.g. `/about/` or `/blog/my-post/`). Set its type to **Exam Update** or **Article** and it appears on the homepage automatically. Shortcodes: `[trades]`, `[trades section="mock-tests"]`, `[jobs type="apprentice" limit="6"]`, `[jobs trade="COPA"]`, `[posts category="article"]`. |
 | **Menus & Links** | Edit the header menu (with dropdowns) and footer links. Pick any trade or page from a list, or type any URL. |
+| **Ads (AdSense)** | Paste your AdSense Publisher ID and switch ads on. Works with **Auto ads**, and you can also add fixed ad units in 9 places (homepage, trade pages, jobs list, job details, articles, sidebar, above footer). `/ads.txt` is created automatically. Ads are hidden while you are logged in as admin. |
 | **Settings** | Homepage title and description for Google, homepage numbers (questions, tests, students), footer text, social media links, change password. |
 
 New trades and pages are added to `/sitemap.xml` automatically. Each trade page also shows the latest jobs for that trade.
 
 **Before launch:** setup adds 6 **sample jobs** and starter pages so you can see the design. The dashboard reminds you about sample jobs until you edit or delete them. Never leave fake job listings live.
+
+## Google AdSense setup
+1. Admin → **Ads (AdSense)** → paste your Publisher ID (`ca-pub-…`) → tick **Show ads on the website** → Save.
+2. In AdSense → **Sites**, add your domain. `https://your-domain/ads.txt` is already served for you.
+3. Choose one or both:
+   - **Auto ads:** in AdSense → Ads → By site → switch on Auto ads. Google places ads automatically.
+   - **Fixed ad units:** in AdSense → Ads → By ad unit → create a *Display* (responsive) unit, copy the number from `data-ad-slot="…"` and paste it into the place you want in Admin → Ads.
+4. Check ads in a **private/incognito window**. They are hidden for the logged-in admin, so you never click your own ads (that breaks AdSense rules).
+5. The starter **Privacy Policy** already explains Google advertising cookies, which AdSense requires.
+6. If you get visitors from Europe/UK, turn on Google's consent message in AdSense → Privacy & messaging.
 
 ## Website URLs
 - `/` – homepage (Popular Trades come from the admin)
@@ -30,6 +41,7 @@ New trades and pages are added to `/sitemap.xml` automatically. Each trade page 
 - `/search/?q=` – search across trades, jobs and pages
 - `/{any-page}/` – pages and articles created by the admin
 - `/sitemap.xml` – sitemap that updates itself
+- `/ads.txt` – AdSense ads.txt, built from Admin → Ads
 
 ## Upload to hosting
 1. Upload everything inside the `itiexam/` folder to `public_html` (or your domain's root folder).

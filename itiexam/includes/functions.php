@@ -272,3 +272,71 @@ function job_card(array $j): string
         . ($meta ? '<p class="jmeta">' . implode('', array_map(fn($m) => "<span>$m</span>", $meta)) . '</p>' : '') . $last . '</div>'
         . '<a class="btn-out" href="' . e(job_url($j)) . '" aria-label="View details: ' . e($j['title']) . '">View Details ' . icon('arrow') . '</a></article>';
 }
+
+/* =========================================================
+   Google AdSense (managed in Admin → Ads)
+   ========================================================= */
+const AD_PLACEMENTS = [
+    'home_top'    => ['Homepage – below the hero', 'Shown under the search banner on the homepage'],
+    'home_middle' => ['Homepage – before Latest Jobs', 'Between Study Material and Latest Job Opportunities'],
+    'trade_top'   => ['Trade page – below overview tiles', 'Under the 6 coloured tiles on every trade page'],
+    'trade_middle'=> ['Trade page – middle', 'After Mock Tests & Syllabus on every trade page'],
+    'jobs_list'   => ['Jobs list – between jobs', 'After every 4th job on /jobs/ and category pages'],
+    'job_detail'  => ['Job details – below highlights', 'Under the Job Highlights box on each job page'],
+    'article'     => ['Articles & pages – inside content', 'After the first paragraph of pages and articles'],
+    'sidebar'     => ['Sidebar', 'Right sidebar on jobs, job details and articles'],
+    'footer_top'  => ['All pages – above footer', 'At the bottom of every page'],
+];
+
+/** AdSense publisher ID like "ca-pub-1234567890123456", or '' when ads are off. */
+function adsense_client(): string
+{
+    $c = trim(setting('adsense_client'));
+    if ($c !== '' && !str_starts_with($c, 'ca-')) $c = 'ca-' . $c;
+    return setting('adsense_enabled') === '1' && preg_match('/^ca-pub-\d{10,20}$/', $c) ? $c : '';
+}
+
+/** Ads are hidden for the logged-in admin so you never click (or inflate) your own ads. */
+function ads_active(): bool { return adsense_client() !== '' && empty($_SESSION['admin']); }
+
+/** The <script> that loads AdSense (also runs Auto Ads when switched on in your AdSense account). */
+function adsense_head(): string
+{
+    $c = adsense_client();
+    if ($c === '') return '';
+    $out = '<meta name="google-adsense-account" content="' . e($c) . '">' . "\n";
+    if (ads_active()) $out .= '  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' . e($c) . '" crossorigin="anonymous"></script>' . "\n";
+    return $out;
+}
+
+/** A manual ad unit for one placement ('' when that placement has no slot ID). */
+function ad(string $placement, string $class = ''): string
+{
+    if (!ads_active() || !isset(AD_PLACEMENTS[$placement])) return '';
+    $slot = preg_replace('/\D/', '', setting('ad_slot_' . $placement));
+    if ($slot === '') return '';
+    $inArticle = $placement === 'article' && setting('ad_article_fluid') === '1';
+    $fmt = $inArticle ? ' style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid"'
+                      : ' style="display:block" data-ad-format="auto" data-full-width-responsive="true"';
+    return '<div class="ad-box ' . e($class) . '" aria-label="Advertisement"><span class="ad-label">Advertisement</span>'
+        . '<ins class="adsbygoogle"' . $fmt . ' data-ad-client="' . e(adsense_client()) . '" data-ad-slot="' . $slot . '"></ins>'
+        . '<script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>';
+}
+
+/** Puts the 'article' ad after the first paragraph of admin-written HTML. */
+function insert_article_ad(string $html): string
+{
+    $ad = ad('article', 'in-content');
+    if ($ad === '') return $html;
+    $pos = stripos($html, '</p>');
+    return $pos === false ? $ad . $html : substr($html, 0, $pos + 4) . $ad . substr($html, $pos + 4);
+}
+
+/** Contents of /ads.txt */
+function ads_txt(): string
+{
+    $out = '';
+    if (preg_match('/(pub-\d{10,20})/', setting('adsense_client'), $m)) $out .= "google.com, {$m[1]}, DIRECT, f08c47fec0942fa0\n";
+    $extra = trim(setting('ads_txt_extra'));
+    return $out . ($extra !== '' ? $extra . "\n" : '');
+}

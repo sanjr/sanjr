@@ -104,3 +104,6 @@ td.thumb img, td.thumb span { width: 42px; height: 42px; display: grid; place-it
 .picks .check { margin-bottom: 6px; font-size: 13px; }
 code { background: #eef2ff; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
 .pager-a { display: flex; flex-wrap: wrap; gap: 6px; }
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0 18px; }
+.slots .hint { display: block; margin: 2px 0 0; }
+.adstxt { background: #0f172a; color: #e2e8f0; padding: 10px 12px; border-radius: 9px; font-size: 12.5px; white-space: pre-wrap; overflow-wrap: anywhere; }

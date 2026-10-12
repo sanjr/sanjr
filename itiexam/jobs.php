@@ -221,7 +221,7 @@ foreach (['type' => $seg ? array_diff($f['type'], [$seg]) : $f['type'], 'qual' =
 <?php endif; ?>
 <?php if ($jobs): ?>
       <div class="job-list">
-<?php foreach ($jobs as $j) echo '        ', job_card($j), "\n"; ?>
+<?php foreach ($jobs as $i => $j) { echo '        ', job_card($j), "\n"; if ($i % 4 === 3 && $i < count($jobs) - 1) echo ad('jobs_list'); } ?>
       </div>
 <?php else: ?>
       <div class="empty"><h3>No jobs match these filters</h3><p>Try removing a filter, or <a href="/jobs/">see all open jobs</a>.</p></div>
@@ -239,6 +239,7 @@ foreach (['type' => $seg ? array_diff($f['type'], [$seg]) : $f['type'], 'qual' =
 
     <!-- ===== Right sidebar ===== -->
     <aside class="jside">
+      <?= ad('sidebar', 'side') ?>
       <section class="card">
         <h2 class="side-h"><span class="h-ic"><?= icon('grid') ?></span>Job Categories</h2>
         <ul class="clist">

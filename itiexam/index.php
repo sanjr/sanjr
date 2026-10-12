@@ -155,6 +155,8 @@ require __DIR__ . '/includes/header.php';
       </div>
     </section>
 
+    <div class="container"><?= ad('home_top', 'wide') ?></div>
+
     <!-- ===== Popular Trades ===== -->
     <section class="section" aria-labelledby="trades-h">
       <div class="container">
@@ -233,6 +235,8 @@ require __DIR__ . '/includes/header.php';
         </article>
       </div>
     </section>
+
+    <div class="container"><?= ad('home_middle', 'wide') ?></div>
 
     <!-- ===== Jobs + Articles ===== -->
     <section class="section pt0">

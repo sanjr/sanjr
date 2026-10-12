@@ -7,6 +7,7 @@ if ($path !== '/' && is_file(__DIR__ . $path)) {
     return false;
 }
 if ($path === '/sitemap.xml') { require __DIR__ . '/sitemap.php'; return true; }
+if ($path === '/ads.txt') { require __DIR__ . '/ads.php'; return true; }
 if (preg_match('~^/admin(/.*)?$~', $path, $m)) {
     $f = __DIR__ . '/admin' . (($m[1] ?? '') === '' || $m[1] === '/' ? '/index.php' : $m[1]);
     if (is_file($f)) { chdir(dirname($f)); require $f; return true; }

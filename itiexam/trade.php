@@ -171,6 +171,7 @@ require __DIR__ . '/includes/header.php';
         <div class="card empty"><h2>Content coming soon</h2><p>Mock tests, notes and papers for ITI <?= e($name) ?> will be added here shortly.</p></div>
 <?php endif; ?>
       </section>
+      <?= ad('trade_top') ?>
 
 <?php
 /* Rows of section cards; empty sections drop out and the row reflows. */
@@ -179,9 +180,10 @@ $rowsDef = [
     [['study_material', 'Study Material', 'rows', 'pdf'], ['previous_papers', 'Previous Year Papers', 'year', 'doc'], ['important_questions', 'Important Questions', 'rows', 'help']],
     [['practical', 'Practical Exercises', 'rows', 'flask'], ['videos', 'Video Tutorials', 'rows', 'play'], ['resources', 'Software &amp; Resources', 'rows', 'link']],
 ];
-foreach ($rowsDef as $row) {
+foreach ($rowsDef as $r => $row) {
     $cards = array_filter(array_map(fn($c) => section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3]), $row));
     if ($cards) echo '      <div class="trow n' . count($cards) . '">' . implode('', $cards) . "</div>\n";
+    if ($r === 0) echo ad('trade_middle');
 }
 ?>
 
