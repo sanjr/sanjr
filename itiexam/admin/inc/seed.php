@@ -330,3 +330,19 @@ function seed_home_lists(): void
     ];
     foreach ($lists as $loc => $rows) foreach ($rows as $i => [$l, $u, $sub, $ic]) $ins->execute([$loc, $l, $u, $sub, $ic, $i]);
 }
+
+
+/** Everything except sample jobs: menus, homepage lists, trades (with COPA sample content), starter pages and default settings. */
+function seed_starter(): void
+{
+    $pdo = db();
+    if ((int)$pdo->query('SELECT COUNT(*) FROM menu_items')->fetchColumn() === 0) seed_menus();
+    seed_home_lists();
+    if ((int)$pdo->query('SELECT COUNT(*) FROM trades')->fetchColumn() === 0) seed_trades();
+    seed_pages();
+    $defaults = [
+        'site_description' => 'Free ITI mock tests, NCVT ITI previous year question papers, Employability Skills MCQ, study material PDF, ITI jobs, apprenticeship (NAPS/NATS), admit card & result updates for COPA, Electrician, Fitter, Turner, Welder & all ITI trades.',
+        'contact_email' => 'contact@itiexam.com', 'whatsapp_float' => '1',
+    ];
+    foreach ($defaults as $k => $v) if (setting($k) === '') setting_set($k, $v);
+}

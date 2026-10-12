@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '6';
+const SCHEMA_VERSION = '7';
 
 function db(): PDO
 {
@@ -98,11 +98,14 @@ function db_migrate(PDO $pdo): void
         id $id, path VARCHAR(300) NOT NULL UNIQUE, hits INT NOT NULL DEFAULT 1, referrer VARCHAR(300) NOT NULL DEFAULT '',
         last_seen VARCHAR(20) NOT NULL)$engine");
 
-    // One-time fixes for sites installed with an older version (missing starter pages, old menu links)
-    if ((int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() > 0) {
-        require_once __DIR__ . '/../admin/inc/seed.php';
-        upgrade_content();
+    require_once __DIR__ . '/../admin/inc/seed.php';
+    // A brand-new (or emptied) website gets the starter menus, trades, pages and settings right away,
+    // even before the admin account is created. Sample jobs are only added by the admin setup.
+    if ((int)$pdo->query('SELECT COUNT(*) FROM trades')->fetchColumn() === 0 && (int)$pdo->query('SELECT COUNT(*) FROM menu_items')->fetchColumn() === 0) {
+        seed_starter();
     }
+    // One-time fixes for sites installed with an older version (missing starter pages, old menu links)
+    if ((int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() > 0) upgrade_content();
 
     $pdo->prepare('DELETE FROM settings WHERE skey = ?')->execute(['schema_version']);
     $pdo->prepare('INSERT INTO settings (skey, svalue) VALUES (?, ?)')->execute(['schema_version', SCHEMA_VERSION]);

@@ -2,6 +2,13 @@
 require __DIR__ . '/inc/boot.php';
 require __DIR__ . '/inc/layout.php';
 require_login();
+require_once __DIR__ . '/inc/seed.php';
+if (is_post() && ($_POST['action'] ?? '') === 'starter') {
+    csrf_check();
+    seed_starter();
+    flash('Starter content added: menus, trades, pages and homepage lists. Edit or delete anything you do not need.');
+    redirect('/admin/');
+}
 $pdo = db();
 $c = fn($sql) => (int)$pdo->query($sql)->fetchColumn();
 $stats = [
@@ -13,8 +20,15 @@ $stats = [
 $recent = $pdo->query('SELECT id, name, slug, updated_at FROM trades ORDER BY updated_at DESC LIMIT 5')->fetchAll();
 $sampleIds = array_filter(array_map('intval', explode(',', setting('sample_job_ids'))));
 $samples = $sampleIds ? (int)$pdo->query('SELECT COUNT(*) FROM jobs WHERE updated_at = posted_at AND id IN (' . implode(',', $sampleIds) . ')')->fetchColumn() : 0;
+$empty = !$c('SELECT COUNT(*) FROM trades') || !$c('SELECT COUNT(*) FROM menu_items') || !$c('SELECT COUNT(*) FROM pages');
 admin_header('Dashboard', 'dashboard');
 ?>
+<?php if ($empty): ?>
+    <form method="post" class="flash err starter"><?= csrf_field() ?><input type="hidden" name="action" value="starter">
+      <span><b>Your website is missing its starter content</b> (menus, trades or pages). Add the ready-made menus, trades, pages and homepage lists, then edit them as you like.</span>
+      <button class="btn">Restore starter content</button>
+    </form>
+<?php endif; ?>
 <?php if ($samples): ?>
     <div class="flash err"><b><?= $samples ?> sample job<?= $samples > 1 ? 's are' : ' is' ?> still on the website.</b> They were added during setup to show the design. <a href="/admin/jobs.php">Edit them with real details or delete them</a> before you launch.</div>
 <?php endif; ?>

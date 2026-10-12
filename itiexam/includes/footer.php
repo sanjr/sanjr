@@ -17,15 +17,19 @@
 <?php endif; endforeach; ?>
         </div>
       </div>
+<?php if ($fq = menu('footer_quick')): ?>
       <nav aria-label="Quick links"><h3>Quick Links</h3><ul>
-<?php foreach (menu('footer_quick') as $m): ?>        <li><a href="<?= e($m['url']) ?>"<?= link_attrs($m['url']) ?>><?= e($m['label']) ?></a></li>
+<?php foreach ($fq as $m): ?>        <li><a href="<?= e($m['url']) ?>"<?= link_attrs($m['url']) ?>><?= e($m['label']) ?></a></li>
 <?php endforeach; ?>      </ul></nav>
+<?php endif; if ($ft = array_slice(trades(), 0, 10)): ?>
       <nav aria-label="Popular trades"><h3>Popular Trades</h3><ul>
-<?php foreach (array_slice(trades(), 0, 10) as $t): ?>        <li><a href="<?= e(trade_url($t)) ?>"><?= e($t['name']) ?></a></li>
+<?php foreach ($ft as $t): ?>        <li><a href="<?= e(trade_url($t)) ?>"><?= e($t['name']) ?></a></li>
 <?php endforeach; ?>      </ul></nav>
+<?php endif; if ($fr = menu('footer_resources')): ?>
       <nav aria-label="Useful resources"><h3>Useful Resources</h3><ul>
-<?php foreach (menu('footer_resources') as $m): ?>        <li><a href="<?= e($m['url']) ?>"<?= link_attrs($m['url']) ?>><?= e($m['label']) ?></a></li>
+<?php foreach ($fr as $m): ?>        <li><a href="<?= e($m['url']) ?>"<?= link_attrs($m['url']) ?>><?= e($m['label']) ?></a></li>
 <?php endforeach; ?>      </ul></nav>
+<?php endif; ?>
       <div class="foot-quote" aria-hidden="true">“Skilled ITI Students<br>Build a Stronger India”</div>
     </div>
     <div class="container foot-bottom">

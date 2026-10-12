@@ -184,11 +184,13 @@ require __DIR__ . '/includes/header.php';
 <?php endif; ?>
         </div>
 
+<?php if ($quick = menu('home_quick')): ?>
         <aside class="quick-links" aria-label="Quick links">
-<?php foreach (menu('home_quick') as $i => $m): ?>
+<?php foreach ($quick as $i => $m): ?>
           <a href="<?= e($m['url']) ?>"<?= link_attrs($m['url']) ?>><span class="qi <?= ['c-blue', 'c-green', 'c-orange', 'c-purple', 'c-red', 'c-teal', 'c-navy'][$i % 7] ?>"><?= icon($m['icon'] ?: 'doc') ?></span><span><b><?= e($m['label']) ?></b><?php if ($m['subtitle'] !== ''): ?><small><?= e($m['subtitle']) ?></small><?php endif; ?></span></a>
 <?php endforeach; ?>
         </aside>
+<?php endif; ?>
       </div>
     </section>
 
