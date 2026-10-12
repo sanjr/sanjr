@@ -466,3 +466,43 @@ function cbt_list(int $limit = 20, string $trade = ''): string
     }
     return $out ? '<ul class="rows sc">' . $out . '</ul>' : '<p>New online tests are coming soon.</p>';
 }
+
+/* =========================================================
+   Right sidebar for pages and articles (fills the space next to the content)
+   ========================================================= */
+function page_sidebar(array $more = [], string $moreTitle = '', string $moreUrl = '', string $skipCategory = '', bool $showWa = true): string
+{
+    ob_start();
+    echo '<aside class="post-side">', ad('sidebar', 'side');
+    if ($more) {
+        echo '<section class="card"><h2 class="side-h"><span class="h-ic">', icon('book'), '</span>More ', e($moreTitle), '</h2><ul class="rows arts">';
+        foreach ($more as $i => $m) echo post_row($m, $i);
+        echo '</ul><a class="view-all" href="', e($moreUrl), '">View all ', icon('arrow'), '</a></section>';
+    }
+    // Popular trades
+    $tr = array_slice(trades(true), 0, 8);
+    if ($tr) {
+        echo '<section class="card"><h2 class="side-h"><span class="h-ic">', icon('tool'), '</span>Popular ITI Trades</h2><div class="side-trades">';
+        foreach ($tr as $t) echo '<a href="', e(trade_url($t)), '" style="--tbg:', e($t['card_color']), '"><span aria-hidden="true">', e($t['emoji'] ?: '🛠️'), '</span>', e($t['name']), '</a>';
+        echo '</div><a class="view-all" href="/trades/">All trades ', icon('arrow'), '</a></section>';
+    }
+    // Latest jobs
+    $jobs = latest_jobs(4);
+    if ($jobs) {
+        echo '<section class="card"><h2 class="side-h"><span class="h-ic">', icon('brief'), '</span>Latest ITI Jobs</h2><ul class="rows">';
+        foreach ($jobs as $j) {
+            echo '<li><a href="', e(job_url($j)), '">', employer_logo($j, 'jl sm'), '<span class="rt"><b>', e(company_name($j)), '</b><small>', e($j['title']),
+                $j['last_date'] ? ' · ' . e(nice_date($j['last_date'])) : '', '</small></span>', icon('chev-r', 'ic chev'), '</a></li>';
+        }
+        echo '</ul><a class="view-all" href="/jobs/">All jobs ', icon('arrow'), '</a></section>';
+    }
+    // Latest articles (when this page is not already listing them)
+    if ($skipCategory !== 'article' && ($arts = latest_posts('article', 3))) {
+        echo '<section class="card"><h2 class="side-h"><span class="h-ic">', icon('doc'), '</span>Recent Articles</h2><ul class="rows arts">';
+        foreach ($arts as $i => $a) echo post_row($a, $i);
+        echo '</ul></section>';
+    }
+    if ($showWa) echo whatsapp_cta('side');
+    echo '</aside>';
+    return ob_get_clean();
+}

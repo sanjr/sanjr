@@ -37,7 +37,7 @@ if ($isPost) {
     $m->execute([$p['category'], $p['id']]);
     $more = $m->fetchAll();
 }
-$noWaCta = str_contains($p['content'], '[whatsapp]');
+$noWaCta = true;   // the sidebar already has the WhatsApp box
 require __DIR__ . '/includes/header.php';
 ?>
 <main id="main">
@@ -51,23 +51,14 @@ require __DIR__ . '/includes/header.php';
     </div>
   </section>
   <section class="section">
-    <div class="container<?= $more ? ' post-layout' : '' ?>">
+    <div class="container post-layout">
       <article class="card prose page-body">
 <?php if ($p['image']): ?>        <img class="cover" src="<?= e(upload_url($p['image'])) ?>" alt="<?= e($p['title']) ?>" fetchpriority="high">
 <?php endif; ?>
         <?= insert_article_ad(render_shortcodes($p['content'])) /* trusted HTML written by the admin */ ?>
         <p class="updated">Last updated: <time datetime="<?= e(date('Y-m-d', strtotime($p['updated_at']))) ?>"><?= e(nice_date($p['updated_at'])) ?></time></p>
       </article>
-<?php if ($more): ?>
-      <aside class="post-side">
-        <?= ad('sidebar', 'side') ?>
-        <div class="card">
-        <h2 class="side-h"><span class="h-ic"><?= icon('book') ?></span>More <?= e($catName) ?></h2>
-        <ul class="rows arts"><?php foreach ($more as $i => $m) echo post_row($m, $i); ?></ul>
-        <a class="view-all" href="<?= e($catUrl) ?>">View all <?= icon('arrow') ?></a>
-        </div>
-      </aside>
-<?php endif; ?>
+      <?= page_sidebar($more, $catName, $catUrl, $p['category'], !str_contains($p['content'], '[whatsapp]')) ?>
     </div>
   </section>
 </main>

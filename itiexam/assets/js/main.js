@@ -3,7 +3,7 @@
   "use strict";
   var nav = document.getElementById("main-nav");
   var toggle = document.querySelector(".menu-toggle");
-  var desktop = window.matchMedia("(min-width: 1280px)");
+  var desktop = window.matchMedia("(min-width: 1024px)");
 
   var overlay = document.querySelector(".nav-overlay");
   function setMenu(open) {
