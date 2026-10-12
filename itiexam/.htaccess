@@ -6,17 +6,17 @@ ErrorDocument 404 /404.php
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
-# Force HTTPS + www (remove these 4 lines if your domain has no SSL yet)
-RewriteCond %{HTTPS} off [OR]
-RewriteCond %{HTTP_HOST} !^www\. [NC]
-RewriteCond %{HTTP_HOST} ^(?:www\.)?(.+)$ [NC]
-RewriteRule ^ https://www.%1%{REQUEST_URI} [L,R=301]
+# Force HTTPS, keeping the same domain/subdomain (remove these 3 lines if SSL is not active yet)
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Block private folders
 RewriteRule ^(data|includes)(/|$) - [F,L]
 
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 RewriteRule ^ads\.txt$ ads.php [L]
+RewriteRule ^robots\.txt$ robots.php [L]
 RewriteRule ^trades/?$ trades.php [L]
 RewriteRule ^trades/([a-z0-9-]+)/?$ trade.php?slug=$1 [L,QSA]
 RewriteRule ^jobs/?$ jobs.php [L,QSA]

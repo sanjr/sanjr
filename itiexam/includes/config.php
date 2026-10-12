@@ -4,7 +4,16 @@
    and fill in the MySQL details from your hosting panel. */
 
 define('SITE_NAME', 'ITIExam.com');
-define('SITE_URL', 'https://www.itiexam.com');   // no trailing slash
+
+// Your website address, no trailing slash, e.g. 'https://blog.copamcq.com'.
+// Leave empty to use the address the site is opened on.
+$siteUrl = '';
+if ($siteUrl === '') {
+    $https = ($_SERVER['HTTPS'] ?? '') === 'on' || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+    $host = preg_replace('/[^A-Za-z0-9.:-]/', '', $_SERVER['HTTP_HOST'] ?? 'localhost');
+    $siteUrl = ($https || !preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', $host) ? 'https' : 'http') . '://' . $host;
+}
+define('SITE_URL', rtrim($siteUrl, '/'));
 
 define('DB_DRIVER', 'sqlite');                    // 'sqlite' or 'mysql'
 define('DB_SQLITE_PATH', __DIR__ . '/../data/itiexam.sqlite');

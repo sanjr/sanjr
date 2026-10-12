@@ -46,14 +46,14 @@ New trades and pages are added to `/sitemap.xml` automatically. Each trade page 
 ## Upload to hosting
 1. Upload everything inside the `itiexam/` folder to `public_html` (or your domain's root folder).
 2. Make sure the `data/` and `uploads/` folders are writable (permission 755 or 775).
-3. Open `includes/config.php` and set `SITE_URL` to your domain (e.g. `https://www.itiexam.com`).
+3. Optional: in `includes/config.php` set `$siteUrl` to your exact address (e.g. `https://blog.copamcq.com`). If left empty, the site uses the address it is opened on. Subdomains work; `www.` is never added.
 4. Open `https://your-domain/admin/`. The first time, it asks you to create your admin username and password. After that, setup is locked.
 5. Log in and start adding trades.
 
 To use MySQL instead of SQLite: create a database in your hosting panel, then in `includes/config.php`
 set `DB_DRIVER` to `'mysql'` and fill in `DB_HOST`, `DB_NAME`, `DB_USER` and `DB_PASS`. The tables are created automatically.
 
-If your domain doesn't have SSL yet, remove the 4 “Force HTTPS” lines from `.htaccess`.
+If your domain or subdomain doesn't have SSL yet, remove the 3 “Force HTTPS” lines from `.htaccess`.
 
 ## Try it on your computer
 ```bash
