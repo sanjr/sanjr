@@ -81,7 +81,7 @@ require __DIR__ . '/includes/header.php';
       </div>
       <div class="cbt-frame" id="cbt-frame">
         <button type="button" class="cbt-close" id="cbt-close" aria-label="Exit full screen">✕</button>
-        <iframe src="<?= e(cbt_play_url($test)) ?>" title="<?= e($test['title']) ?>" sandbox="<?= e(cbt_sandbox()) ?>" allow="fullscreen" loading="eager"></iframe>
+        <iframe src="<?= e(cbt_play_url($test)) ?>" title="<?= e($test['title']) ?>" sandbox="<?= e(cbt_sandbox()) ?>" allow="fullscreen; geolocation" loading="eager"></iframe>
       </div>
 <?php if ($test['description']): ?>      <p class="cbt-desc"><?= e($test['description']) ?></p>
 <?php endif; ?>

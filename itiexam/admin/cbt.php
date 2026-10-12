@@ -155,7 +155,7 @@ admin_header('CBT Tests', 'cbt');
         <form method="post" class="box form">
           <h2>Safety</h2>
           <?= csrf_field() ?><input type="hidden" name="action" value="storage">
-          <p class="muted">Tests run in a protected “sandbox”: their JavaScript works, but it cannot reach your website, your login or the admin panel.</p>
+          <p class="muted">Tests run in a protected “sandbox”: their JavaScript works, but it cannot reach your website, your login or the admin panel. Tests may ask the student for their location (GPS); the browser always asks the student first.</p>
           <label class="check"><input type="checkbox" name="cbt_allow_storage"<?= setting('cbt_allow_storage') === '1' ? ' checked' : '' ?>> My tests need to save progress or scores in the browser (localStorage)</label>
           <p class="muted">Tick this only if your tests stop working without it, and only upload tests you made yourself or trust.</p>
           <div class="bar"><span></span><button class="btn alt">Save</button></div>
