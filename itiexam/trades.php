@@ -21,7 +21,7 @@ require __DIR__ . '/includes/header.php';
   </section>
   <section class="section">
     <div class="container">
-      <div class="trades">
+      <div class="trades big">
 <?php foreach ($all as $t): ?>
         <a class="trade" href="<?= e(trade_url($t)) ?>" style="--tbg:<?= e($t['card_color']) ?>"><?php if ($t['image']): ?><img class="timg" src="<?= e(upload_url($t['image'])) ?>" alt="<?= e($t['name']) ?> ITI trade" width="64" height="64" loading="lazy"><?php else: ?><span class="emo" aria-hidden="true"><?= e($t['emoji'] ?: '🛠️') ?></span><?php endif; ?><h2><?= e($t['name']) ?></h2><p><?= e($t['short_desc']) ?></p><span class="go"><?= icon('arrow') ?></span></a>
 <?php endforeach; ?>

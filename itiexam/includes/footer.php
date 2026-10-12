@@ -33,7 +33,7 @@
       <div class="foot-quote" aria-hidden="true">“Skilled ITI Students<br>Build a Stronger India”</div>
     </div>
     <div class="container foot-bottom">
-      <p>© <?= date('Y') ?> <?= e(SITE_NAME) ?>. All Rights Reserved.<?php if (($credit = setting('footer_credit', 'Created & Developed by – Sanjay L. Rathod')) !== ''): ?><br><span class="foot-credit"><?= preg_replace('/(by\s*[–-]?\s*)(.+)$/u', '$1<b>$2</b>', e($credit)) ?></span><?php endif; ?></p>
+      <p>© <?= date('Y') ?> <?= e(SITE_NAME) ?>. All Rights Reserved.<?php if (($credit = setting('footer_credit', 'Created & Developed by – Sanjay L. Rathod')) !== ''): ?><span class="sep" aria-hidden="true"> | </span><span class="foot-credit"><?= preg_replace('/(by\s*[–-]?\s*)(.+)$/u', '$1<b>$2</b>', e($credit)) ?></span><?php endif; ?></p>
       <ul>
 <?php foreach (menu('footer_legal') as $m): ?>        <li><a href="<?= e($m['url']) ?>"<?= link_attrs($m['url']) ?>><?= e($m['label']) ?></a></li>
 <?php endforeach; ?>      </ul>

@@ -1091,3 +1091,24 @@ a:hover .btn-sm, .btn-sm:hover { background: linear-gradient(135deg, var(--blue-
 .foot-credit { color: #cbd5e1; }
 .foot-credit b { color: #fff; font-weight: 600; }
 @media (min-width: 768px) { .foot-bottom p { text-align: left; line-height: 1.7; } }
+
+/* All Trades page: 4 bigger cards per row */
+.trades.big { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.trades.big .trade { padding: 26px 16px 62px; min-height: 230px; }
+.trades.big .emo { font-size: 70px; margin-bottom: 14px; }
+.trades.big .timg { width: 80px; height: 80px; margin-bottom: 14px; }
+.trades.big h2 { font-size: 20px; }
+.trades.big p { font-size: 14px; margin-top: 6px; }
+.trades.big .go { width: 34px; height: 34px; bottom: 18px; }
+@media (max-width: 899px) { .trades.big { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 599px) {
+  .trades.big { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .trades.big .trade { min-height: 190px; padding: 18px 10px 54px; }
+  .trades.big .emo { font-size: 52px; }
+  .trades.big h2 { font-size: 16px; }
+  .trades.big p { display: block; font-size: 12px; }
+}
+/* footer: copyright and credit on one line */
+.foot-bottom p { line-height: 1.6; }
+.foot-bottom .sep { color: rgba(255, 255, 255, .35); margin: 0 6px; }
+@media (max-width: 767px) { .foot-bottom .sep { display: none; } .foot-credit { display: block; } }
