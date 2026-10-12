@@ -1,0 +1,9 @@
+{
+  "name": "ITIExam.com – ITI Exam Preparation",
+  "short_name": "ITIExam",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b2a6f",
+  "icons": [{ "src": "/assets/img/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
