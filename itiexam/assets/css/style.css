@@ -1362,3 +1362,57 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @media (prefers-reduced-motion: reduce) {
   .card, .rows a, .st, .tile, .trades .trade, .jcard, .job { transition: none; }
 }
+
+/* ===== All Trades page: cards in the Study Material style ===== */
+.tgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.tcard {
+  position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 28px 18px 22px; border-radius: 22px; background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow); color: var(--ink);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
+}
+.tcard::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 92px; z-index: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 9%, #fff), transparent);
+}
+.tcard::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--c);
+  transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease);
+}
+.tcard > * { position: relative; z-index: 1; }
+.tci {
+  display: grid; place-items: center; width: 76px; height: 76px; border-radius: 22px; font-size: 40px; line-height: 1;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--c) 78%, #fff), var(--c));
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--c) 34%, transparent), inset 0 1px 0 rgba(255, 255, 255, .35);
+  transition: transform .35s var(--ease);
+}
+.tci > span { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .25)); }
+.tci img { width: 46px; height: 46px; object-fit: contain; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .2)); }
+.tcard h2 { margin-top: 18px; font-size: 18px; font-weight: 700; line-height: 1.25; }
+.tcard p { margin-top: 6px; font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+.tc-cta {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding: 8px 14px; border-radius: 999px;
+  font: 600 13px/1 var(--font-head); color: var(--c); background: color-mix(in srgb, var(--c) 10%, #fff);
+  transition: background .25s, color .25s;
+}
+.tcard p { margin-bottom: 16px; }
+.tc-cta .ic { width: 15px; height: 15px; transition: transform .25s var(--ease); }
+.tcard:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--c) 35%, var(--line)); box-shadow: 0 18px 36px color-mix(in srgb, var(--c) 18%, transparent); }
+.tcard:hover::after { transform: scaleX(1); }
+.tcard:hover .tci { transform: translateY(-3px) scale(1.06) rotate(-3deg); }
+.tcard:hover .tc-cta { background: var(--c); color: #fff; }
+.tcard:hover .tc-cta .ic { transform: translateX(3px); }
+.tcard:focus-visible { box-shadow: var(--ring); }
+.tgrid-ad { grid-column: 1 / -1; }
+@media (max-width: 1023px) { .tgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
+@media (max-width: 640px) {
+  .tgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .tcard { padding: 20px 10px 16px; border-radius: 18px; }
+  .tci { width: 60px; height: 60px; border-radius: 18px; font-size: 31px; }
+  .tci img { width: 36px; height: 36px; }
+  .tcard h2 { margin-top: 13px; font-size: 15.5px; }
+  .tcard p { font-size: 12px; }
+  .tc-cta { padding: 7px 11px; font-size: 11.5px; }
+  .tcard p { margin-bottom: 12px; }
+}
+@media (hover: none) { .tcard:active { transform: scale(.97); transition-duration: .08s; } }
+@media (prefers-reduced-motion: reduce) { .tcard, .tci, .tcard::after { transition: none; } }

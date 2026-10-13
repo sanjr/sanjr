@@ -296,6 +296,7 @@ const AD_PLACEMENTS = [
     'trade_middle'=> ['Trade page – middle', 'After Mock Tests & Syllabus on every trade page'],
     'jobs_list'   => ['Jobs list – between jobs', 'After every 4th job on /jobs/ and category pages'],
     'job_detail'  => ['Job details – below highlights', 'Under the Job Highlights box on each job page'],
+    'trades_list' => ['All Trades page – between cards', 'After the first 8 trade cards on /trades/'],
     'article'     => ['Articles & pages – inside content', 'After the first paragraph of pages and articles'],
     'sidebar'     => ['Sidebar', 'Right sidebar on jobs, job details and articles'],
     'footer_top'  => ['All pages – above footer', 'At the bottom of every page'],

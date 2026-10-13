@@ -21,10 +21,18 @@ require __DIR__ . '/includes/header.php';
   </section>
   <section class="section">
     <div class="container">
-      <div class="trades big">
-<?php foreach ($all as $t): ?>
-        <a class="trade" href="<?= e(trade_url($t)) ?>" style="--tbg:<?= e($t['card_color']) ?>"><?php if ($t['image']): ?><img class="timg" src="<?= e(upload_url($t['image'])) ?>" alt="<?= e($t['name']) ?> ITI trade" width="64" height="64" loading="lazy"><?php else: ?><span class="emo" aria-hidden="true"><?= e($t['emoji'] ?: '🛠️') ?></span><?php endif; ?><h2><?= e($t['name']) ?></h2><p><?= e($t['short_desc']) ?></p><span class="go"><?= icon('arrow') ?></span></a>
-<?php endforeach; ?>
+      <div class="tgrid">
+<?php $tc = ['c-blue', 'c-orange', 'c-green', 'c-purple', 'c-red', 'c-cyan', 'c-pink', 'c-teal'];
+foreach ($all as $i => $t): ?>
+        <a class="tcard <?= $tc[$i % count($tc)] ?>" href="<?= e(trade_url($t)) ?>">
+          <span class="tci"><?php if ($t['image']): ?><img src="<?= e(upload_url($t['image'])) ?>" alt="<?= e($t['name']) ?> ITI trade" width="44" height="44" loading="lazy"><?php else: ?><span aria-hidden="true"><?= e($t['emoji'] ?: '🛠️') ?></span><?php endif; ?></span>
+          <h2><?= e($t['name']) ?></h2>
+          <p><?= e($t['short_desc']) ?></p>
+          <span class="tc-cta">Start Preparing <?= icon('arrow') ?></span>
+        </a>
+<?php if ($i === 7 && count($all) > 8 && ($adHtml = ad('trades_list', 'wide'))): ?>
+        <div class="tgrid-ad"><?= $adHtml ?></div>
+<?php endif; endforeach; ?>
       </div>
 <?php if (!$all): ?><p>No trades yet.</p><?php endif; ?>
     </div>
