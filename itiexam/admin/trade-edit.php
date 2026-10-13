@@ -52,6 +52,15 @@ if (is_post()) {
                 $new = db()->prepare('SELECT * FROM trades WHERE id = ?'); $new->execute([$id]);
                 seed_trade_skeleton($new->fetch());
             }
+            if (isset($_POST['in_menu'])) {
+                // Add the trade under "Trades" in the header menu, before "All Trades"/the end of the list
+                $parent = (int)db()->query("SELECT id FROM menu_items WHERE location = 'header' AND parent_id = 0 AND url = '/trades/' ORDER BY id LIMIT 1")->fetchColumn();
+                if ($parent) {
+                    $next = (int)db()->query("SELECT COALESCE(MAX(sort_order), 0) + 1 FROM menu_items WHERE parent_id = $parent")->fetchColumn();
+                    db()->prepare("INSERT INTO menu_items (location, parent_id, label, url, sort_order, subtitle, icon) VALUES ('header', ?, ?, ?, ?, '', '')")
+                        ->execute([$parent, $t['name'], '/trades/' . $t['slug'] . '/', $next]);
+                }
+            }
             flash(isset($_POST['starter']) ? 'Trade added with the standard sections (quick links, tiles, notes, papers, practical, FAQ). Now add its syllabus modules and mock tests.' : 'Trade added. Now add its content (mock tests, syllabus, notes…).');
             redirect('/admin/trade-content.php?id=' . $id);
         }
@@ -93,6 +102,7 @@ admin_header($id ? 'Edit Trade: ' . $t['name'] : 'Add New Trade', 'trades');
           </div>
           <label class="check"><input type="checkbox" name="is_popular"<?= $t['is_popular'] ? ' checked' : '' ?>> Show in “Popular ITI Trades” on the homepage</label>
 <?php if (!$id): ?>
+          <label class="check"><input type="checkbox" name="in_menu" checked> Add to the “Trades” drop-down in the top menu</label>
           <label class="check"><input type="checkbox" name="starter" checked> Add the standard trade sections (same layout as COPA: quick links, tiles, notes, papers, practical, FAQ)</label>
 <?php endif; ?>
         </section>

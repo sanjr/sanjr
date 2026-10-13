@@ -5,9 +5,11 @@ require_login();
 
 if (is_post() && ($_POST['action'] ?? '') === 'delete') {
     csrf_check();
-    $st = db()->prepare('SELECT image FROM trades WHERE id = ?');
+    $st = db()->prepare('SELECT image, slug FROM trades WHERE id = ?');
     $st->execute([(int)$_POST['id']]);
-    if ($img = $st->fetchColumn()) delete_upload($img);
+    $gone = $st->fetch() ?: ['image' => '', 'slug' => ''];
+    if ($gone['image']) delete_upload($gone['image']);
+    if ($gone['slug'] !== '') db()->prepare('DELETE FROM menu_items WHERE url = ? AND parent_id <> 0')->execute(['/trades/' . $gone['slug'] . '/']);
     db()->prepare('DELETE FROM trade_items WHERE trade_id = ?')->execute([(int)$_POST['id']]);
     db()->prepare('DELETE FROM trades WHERE id = ?')->execute([(int)$_POST['id']]);
     flash('Trade deleted.');
