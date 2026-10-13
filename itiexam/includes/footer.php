@@ -32,6 +32,19 @@
 <?php endif; ?>
       <div class="foot-quote" aria-hidden="true">“Skilled ITI Students<br>Build a Stronger India”</div>
     </div>
+    <div class="container foot-search">
+      <h2>Popular Searches</h2>
+      <p>
+<?php
+$yr = date('Y');
+$ps = [['ITI Mock Test ' . $yr, '/mock-test/'], ['ITI CBT Online Test', '/mock-test/'], ['ITI Question Paper PDF', '/previous-papers/'], ['NCVT ITI Exam Date ' . $yr, '/exam/ncvt-iti-exam-date/'],
+    ['ITI Admit Card ' . $yr, '/exam/iti-admit-card/'], ['ITI Result ' . $yr, '/exam/maharashtra-iti-result/'], ['ITI Syllabus', '/syllabus/'], ['Employability Skills MCQ', '/employability-skills/'],
+    ['ITI Study Material PDF', '/study-material/'], ['NCVT Exam Pattern', '/blog/ncvt-iti-exam-pattern-syllabus/'], ['ITI Apprenticeship ' . $yr, '/apprenticeship/'], ['ITI Jobs ' . $yr, '/jobs/']];
+foreach (array_slice(trades(true), 0, 8) as $pt) { $ps[] = [$pt['name'] . ' Mock Test', trade_url($pt)]; }
+foreach ($ps as [$l, $u]): ?>        <a href="<?= e($u) ?>"><?= e($l) ?></a>
+<?php endforeach; ?>
+      </p>
+    </div>
     <div class="container foot-bottom">
       <p>© <?= date('Y') ?> <?= e(SITE_NAME) ?>. All Rights Reserved.<?php if (($credit = setting('footer_credit', 'Created & Developed by – Sanjay L. Rathod')) !== ''): ?><span class="sep" aria-hidden="true"> | </span><span class="foot-credit"><?= preg_replace('/(by\s*[–-]?\s*)(.+)$/u', '$1<b>$2</b>', e($credit)) ?></span><?php endif; ?></p>
       <ul>

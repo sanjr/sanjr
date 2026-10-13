@@ -55,8 +55,20 @@ function section_card(string $key, string $heading, array $list, string $style, 
 /* ---------- SEO ---------- */
 $yr = date('Y');
 $title = $t['meta_title'] ?: "ITI $name Mock Test $yr – MCQ, Question Paper PDF & Syllabus | ITI Exam";
-$desc = $t['meta_description'] ?: trim("ITI $name ({$t['full_name']}) trade – free mock tests, NCVT syllabus, theory notes PDF, practical exercises, previous year question papers and important questions.");
-$keywords = $t['meta_keywords'] ?: "ITI $name mock test, ITI $name MCQ, ITI $name question paper PDF, ITI $name previous year paper, ITI $name online test, ITI $name syllabus $yr, ITI $name notes PDF, $name 1st year MCQ, $name 2nd year MCQ, ITI $name jobs, {$t['full_name']}";
+$desc = $t['meta_description'] ?: trim("ITI $name" . ($t['full_name'] ? " ({$t['full_name']})" : '') . " $yr – free online CBT mock test, MCQ in English, Hindi & Marathi, NCVT syllabus, notes PDF, previous year question papers and important questions.");
+$keywords = $t['meta_keywords'] ?: "ITI $name mock test, ITI $name MCQ, ITI $name question paper PDF, ITI $name previous year paper, ITI $name online test, ITI $name CBT test, ITI $name syllabus $yr, ITI $name notes PDF, $name 1st year MCQ, $name 2nd year MCQ, $name 1st semester, ITI $name MCQ in Hindi, ITI $name MCQ in Marathi, NIMI $name question bank, ITI $name jobs, {$t['full_name']}";
+
+/* Built-in exam guide + FAQ, so every trade page has useful text even before the admin writes any */
+$full = $t['full_name'] ? " ({$t['full_name']})" : '';
+$dur = $t['duration'] ?: '1 or 2 years';
+$autoFaq = [
+    ["Is the ITI $name mock test free?", "Yes. All ITI $name mock tests on " . SITE_NAME . " are free. You can practise module-wise and full-length tests in the NCVT CBT pattern without registration."],
+    ["What is the ITI $name exam pattern?", "The ITI $name exam is a computer based test (CBT) with multiple choice questions on Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills, followed by a practical exam. The CBT paper usually has 75 questions for 150 marks in 2 hours, and you need at least 33% in each part. Always check the latest DGT/NCVT notice for your batch."],
+    ["How long is the ITI $name course?", "The ITI $name$full course duration is $dur" . ($t['nsqf_level'] ? ", at NSQF level {$t['nsqf_level']}" : '') . ". The syllabus is divided into semesters and modules, and questions come from each module."],
+    ["Where can I get ITI $name previous year question papers?", "Open the Previous Papers section on this page to practise ITI $name previous year questions with answers. Solving old papers shows you the question style and the topics asked most often."],
+    ["Are ITI $name questions available in Hindi and Marathi?", "Yes. Our ITI $name mock tests show every question in English with Hindi and Marathi, so you can study in the language you are comfortable with."],
+];
+$faqLd = $items['faq'] ? array_map(fn($f) => [$f['title'], $f['subtitle']], $items['faq']) : $autoFaq;
 
 $ld = [
     ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => [
@@ -69,10 +81,8 @@ $ld = [
         'educationalCredentialAwarded' => 'NCVT Certificate',
         'provider' => ['@type' => 'Organization', 'name' => SITE_NAME, 'sameAs' => SITE_URL . '/']],
 ];
-if ($items['faq']) {
-    $ld[] = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(fn($f) => [
-        '@type' => 'Question', 'name' => $f['title'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['subtitle']]], $items['faq'])];
-}
+$ld[] = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(fn($f) => [
+    '@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], $faqLd)];
 
 $meta = ['title' => $title, 'description' => $desc, 'keywords' => $keywords, 'path' => $path,
     'image' => $t['image'] ? upload_url($t['image']) : null, 'jsonld' => $ld];
@@ -83,6 +93,8 @@ foreach ($sections as $k => $s) {
     if ($s['tab'] && $items[$k]) $nav[] = [sec_id($k), $s['tab'], $s['icon']];
 }
 if ($t['content']) array_splice($nav, 1, 0, [['about', 'About ' . $name, 'book']]);
+$nav[] = ['exam-guide', 'Exam Guide', 'target'];
+if (!$items['faq']) $nav[] = ['faq', 'FAQ', 'help'];
 
 $stats = array_filter([
     ['clock', 'Duration', $t['duration'], 'c-green'],
@@ -202,14 +214,35 @@ foreach ($rowsDef as $r => $row) {
       </article>
 <?php endif; ?>
 
-<?php if ($items['faq']): ?>
+      <article class="card tsec prose exam-guide" id="exam-guide">
+        <h2>ITI <?= e($name) ?> Exam <?= $yr ?>: Pattern, Syllabus &amp; How to Prepare</h2>
+        <p><strong>ITI <?= e($name) ?></strong><?= e($full) ?> is an NCVT trade. On this page you get free <strong>ITI <?= e($name) ?> mock tests</strong> in the real CBT pattern, module-wise <strong><?= e($name) ?> MCQ</strong>, the latest syllabus, theory notes, practical exercises and <strong>previous year question papers with answers</strong> for 1st and 2nd year.</p>
+        <div class="eg-facts">
+          <div><span>Exam mode</span><b>Online CBT + Practical</b></div>
+          <div><span>CBT paper</span><b>75 MCQ · 150 marks · 2 hours</b></div>
+          <div><span>Pass marks</span><b>33% in each part</b></div>
+          <div><span>Course duration</span><b><?= e($dur) ?></b></div>
+          <div><span>Subjects</span><b>Trade Theory, WCS, Engg. Drawing, Employability Skills</b></div>
+          <div><span>Languages</span><b>English · हिंदी · मराठी</b></div>
+        </div>
+        <h3>How to prepare for the ITI <?= e($name) ?> CBT exam</h3>
+        <ol>
+          <li>Read the module-wise syllabus and theory notes for your semester.</li>
+          <li>Solve one <a href="#mock-tests">module-wise <?= e($name) ?> mock test</a> after every module and check the answers you got wrong.</li>
+          <li>Practise <a href="#previous-papers">previous year papers</a> and important questions in the last month.</li>
+          <li>Do not skip Employability Skills, Workshop Calculation &amp; Science and Engineering Drawing; together they carry many marks.</li>
+          <li>Take full-length timed tests to build speed: 75 questions in 2 hours.</li>
+        </ol>
+        <p class="eg-lang">आईटीआई <?= e($name) ?> मॉक टेस्ट, प्रश्न पत्र और MCQ हिंदी में मुफ्त · आयटीआय <?= e($name) ?> मॉक टेस्ट, प्रश्नपत्रिका आणि MCQ मराठीत मोफत.</p>
+        <p class="eg-note">Exam pattern is based on DGT guidelines; always confirm the latest notice on NCVT MIS / Skill India Digital.</p>
+      </article>
+
       <section class="card tsec faq" id="faq">
         <h2><?= e($name) ?> – Frequently Asked Questions</h2>
-<?php foreach ($items['faq'] as $f): ?>
-        <details><summary><?= e($f['title']) ?></summary><p><?= e($f['subtitle']) ?></p></details>
+<?php foreach ($faqLd as [$fq, $fa]): ?>
+        <details><summary><?= e($fq) ?></summary><p><?= e($fa) ?></p></details>
 <?php endforeach; ?>
       </section>
-<?php endif; ?>
     </div>
   </div>
 
