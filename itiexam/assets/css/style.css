@@ -1435,3 +1435,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1); transition: background .2s, color .2s;
 }
 .foot-search a:hover { background: rgba(255, 255, 255, .16); color: #fff; }
+.mt-empty { display: grid; justify-items: start; gap: 12px; padding: 6px 2px 4px; }
+.mt-empty .sti { margin: 0; }
+.mt-empty p { font-size: 14px; color: var(--text); line-height: 1.55; }

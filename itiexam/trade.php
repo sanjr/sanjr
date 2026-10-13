@@ -90,11 +90,12 @@ $meta = ['title' => $title, 'description' => $desc, 'keywords' => $keywords, 'pa
 /* Tabs / side menu: Overview + every section that has content */
 $nav = [['overview', 'Overview', 'home']];
 foreach ($sections as $k => $s) {
-    if ($s['tab'] && $items[$k]) $nav[] = [sec_id($k), $s['tab'], $s['icon']];
+    if ($s['tab'] && ($items[$k] || $k === 'mock_tests')) $nav[] = [sec_id($k), $s['tab'], $s['icon']];
 }
 if ($t['content']) array_splice($nav, 1, 0, [['about', 'About ' . $name, 'book']]);
 $nav[] = ['exam-guide', 'Exam Guide', 'target'];
 if (!$items['faq']) $nav[] = ['faq', 'FAQ', 'help'];
+$nav = array_values(array_filter($nav, fn($n) => $n[0] !== 'faq')); $nav[] = ['faq', 'FAQ', 'help'];
 
 $stats = array_filter([
     ['clock', 'Duration', $t['duration'], 'c-green'],
@@ -195,6 +196,9 @@ $rowsDef = [
 ];
 foreach ($rowsDef as $r => $row) {
     $cards = array_filter(array_map(fn($c) => section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3]), $row));
+    if ($r === 0 && !$items['mock_tests']) array_unshift($cards, '<article class="card tsec mt-soon" id="mock-tests"><div class="sec-head sm"><h2>Latest ' . e($name) . ' Mock Tests</h2></div>'
+        . '<div class="mt-empty"><span class="sti c-blue">' . icon('clip') . '</span><p><b>Module-wise ' . e($name) . ' mock tests are coming soon.</b> Until then, revise the syllabus and practise Employability Skills, which is common to all trades.</p>'
+        . '<a class="btn-sm" href="/employability-skills/">Employability Skills MCQ ' . icon('arrow') . '</a></div></article>');
     if ($cards) echo '      <div class="trow n' . count($cards) . '">' . implode('', $cards) . "</div>\n";
     if ($r === 0) echo ad('trade_middle');
 }

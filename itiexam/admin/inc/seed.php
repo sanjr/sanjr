@@ -274,6 +274,7 @@ function upgrade_content(): void
     $pdo = db();
     seed_pages();
     seed_home_lists();
+    seed_trade_content();
 
     $remap = ['/study-material/notes/' => '/study-material/', '/study-material/mcq/' => '/mock-test/', '/study-material/syllabus/' => '/syllabus/',
               '/exam/date/' => '/exam/ncvt-iti-exam-date/', '/exam/admit-card/' => '/exam/iti-admit-card/', '/exam/result/' => '/exam/maharashtra-iti-result/',
@@ -339,10 +340,179 @@ function seed_starter(): void
     if ((int)$pdo->query('SELECT COUNT(*) FROM menu_items')->fetchColumn() === 0) seed_menus();
     seed_home_lists();
     if ((int)$pdo->query('SELECT COUNT(*) FROM trades')->fetchColumn() === 0) seed_trades();
+    seed_trade_content();
     seed_pages();
     $defaults = [
         'site_description' => 'Free ITI mock tests, NCVT ITI previous year question papers, Employability Skills MCQ, study material PDF, ITI jobs, apprenticeship (NAPS/NATS), admit card & result updates for COPA, Electrician, Fitter, Turner, Welder & all ITI trades.',
         'contact_email' => 'contact@itiexam.com', 'whatsapp_float' => '1',
     ];
     foreach ($defaults as $k => $v) if (setting($k) === '') setting_set($k, $v);
+}
+
+/**
+ * Starter content for every trade (other than COPA, which has its own above), so each trade page
+ * looks complete like COPA. Only fills what is empty – it never overwrites anything the admin wrote.
+ */
+function trade_starter_data(): array
+{
+    return [
+        'electrician' => [
+            'full' => 'Electrician',
+            'desc' => 'ITI Electrician trade trains students to install, test, maintain and repair electrical wiring, machines, transformers, control panels and power systems in homes, industries and power stations.',
+            'modules' => [['Safety & Basic Electrical Practice', 'Safety, First aid, Tools, Fire safety'], ['Wires, Joints & Soldering', 'Conductors, Cables, Joints, Soldering'],
+                ['DC Circuits & Electrical Laws', "Ohm's law, Kirchhoff's laws, Series-parallel"], ['Magnetism & Capacitors', 'Electromagnetism, Induction, Capacitors'],
+                ['AC Circuits & Measuring Instruments', 'Single & 3-phase, Power factor, Meters'], ['Electrical Wiring & Earthing', 'Domestic & industrial wiring, Earthing, IE rules'],
+                ['DC & AC Machines', 'DC motors, Generators, Induction motors, Starters'], ['Transformers & Power Systems', 'Transformers, Generation, Transmission, Distribution']],
+            'practical' => [['House Wiring Practical', 'Board wiring, switch & socket connections', 'tool'], ['Motor Starter Connections', 'DOL & star-delta starter wiring', 'gear']],
+            'faq' => [['What is the duration of the ITI Electrician course?', 'ITI Electrician is a 2 year (4 semester) NCVT course at NSQF Level 5.'],
+                ['Which subjects are in the ITI Electrician exam?', 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+                ['What jobs can I get after ITI Electrician?', 'Electrician, wireman, maintenance technician, lineman, apprentice in railways, power companies, PSUs and private industries, or your own electrical contracting work.']],
+        ],
+        'fitter' => [
+            'full' => 'Fitter',
+            'desc' => 'ITI Fitter trade teaches fitting, assembly, measuring, drilling, sheet metal, welding, turning, hydraulics and maintenance of machines used in manufacturing and engineering industries.',
+            'modules' => [['Safety & Basic Fitting', 'Safety, Hand tools, Filing, Marking, Measuring'], ['Sheet Metal & Welding', 'Sheet metal work, Riveting, Gas & arc welding'],
+                ['Drilling & Fitting Assembly', 'Drilling, Reaming, Tapping, Limits & fits'], ['Turning & Basic Maintenance', 'Lathe operations, Lubrication, Bearings'],
+                ['Assembly & Gauges', 'Keys, Fasteners, Slip gauges, Lapping'], ['Pipe & Pipe Fitting', 'Pipes, Fittings, Valves, Pipe threading'],
+                ['Drill Jig & Repairing Technique', 'Jigs & fixtures, Belts, Gears, Couplings'], ['Hydraulics, Pneumatics & Erection', 'Hydraulic & pneumatic circuits, Preventive maintenance, Erection & testing']],
+            'practical' => [['Filing & Fitting Jobs', 'Step-by-step practical exercises', 'tool'], ['Drilling, Tapping & Reaming', 'Practical job sheets', 'gear']],
+            'faq' => [['What is the duration of the ITI Fitter course?', 'ITI Fitter is a 2 year (4 semester) NCVT course at NSQF Level 5.'],
+                ['Which subjects are in the ITI Fitter exam?', 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+                ['What jobs can I get after ITI Fitter?', 'Fitter, maintenance fitter, assembly technician, machine operator and apprentice in railways, defence, PSUs, automobile and manufacturing companies.']],
+        ],
+        'turner' => [
+            'full' => 'Turner',
+            'desc' => 'ITI Turner trade trains students to operate lathe machines for plain, step, taper and thread turning, and to produce precise components using measuring instruments, grinding and CNC turning.',
+            'modules' => [['Safety & Basic Fitting', 'Safety, Hand tools, Marking, Measuring'], ['Lathe & Plain Turning', 'Lathe parts, Facing, Step turning, Chucks'],
+                ['Taper Turning', 'Compound rest, Tailstock set-over, Taper attachment'], ['Thread Cutting', 'V, Square, ACME threads, Thread calculations'],
+                ['Cutting Tools & Tool Grinding', 'Tool angles, Tool materials, Grinding'], ['Eccentric & Special Turning', 'Eccentric, Multi-start threads, Boring'],
+                ['Shaper, Milling & Grinding Basics', 'Shaper, Milling, Surface & cylindrical grinding'], ['CNC Turning', 'CNC lathe, G & M codes, Part programming']],
+            'practical' => [['Plain & Step Turning Jobs', 'Practical job sheets', 'gear'], ['Thread Cutting on Lathe', 'Step-by-step practical', 'tool']],
+            'faq' => [['What is the duration of the ITI Turner course?', 'ITI Turner is a 2 year (4 semester) NCVT course at NSQF Level 5.'],
+                ['Which subjects are in the ITI Turner exam?', 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+                ['What jobs can I get after ITI Turner?', 'Lathe operator, CNC turner, machine operator, tool room assistant and apprentice in railways, defence, PSUs and manufacturing companies.']],
+        ],
+        'welder' => [
+            'full' => 'Welder (Gas & Electric)',
+            'desc' => 'ITI Welder trade trains students in gas welding and cutting, arc welding, MIG/MAG and TIG welding, pipe welding and inspection of welded joints for fabrication, construction and manufacturing.',
+            'modules' => [['Safety in Welding', 'Safety, PPE, Fire hazards, Ventilation'], ['Gas Welding & Cutting', 'Oxy-acetylene process, Flames, Gas cutting'],
+                ['Arc Welding (SMAW)', 'Arc welding machines, Electrodes, Joints & positions'], ['Weldability of Steel', 'Distortion, Cast iron, Alloy steels, Pre-heating'],
+                ['Pipe Welding', 'Pipe joints, Positions, Pipe welding procedure'], ['MIG / MAG Welding (GMAW)', 'Shielding gases, Wire feed, Metal transfer'],
+                ['TIG Welding (GTAW)', 'Tungsten electrodes, Aluminium & stainless steel'], ['Inspection & Testing of Welds', 'Welding defects, Destructive & NDT tests']],
+            'practical' => [['Arc Welding Joints', 'Butt, lap and T-joint practice', 'tool'], ['Gas Cutting Practice', 'Straight and bevel cutting', 'gear']],
+            'faq' => [['What is the duration of the ITI Welder course?', 'ITI Welder is a 1 year (2 semester) NCVT course.'],
+                ['Which subjects are in the ITI Welder exam?', 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+                ['What jobs can I get after ITI Welder?', 'Welder, fabricator, pipe welder, welding inspector assistant and jobs in shipyards, construction, oil & gas, railways and abroad (Gulf countries).']],
+        ],
+        'mmv' => [
+            'full' => 'Mechanic Motor Vehicle',
+            'desc' => 'ITI Mechanic Motor Vehicle (MMV) trade teaches servicing, repair and overhaul of cars and commercial vehicles: engines, fuel systems, transmission, steering, suspension, brakes and auto electricals.',
+            'modules' => [['Safety & Workshop Tools', 'Safety, Hand tools, Measuring instruments'], ['Fitting & Basic Workshop Practice', 'Filing, Drilling, Fasteners, Welding basics'],
+                ['IC Engine Components', 'Petrol & diesel engines, Cylinder head, Valves'], ['Cooling & Lubrication Systems', 'Radiator, Water pump, Oil pump, Filters'],
+                ['Fuel Systems', 'Carburettor, MPFI, Diesel FIP, CRDI'], ['Clutch, Gear Box & Transmission', 'Clutch, Gearbox, Propeller shaft, Differential'],
+                ['Steering, Suspension & Brakes', 'Steering geometry, Suspension, Hydraulic & air brakes'], ['Auto Electrical & Electronics', 'Battery, Starting, Charging, Sensors, ECU']],
+            'practical' => [['Engine Overhauling', 'Dismantling and assembly steps', 'gear'], ['Vehicle Servicing', 'Periodic service checklist', 'tool']],
+            'faq' => [['What is the duration of the ITI MMV course?', 'ITI Mechanic Motor Vehicle is a 2 year (4 semester) NCVT course at NSQF Level 5.'],
+                ['Which subjects are in the ITI MMV exam?', 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+                ['What jobs can I get after ITI MMV?', 'Motor mechanic, service technician in car showrooms and workshops, State Transport, railways, defence and apprenticeship in automobile companies.']],
+        ],
+        'plumber' => [
+            'full' => 'Plumber',
+            'desc' => 'ITI Plumber trade teaches installation and repair of water supply, sanitary and drainage systems: pipes and fittings, pipe threading and joints, fixtures, hot water and solar systems.',
+            'modules' => [['Safety & Plumbing Tools', 'Safety, Hand tools, Measuring tools'], ['Pipes & Pipe Fittings', 'GI, CI, PVC, CPVC, HDPE pipes and fittings'],
+                ['Pipe Threading & Joints', 'Threading, Bending, Jointing methods'], ['Water Supply Systems', 'Overhead tanks, Pumps, Valves, Meters'],
+                ['Sanitary Fittings & Fixtures', 'WC, Wash basin, Sink, Traps, Taps'], ['Drainage & Sewerage', 'Soil & waste pipes, Manholes, Septic tank'],
+                ['Hot Water & Solar Systems', 'Geysers, Solar water heater, Insulation'], ['Plumbing Drawing & Estimation', 'Symbols, Layouts, Material estimation']],
+            'practical' => [['Pipe Threading & Fitting', 'Step-by-step practical', 'tool'], ['Sanitary Fixture Installation', 'WC and wash basin fitting', 'gear']],
+            'faq' => [['What is the duration of the ITI Plumber course?', 'ITI Plumber is a 1 year (2 semester) NCVT course.'],
+                ['Which subjects are in the ITI Plumber exam?', 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+                ['What jobs can I get after ITI Plumber?', 'Plumber, pipe fitter, maintenance plumber in hotels, hospitals, municipal corporations, construction companies and abroad, or your own plumbing business.']],
+        ],
+        'wireman' => [
+            'full' => 'Wireman',
+            'desc' => 'ITI Wireman trade trains students in domestic and industrial wiring, cables and joints, earthing and protection, installation testing, motors and control panels as per IE rules.',
+            'modules' => [['Safety & Electrical Basics', 'Safety, First aid, Tools, Electrical terms'], ['Wires, Cables & Joints', 'Conductors, Insulators, Cable joints, Soldering'],
+                ['DC & AC Circuits', "Ohm's law, AC fundamentals, Power"], ['Domestic Wiring', 'Wiring systems, Switches, Circuits, Lighting'],
+                ['Industrial Wiring & Conduits', 'Conduit, Trunking, Cable trays, Distribution boards'], ['Earthing & Protection', 'Earthing types, MCB, ELCB, RCCB, Fuses'],
+                ['Installation Testing', 'Insulation test, Polarity, Earth resistance, IE rules'], ['Motors & Control Panels', 'Motor wiring, Starters, Control panel']],
+            'practical' => [['Domestic Wiring Practical', 'Staircase, godown & tunnel wiring', 'tool'], ['Earthing Practice', 'Pipe and plate earthing', 'gear']],
+            'faq' => [['What is the duration of the ITI Wireman course?', 'ITI Wireman is a 2 year (4 semester) NCVT course.'],
+                ['Which subjects are in the ITI Wireman exam?', 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+                ['What jobs can I get after ITI Wireman?', 'Wireman, electrical maintenance technician, lineman helper and jobs with electrical contractors, builders and industries; you can also get a wireman licence.']],
+        ],
+        'machinist' => [
+            'full' => 'Machinist',
+            'desc' => 'ITI Machinist trade trains students to produce precision parts on lathe, milling, shaper, slotter and grinding machines, cut gears, and work on CNC machining centres.',
+            'modules' => [['Safety & Bench Work', 'Safety, Hand tools, Filing, Marking'], ['Measuring Instruments', 'Vernier, Micrometer, Dial indicator, Gauges'],
+                ['Lathe Operations', 'Turning, Taper, Threading, Boring'], ['Milling Machine', 'Milling cutters, Indexing, Dividing head'],
+                ['Shaper & Slotter', 'Shaping, Slotting, Key-ways'], ['Grinding', 'Surface, Cylindrical & tool grinding'],
+                ['Gear Cutting', 'Spur, Helical & bevel gears, Gear calculations'], ['CNC Machining', 'CNC milling, G & M codes, Programming']],
+            'practical' => [['Milling Practice Jobs', 'Step milling and slotting', 'gear'], ['Gear Cutting Practical', 'Spur gear on milling machine', 'tool']],
+            'faq' => [['What is the duration of the ITI Machinist course?', 'ITI Machinist is a 2 year (4 semester) NCVT course at NSQF Level 5.'],
+                ['Which subjects are in the ITI Machinist exam?', 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+                ['What jobs can I get after ITI Machinist?', 'Machinist, CNC operator, milling operator, tool room technician and apprentice in railways, defence, PSUs and manufacturing companies.']],
+        ],
+        'diesel-mechanic' => [
+            'full' => 'Mechanic Diesel',
+            'desc' => 'ITI Mechanic Diesel trade teaches servicing, overhauling and troubleshooting of diesel engines: engine components, cooling and lubrication, fuel injection, turbochargers and engine electricals.',
+            'modules' => [['Safety & Workshop Tools', 'Safety, Hand tools, Measuring instruments'], ['Fitting & Basic Workshop Practice', 'Filing, Drilling, Fasteners'],
+                ['Diesel Engine Construction', 'Cylinder block, Piston, Crankshaft, Valves'], ['Engine Overhauling', 'Dismantling, Inspection, Assembly'],
+                ['Cooling & Lubrication Systems', 'Radiator, Thermostat, Oil pump, Filters'], ['Fuel Injection System', 'FIP, Injectors, Governor, CRDI'],
+                ['Air Intake, Exhaust & Turbocharger', 'Air filter, Turbocharger, Emission control'], ['Engine Electrical System', 'Battery, Starting motor, Alternator']],
+            'practical' => [['Engine Dismantling & Assembly', 'Step-by-step practical', 'gear'], ['Fuel Injector Testing', 'Injector testing and setting', 'tool']],
+            'faq' => [['What is the duration of the ITI Mechanic Diesel course?', 'ITI Mechanic Diesel is a 1 year (2 semester) NCVT course.'],
+                ['Which subjects are in the ITI Mechanic Diesel exam?', 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+                ['What jobs can I get after ITI Mechanic Diesel?', 'Diesel mechanic, generator technician, service technician in tractor, truck and bus workshops, State Transport, railways and apprenticeships.']],
+        ],
+    ];
+}
+
+function seed_trade_content(): void
+{
+    $pdo = db();
+    $it = $pdo->prepare('INSERT INTO trade_items (trade_id, section, title, subtitle, url, label, icon, questions, minutes, is_new, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $has = $pdo->prepare('SELECT COUNT(*) FROM trade_items WHERE trade_id = ? AND section = ?');
+    $icons = ['alert', 'tool', 'gear', 'bulb', 'target', 'flask', 'book', 'monitor'];
+    $yr = (int)date('Y');
+    foreach (trade_starter_data() as $slug => $d) {
+        $st = $pdo->prepare('SELECT * FROM trades WHERE slug = ?');
+        $st->execute([$slug]);
+        if (!$t = $st->fetch()) continue;
+        $id = (int)$t['id'];
+        $name = $t['name'];
+        $add = function (string $sec, array $rows) use ($it, $has, $id) {
+            $has->execute([$id, $sec]);
+            if ((int)$has->fetchColumn() > 0) return;
+            foreach ($rows as $i => $r) {
+                $r += ['', '', '', '', '', 0, 0, 0];
+                $it->execute([$id, $sec, $r[0], $r[1], $r[2], $r[3], $r[4], $r[5], $r[6], $r[7], $i]);
+            }
+        };
+        $add('quick_links', [['Start Mock Test', '', '#mock-tests', '', 'clip'], ['Syllabus & Modules', '', '#syllabus', '', 'list'], ['Theory Notes (PDF)', '', '#study-material', '', 'pdf'],
+            ['Practical Exercises', '', '#practical', '', 'flask'], ['Previous Year Papers', '', '#previous-papers', '', 'doc'], ['Important Questions', '', '#important-questions', '', 'alert'],
+            ['Exam Guide', '', '#exam-guide', '', 'target'], ['FAQ', '', '#faq', '', 'help']]);
+        $add('features', [['Module-wise Tests', 'Topic wise practice', '#mock-tests', '', 'doc'], ['Full Mock Tests', 'Exam pattern based', '#mock-tests', '', 'list'], ['Previous Papers', 'With solutions', '#previous-papers', '', 'clip'],
+            ['Theory Notes', 'Module-wise notes', '#study-material', '', 'pdf'], ['Practical Exercises', 'Step-by-step', '#practical', '', 'flask'], ['Important Questions', 'Most expected MCQs', '#important-questions', '', 'brief']]);
+        $add('syllabus', $d['modules']);
+        $add('study_material', [['Theory Notes', 'Module-wise notes', '/study-material/', '', 'pdf'], ['MCQ Question Bank', "$name MCQ with answers", '#mock-tests', '', 'help'],
+            ['Model Question Papers', 'Exam pattern & blueprint', '/previous-papers/', '', 'layout']]);
+        $add('practical', array_map(fn($p) => [$p[0], $p[1], '/practical/', '', $p[2]], $d['practical']));
+        $add('previous_papers', array_map(fn($y) => ["NCVT CBT Exam $y", 'With Solutions', '/previous-papers/', (string)$y], range($yr - 2, $yr - 5)));
+        $add('important_questions', array_map(fn($m, $i) => [$m[0], ['Most expected questions', 'Important MCQs', 'Previous year important questions', 'Expected questions', 'High weightage questions'][$i % 5], '#mock-tests', '', $icons[$i % 8]],
+            array_slice($d['modules'], 0, 5), array_keys(array_slice($d['modules'], 0, 5))));
+        $add('faq', $d['faq']);
+        $upd = [];
+        if (trim($t['full_name']) === '' && $d['full'] !== $name) $upd['full_name'] = $d['full'];
+        if (trim($t['description']) === '') $upd['description'] = $d['desc'];
+        if (trim($t['content']) === '') {
+            $mods = implode(', ', array_map(fn($m) => $m[0], array_slice($d['modules'], 1, 6)));
+            $upd['content'] = '<p>The <strong>ITI ' . (str_starts_with($d['full'], $name) ? e($d['full']) : e($name) . ' (' . e($d['full']) . ')') . '</strong> trade is a ' . e(preg_replace('/^(\d+)\s*years?$/i', '$1-year', trim($t['duration'] ?: '')) ?: 'full-time') . ' NCVT course'
+                . ($t['sector'] ? ' in the ' . e($t['sector']) . ' sector' : '') . '. ' . e($d['desc']) . '</p>'
+                . '<p>Important topics include ' . e($mods) . '. Use the mock tests on this page to practise for the CBT exam, revise the module-wise syllabus, and solve previous year papers to score high.</p>';
+        }
+        if ($upd) {
+            $sets = implode(', ', array_map(fn($k) => "$k = ?", array_keys($upd)));
+            $pdo->prepare("UPDATE trades SET $sets, updated_at = ? WHERE id = ?")->execute([...array_values($upd), now(), $id]);
+        }
+    }
 }
