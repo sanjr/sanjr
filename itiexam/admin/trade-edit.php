@@ -47,7 +47,12 @@ if (is_post()) {
             $sql = 'INSERT INTO trades (' . implode(', ', $cols) . ', created_at, updated_at) VALUES (' . rtrim(str_repeat('?, ', count($cols) + 2), ', ') . ')';
             db()->prepare($sql)->execute([...$vals, now(), now()]);
             $id = (int)db()->lastInsertId();
-            flash('Trade added. Now add its content (mock tests, syllabus, notes…).');
+            if (isset($_POST['starter'])) {
+                require_once __DIR__ . '/inc/seed.php';
+                $new = db()->prepare('SELECT * FROM trades WHERE id = ?'); $new->execute([$id]);
+                seed_trade_skeleton($new->fetch());
+            }
+            flash(isset($_POST['starter']) ? 'Trade added with the standard sections (quick links, tiles, notes, papers, practical, FAQ). Now add its syllabus modules and mock tests.' : 'Trade added. Now add its content (mock tests, syllabus, notes…).');
             redirect('/admin/trade-content.php?id=' . $id);
         }
         redirect('/admin/trade-edit.php?id=' . $id);
@@ -87,6 +92,9 @@ admin_header($id ? 'Edit Trade: ' . $t['name'] : 'Add New Trade', 'trades');
             <label>Status <select name="status"><option value="published"<?= $t['status'] === 'published' ? ' selected' : '' ?>>Published</option><option value="draft"<?= $t['status'] === 'draft' ? ' selected' : '' ?>>Draft (hidden)</option></select></label>
           </div>
           <label class="check"><input type="checkbox" name="is_popular"<?= $t['is_popular'] ? ' checked' : '' ?>> Show in “Popular ITI Trades” on the homepage</label>
+<?php if (!$id): ?>
+          <label class="check"><input type="checkbox" name="starter" checked> Add the standard trade sections (same layout as COPA: quick links, tiles, notes, papers, practical, FAQ)</label>
+<?php endif; ?>
         </section>
       </div>
       <section class="box">

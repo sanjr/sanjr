@@ -96,6 +96,9 @@ if ($t['content']) array_splice($nav, 1, 0, [['about', 'About ' . $name, 'book']
 $nav[] = ['exam-guide', 'Exam Guide', 'target'];
 if (!$items['faq']) $nav[] = ['faq', 'FAQ', 'help'];
 $nav = array_values(array_filter($nav, fn($n) => $n[0] !== 'faq')); $nav[] = ['faq', 'FAQ', 'help'];
+/* Quick links that point to a section of this page only show when that section exists */
+$anchors = array_merge(array_column($nav, 0), ['mock-tests', 'exam-guide', 'faq', 'jobs']);
+$items['quick_links'] = array_values(array_filter($items['quick_links'], fn($q) => ($q['url'][0] ?? '') !== '#' || in_array(substr($q['url'], 1), $anchors, true)));
 
 $stats = array_filter([
     ['clock', 'Duration', $t['duration'], 'c-green'],

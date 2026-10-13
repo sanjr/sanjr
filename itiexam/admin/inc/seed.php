@@ -470,49 +470,67 @@ function trade_starter_data(): array
 function seed_trade_content(): void
 {
     $pdo = db();
+    foreach (trade_starter_data() as $slug => $d) {
+        $st = $pdo->prepare('SELECT * FROM trades WHERE slug = ?');
+        $st->execute([$slug]);
+        if ($t = $st->fetch()) seed_trade_skeleton($t, $d);
+    }
+}
+
+/**
+ * Gives one trade the same sections as COPA. Used for the starter trades and for every new trade the admin adds.
+ * $d (optional) holds trade-specific modules, practicals, FAQ, full name and description.
+ * Only empty sections/fields are filled.
+ */
+function seed_trade_skeleton(array $t, array $d = []): void
+{
+    $pdo = db();
     $it = $pdo->prepare('INSERT INTO trade_items (trade_id, section, title, subtitle, url, label, icon, questions, minutes, is_new, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $has = $pdo->prepare('SELECT COUNT(*) FROM trade_items WHERE trade_id = ? AND section = ?');
     $icons = ['alert', 'tool', 'gear', 'bulb', 'target', 'flask', 'book', 'monitor'];
     $yr = (int)date('Y');
-    foreach (trade_starter_data() as $slug => $d) {
-        $st = $pdo->prepare('SELECT * FROM trades WHERE slug = ?');
-        $st->execute([$slug]);
-        if (!$t = $st->fetch()) continue;
-        $id = (int)$t['id'];
-        $name = $t['name'];
-        $add = function (string $sec, array $rows) use ($it, $has, $id) {
-            $has->execute([$id, $sec]);
-            if ((int)$has->fetchColumn() > 0) return;
-            foreach ($rows as $i => $r) {
-                $r += ['', '', '', '', '', 0, 0, 0];
-                $it->execute([$id, $sec, $r[0], $r[1], $r[2], $r[3], $r[4], $r[5], $r[6], $r[7], $i]);
-            }
-        };
-        $add('quick_links', [['Start Mock Test', '', '#mock-tests', '', 'clip'], ['Syllabus & Modules', '', '#syllabus', '', 'list'], ['Theory Notes (PDF)', '', '#study-material', '', 'pdf'],
-            ['Practical Exercises', '', '#practical', '', 'flask'], ['Previous Year Papers', '', '#previous-papers', '', 'doc'], ['Important Questions', '', '#important-questions', '', 'alert'],
-            ['Exam Guide', '', '#exam-guide', '', 'target'], ['FAQ', '', '#faq', '', 'help']]);
-        $add('features', [['Module-wise Tests', 'Topic wise practice', '#mock-tests', '', 'doc'], ['Full Mock Tests', 'Exam pattern based', '#mock-tests', '', 'list'], ['Previous Papers', 'With solutions', '#previous-papers', '', 'clip'],
-            ['Theory Notes', 'Module-wise notes', '#study-material', '', 'pdf'], ['Practical Exercises', 'Step-by-step', '#practical', '', 'flask'], ['Important Questions', 'Most expected MCQs', '#important-questions', '', 'brief']]);
-        $add('syllabus', $d['modules']);
-        $add('study_material', [['Theory Notes', 'Module-wise notes', '/study-material/', '', 'pdf'], ['MCQ Question Bank', "$name MCQ with answers", '#mock-tests', '', 'help'],
-            ['Model Question Papers', 'Exam pattern & blueprint', '/previous-papers/', '', 'layout']]);
-        $add('practical', array_map(fn($p) => [$p[0], $p[1], '/practical/', '', $p[2]], $d['practical']));
-        $add('previous_papers', array_map(fn($y) => ["NCVT CBT Exam $y", 'With Solutions', '/previous-papers/', (string)$y], range($yr - 2, $yr - 5)));
-        $add('important_questions', array_map(fn($m, $i) => [$m[0], ['Most expected questions', 'Important MCQs', 'Previous year important questions', 'Expected questions', 'High weightage questions'][$i % 5], '#mock-tests', '', $icons[$i % 8]],
-            array_slice($d['modules'], 0, 5), array_keys(array_slice($d['modules'], 0, 5))));
-        $add('faq', $d['faq']);
-        $upd = [];
-        if (trim($t['full_name']) === '' && $d['full'] !== $name) $upd['full_name'] = $d['full'];
-        if (trim($t['description']) === '') $upd['description'] = $d['desc'];
-        if (trim($t['content']) === '') {
-            $mods = implode(', ', array_map(fn($m) => $m[0], array_slice($d['modules'], 1, 6)));
-            $upd['content'] = '<p>The <strong>ITI ' . (str_starts_with($d['full'], $name) ? e($d['full']) : e($name) . ' (' . e($d['full']) . ')') . '</strong> trade is a ' . e(preg_replace('/^(\d+)\s*years?$/i', '$1-year', trim($t['duration'] ?: '')) ?: 'full-time') . ' NCVT course'
-                . ($t['sector'] ? ' in the ' . e($t['sector']) . ' sector' : '') . '. ' . e($d['desc']) . '</p>'
-                . '<p>Important topics include ' . e($mods) . '. Use the mock tests on this page to practise for the CBT exam, revise the module-wise syllabus, and solve previous year papers to score high.</p>';
+    $id = (int)$t['id'];
+    $name = $t['name'];
+    $add = function (string $sec, array $rows) use ($it, $has, $id) {
+        if (!$rows) return;
+        $has->execute([$id, $sec]);
+        if ((int)$has->fetchColumn() > 0) return;
+        foreach ($rows as $i => $r) {
+            $r += ['', '', '', '', '', 0, 0, 0];
+            $it->execute([$id, $sec, $r[0], $r[1], $r[2], $r[3], $r[4], $r[5], $r[6], $r[7], $i]);
         }
-        if ($upd) {
-            $sets = implode(', ', array_map(fn($k) => "$k = ?", array_keys($upd)));
-            $pdo->prepare("UPDATE trades SET $sets, updated_at = ? WHERE id = ?")->execute([...array_values($upd), now(), $id]);
-        }
+    };
+    $dur = trim($t['duration'] ?? '');
+    $d += ['full' => $name, 'desc' => '', 'modules' => [], 'practical' => [], 'faq' => [
+        ["What is the duration of the ITI $name course?", 'ITI ' . $name . ' is ' . ($dur !== '' ? 'a ' . preg_replace('/^(\d+)\s*years?$/i', '$1-year', $dur) . ' ' : 'an ') . 'NCVT course' . (($t['nsqf_level'] ?? '') !== '' ? ' at NSQF ' . $t['nsqf_level'] : '') . '.'],
+        ["Which subjects are in the ITI $name exam?", 'Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills are asked in the CBT; the practical exam is held at the ITI.'],
+        ["What jobs can I get after ITI $name?", "After ITI $name you can apply for apprenticeship, government and PSU jobs, private company jobs, or start your own work. See the latest ITI $name jobs on this page."]]];
+    $add('quick_links', [['Start Mock Test', '', '#mock-tests', '', 'clip'], ['Syllabus & Modules', '', '#syllabus', '', 'list'], ['Theory Notes (PDF)', '', '#study-material', '', 'pdf'],
+        ['Practical Exercises', '', '#practical', '', 'flask'], ['Previous Year Papers', '', '#previous-papers', '', 'doc'], ['Important Questions', '', '#important-questions', '', 'alert'],
+        ['Exam Guide', '', '#exam-guide', '', 'target'], ['FAQ', '', '#faq', '', 'help']]);
+    $add('features', [['Module-wise Tests', 'Topic wise practice', '#mock-tests', '', 'doc'], ['Full Mock Tests', 'Exam pattern based', '#mock-tests', '', 'list'], ['Previous Papers', 'With solutions', '#previous-papers', '', 'clip'],
+        ['Theory Notes', 'Module-wise notes', '#study-material', '', 'pdf'], ['Practical Exercises', 'Step-by-step', '#practical', '', 'flask'], ['Important Questions', 'Most expected MCQs', '#important-questions', '', 'brief']]);
+    $add('syllabus', $d['modules']);
+    $add('study_material', [['Theory Notes', 'Module-wise notes', '/study-material/', '', 'pdf'], ['MCQ Question Bank', "$name MCQ with answers", '#mock-tests', '', 'help'],
+        ['Model Question Papers', 'Exam pattern & blueprint', '/previous-papers/', '', 'layout']]);
+    $add('practical', $d['practical'] ? array_map(fn($p) => [$p[0], $p[1], '/practical/', '', $p[2]], $d['practical'])
+        : [['Practical Notes', 'Step-by-step guides', '/practical/', '', 'flask'], ["$name Practical Job Sheets", 'Practical exercises', '/practical/', '', 'tool']]);
+    $add('previous_papers', array_map(fn($y) => ["NCVT CBT Exam $y", 'With Solutions', '/previous-papers/', (string)$y], range($yr - 2, $yr - 5)));
+    $imp = array_slice($d['modules'], 0, 5);
+    $add('important_questions', array_map(fn($m, $i) => [$m[0], ['Most expected questions', 'Important MCQs', 'Previous year important questions', 'Expected questions', 'High weightage questions'][$i % 5], '#mock-tests', '', $icons[$i % 8]],
+        $imp, array_keys($imp)));
+    $add('faq', $d['faq']);
+    $upd = [];
+    if (trim($t['full_name'] ?? '') === '' && $d['full'] !== $name) $upd['full_name'] = $d['full'];
+    if (trim($t['description'] ?? '') === '' && $d['desc'] !== '') $upd['description'] = $d['desc'];
+    if (trim($t['content'] ?? '') === '' && $d['desc'] !== '') {
+        $mods = implode(', ', array_map(fn($m) => $m[0], array_slice($d['modules'], 1, 6)));
+        $upd['content'] = '<p>The <strong>ITI ' . (str_starts_with($d['full'], $name) ? e($d['full']) : e($name) . ' (' . e($d['full']) . ')') . '</strong> trade is a ' . e(preg_replace('/^(\d+)\s*years?$/i', '$1-year', $dur) ?: 'full-time') . ' NCVT course'
+            . (($t['sector'] ?? '') !== '' ? ' in the ' . e($t['sector']) . ' sector' : '') . '. ' . e($d['desc']) . '</p>'
+            . ($mods !== '' ? '<p>Important topics include ' . e($mods) . '. ' : '<p>') . 'Use the mock tests on this page to practise for the CBT exam, revise the module-wise syllabus, and solve previous year papers to score high.</p>';
+    }
+    if ($upd) {
+        $sets = implode(', ', array_map(fn($k) => "$k = ?", array_keys($upd)));
+        $pdo->prepare("UPDATE trades SET $sets, updated_at = ? WHERE id = ?")->execute([...array_values($upd), now(), $id]);
     }
 }
