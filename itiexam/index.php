@@ -194,6 +194,18 @@ require __DIR__ . '/includes/header.php';
       </div>
     </section>
 
+    <!-- ===== Why students trust us ===== -->
+    <section class="trust" aria-label="Why ITI students choose ITIExam">
+      <div class="container">
+        <ul class="trust-row">
+          <li><span class="tr-ic c-blue"><?= icon('shield') ?></span><span><b>NCVT CBT Pattern</b><small>Real exam style tests</small></span></li>
+          <li><span class="tr-ic c-green"><?= icon('star') ?></span><span><b>100% Free</b><small>No login, no fees</small></span></li>
+          <li><span class="tr-ic c-orange"><?= icon('clock') ?></span><span><b>Updated <?= date('Y') ?></b><small>Latest syllabus &amp; jobs</small></span></li>
+          <li><span class="tr-ic c-purple"><?= icon('globe') ?></span><span><b>English · हिंदी · मराठी</b><small>Learn in your language</small></span></li>
+        </ul>
+      </div>
+    </section>
+
     <div class="container"><?= ad('home_top', 'wide') ?></div>
 
 <?php if ($show('trades')):

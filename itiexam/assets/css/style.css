@@ -1217,3 +1217,148 @@ a:hover .btn-sm, .btn-sm:hover { background: linear-gradient(135deg, var(--blue-
 }
 @media (max-width: 380px) { .sec-sub { display: none; } }
 @media (prefers-reduced-motion: reduce) { .htrade, .ht-ic, .ht-go, .htrade::after, .va-btn, .va-ic { transition: none; } }
+
+/* =====================================================================
+   Theme v6 – one card system for every page: trustworthy blue + logo
+   orange, coloured accents, lively hover on computers, press on phones
+   ===================================================================== */
+:root {
+  --teal: #0e9f8e;
+  --grad-brand: linear-gradient(135deg, var(--blue) 0%, var(--navy) 100%);
+  --grad-warm: linear-gradient(135deg, var(--orange) 0%, var(--amber) 100%);
+  --ring: 0 0 0 3px color-mix(in srgb, var(--blue) 30%, transparent);
+}
+body {
+  background:
+    radial-gradient(900px 500px at 100% 0%, rgba(31, 79, 214, .06), transparent 60%),
+    radial-gradient(700px 420px at 0% 40%, rgba(247, 116, 15, .045), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+::selection { background: color-mix(in srgb, var(--blue) 22%, #fff); }
+
+/* ---- Trust bar under the homepage hero ---- */
+.trust { position: relative; z-index: 3; margin-top: -26px; }
+.trust-row {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; padding: 6px; border-radius: 20px;
+  background: #fff; border: 1px solid var(--line); box-shadow: 0 14px 34px rgba(11, 20, 48, .08);
+}
+.trust-row li { display: flex; align-items: center; gap: 12px; padding: 12px 16px; min-width: 0; }
+.trust-row li + li { border-left: 1px solid var(--line); }
+.trust-row b { display: block; font: 600 14.5px/1.25 var(--font-head); color: var(--ink); }
+.trust-row small { display: block; font-size: 12.5px; color: var(--muted); }
+.tr-ic { flex-shrink: 0; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; color: var(--c); background: color-mix(in srgb, var(--c) 13%, #fff); }
+.tr-ic .ic { width: 21px; height: 21px; }
+@media (max-width: 899px) {
+  .trust-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .trust-row li:nth-child(3) { border-left: 0; }
+  .trust-row li:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
+@media (max-width: 480px) {
+  .trust { margin-top: -18px; }
+  .trust-row { padding: 4px; border-radius: 16px; }
+  .trust-row li { gap: 9px; padding: 10px; }
+  .tr-ic { width: 34px; height: 34px; border-radius: 10px; }
+  .tr-ic .ic { width: 17px; height: 17px; }
+  .trust-row b { font-size: 12.5px; }
+  .trust-row small { font-size: 11px; }
+}
+
+/* ---- Cards: coloured top accent, softer depth, lift on hover ---- */
+.card:not(.tmenu):not(.jfilter):not(.jd-side) { position: relative; }
+.card { border: 1px solid var(--line); border-radius: 20px; transition: box-shadow .3s var(--ease), border-color .3s var(--ease), transform .3s var(--ease); }
+.card::before {
+  content: ""; position: absolute; left: 18px; right: 18px; top: 0; height: 3px; border-radius: 0 0 4px 4px;
+  background: var(--accent, linear-gradient(90deg, var(--blue), #6d8cff)); opacity: .9; pointer-events: none;
+}
+.card:hover { box-shadow: var(--shadow-h); border-color: color-mix(in srgb, var(--blue) 18%, var(--line)); }
+.card.prose::before, .card.page-body::before, .card.empty::before { display: none; }
+.card.prose:hover, .card.page-body:hover { box-shadow: var(--shadow); border-color: var(--line); }
+/* three-in-a-row homepage cards each get their own colour */
+.cols-3 > .card:nth-child(3n+1) { --accent: linear-gradient(90deg, var(--blue), #6d8cff); }
+.cols-3 > .card:nth-child(3n+2) { --accent: var(--grad-warm); }
+.cols-3 > .card:nth-child(3n+3) { --accent: linear-gradient(90deg, var(--teal), #34d399); }
+.cols-2-1 > .card:nth-child(2) { --accent: linear-gradient(90deg, #7c3aed, #c084fc); }
+
+/* ---- List rows (mock tests, jobs, articles, menus) ---- */
+.rows a { position: relative; padding-inline: 10px; margin-inline: -8px; transition: background .25s var(--ease), transform .25s var(--ease); }
+.rows a::before {
+  content: ""; position: absolute; left: 0; top: 18%; bottom: 18%; width: 3px; border-radius: 3px;
+  background: var(--blue); transform: scaleY(0); transition: transform .25s var(--ease);
+}
+.rows a:hover { background: linear-gradient(90deg, #eef3ff, #f7f9ff 70%, transparent); }
+.rows a:hover::before { transform: scaleY(1); }
+.rows a:hover .rt b, .rows a:hover h3 { color: var(--blue); }
+.rows .ri { transition: transform .3s var(--ease); }
+.rows a:hover .ri { transform: scale(1.08) rotate(-4deg); }
+
+/* ---- Buttons ---- */
+.btn-sm, .btn-full { background: var(--grad-brand); box-shadow: 0 6px 16px rgba(31, 79, 214, .26); transition: transform .2s var(--ease), box-shadow .2s var(--ease), filter .2s; }
+.btn-sm:hover, .btn-full:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(31, 79, 214, .34); filter: saturate(1.1); }
+.btn-sm.ghost-b, .btn-out { background: #fff; box-shadow: none; }
+.view-all { transition: background .2s, color .2s, transform .2s var(--ease); }
+.view-all:hover { background: var(--blue); color: #fff; }
+.view-all:hover .ic { transform: translateX(2px); }
+.view-all .ic { transition: transform .2s var(--ease); }
+
+/* ---- Study material tiles ---- */
+.st { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease); }
+.st::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--c, var(--blue)); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
+.st:has(.c-red) { --c: #e11d48; } .st:has(.c-purple) { --c: #7c3aed; } .st:has(.c-blue) { --c: var(--blue); }
+.st:has(.c-green) { --c: #16a34a; } .st:has(.c-orange) { --c: #f97316; } .st:has(.c-cyan) { --c: #0891b2; }
+.st:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--c, var(--blue)) 35%, var(--line)); box-shadow: 0 18px 36px color-mix(in srgb, var(--c, var(--blue)) 18%, transparent); }
+.st:hover::after { transform: scaleX(1); }
+.sti { background: linear-gradient(135deg, color-mix(in srgb, var(--c) 82%, #fff), var(--c)); box-shadow: 0 10px 20px color-mix(in srgb, var(--c) 32%, transparent); transition: transform .35s var(--ease); }
+.st:hover .sti { transform: translateY(-3px) scale(1.06); }
+
+/* ---- Trade page quick tiles & menu ---- */
+.tile { border: 1px solid rgba(11, 20, 48, .05); border-radius: 18px; }
+.tile:hover { transform: translateY(-5px); box-shadow: var(--shadow-h); border-color: color-mix(in srgb, var(--blue) 25%, transparent); }
+.tmenu a { transition: background .2s, color .2s, padding .2s var(--ease); }
+.tmenu a:hover { padding-left: 12px; }
+.tmenu a.on { background: var(--grad-brand); color: #fff; box-shadow: 0 8px 18px rgba(31, 79, 214, .25); }
+.tmenu a.on .ri { background: rgba(255, 255, 255, .18); color: #fff; }
+.tmenu a.on .mchev { color: #fff; }
+
+/* ---- All Trades page cards ---- */
+.trades .trade { border: 1px solid var(--line); transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease); }
+.trades .trade:hover { transform: translateY(-6px); box-shadow: var(--shadow-h); border-color: color-mix(in srgb, var(--blue) 28%, var(--line)); }
+.trades .trade .emo, .trades .trade .timg { transition: transform .35s var(--ease); }
+.trades .trade:hover .emo, .trades .trade:hover .timg { transform: scale(1.08) rotate(-4deg); }
+.trades .trade:hover .go { transform: translateX(-50%) scale(1.1); }
+
+/* ---- Jobs ---- */
+.job { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.job::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--grad-warm); }
+.job:hover { border-color: color-mix(in srgb, var(--orange) 35%, var(--line)); box-shadow: 0 18px 36px rgba(247, 116, 15, .14); }
+.jcard { overflow: hidden; border-radius: 16px; }
+.jcard::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--grad-warm); transform: scaleY(0); transition: transform .3s var(--ease); }
+.jcard:hover::before { transform: scaleY(1); }
+.jcard:hover h3 a { color: var(--blue); }
+.jstat { border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(160deg, color-mix(in srgb, var(--c, var(--blue)) 7%, #fff), #fff 60%); }
+.jstat:has(.c-blue) { --c: var(--blue); } .jstat:has(.c-orange) { --c: #f97316; } .jstat:has(.c-purple) { --c: #7c3aed; }
+.jstat:has(.c-green) { --c: #16a34a; } .jstat:has(.c-indigo) { --c: #4f46e5; }
+
+/* ---- Inner page heroes and article cards ---- */
+.thero {
+  background:
+    radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px) 0 0 / 22px 22px,
+    radial-gradient(560px 320px at 88% 18%, rgba(61, 111, 240, .55), transparent 70%),
+    radial-gradient(480px 300px at 6% 100%, rgba(247, 116, 15, .28), transparent 70%),
+    linear-gradient(135deg, #061436 0%, #0b2a6f 48%, #1f4fd6 100%);
+}
+.crumbs a:hover { color: #fff; text-decoration: underline; }
+.prose h2 { position: relative; padding-left: 14px; }
+.prose h2::before { content: ""; position: absolute; left: 0; top: .2em; bottom: .2em; width: 4px; border-radius: 4px; background: linear-gradient(180deg, var(--orange), var(--blue)); }
+.prose blockquote { border-left: 4px solid var(--orange); background: #fff8f1; border-radius: 0 12px 12px 0; }
+
+/* ---- Feel "alive" on phones: press-in when tapped ---- */
+@media (hover: none) {
+  .htrade:active, .st:active, .tile:active, .job:active, .jcard:active, .trades .trade:active, .jstat:active,
+  .rows a:active, .btn-sm:active, .btn-full:active, .va-btn:active, .view-all:active { transform: scale(.97); transition-duration: .08s; }
+  .rows a:active { background: #eef3ff; }
+}
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 10px; }
+@media (prefers-reduced-motion: reduce) {
+  .card, .rows a, .st, .tile, .trades .trade, .jcard, .job { transition: none; }
+}
