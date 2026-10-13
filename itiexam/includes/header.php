@@ -44,7 +44,7 @@ $currentPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
   <?= adsense_head() ?>
-  <link rel="stylesheet" href="/assets/css/style.css?v=16">
+  <link rel="stylesheet" href="/assets/css/style.css?v=17">
   <script src="/assets/js/main.js?v=7" defer></script>
 <?php if (($ga = setting('ga4_id')) && preg_match('/^G-[A-Z0-9]{4,15}$/', $ga) && empty($_SESSION['admin'])): ?>
   <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($ga) ?>"></script>

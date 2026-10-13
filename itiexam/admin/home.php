@@ -28,6 +28,7 @@ if (is_post()) {
     foreach ($texts as $k => $_) setting_set($k, trim($_POST[$k] ?? ''));
     foreach ($sections as $k => $_) setting_set('home_show_' . $k, isset($_POST['show_' . $k]) ? '1' : '0');
     setting_set('home_seo_html', trim($_POST['home_seo_html'] ?? ''));
+    setting_set('home_trades_count', (string)min(10, max(1, (int)($_POST['home_trades_count'] ?? 5))));
     $faq = [];
     foreach ((array)($_POST['faq_q'] ?? []) as $i => $q) {
         $a = trim($_POST['faq_a'][$i] ?? '');
@@ -76,6 +77,8 @@ admin_header('Homepage', 'home');
 <?php foreach ($sections as $k => $label): ?>
             <label class="check"><input type="checkbox" name="show_<?= $k ?>"<?= setting('home_show_' . $k, '1') !== '0' ? ' checked' : '' ?>> <?= e($label) ?></label>
 <?php endforeach; ?>
+            <label>Popular ITI Trades: how many cards <input type="number" name="home_trades_count" min="1" max="10" value="<?= (int)(setting('home_trades_count') ?: 5) ?>"></label>
+            <p class="muted">Shows the first trades ticked “Show in Popular ITI Trades”, in their sort order.</p>
           </section>
           <section class="box">
             <h2>Homepage lists</h2>

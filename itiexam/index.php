@@ -196,18 +196,35 @@ require __DIR__ . '/includes/header.php';
 
     <div class="container"><?= ad('home_top', 'wide') ?></div>
 
-<?php if ($show('trades')): ?>
+<?php if ($show('trades')):
+    $homeTrades = array_slice(trades(true), 0, max(1, (int)(setting('home_trades_count') ?: 5)));
+    $testCount = db()->query("SELECT trade_id, COUNT(*) FROM trade_items WHERE section = 'mock_tests' GROUP BY trade_id")->fetchAll(PDO::FETCH_KEY_PAIR);
+?>
     <!-- ===== Popular Trades ===== -->
-    <section class="section" aria-labelledby="trades-h">
+    <section class="section htrades-sec" aria-labelledby="trades-h">
       <div class="container">
         <div class="sec-head">
-          <h2 id="trades-h">Popular ITI Trades</h2>
-          <a href="/trades/" class="view-all">View All Trades <svg class="ic"><use href="#i-arrow"/></svg></a>
+          <div>
+            <h2 id="trades-h">Popular ITI Trades</h2>
+            <p class="sec-sub">Choose your trade and start practising today</p>
+          </div>
+          <a href="/trades/" class="va-btn">View All Trades <span class="va-ic"><?= icon('arrow') ?></span></a>
         </div>
-        <div class="trades">
-<?php foreach (trades(true) as $t): ?>
-          <a class="trade" href="<?= e(trade_url($t)) ?>" style="--tbg:<?= e($t['card_color']) ?>"><?php if ($t['image']): ?><img class="timg" src="<?= e(upload_url($t['image'])) ?>" alt="<?= e($t['name']) ?> ITI trade" width="64" height="64" loading="lazy"><?php else: ?><span class="emo" aria-hidden="true"><?= e($t['emoji'] ?: '🛠️') ?></span><?php endif; ?><h3><?= e($t['name']) ?></h3><p><?= e($t['short_desc']) ?></p><span class="go"><?= icon('arrow') ?></span></a>
+        <div class="htrades">
+<?php foreach ($homeTrades as $i => $t): $n = (int)($testCount[$t['id']] ?? 0); ?>
+          <a class="htrade" href="<?= e(trade_url($t)) ?>" style="--tbg:<?= e($t['card_color'] ?: '#eef3ff') ?>">
+            <span class="ht-ic"><?php if ($t['image']): ?><img src="<?= e(upload_url($t['image'])) ?>" alt="<?= e($t['name']) ?> ITI trade" width="52" height="52" loading="lazy"><?php else: ?><span aria-hidden="true"><?= e($t['emoji'] ?: '🛠️') ?></span><?php endif; ?></span>
+            <h3><?= e($t['name']) ?></h3>
+            <p><?= e($t['short_desc']) ?></p>
+            <span class="ht-foot"><span class="ht-tag"><?= icon('clip') ?> <?= $n ? $n . ' Mock Test' . ($n > 1 ? 's' : '') : 'Study &amp; Tests' ?></span><span class="ht-go"><?= icon('arrow') ?></span></span>
+          </a>
 <?php endforeach; ?>
+          <a class="htrade ht-all" href="/trades/">
+            <span class="ht-ic"><?= icon('list') ?></span>
+            <h3>All Trades</h3>
+            <p><?= count(trades()) ?>+ ITI trades: notes, MCQ and mock tests</p>
+            <span class="ht-foot"><span class="ht-tag">View All</span><span class="ht-go"><?= icon('arrow') ?></span></span>
+          </a>
         </div>
       </div>
     </section>
