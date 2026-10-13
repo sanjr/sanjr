@@ -24,7 +24,7 @@ function admin_header(string $title, string $active = ''): void
   <title><?= e($title) ?> – <?= e(SITE_NAME) ?> Admin</title>
   <link rel="icon" href="/assets/img/favicon-48.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=2">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=3">
 </head>
 <body>
 <?php require __DIR__ . '/../../includes/icons.php'; ?>

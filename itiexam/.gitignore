@@ -2,3 +2,4 @@ data/*.sqlite
 uploads/*
 !uploads/.htaccess
 data/tests/
+data/reset.txt

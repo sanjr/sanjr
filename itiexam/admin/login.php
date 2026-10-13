@@ -38,5 +38,6 @@ admin_header('Login');
       <label>Username <input name="username" required autocomplete="username" autofocus value="<?= e(post('username')) ?>"></label>
       <label>Password <input type="password" name="password" required autocomplete="current-password"></label>
       <button class="btn">Login</button>
+      <p class="forgot"><a href="/admin/reset.php">Forgot password?</a></p>
     </form>
 <?php admin_footer();
