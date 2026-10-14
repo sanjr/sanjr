@@ -1,0 +1,52 @@
+# ITIExam.com – Apache rules (works on most shared hosting: Hostinger, GoDaddy, BigRock, cPanel)
+Options -Indexes
+DirectoryIndex index.php
+ErrorDocument 404 /404.php
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Force HTTPS, keeping the same domain/subdomain (remove these 3 lines if SSL is not active yet)
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Block private folders
+RewriteRule ^(data|includes)(/|$) - [F,L]
+
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+RewriteRule ^ads\.txt$ ads.php [L]
+RewriteRule ^robots\.txt$ robots.php [L]
+RewriteRule ^trades/?$ trades.php [L]
+RewriteRule ^trades/([a-z0-9-]+)/?$ trade.php?slug=$1 [L,QSA]
+RewriteRule ^jobs/?$ jobs.php [L,QSA]
+RewriteRule ^jobs/([a-z0-9-]+)/?$ jobs.php?seg=$1 [L,QSA]
+RewriteRule ^syllabus/?$ syllabus.php [L,QSA]
+RewriteRule ^search/?$ search.php [L,QSA]
+RewriteRule ^cbt/([a-z0-9-]+)/?$ cbt.php?f=$1 [L,QSA]
+RewriteRule ^cbt/([a-z0-9-]+)/play/(.+)$ cbt.php?f=$1&p=$2 [L,QSA,B]
+
+# Add trailing slash to page URLs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/admin
+RewriteRule ^(.+[^/])$ /$1/ [L,R=301]
+
+# Everything else that is not a real file/folder → admin-created page
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+?)/?$ page.php?slug=$1 [L,QSA]
+</IfModule>
+
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/xml
+</IfModule>
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType text/css "access plus 1 month"
+ExpiresByType application/javascript "access plus 1 month"
+ExpiresByType image/svg+xml "access plus 1 month"
+ExpiresByType image/png "access plus 1 month"
+ExpiresByType image/jpeg "access plus 1 month"
+ExpiresByType image/webp "access plus 1 month"
+</IfModule>
