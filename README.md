@@ -14,3 +14,7 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
+
+### 📘 ITI Trade Syllabus
+
+[`syllabus.html`](syllabus.html) — all CTS (ITI) trade syllabus PDFs in one page: Sr. No., trade name, NSQF level, duration, type and a download link. You can search and filter by sector. An admin can add, edit and delete syllabus entries (default password `admin@123`; change it from the admin panel).

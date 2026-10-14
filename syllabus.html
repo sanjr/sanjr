@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ITI Trade Syllabus</title>
+<meta name="description" content="Download CTS (ITI) trade syllabus PDFs — NSQF level, duration and sector for every trade.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --surface: #ffffff;
+    --surface-2: #f8f9fd;
+    --text: #1b1f3b;
+    --muted: #646b8a;
+    --border: #e3e7f2;
+    --primary: #4f46e5;
+    --primary-2: #7c3aed;
+    --accent: #06b6d4;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --shadow: 0 10px 30px rgba(31, 41, 90, .08);
+    --shadow-lg: 0 20px 50px rgba(31, 41, 90, .18);
+    --radius: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1021; --surface: #161a33; --surface-2: #1c2140; --text: #eef0ff;
+      --muted: #9aa1c7; --border: #2a3058; --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --shadow-lg: 0 20px 50px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1021; --surface: #161a33; --surface-2: #1c2140; --text: #eef0ff;
+    --muted: #9aa1c7; --border: #2a3058; --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; font-family: "Poppins", system-ui, -apple-system, Segoe UI, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5; overflow-x: hidden;
+  }
+  a { color: inherit; }
+  button { font-family: inherit; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------- Navbar ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 40; backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--surface) 80%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav .container { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; text-decoration: none; }
+  .brand-logo {
+    width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 6px 16px rgba(79,70,229,.4);
+  }
+  .nav-actions { display: flex; gap: 8px; align-items: center; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: 0; cursor: pointer; border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: .9rem;
+    text-decoration: none; transition: transform .15s ease, box-shadow .2s ease, background .2s ease, opacity .2s;
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .btn-primary { color: #fff; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 8px 20px rgba(79,70,229,.35); }
+  .btn-primary:hover { box-shadow: 0 12px 28px rgba(79,70,229,.5); transform: translateY(-2px); }
+  .btn-success { color: #fff; background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 6px 16px rgba(16,185,129,.35); }
+  .btn-success:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(16,185,129,.5); }
+  .btn-danger { color: #fff; background: linear-gradient(135deg, #f43f5e, #dc2626); }
+  .btn-danger:hover { transform: translateY(-2px); }
+  .btn-ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-sm { padding: 7px 12px; font-size: .8rem; border-radius: 10px; }
+  .btn-icon { padding: 9px; border-radius: 12px; }
+  .btn-icon.btn-sm { padding: 7px; }
+  .btn-white { background: #fff; color: var(--primary); box-shadow: 0 10px 24px rgba(0,0,0,.15); }
+  .btn-white:hover { transform: translateY(-2px); }
+  .btn-outline-white { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.4); }
+  .btn-outline-white:hover { background: rgba(255,255,255,.22); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden; color: #fff; padding: 56px 0 96px;
+    background: radial-gradient(1200px 400px at 10% -10%, rgba(6,182,212,.55), transparent 60%),
+                linear-gradient(135deg, #4338ca 0%, #6d28d9 55%, #9333ea 100%);
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .18;
+    background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 22px 22px;
+  }
+  .hero .container { position: relative; z-index: 1; }
+  .chip-hero {
+    display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3); padding: 6px 14px; border-radius: 999px; font-size: .8rem; font-weight: 500;
+  }
+  .hero h1 { font-size: clamp(1.9rem, 5vw, 3.2rem); line-height: 1.15; margin: 16px 0 12px; font-weight: 800; }
+  .hero h1 span { background: linear-gradient(90deg, #a5f3fc, #fde68a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { max-width: 640px; opacity: .92; font-size: 1.02rem; margin: 0 0 24px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  /* ---------- Stats ---------- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: -60px; position: relative; z-index: 2; }
+  .stat {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px;
+    box-shadow: var(--shadow); display: flex; gap: 14px; align-items: center;
+  }
+  .stat-icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; color: #fff; flex-shrink: 0; }
+  .stat-icon svg { width: 22px; height: 22px; }
+  .stat b { display: block; font-size: 1.5rem; line-height: 1.1; }
+  .stat small { color: var(--muted); font-size: .8rem; }
+
+  /* ---------- Toolbar ---------- */
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .toolbar { margin-top: 24px; padding: 16px; display: grid; grid-template-columns: 2fr repeat(3, 1fr) auto; gap: 12px; align-items: center; }
+  .search { position: relative; }
+  .search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--muted); }
+  .input, .select {
+    width: 100%; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-2);
+    color: var(--text); font: inherit; font-size: .9rem; outline: none; transition: border-color .2s, box-shadow .2s;
+  }
+  .search .input { padding-left: 42px; }
+  .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79,70,229,.15); }
+  .sector-pills { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 0; }
+  .pill {
+    border: 1px solid var(--border); background: var(--surface); color: var(--muted); padding: 6px 14px; border-radius: 999px;
+    font-size: .8rem; font-weight: 500; cursor: pointer; transition: all .2s;
+  }
+  .pill:hover { color: var(--primary); border-color: var(--primary); }
+  .pill.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; border-color: transparent; }
+
+  /* ---------- Admin bar ---------- */
+  .admin-bar {
+    display: none; margin-top: 16px; padding: 14px 16px; border-radius: var(--radius); gap: 10px; align-items: center; flex-wrap: wrap;
+    background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(6,182,212,.12)); border: 1px dashed var(--success);
+  }
+  body.is-admin .admin-bar { display: flex; }
+  .admin-bar .label { font-weight: 600; display: flex; align-items: center; gap: 8px; margin-right: auto; }
+  .dot { width: 9px; height: 9px; background: var(--success); border-radius: 50%; box-shadow: 0 0 0 4px rgba(16,185,129,.25); }
+  .admin-only { display: none !important; }
+  body.is-admin .admin-only { display: inline-flex !important; }
+
+  /* ---------- Table ---------- */
+  .table-wrap { margin: 20px 0 40px; overflow: hidden; }
+  .table-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
+  .table-head h2 { margin: 0; font-size: 1.1rem; }
+  .table-head small { color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 14px 18px; text-align: left; font-size: .9rem; vertical-align: middle; }
+  th {
+    background: var(--surface-2); color: var(--muted); font-weight: 600; font-size: .75rem; text-transform: uppercase;
+    letter-spacing: .05em; cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  th.no-sort { cursor: default; }
+  th .arrow { opacity: .4; margin-left: 4px; }
+  th.sorted .arrow { opacity: 1; color: var(--primary); }
+  tbody tr { border-top: 1px solid var(--border); transition: background .15s; animation: fadeUp .35s ease both; }
+  tbody tr:hover { background: var(--surface-2); }
+  .sr {
+    width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 700; font-size: .8rem;
+    background: rgba(79,70,229,.1); color: var(--primary);
+  }
+  .trade { display: flex; align-items: center; gap: 12px; }
+  .trade-icon { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: #fff; flex-shrink: 0; font-weight: 700; }
+  .trade-name { font-weight: 600; }
+  .trade-sub { color: var(--muted); font-size: .78rem; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: .75rem; font-weight: 600; white-space: nowrap; }
+  .badge-nsqf { background: rgba(124,58,237,.12); color: #7c3aed; }
+  .badge-dur { background: rgba(6,182,212,.12); color: #0891b2; }
+  .badge-type { background: rgba(245,158,11,.14); color: #b45309; }
+  :root[data-theme="dark"] .badge-nsqf, :root[data-theme="dark"] .badge-dur, :root[data-theme="dark"] .badge-type { filter: brightness(1.5); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .badge { filter: brightness(1.5); } }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  td .actions { flex-wrap: nowrap; }
+
+  .empty { padding: 60px 20px; text-align: center; color: var(--muted); }
+  .empty svg { width: 60px; height: 60px; opacity: .5; }
+
+  /* ---------- Mobile cards ---------- */
+  .cards { display: none; padding: 12px; gap: 12px; }
+  .card { border: 1px solid var(--border); border-radius: 14px; padding: 14px; background: var(--surface-2); animation: fadeUp .35s ease both; }
+  .card-top { display: flex; gap: 12px; align-items: flex-start; }
+  .card .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .card .actions .btn-success { flex: 1; }
+
+  /* ---------- Modal ---------- */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(10,12,30,.55); backdrop-filter: blur(4px); z-index: 80;
+    display: none; align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-bg.open { display: flex; animation: fade .2s ease; }
+  .modal {
+    background: var(--surface); border-radius: 20px; width: 100%; max-width: 520px; max-height: 92vh; overflow: auto;
+    box-shadow: var(--shadow-lg); animation: pop .25s cubic-bezier(.2,1.3,.5,1);
+  }
+  .modal-head { padding: 20px 22px 0; display: flex; justify-content: space-between; align-items: center; }
+  .modal-head h3 { margin: 0; font-size: 1.15rem; }
+  .modal-body { padding: 18px 22px; display: grid; gap: 14px; }
+  .modal-foot { padding: 0 22px 22px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+  .field label { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 6px; color: var(--muted); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .hint { font-size: .78rem; color: var(--muted); margin: 0; }
+  .err { color: var(--danger); font-size: .8rem; min-height: 1em; margin: 0; }
+
+  /* ---------- Toast ---------- */
+  .toasts { position: fixed; bottom: 20px; right: 20px; z-index: 100; display: grid; gap: 10px; }
+  .toast {
+    background: var(--text); color: var(--bg); padding: 12px 18px; border-radius: 12px; box-shadow: var(--shadow-lg);
+    font-size: .88rem; font-weight: 500; animation: slideIn .3s ease; display: flex; gap: 8px; align-items: center;
+  }
+
+  footer { text-align: center; color: var(--muted); font-size: .82rem; padding: 10px 16px 40px; }
+  footer a { color: var(--primary); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes pop { from { opacity: 0; transform: scale(.92); } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } }
+
+  @media (max-width: 960px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .toolbar { grid-template-columns: 1fr 1fr; }
+    .toolbar .search { grid-column: 1 / -1; }
+  }
+  @media (max-width: 720px) {
+    table { display: none; }
+    .cards { display: grid; }
+    .hero { padding: 40px 0 88px; }
+    .nav .btn-text { display: none; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .toasts { left: 16px; right: 16px; }
+  }
+  @media (max-width: 420px) {
+    .stats { gap: 10px; }
+    .stat { padding: 12px; gap: 10px; }
+    .stat-icon { width: 38px; height: 38px; }
+    .stat b { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="nav">
+  <div class="container">
+    <a class="brand" href="#top">
+      <span class="brand-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg>
+      </span>
+      ITI Syllabus
+    </a>
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-icon" id="themeBtn" title="Change theme" aria-label="Change theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button class="btn btn-primary" id="adminBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="btn-text" id="adminBtnText">Admin Login</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero" id="top">
+  <div class="container">
+    <span class="chip-hero">📘 Craftsmen Training Scheme (CTS) · NSQF</span>
+    <h1>Sarv ITI Trade che <span>Syllabus</span><br>ekach thikani</h1>
+    <p>Tumchya trade cha official syllabus PDF shodha, baghaa ani ek click madhe download kara. NSQF level, duration ani sector nusar filter kara.</p>
+    <div class="hero-actions">
+      <a href="#list" class="btn btn-white">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+        Syllabus Download
+      </a>
+      <a href="https://www.cstaricalcutta.gov.in/en/cts-syllabus" target="_blank" rel="noopener" class="btn btn-outline-white">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+        Official CSTARI Website
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Stats -->
+  <section class="stats">
+    <div class="stat"><div class="stat-icon" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></div><div><b id="statTotal">0</b><small>Total Trades</small></div></div>
+    <div class="stat"><div class="stat-icon" style="background:linear-gradient(135deg,#06b6d4,#0284c7)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><div><b id="statSectors">0</b><small>Sectors</small></div></div>
+    <div class="stat"><div class="stat-icon" style="background:linear-gradient(135deg,#10b981,#059669)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8Z"/></svg></div><div><b id="statEng">0</b><small>Engineering</small></div></div>
+    <div class="stat"><div class="stat-icon" style="background:linear-gradient(135deg,#f59e0b,#ea580c)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></div><div><b id="statNonEng">0</b><small>Non-Engineering</small></div></div>
+  </section>
+
+  <!-- Filters -->
+  <section class="panel toolbar" id="list">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input class="input" id="q" type="search" placeholder="Trade cha naav shodha… (e.g. Electrician, COPA, Fitter)">
+    </div>
+    <select class="select" id="fNsqf" aria-label="NSQF level"><option value="">All NSQF Levels</option></select>
+    <select class="select" id="fDur" aria-label="Duration"><option value="">All Durations</option></select>
+    <select class="select" id="fType" aria-label="Trade type">
+      <option value="">All Types</option><option>Engineering</option><option>Non-Engineering</option>
+    </select>
+    <button class="btn btn-ghost" id="resetBtn" title="Clear filters">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      Reset
+    </button>
+  </section>
+  <div class="sector-pills" id="pills"></div>
+
+  <!-- Admin bar -->
+  <div class="admin-bar" id="adminBar">
+    <span class="label"><span class="dot"></span> Admin Mode</span>
+    <button class="btn btn-success btn-sm" id="addBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Add Syllabus
+    </button>
+    <button class="btn btn-ghost btn-sm" id="exportBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg> Export JSON
+    </button>
+    <label class="btn btn-ghost btn-sm" for="importFile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg> Import JSON
+    </label>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+    <button class="btn btn-ghost btn-sm" id="pwdBtn">🔑 Change Password</button>
+    <button class="btn btn-ghost btn-sm" id="restoreBtn">↺ Restore Default</button>
+    <button class="btn btn-danger btn-sm" id="logoutBtn">Logout</button>
+  </div>
+
+  <!-- Table -->
+  <section class="panel table-wrap">
+    <div class="table-head">
+      <div><h2>📄 CTS Trade Syllabus List</h2><small id="countText"></small></div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th data-sort="sr">Sr. No.<span class="arrow">↕</span></th>
+          <th data-sort="name">Trade Name<span class="arrow">↕</span></th>
+          <th data-sort="nsqf">NSQF<span class="arrow">↕</span></th>
+          <th data-sort="duration">Duration<span class="arrow">↕</span></th>
+          <th data-sort="type">Type<span class="arrow">↕</span></th>
+          <th class="no-sort">Download</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="cards" id="cards"></div>
+    <div class="empty" id="empty" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+      <p>Kahi sapadle nahi. Dusra naav try kara kiva filters reset kara.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Syllabus PDFs are hosted by <a href="https://www.cstaricalcutta.gov.in/en/cts-syllabus" target="_blank" rel="noopener">CSTARI Kolkata</a>
+  and <a href="https://dgt.gov.in" target="_blank" rel="noopener">DGT</a>, Ministry of Skill Development &amp; Entrepreneurship, Govt. of India.
+  Navin version sathi official website check kara.
+</footer>
+
+<!-- Login modal -->
+<div class="modal-bg" id="loginModal">
+  <form class="modal" id="loginForm" autocomplete="off">
+    <div class="modal-head"><h3>🔐 Admin Login</h3><button type="button" class="btn btn-ghost btn-icon btn-sm" data-close>✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="loginPwd">Password</label><input class="input" id="loginPwd" type="password" required placeholder="Admin password takaa"></div>
+      <p class="err" id="loginErr"></p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+  </form>
+</div>
+
+<!-- Add / edit modal -->
+<div class="modal-bg" id="editModal">
+  <form class="modal" id="editForm" autocomplete="off">
+    <div class="modal-head"><h3 id="editTitle">Add Syllabus</h3><button type="button" class="btn btn-ghost btn-icon btn-sm" data-close>✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="eName">Trade Name *</label><input class="input" id="eName" required placeholder="e.g. Electrician"></div>
+      <div class="field"><label for="eSector">Sector</label><input class="input" id="eSector" list="sectorList" placeholder="e.g. Power"><datalist id="sectorList"></datalist></div>
+      <div class="grid-2">
+        <div class="field"><label for="eNsqf">NSQF Level</label><input class="input" id="eNsqf" placeholder="e.g. 4"></div>
+        <div class="field"><label for="eDur">Duration</label>
+          <select class="select" id="eDur"><option value="">—</option><option>6 Months</option><option>1 Year</option><option>2 Years</option></select>
+        </div>
+      </div>
+      <div class="field"><label for="eType">Type</label>
+        <select class="select" id="eType"><option>Engineering</option><option>Non-Engineering</option></select>
+      </div>
+      <div class="field"><label for="eUrl">Syllabus PDF Link *</label><input class="input" id="eUrl" type="url" required placeholder="https://…/syllabus.pdf"></div>
+      <p class="hint">PDF chi direct link takaa (CSTARI / DGT website varun copy kara).</p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+      <button type="submit" class="btn btn-success">💾 Save</button>
+    </div>
+  </form>
+</div>
+
+<!-- Delete modal -->
+<div class="modal-bg" id="delModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head"><h3>🗑️ Delete Syllabus?</h3><button type="button" class="btn btn-ghost btn-icon btn-sm" data-close>✕</button></div>
+    <div class="modal-body"><p style="margin:0">"<b id="delName"></b>" ha syllabus kadhun takaycha ka?</p></div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+      <button type="button" class="btn btn-danger" id="delConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change password modal -->
+<div class="modal-bg" id="pwdModal">
+  <form class="modal" id="pwdForm" style="max-width:420px" autocomplete="off">
+    <div class="modal-head"><h3>🔑 Change Password</h3><button type="button" class="btn btn-ghost btn-icon btn-sm" data-close>✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="pwdNew">New Password</label><input class="input" id="pwdNew" type="password" minlength="4" required></div>
+      <div class="field"><label for="pwdNew2">Confirm Password</label><input class="input" id="pwdNew2" type="password" minlength="4" required></div>
+      <p class="err" id="pwdErr"></p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+      <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+  </form>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="syllabus-data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var STORE_KEY = "iti-syllabus-data-v1";
+  var PWD_KEY = "iti-syllabus-admin-hash";
+  var THEME_KEY = "iti-syllabus-theme";
+  var SESSION_KEY = "iti-syllabus-admin";
+
+  var COLORS = [
+    ["#4f46e5", "#7c3aed"], ["#06b6d4", "#0284c7"], ["#10b981", "#059669"], ["#f59e0b", "#ea580c"],
+    ["#ec4899", "#db2777"], ["#8b5cf6", "#6d28d9"], ["#14b8a6", "#0f766e"], ["#f43f5e", "#be123c"]
+  ];
+
+  // ---------- storage helpers (fail safely in private mode) ----------
+  function get(store, key) { try { return store.getItem(key); } catch (e) { return null; } }
+  function set(store, key, val) { try { store.setItem(key, val); return true; } catch (e) { return false; } }
+  function del(store, key) { try { store.removeItem(key); } catch (e) {} }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var data = load();
+  var state = { q: "", sector: "", nsqf: "", dur: "", type: "", sort: "sr", dir: 1 };
+  var editIndex = -1, deleteIndex = -1;
+
+  function defaults() {
+    return (window.SYLLABUS_DATA || []).map(function (d) { return Object.assign({}, d); });
+  }
+  function load() {
+    var raw = get(localStorage, STORE_KEY);
+    if (raw) { try { var arr = JSON.parse(raw); if (Array.isArray(arr)) return arr; } catch (e) {} }
+    return defaults();
+  }
+  function save() {
+    if (!set(localStorage, STORE_KEY, JSON.stringify(data))) toast("⚠️ Browser storage available nahi — changes save zale nahit");
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function safeUrl(u) { return /^https?:\/\//i.test(u || "") ? u : "#"; }
+  function initials(name) {
+    var w = String(name).replace(/\(.*?\)/g, "").split(/[\s&–-]+/).filter(Boolean);
+    return ((w[0] || "?")[0] + (w[1] ? w[1][0] : "")).toUpperCase();
+  }
+  function colorFor(str) {
+    var h = 0; for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    var c = COLORS[h % COLORS.length]; return "linear-gradient(135deg," + c[0] + "," + c[1] + ")";
+  }
+  function uniq(key) {
+    var s = {}; data.forEach(function (d) { if (d[key]) s[d[key]] = 1; });
+    return Object.keys(s).sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); });
+  }
+
+  // ---------- filters ----------
+  function fillSelect(el, values, label) {
+    var cur = el.value;
+    el.innerHTML = '<option value="">' + label + "</option>" + values.map(function (v) {
+      return "<option>" + esc(v) + "</option>";
+    }).join("");
+    if (values.indexOf(cur) > -1) el.value = cur;
+  }
+  function buildFilters() {
+    fillSelect($("fNsqf"), uniq("nsqf"), "All NSQF Levels");
+    fillSelect($("fDur"), uniq("duration"), "All Durations");
+    var sectors = uniq("sector");
+    if (state.sector && sectors.indexOf(state.sector) < 0) state.sector = "";
+    $("pills").innerHTML = ['<button class="pill' + (state.sector ? "" : " active") + '" data-sector="">All Sectors</button>']
+      .concat(sectors.map(function (s) {
+        return '<button class="pill' + (state.sector === s ? " active" : "") + '" data-sector="' + esc(s) + '">' + esc(s) + "</button>";
+      })).join("");
+    $("sectorList").innerHTML = sectors.map(function (s) { return '<option value="' + esc(s) + '">'; }).join("");
+  }
+
+  function filtered() {
+    var q = state.q.trim().toLowerCase();
+    var rows = data.map(function (d, i) { return { d: d, i: i }; }).filter(function (r) {
+      var d = r.d;
+      if (q && (d.name + " " + d.sector).toLowerCase().indexOf(q) < 0) return false;
+      if (state.sector && d.sector !== state.sector) return false;
+      if (state.nsqf && d.nsqf !== state.nsqf) return false;
+      if (state.dur && d.duration !== state.dur) return false;
+      if (state.type && d.type !== state.type) return false;
+      return true;
+    });
+    if (state.sort !== "sr") {
+      var k = state.sort;
+      rows.sort(function (a, b) {
+        return String(a.d[k] || "").localeCompare(String(b.d[k] || ""), undefined, { numeric: true }) * state.dir;
+      });
+    } else if (state.dir < 0) rows.reverse();
+    return rows;
+  }
+
+  // ---------- render ----------
+  var ICON_DL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>';
+  var ICON_EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  var ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+  var ICON_DEL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+
+  function actions(r, compact) {
+    var u = esc(safeUrl(r.d.url));
+    return '<div class="actions">' +
+      '<a class="btn btn-success btn-sm" href="' + u + '" target="_blank" rel="noopener" download>' + ICON_DL + " Download</a>" +
+      '<a class="btn btn-ghost btn-icon btn-sm" href="' + u + '" target="_blank" rel="noopener" title="View PDF" aria-label="View PDF">' + ICON_EYE + "</a>" +
+      '<button class="btn btn-ghost btn-icon btn-sm" data-copy="' + r.i + '" title="Copy link" aria-label="Copy link">' + ICON_COPY + "</button>" +
+      '<button class="btn btn-ghost btn-icon btn-sm admin-only" data-edit="' + r.i + '" title="Edit" aria-label="Edit">' + ICON_EDIT + "</button>" +
+      '<button class="btn btn-ghost btn-icon btn-sm admin-only" data-del="' + r.i + '" title="Delete" aria-label="Delete" style="color:var(--danger)">' + ICON_DEL + "</button>" +
+      "</div>";
+  }
+  function badge(cls, label, val) {
+    return '<span class="badge ' + cls + '">' + (label ? label + " " : "") + esc(val || "—") + "</span>";
+  }
+
+  function render() {
+    var rows = filtered();
+    $("tbody").innerHTML = rows.map(function (r, n) {
+      var d = r.d;
+      return '<tr style="animation-delay:' + Math.min(n * 25, 400) + 'ms">' +
+        '<td><span class="sr">' + (r.i + 1) + "</span></td>" +
+        '<td><div class="trade"><span class="trade-icon" style="background:' + colorFor(d.sector || d.name) + '">' + esc(initials(d.name)) + "</span>" +
+        '<div><div class="trade-name">' + esc(d.name) + '</div><div class="trade-sub">' + esc(d.sector || "—") + "</div></div></div></td>" +
+        "<td>" + badge("badge-nsqf", "Level", d.nsqf) + "</td>" +
+        "<td>" + badge("badge-dur", "", d.duration) + "</td>" +
+        "<td>" + badge("badge-type", "", d.type) + "</td>" +
+        "<td>" + actions(r) + "</td></tr>";
+    }).join("");
+
+    $("cards").innerHTML = rows.map(function (r, n) {
+      var d = r.d;
+      return '<div class="card" style="animation-delay:' + Math.min(n * 25, 400) + 'ms"><div class="card-top">' +
+        '<span class="trade-icon" style="background:' + colorFor(d.sector || d.name) + '">' + esc(initials(d.name)) + "</span>" +
+        '<div style="flex:1;min-width:0"><div class="trade-name">' + (r.i + 1) + ". " + esc(d.name) + '</div><div class="trade-sub">' + esc(d.sector || "—") + "</div></div></div>" +
+        '<div class="badges">' + badge("badge-nsqf", "NSQF", d.nsqf) + badge("badge-dur", "", d.duration) + badge("badge-type", "", d.type) + "</div>" +
+        actions(r) + "</div>";
+    }).join("");
+
+    $("empty").hidden = rows.length > 0;
+    $("countText").textContent = rows.length + " of " + data.length + " trades dakhavat aahe";
+
+    $("statTotal").textContent = data.length;
+    $("statSectors").textContent = uniq("sector").length;
+    $("statEng").textContent = data.filter(function (d) { return d.type === "Engineering"; }).length;
+    $("statNonEng").textContent = data.filter(function (d) { return d.type === "Non-Engineering"; }).length;
+
+    document.querySelectorAll("th[data-sort]").forEach(function (th) {
+      var on = th.dataset.sort === state.sort;
+      th.classList.toggle("sorted", on);
+      th.querySelector(".arrow").textContent = on ? (state.dir > 0 ? "↑" : "↓") : "↕";
+    });
+  }
+  function refresh() { buildFilters(); render(); }
+
+  // ---------- toast & modals ----------
+  function toast(msg) {
+    var t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+    $("toasts").appendChild(t);
+    setTimeout(function () { t.style.transition = "opacity .3s"; t.style.opacity = "0"; }, 2400);
+    setTimeout(function () { t.remove(); }, 2800);
+  }
+  function openModal(id) { $(id).classList.add("open"); var f = $(id).querySelector("input"); if (f) setTimeout(function () { f.focus(); }, 50); }
+  function closeModals() { document.querySelectorAll(".modal-bg.open").forEach(function (m) { m.classList.remove("open"); }); }
+  document.querySelectorAll(".modal-bg").forEach(function (bg) {
+    bg.addEventListener("click", function (e) { if (e.target === bg || e.target.closest("[data-close]")) closeModals(); });
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModals(); });
+
+  // ---------- admin ----------
+  function sha256(text) {
+    if (!(window.crypto && crypto.subtle)) return Promise.reject(new Error("no-crypto"));
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    });
+  }
+  function adminHash() { return get(localStorage, PWD_KEY) || window.SYLLABUS_ADMIN_HASH; }
+  function setAdmin(on) {
+    document.body.classList.toggle("is-admin", on);
+    $("adminBtnText").textContent = on ? "Admin Mode" : "Admin Login";
+    if (on) set(sessionStorage, SESSION_KEY, "1"); else del(sessionStorage, SESSION_KEY);
+  }
+
+  $("adminBtn").addEventListener("click", function () {
+    if (document.body.classList.contains("is-admin")) { $("adminBar").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    $("loginErr").textContent = ""; $("loginForm").reset(); openModal("loginModal");
+  });
+  $("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    sha256($("loginPwd").value).then(function (h) {
+      if (h === adminHash()) { setAdmin(true); closeModals(); toast("✅ Admin login successful"); }
+      else $("loginErr").textContent = "Chukicha password. Punha try kara.";
+    }, function () { $("loginErr").textContent = "Ha page https: kiva localhost varun open kara."; });
+  });
+  $("logoutBtn").addEventListener("click", function () { setAdmin(false); toast("👋 Logged out"); });
+
+  function openEditor(i) {
+    editIndex = i;
+    var d = i > -1 ? data[i] : { name: "", sector: "", nsqf: "", duration: "", type: "Engineering", url: "" };
+    $("editTitle").textContent = i > -1 ? "✏️ Edit Syllabus" : "➕ Add Syllabus";
+    $("eName").value = d.name; $("eSector").value = d.sector; $("eNsqf").value = d.nsqf;
+    $("eDur").value = d.duration; $("eType").value = d.type || "Engineering"; $("eUrl").value = d.url;
+    if ($("eDur").value !== d.duration && d.duration) {
+      var o = document.createElement("option"); o.textContent = d.duration; $("eDur").appendChild(o); $("eDur").value = d.duration;
+    }
+    openModal("editModal");
+  }
+  $("addBtn").addEventListener("click", function () { openEditor(-1); });
+  $("editForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var item = {
+      name: $("eName").value.trim(), sector: $("eSector").value.trim(), nsqf: $("eNsqf").value.trim(),
+      duration: $("eDur").value, type: $("eType").value, url: $("eUrl").value.trim()
+    };
+    if (editIndex > -1) { data[editIndex] = item; toast("✅ Syllabus updated"); }
+    else { data.push(item); toast("🎉 Navin syllabus add zala"); }
+    save(); closeModals(); refresh();
+  });
+  $("delConfirm").addEventListener("click", function () {
+    if (deleteIndex > -1) { data.splice(deleteIndex, 1); save(); refresh(); toast("🗑️ Syllabus deleted"); }
+    closeModals();
+  });
+
+  $("exportBtn").addEventListener("click", function () {
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "syllabus-data.json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    toast("📦 JSON export zala");
+  });
+  $("importFile").addEventListener("change", function () {
+    var file = this.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var arr = JSON.parse(reader.result);
+        if (!Array.isArray(arr) || !arr.every(function (d) { return d && d.name && d.url; })) throw new Error();
+        data = arr.map(function (d) {
+          return { name: String(d.name), sector: String(d.sector || ""), nsqf: String(d.nsqf || ""), duration: String(d.duration || ""), type: String(d.type || ""), url: String(d.url) };
+        });
+        save(); refresh(); toast("✅ " + data.length + " syllabus import zale");
+      } catch (e) { toast("⚠️ Invalid JSON file"); }
+    };
+    reader.readAsText(file); this.value = "";
+  });
+  $("restoreBtn").addEventListener("click", function () {
+    if (!confirm("Sarv changes kadhun default list restore karaychi ka?")) return;
+    data = defaults(); del(localStorage, STORE_KEY); refresh(); toast("↺ Default list restore zali");
+  });
+  $("pwdBtn").addEventListener("click", function () { $("pwdForm").reset(); $("pwdErr").textContent = ""; openModal("pwdModal"); });
+  $("pwdForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if ($("pwdNew").value !== $("pwdNew2").value) { $("pwdErr").textContent = "Donhi password match hot nahit."; return; }
+    sha256($("pwdNew").value).then(function (h) {
+      set(localStorage, PWD_KEY, h); closeModals(); toast("🔑 Password badalla");
+    });
+  });
+
+  // ---------- table actions ----------
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-copy],[data-edit],[data-del],[data-sector],th[data-sort]");
+    if (!b) return;
+    if (b.dataset.copy != null) {
+      var url = data[+b.dataset.copy].url;
+      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(
+        function () { toast("🔗 Link copy zali"); },
+        function () { prompt("Link copy kara:", url); });
+    } else if (b.dataset.edit != null) openEditor(+b.dataset.edit);
+    else if (b.dataset.del != null) { deleteIndex = +b.dataset.del; $("delName").textContent = data[deleteIndex].name; openModal("delModal"); }
+    else if (b.dataset.sector != null) { state.sector = b.dataset.sector; refresh(); }
+    else if (b.dataset.sort) {
+      if (state.sort === b.dataset.sort) state.dir *= -1; else { state.sort = b.dataset.sort; state.dir = 1; }
+      render();
+    }
+  });
+
+  $("q").addEventListener("input", function () { state.q = this.value; render(); });
+  $("fNsqf").addEventListener("change", function () { state.nsqf = this.value; render(); });
+  $("fDur").addEventListener("change", function () { state.dur = this.value; render(); });
+  $("fType").addEventListener("change", function () { state.type = this.value; render(); });
+  $("resetBtn").addEventListener("click", function () {
+    state = { q: "", sector: "", nsqf: "", dur: "", type: "", sort: "sr", dir: 1 };
+    $("q").value = ""; $("fNsqf").value = ""; $("fDur").value = ""; $("fType").value = "";
+    refresh();
+  });
+
+  // ---------- theme ----------
+  var savedTheme = get(localStorage, THEME_KEY);
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  $("themeBtn").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next); set(localStorage, THEME_KEY, next);
+  });
+
+  setAdmin(get(sessionStorage, SESSION_KEY) === "1");
+  refresh();
+})();
+</script>
+</body>
+</html>
