@@ -43,12 +43,12 @@ function item_row(array $it, int $i, string $style, string $defIcon): string
 }
 
 /** A titled card holding one section's list. */
-function section_card(string $key, string $heading, array $list, string $style, string $defIcon, string $viewAll = ''): string
+function section_card(string $key, string $heading, array $list, string $style, string $defIcon, string $viewAll = '', string $vaLabel = 'View All'): string
 {
     if (!$list) return '';
     $rows = '';
     foreach ($list as $i => $it) $rows .= item_row($it, $i, $style, $defIcon);
-    $va = $viewAll ? '<a href="' . e($viewAll) . '" class="view-all">View All ' . icon('arrow') . '</a>' : '';
+    $va = $viewAll ? '<a href="' . e($viewAll) . '" class="view-all"' . (str_starts_with($viewAll, 'http') ? ' target="_blank" rel="noopener nofollow"' : '') . '>' . e($vaLabel) . ' ' . icon('arrow') . '</a>' : '';
     return '<article class="card tsec" id="' . sec_id($key) . '"><div class="sec-head sm"><h2>' . $heading . '</h2>' . $va . "</div><ul class=\"rows\">$rows</ul></article>";
 }
 
@@ -192,13 +192,17 @@ require __DIR__ . '/includes/header.php';
 
 <?php
 /* Rows of section cards; empty sections drop out and the row reflows. */
+$sp = db()->prepare("SELECT pdf_url FROM syllabi WHERE trade_id = ? AND status = 'published' ORDER BY sort_order LIMIT 1");
+$sp->execute([$t['id']]);
+$sylPdf = (string)$sp->fetchColumn();
 $rowsDef = [
     [['mock_tests', "Latest " . e($name) . " Mock Tests", 'mock', 'clip'], ['syllabus', 'Syllabus &amp; Modules', 'num', 'open']],
     [['study_material', 'Study Material', 'rows', 'pdf'], ['previous_papers', 'Previous Year Papers', 'year', 'doc'], ['important_questions', 'Important Questions', 'rows', 'help']],
     [['practical', 'Practical Exercises', 'rows', 'flask'], ['videos', 'Video Tutorials', 'rows', 'play'], ['resources', 'Software &amp; Resources', 'rows', 'link']],
 ];
 foreach ($rowsDef as $r => $row) {
-    $cards = array_filter(array_map(fn($c) => section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3]), $row));
+    $cards = array_filter(array_map(fn($c) => $c[0] === 'syllabus' && $sylPdf ? section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3], $sylPdf, 'Syllabus PDF')
+        : section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3]), $row));
     if ($r === 0 && !$items['mock_tests']) array_unshift($cards, '<article class="card tsec mt-soon" id="mock-tests"><div class="sec-head sm"><h2>Latest ' . e($name) . ' Mock Tests</h2></div>'
         . '<div class="mt-empty"><span class="sti c-blue">' . icon('clip') . '</span><p><b>Module-wise ' . e($name) . ' mock tests are coming soon.</b> Until then, revise the syllabus and practise Employability Skills, which is common to all trades.</p>'
         . '<a class="btn-sm" href="/employability-skills/">Employability Skills MCQ ' . icon('arrow') . '</a></div></article>');

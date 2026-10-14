@@ -534,3 +534,57 @@ function seed_trade_skeleton(array $t, array $d = []): void
         $pdo->prepare("UPDATE trades SET $sets, updated_at = ? WHERE id = ?")->execute([...array_values($upd), now(), $id]);
     }
 }
+
+/**
+ * Official NCVT CTS syllabus PDFs (DGT / BharatSkills / CSTARI). Added once; the admin can edit, add or delete them.
+ * Columns: trade, sector, duration, NSQF level, details, PDF link, featured on top
+ */
+function seed_syllabi(): void
+{
+    $D = 'https://dgt.gov.in/sites/default/files/';
+    $B = 'https://bharatskills.gov.in/pdf/';
+    $rows = [
+        ['COPA (Computer Operator & Programming Assistant)', 'IT & ITES', '1 Year', '3', 'Computer fundamentals, MS Office, internet, web design, Python and databases', $D . 'COPA_CTS2.0_NSQF-3.pdf', 1],
+        ['Electrician', 'Power', '2 Years', '4', 'Electrical wiring, machines, transformers, control panels and power systems', $D . '2024-01/Electrician_CTS2.0_NSQF-4.pdf', 1],
+        ['Fitter', 'Capital Goods & Manufacturing', '2 Years', '4', 'Fitting, assembly, drilling, turning, hydraulics and maintenance (CTS 3.0)', $D . '2026-08/Fitter_CTS3.0_NSQF-4.pdf', 1],
+        ['Turner', 'Capital Goods & Manufacturing', '2 Years', '4', 'Lathe operations, taper and thread turning, grinding and CNC turning', $D . 'Turner_CTS2.0_NSQF-4.pdf', 1],
+        ['Welder', 'Capital Goods & Manufacturing', '1 Year', '', 'Gas and arc welding, cutting, MIG/MAG, TIG and weld inspection', $B . 'Curriculum/CTS/English/Welder.pdf', 1],
+        ['Mechanic Motor Vehicle (MMV)', 'Automotive', '2 Years', '4', 'Engine, fuel system, transmission, brakes and auto electricals (CTS 3.0)', $B . 'Curriculum/CTS/English/Mechanic%20Motor%20Vehicle_CTS3.0_NSQF-4.pdf', 1],
+        ['Mechanic Diesel', 'Automotive', '1 Year', '4', 'Diesel engine overhauling, fuel injection, cooling and lubrication', $B . 'Qp_Curriculum/Mechanic_Diesel_CTS_NSQF-4.pdf', 1],
+        ['Machinist', 'Capital Goods & Manufacturing', '2 Years', '5', 'Lathe, milling, shaper, grinding, gear cutting and CNC machining', $B . 'Qp_Curriculum/Machinist_CTS_NSQF-5.pdf', 0],
+        ['Plumber', 'Construction', '1 Year', '3', 'Pipes and fittings, water supply, sanitary fixtures and drainage', $D . 'Plumber_CTS2.0_NSQF-3.pdf', 0],
+        ['Wireman', 'Power', '', '3', 'Domestic and industrial wiring, earthing, protection and installation testing', $B . 'Curriculum/CTS/English/Wireman.pdf', 0],
+        ['Electrician Power Distribution', 'Power', '2 Years', '4', 'Power distribution lines, substations and maintenance', $D . '2023-12/Electrician-Power%20Distribution_CTS2.0_NSQF-4.pdf', 0],
+        ['Electronics Mechanic', 'Electronics & Hardware', '2 Years', '4', 'Electronic components, circuits, testing and repair of electronic equipment', $D . 'Electronics%20Mechanic_CTS2.0_NSQF-4.pdf', 0],
+        ['Instrument Mechanic', 'Electronics & Hardware', '2 Years', '4', 'Measuring and control instruments, calibration and maintenance', $D . 'Instrument%20Mechanic_CTS2.0_NSQF-4.pdf', 0],
+        ['Instrument Mechanic (Chemical Plant)', 'Chemicals & Petrochemicals', '', '4', 'Process instruments used in chemical plants', $D . '2023-12/IM%20(CP)_CTS2.0_NSQF-4.pdf', 0],
+        ['Refrigeration & Air Conditioning Technician', 'Capital Goods & Manufacturing', '2 Years', '4', 'Refrigeration cycle, AC installation, servicing and repair', $D . '2024-01/Ref.%20_%20Air%20Conditioning%20Tech._CTS2.0_NSQF-4.pdf', 0],
+        ['Mechanic Auto Electrical & Electronics', 'Automotive', '', '3', 'Vehicle batteries, starting, charging, lighting and electronic systems', $D . '2023-12/Mech.%20Auto%20Electrical%20Electronics_CTS2.0_NSQF-3.pdf', 0],
+        ['Mechanic Consumer Electronic Appliances', 'Electronics & Hardware', '', '4', 'Repair of home appliances and consumer electronics', $D . 'Mech%20Consumer%20Electronic%20Appliances_CTS2.0_NSQF-4.pdf', 0],
+        ['Mechanic Tractor', 'Automotive', '1 Year', '3', 'Tractor engine, transmission, hydraulics and repair', $D . 'Mechanic%20Tractor_CTS2.0_NSQF-3.pdf', 0],
+        ['Draughtsman Civil', 'Construction', '2 Years', '4', 'Building drawing, surveying, estimation and CAD', $D . 'Draughtsman%20Civil_CTS2.0_NSQF-4.pdf', 0],
+        ['Draughtsman Mechanical', 'Capital Goods & Manufacturing', '2 Years', '4', 'Machine drawing, projections, assemblies and CAD', $D . 'D_man%20Mechanical_CTS2.0_NSQF-4.pdf', 0],
+        ['Tool & Die Maker (Dies & Moulds)', 'Capital Goods & Manufacturing', '2 Years', '4', 'Press tools, dies, moulds, jigs and fixtures', $D . 'TDM%20(D_M)_CTS2.0_NSQF-4.pdf', 0],
+        ['Sheet Metal Worker', 'Capital Goods & Manufacturing', '1 Year', '3', 'Sheet metal development, cutting, bending, joining and fabrication', $D . 'Sheet%20Metal%20Worker_CTS2.0_NSQF-3.pdf', 0],
+        ['Welder (Fabrication & Fitting)', 'Capital Goods & Manufacturing', '', '3', 'Fabrication, fitting and welding of structures', $B . 'Qp_Curriculum/Curriculum-Welder(Fabrication&Fitting).pdf', 0],
+        ['Information Technology', 'IT & ITES', '2 Years', '4', 'Computer hardware, networking, operating systems and programming', $D . '2024-01/IT_CTS2.0_NSQF-4.pdf', 0],
+        ['ICTSM (Information & Communication Technology System Maintenance)', 'IT & ITES', '2 Years', '4', 'Computer, mobile and network system maintenance', $D . '2024-01/ICTSM_CTS2.0_NSQF-4.pdf', 0],
+        ['Data Entry Operator', 'IT & ITES', '', '', 'Typing, data entry, office software and record keeping', $B . 'Curriculum/CTS/English/Data%20Entry%20Operator.pdf', 0],
+        ['Multimedia, Animation & Special Effects', 'Media & Entertainment', '', '4', 'Graphics, 2D/3D animation, video editing and special effects', 'https://www.cstaricalcutta.gov.in/images/CTS%20Multimedia%20Animation%20and%20Special%20Effects_CTS_NSQF-4.pdf', 0],
+        ['Stenographer & Secretarial Assistant (English)', 'Management & Entrepreneurship', '1 Year', '3.5', 'Shorthand, English typing, computer and office procedures', $D . '2025-01/Stenographer%20Sec.%20Asst%20(Eng)_CTS2.0_NSQF-3.5.pdf', 0],
+        ['Electroplater', 'Chemicals & Petrochemicals', '2 Years', '4', 'Electroplating processes, surface preparation and testing', $D . '2024-01/Electroplater_CTS2.0_NSQF-4.pdf', 0],
+        ['Painter (General)', 'Construction', '', '4', 'Surface preparation, painting, spraying and decorative finishes', $D . 'Painter%20(General)_CTS2.0_NSQF-4.pdf', 0],
+        ['Mason (Building Constructor)', 'Construction', '1 Year', '3', 'Brick and stone masonry, plastering and building construction', $D . 'Mason%20(Building%20Constructor)_CTS2.0_NSQF-3.pdf', 0],
+        ['Sewing Technology', 'Apparel', '1 Year', '3', 'Garment cutting, sewing machines and tailoring', $D . 'Sewing%20Technology_CTS2.0_NSQF-3.pdf', 0],
+        ['Fashion Design & Technology', 'Apparel', '1 Year', '3', 'Fashion illustration, pattern making and garment construction', $D . '2024-01/Fashion%20Design%20_%20Technology_CTS2.0_NSQF-3.pdf', 0],
+    ];
+    $tid = [];
+    foreach (db()->query('SELECT id, name FROM trades') as $t) $tid[strtolower($t['name'])] = (int)$t['id'];
+    $alias = ['copa (computer operator & programming assistant)' => 'copa', 'mechanic motor vehicle (mmv)' => 'mmv', 'mechanic diesel' => 'diesel mechanic'];
+    $ins = db()->prepare('INSERT INTO syllabi (trade_name, trade_id, sector, duration, nsqf, details, pdf_url, source, is_featured, status, sort_order, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    foreach ($rows as $i => [$name, $sector, $dur, $nsqf, $det, $url, $feat]) {
+        $key = $alias[strtolower($name)] ?? strtolower($name);
+        $src = str_contains($url, 'dgt.gov.in') ? 'DGT' : (str_contains($url, 'bharatskills') ? 'BharatSkills' : 'CSTARI');
+        $ins->execute([$name, $tid[$key] ?? 0, $sector, $dur, $nsqf, $det, $url, $src, $feat, 'published', $i + 1, now()]);
+    }
+}

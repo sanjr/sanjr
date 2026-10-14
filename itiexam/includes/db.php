@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '9';
+const SCHEMA_VERSION = '10';
 
 function db(): PDO
 {
@@ -98,7 +98,15 @@ function db_migrate(PDO $pdo): void
         id $id, path VARCHAR(300) NOT NULL UNIQUE, hits INT NOT NULL DEFAULT 1, referrer VARCHAR(300) NOT NULL DEFAULT '',
         last_seen VARCHAR(20) NOT NULL)$engine");
 
+    $pdo->exec("CREATE TABLE IF NOT EXISTS syllabi (
+        id $id, trade_name VARCHAR(160) NOT NULL, trade_id INT NOT NULL DEFAULT 0, sector VARCHAR(120) NOT NULL DEFAULT '',
+        duration VARCHAR(60) NOT NULL DEFAULT '', nsqf VARCHAR(20) NOT NULL DEFAULT '', details VARCHAR(500) NOT NULL DEFAULT '',
+        pdf_url VARCHAR(500) NOT NULL DEFAULT '', hindi_url VARCHAR(500) NOT NULL DEFAULT '', source VARCHAR(80) NOT NULL DEFAULT '',
+        is_featured INT NOT NULL DEFAULT 0, status VARCHAR(20) NOT NULL DEFAULT 'published', sort_order INT NOT NULL DEFAULT 0,
+        updated_at VARCHAR(20) NOT NULL)$engine");
+
     require_once __DIR__ . '/../admin/inc/seed.php';
+    if ((int)$pdo->query('SELECT COUNT(*) FROM syllabi')->fetchColumn() === 0 && !setting('syllabi_seeded')) { seed_syllabi(); setting_set('syllabi_seeded', '1'); }
     // A brand-new (or emptied) website gets the starter menus, trades, pages and settings right away,
     // even before the admin account is created. Sample jobs are only added by the admin setup.
     if ((int)$pdo->query('SELECT COUNT(*) FROM trades')->fetchColumn() === 0 && (int)$pdo->query('SELECT COUNT(*) FROM menu_items')->fetchColumn() === 0) {
