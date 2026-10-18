@@ -1529,3 +1529,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .syl-trade h2 { font-size: 15.5px; }
 }
 @media (hover: none) { .syl-dl:active, .chip:active, .syl-src:active { transform: scale(.97); } }
+.syl-filter { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.syl-filter select {
+  height: 44px; padding: 0 40px 0 14px; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--ink);
+  font: 600 14px var(--font); box-shadow: var(--shadow); cursor: pointer; max-width: 100%;
+}
+.syl-filter select:focus { outline: none; box-shadow: var(--ring); }
+.syl-count { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+.syl-dl.alt { background: var(--grad-brand); box-shadow: 0 8px 18px rgba(31, 79, 214, .26); }
+.syl-dl.alt:hover { box-shadow: 0 12px 24px rgba(31, 79, 214, .34); }
+@media (max-width: 640px) { .syl-filter select { flex: 1 1 100%; } }
+.tr-search { margin-top: 18px; }
+.tr-none { margin-bottom: 16px; padding: 16px 18px; border-radius: 14px; background: #fff8f1; border: 1px solid #fed7aa; color: var(--text); }
+.tr-none a { display: inline-block; margin-top: 4px; font-weight: 700; color: var(--blue); }
+.tcard[hidden], .syl-row[hidden] { display: none !important; }

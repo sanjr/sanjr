@@ -588,3 +588,165 @@ function seed_syllabi(): void
         $ins->execute([$name, $tid[$key] ?? 0, $sector, $dur, $nsqf, $det, $url, $src, $feat, 'published', $i + 1, now()]);
     }
 }
+
+/**
+ * The rest of the NCVT CTS trades (DGT list). Trades without a verified direct PDF link point to the
+ * official CSTARI syllabus search for that trade. Only trades that are not in the list yet are added.
+ * Columns: trade, sector, duration, details, search keyword
+ */
+function seed_syllabi_more(): void
+{
+    $CG = 'Capital Goods & Manufacturing'; $AU = 'Automotive'; $PW = 'Power'; $EH = 'Electronics & Hardware'; $IT = 'IT & ITES';
+    $CO = 'Construction'; $CH = 'Chemicals & Petrochemicals'; $AP = 'Apparel'; $TX = 'Textile'; $HE = 'Healthcare'; $BW = 'Beauty & Wellness';
+    $TH = 'Tourism & Hospitality'; $FP = 'Food Processing'; $AG = 'Agriculture'; $ME = 'Media & Entertainment'; $MG = 'Management & Entrepreneurship';
+    $LG = 'Logistics'; $LE = 'Leather'; $RU = 'Rubber, Chemical & Petrochemical'; $MI = 'Mining'; $GR = 'Green Jobs'; $AE = 'Aerospace & Aviation';
+    $DO = 'Domestic Workers'; $HC = 'Handicrafts & Carpets'; $SE = 'Security'; $IN = 'Instrumentation'; $PL = 'Plumbing'; $LS = 'Life Sciences'; $TC = 'Telecom';
+    $list = [
+        // Engineering trades
+        ['Additive Manufacturing Technician (3D Printing)', $CG, '1 Year', '3D printing processes, CAD models and post-processing'],
+        ['Advanced CNC Machining Technician', $CG, '1 Year', 'CNC turning and milling, programming and set-up'],
+        ['Aeronautical Structure & Equipment Fitter', $AE, '2 Years', 'Aircraft structures, sheet metal, riveting and fitting'],
+        ['Architectural Assistant', $CO, '2 Years', 'Building drawing, architectural design and CAD'],
+        ['Attendant Operator (Chemical Plant)', $CH, '2 Years', 'Operation of chemical plant equipment and processes'],
+        ['Basic Designer & Virtual Verifier (Mechanical)', $CG, '2 Years', 'Product design, 3D CAD modelling and virtual verification'],
+        ['Building Maintenance', $CO, '1 Year', 'Maintenance of building, plumbing, electrical and civil works'],
+        ['Carpenter', $CO, '1 Year', 'Wood working, joinery, furniture and carpentry tools'],
+        ['Civil Engineer Assistant', $CO, '2 Years', 'Surveying, estimation, building materials and site work'],
+        ['Computer Hardware & Network Maintenance', $IT, '1 Year', 'PC assembly, troubleshooting, networking and servers'],
+        ['Drone Technician', $AE, '6 Months', 'Drone assembly, flying, maintenance and regulations'],
+        ['Fiber to Home Technician', $TC, '6 Months', 'Optical fibre laying, splicing and FTTH installation'],
+        ['Fireman', $SE, '1 Year', 'Fire fighting, rescue, fire safety equipment and drills'],
+        ['Foundryman', $CG, '1 Year', 'Moulding, core making, melting and casting'],
+        ['Furniture & Cabinet Maker', $CO, '1 Year', 'Furniture design, wood working and finishing'],
+        ['Geo-Informatics Assistant', $IT, '1 Year', 'GIS, GPS, remote sensing and digital mapping'],
+        ['Industrial Robotics & Digital Manufacturing Technician', $CG, '2 Years', 'Industrial robots, PLC and smart manufacturing'],
+        ['Internet of Things Technician (Smart Agriculture)', $EH, '1 Year', 'IoT sensors and devices for farming'],
+        ['Internet of Things Technician (Smart City)', $EH, '1 Year', 'IoT networks, sensors and smart city systems'],
+        ['Internet of Things Technician (Smart Healthcare)', $EH, '1 Year', 'IoT devices used in healthcare'],
+        ['Interior Design & Decoration', $CO, '1 Year', 'Interior planning, materials, colour and decoration'],
+        ['Laboratory Assistant (Chemical Plant)', $CH, '2 Years', 'Chemical testing, laboratory equipment and analysis'],
+        ['Lift & Escalator Mechanic', $CG, '2 Years', 'Installation and maintenance of lifts and escalators'],
+        ['Machinist Grinder', $CG, '2 Years', 'Surface, cylindrical and tool grinding operations'],
+        ['Maintenance Mechanic (Chemical Plant)', $CH, '2 Years', 'Maintenance of pumps, valves and chemical plant machinery'],
+        ['Manufacturing Process Control & Automation', $CG, '2 Years', 'PLC, sensors, process control and automation'],
+        ['Marine Engine Fitter', $CG, '2 Years', 'Marine diesel engines, fitting and maintenance'],
+        ['Marine Fitter', $CG, '2 Years', 'Ship fitting, fabrication and assembly'],
+        ['Mechanic Agricultural Machinery', $AG, '2 Years', 'Tractors, harvesters and farm machinery repair'],
+        ['Mechanic Auto Body Painting', $AU, '1 Year', 'Vehicle body painting, denting and finishing'],
+        ['Mechanic Auto Body Repair', $AU, '1 Year', 'Vehicle body repair, welding and panel work'],
+        ['Mechanic Computer Hardware', $IT, '2 Years', 'Computer hardware, peripherals and repair'],
+        ['Mechanic cum Operator Electronics Communication System', $EH, '2 Years', 'Communication equipment, antennas and RF systems'],
+        ['Mechanic Electric Vehicle', $AU, '2 Years', 'Electric vehicle systems, servicing and repair'],
+        ['Mechanic Lens / Prism Grinding', $CG, '1 Year', 'Optical lens and prism grinding and polishing'],
+        ['Mechanic Machine Tool Maintenance', $CG, '2 Years', 'Maintenance of machine tools, hydraulics and pneumatics'],
+        ['Mechanic Mechatronics', $CG, '2 Years', 'Mechanical, electrical, electronics and PLC systems'],
+        ['Mechanic Medical Electronics', $HE, '2 Years', 'Medical electronic equipment repair and maintenance'],
+        ['Mechanic Mining Machinery', $MI, '2 Years', 'Mining machines, hydraulics and maintenance'],
+        ['Mechanic Motor Cycle', $AU, '1 Year', 'Motorcycle engine, transmission and servicing'],
+        ['Mechanic Two & Three Wheeler', $AU, '1 Year', 'Two and three wheeler servicing and repair'],
+        ['Mechanic Repair & Maintenance of Heavy Vehicles', $AU, '1 Year', 'Trucks and buses repair and maintenance'],
+        ['Mechanic Repair & Maintenance of Light Vehicles', $AU, '1 Year', 'Car repair and maintenance'],
+        ['Mechanic Repair & Maintenance of Two Wheelers', $AU, '1 Year', 'Scooter and motorcycle repair'],
+        ['Operator Advanced Machine Tool', $CG, '2 Years', 'CNC machine operation and programming'],
+        ['Plastic Processing Operator', $RU, '1 Year', 'Injection moulding, extrusion and plastic processing'],
+        ['Pump Operator cum Mechanic', $PW, '1 Year', 'Pump operation, maintenance and repair'],
+        ['Radiology Technician', $HE, '2 Years', 'X-ray, imaging equipment and radiation safety'],
+        ['Rubber Technician', $RU, '1 Year', 'Rubber processing, compounding and moulding'],
+        ['Solar Technician (Electrical)', $GR, '1 Year', 'Solar PV installation, wiring and maintenance'],
+        ['Spinning Technician', $TX, '2 Years', 'Spinning machines, yarn production and quality'],
+        ['Surveyor', $CO, '2 Years', 'Land survey, levelling, total station and mapping'],
+        ['Technician Mechatronics', $CG, '2 Years', 'Mechatronic systems, sensors, PLC and robotics'],
+        ['Technician Power Electronics System', $EH, '2 Years', 'Power electronic devices, drives and converters'],
+        ['Textile Mechatronics', $TX, '2 Years', 'Automation in textile machinery'],
+        ['Textile Wet Processing Technician', $TX, '2 Years', 'Dyeing, printing and finishing of textiles'],
+        ['Tool & Die Maker (Press Tools, Jigs & Fixtures)', $CG, '2 Years', 'Press tools, jigs, fixtures and gauges'],
+        ['Vessel Navigator', $LG, '2 Years', 'Ship navigation, seamanship and safety'],
+        ['Water Technician', $GR, '1 Year', 'Water treatment, testing and supply systems'],
+        ['Weaving Technician', $TX, '2 Years', 'Weaving machines, fabric production and quality'],
+        ['Welder (Gas & Electric)', $CG, '1 Year', 'Gas welding, arc welding and cutting'],
+        ['Welder (Pipe)', $CG, '1 Year', 'Pipe welding in all positions'],
+        ['Welder (TIG / MIG)', $CG, '1 Year', 'TIG and MIG/MAG welding processes'],
+        ['Welder (Welding & Inspection)', $CG, '1 Year', 'Welding processes and inspection of welds'],
+        // Non-engineering trades
+        ['Agro Processing', $FP, '1 Year', 'Processing of grains, pulses and agricultural produce'],
+        ['Baker & Confectioner', $FP, '1 Year', 'Bread, cakes, biscuits and confectionery'],
+        ['Basic Cosmetology', $BW, '1 Year', 'Hair, skin and beauty care basics'],
+        ['Cane, Willow & Bamboo Worker', $HC, '1 Year', 'Cane and bamboo products and handicrafts'],
+        ['Catering & Hospitality Assistant', $TH, '1 Year', 'Catering, food service and hospitality'],
+        ['Computer Aided Embroidery & Designing', $AP, '1 Year', 'Computerised embroidery machines and design'],
+        ['Corporate House Keeping', $TH, '1 Year', 'Housekeeping in offices and corporate buildings'],
+        ['Cosmetology', $BW, '1 Year', 'Hair styling, skin care, make-up and salon work'],
+        ['Craftsman Food Production (General)', $TH, '1 Year', 'Cooking, kitchen operations and food production'],
+        ['Craftsman Food Production (Vegetarian)', $TH, '1 Year', 'Vegetarian cooking and kitchen operations'],
+        ['Creche Management', $DO, '1 Year', 'Child care and creche management'],
+        ['Cutting & Sewing', $AP, '1 Year', 'Garment cutting, stitching and tailoring'],
+        ['Dairying', $AG, '1 Year', 'Milk production, dairy farm and milk products'],
+        ['Dental Laboratory Equipment Technician', $HE, '2 Years', 'Dental lab equipment and prosthesis work'],
+        ['Desktop Publishing Operator', $ME, '1 Year', 'DTP software, layout and printing'],
+        ['Digital Photographer', $ME, '1 Year', 'Digital camera, lighting and photo editing'],
+        ['Domestic House Keeping', $DO, '6 Months', 'Housekeeping in homes'],
+        ['Dress Making', $AP, '1 Year', 'Pattern making, cutting and dress stitching'],
+        ['Driver cum Mechanic (Light Motor Vehicle)', $AU, '6 Months', 'Driving and basic vehicle maintenance'],
+        ['Embroidery & Needle Worker', $AP, '1 Year', 'Hand and machine embroidery'],
+        ['Event Management Assistant', $MG, '1 Year', 'Planning and managing events'],
+        ['Finance Executive', $MG, '1 Year', 'Accounting, banking and finance basics'],
+        ['Fire Technology & Industrial Safety Management', $SE, '1 Year', 'Fire safety, industrial safety and hazards'],
+        ['Floriculture & Landscaping', $AG, '1 Year', 'Flower growing, gardening and landscaping'],
+        ['Food & Beverages Service Assistant', $TH, '1 Year', 'Restaurant service, bar and beverages'],
+        ['Front Office Assistant', $TH, '1 Year', 'Hotel front office, reception and guest service'],
+        ['Fruits & Vegetables Processing', $FP, '1 Year', 'Jams, pickles, juices and food preservation'],
+        ['Hair & Skin Care', $BW, '1 Year', 'Hair cutting, styling and skin treatments'],
+        ['Health Safety & Environment', $SE, '1 Year', 'Workplace health, safety and environment'],
+        ['Health Sanitary Inspector', $HE, '1 Year', 'Public health, sanitation and hygiene'],
+        ['Horticulture', $AG, '1 Year', 'Fruits, vegetables, nursery and gardening'],
+        ['Hospital House Keeping', $HE, '1 Year', 'Housekeeping and hygiene in hospitals'],
+        ['Hospital Waste Management', $HE, '1 Year', 'Bio-medical waste handling and disposal'],
+        ['Human Resource Executive', $MG, '1 Year', 'HR, recruitment, payroll and office work'],
+        ['Institution House Keeping', $TH, '1 Year', 'Housekeeping in institutions'],
+        ['Insurance Agent', $MG, '6 Months', 'Insurance products, sales and customer service'],
+        ['Leather Goods Maker', $LE, '1 Year', 'Leather cutting, stitching and goods making'],
+        ['Library & Information Science', $MG, '1 Year', 'Library management and information services'],
+        ['Litigation Assistant', $MG, '1 Year', 'Legal documents, court procedures and office work'],
+        ['Marketing Executive', $MG, '1 Year', 'Sales, marketing and customer relations'],
+        ['Medical Transcription', $HE, '1 Year', 'Medical terms, typing and transcription'],
+        ['Milk & Milk Products', $FP, '1 Year', 'Processing of milk and dairy products'],
+        ['Office Assistant cum Computer Operator', $IT, '1 Year', 'Office work, computer and typing'],
+        ['Old Age Care Assistant', $HE, '1 Year', 'Care of elderly people'],
+        ['Physiotherapy Technician', $HE, '2 Years', 'Physiotherapy equipment and exercises'],
+        ['Photographer', $ME, '1 Year', 'Photography, lighting and processing'],
+        ['Plate Maker cum Impositor', $ME, '1 Year', 'Printing plates and imposition'],
+        ['Pre / Preparatory School Management (Assistant)', $DO, '1 Year', 'Pre-school teaching and management'],
+        ['Printing Technology', $ME, '1 Year', 'Offset printing machines and printing processes'],
+        ['Programming & Systems Administration Assistant', $IT, '1 Year', 'Programming, operating systems and administration'],
+        ['Secretarial Practice (English)', $MG, '1 Year', 'Office procedure, correspondence and computer'],
+        ['Sericulture', $AG, '1 Year', 'Silkworm rearing and silk production'],
+        ['Software Testing Assistant', $IT, '1 Year', 'Manual and automated software testing'],
+        ['Spa Therapy', $BW, '1 Year', 'Spa treatments, massage and wellness'],
+        ['Stenographer & Secretarial Assistant (Hindi)', $MG, '1 Year', 'Hindi shorthand, typing and office work'],
+        ['Surface Ornamentation Techniques (Embroidery)', $AP, '1 Year', 'Surface decoration and embroidery techniques'],
+        ['Tourist Guide', $TH, '1 Year', 'Tourism, heritage sites and guiding'],
+        ['Travel & Tour Assistant', $TH, '1 Year', 'Ticketing, tour planning and travel services'],
+        ['Weaving of Fancy Fabric', $TX, '1 Year', 'Handloom and fancy fabric weaving'],
+        ['Weaving of Silk & Woolen Fabric', $TX, '1 Year', 'Silk and woollen fabric weaving'],
+        ['Yoga Assistant', $BW, '1 Year', 'Yoga practices and wellness'],
+        ['Commercial Art', $ME, '1 Year', 'Drawing, painting, design and graphics'],
+        ['Web Designing & Computer Graphics', $IT, '1 Year', 'Web design, HTML, CSS and graphics'],
+        ['Computer Software Application', $IT, '1 Year', 'Office software, accounting software and applications'],
+        ['Footwear Maker', $LE, '1 Year', 'Footwear design, cutting and making'],
+        ['Jewellery Maker (Gold Smith)', $HC, '1 Year', 'Gold and silver jewellery making'],
+        ['Smart Phone Technician cum App Tester', $EH, '1 Year', 'Smartphone hardware repair, software and app testing'],
+    ];
+    $have = [];
+    foreach (db()->query('SELECT trade_name FROM syllabi') as $r) $have[strtolower(preg_replace('/\W+/', '', $r['trade_name']))] = 1;
+    $sort = (int)db()->query('SELECT COALESCE(MAX(sort_order), 0) FROM syllabi')->fetchColumn();
+    $ins = db()->prepare('INSERT INTO syllabi (trade_name, trade_id, sector, duration, nsqf, details, pdf_url, source, is_featured, status, sort_order, updated_at) VALUES (?, 0, ?, ?, \'\', ?, ?, ?, 0, ?, ?, ?)');
+    foreach ($list as [$name, $sector, $dur, $det]) {
+        $key = strtolower(preg_replace('/\W+/', '', $name));
+        if (isset($have[$key])) continue;
+        $have[$key] = 1;
+        $kw = trim(preg_replace('/\s*\(.*$/', '', $name));
+        $url = 'https://www.cstaricalcutta.gov.in/en/cts-syllabus?title=' . rawurlencode($kw)
+            . '&field_sector_name_target_id=All&field_duration_target_id=All&field_syllabus_branch_target_id=All&field_level_target_id=All&field_trainee_qualification_target_id=All';
+        $ins->execute([$name, $sector, $dur, $det, $url, 'CSTARI', 'published', ++$sort, now()]);
+    }
+}

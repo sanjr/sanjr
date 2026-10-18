@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '10';
+const SCHEMA_VERSION = '11';
 
 function db(): PDO
 {
@@ -107,6 +107,7 @@ function db_migrate(PDO $pdo): void
 
     require_once __DIR__ . '/../admin/inc/seed.php';
     if ((int)$pdo->query('SELECT COUNT(*) FROM syllabi')->fetchColumn() === 0 && !setting('syllabi_seeded')) { seed_syllabi(); setting_set('syllabi_seeded', '1'); }
+    if (!setting('syllabi_more_seeded')) { seed_syllabi_more(); setting_set('syllabi_more_seeded', '1'); }
     // A brand-new (or emptied) website gets the starter menus, trades, pages and settings right away,
     // even before the admin account is created. Sample jobs are only added by the admin setup.
     if ((int)$pdo->query('SELECT COUNT(*) FROM trades')->fetchColumn() === 0 && (int)$pdo->query('SELECT COUNT(*) FROM menu_items')->fetchColumn() === 0) {

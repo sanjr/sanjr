@@ -55,11 +55,15 @@ require __DIR__ . '/includes/header.php';
   <section class="section syl-sec">
     <div class="container">
       <div class="syl-bar">
-        <div class="syl-chips" role="group" aria-label="Filter by sector">
-          <button type="button" class="chip on" data-sector="">All</button>
-<?php foreach ($sectors as $s): ?>
-          <button type="button" class="chip" data-sector="<?= e($s) ?>"><?= e($s) ?></button>
+        <div class="syl-filter">
+          <label class="sr-only" for="syl-sector">Sector</label>
+          <select id="syl-sector">
+            <option value="">All sectors (<?= count($rows) ?>)</option>
+<?php $sc = array_count_values(array_column($rows, 'sector')); foreach ($sectors as $s): ?>
+            <option value="<?= e($s) ?>"><?= e($s) ?> (<?= $sc[$s] ?? 0 ?>)</option>
 <?php endforeach; ?>
+          </select>
+          <span class="syl-count" id="syl-count" aria-live="polite">Showing <?= count($rows) ?> trades</span>
         </div>
         <a class="syl-src" href="<?= e($cstari) ?>" target="_blank" rel="noopener nofollow"><?= icon('globe') ?> All trades on CSTARI <?= icon('arrow') ?></a>
       </div>
@@ -79,10 +83,11 @@ require __DIR__ . '/includes/header.php';
           </div>
           <p class="syl-det"><?= e($r['details']) ?><?php if ($r['tslug']): ?> <a href="/trades/<?= e($r['tslug']) ?>/">Mock tests &amp; notes →</a><?php endif; ?></p>
           <div class="syl-acts">
-            <a class="syl-dl" href="<?= e($r['pdf_url']) ?>" target="_blank" rel="noopener nofollow" download><?= icon('download') ?> Download PDF</a>
+<?php $isPdf = (bool)preg_match('~\.pdf($|\?)~i', $r['pdf_url']); ?>
+            <a class="syl-dl<?= $isPdf ? '' : ' alt' ?>" href="<?= e($r['pdf_url']) ?>" target="_blank" rel="noopener nofollow"><?= icon($isPdf ? 'download' : 'open') ?> <?= $isPdf ? 'Download PDF' : 'View Syllabus' ?></a>
 <?php if ($r['hindi_url']): ?>            <a class="syl-hi" href="<?= e($r['hindi_url']) ?>" target="_blank" rel="noopener nofollow">हिंदी PDF</a>
 <?php endif; ?>
-            <?php if ($r['source']): ?><small class="syl-by">Source: <?= e($r['source']) ?></small><?php endif; ?>
+            <?php if ($r['source']): ?><small class="syl-by"><?= $isPdf ? 'Source: ' . e($r['source']) : 'Opens on ' . e($r['source']) ?></small><?php endif; ?>
           </div>
         </article>
 <?php endforeach; ?>
@@ -110,23 +115,20 @@ require __DIR__ . '/includes/header.php';
 </main>
 <script>
 (function () {
-  var q = document.getElementById('syl-q'), rows = [].slice.call(document.querySelectorAll('.syl-row')),
-      chips = [].slice.call(document.querySelectorAll('.syl-chips .chip')), none = document.querySelector('.syl-none'), sector = '';
+  var q = document.getElementById('syl-q'), sel = document.getElementById('syl-sector'), cnt = document.getElementById('syl-count'),
+      rows = [].slice.call(document.querySelectorAll('.syl-row')), none = document.querySelector('.syl-none');
   function apply() {
-    var t = (q.value || '').trim().toLowerCase(), shown = 0;
+    var t = (q.value || '').trim().toLowerCase().split(/\s+/).filter(Boolean), sector = sel.value, shown = 0;
     rows.forEach(function (r) {
-      var ok = (!t || r.dataset.name.indexOf(t) > -1) && (!sector || r.dataset.sector === sector);
-      r.hidden = !ok; if (ok) shown++;
+      var ok = t.every(function (w) { return r.dataset.name.indexOf(w) > -1; }) && (!sector || r.dataset.sector === sector);
+      r.hidden = !ok;
+      if (ok) r.querySelector('.syl-no').textContent = ++shown;
     });
     none.hidden = shown > 0;
+    cnt.textContent = 'Showing ' + shown + ' of ' + rows.length + ' trades';
   }
   q.addEventListener('input', apply);
-  chips.forEach(function (c) {
-    c.addEventListener('click', function () {
-      chips.forEach(function (x) { x.classList.toggle('on', x === c); });
-      sector = c.dataset.sector; apply();
-    });
-  });
+  sel.addEventListener('change', apply);
   var p = new URLSearchParams(location.search).get('q'); if (p) { q.value = p; apply(); }
 })();
 </script>

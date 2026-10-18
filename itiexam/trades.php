@@ -17,14 +17,20 @@ require __DIR__ . '/includes/header.php';
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <?= icon('chev-r') ?> <span aria-current="page">Trades</span></nav>
       <h1>All ITI Trades</h1>
       <p class="lead">Choose your trade to start mock tests, read notes and solve previous year papers.</p>
+      <div class="syl-search tr-search">
+        <label class="sr-only" for="tr-q">Search trade</label>
+        <span class="ss-ic"><?= icon('search') ?></span>
+        <input id="tr-q" type="search" placeholder="Search any ITI trade… (e.g. Fitter, COPA, Electrician)" autocomplete="off">
+      </div>
     </div>
   </section>
   <section class="section">
     <div class="container">
+      <p class="tr-none" id="tr-none" hidden>No trade page found for “<b id="tr-term"></b>”. <a id="tr-syl" href="/syllabus/">Search it in all 160+ ITI trades syllabus →</a></p>
       <div class="tgrid">
 <?php $tc = ['c-blue', 'c-orange', 'c-green', 'c-purple', 'c-red', 'c-cyan', 'c-pink', 'c-teal'];
 foreach ($all as $i => $t): ?>
-        <a class="tcard <?= $tc[$i % count($tc)] ?>" href="<?= e(trade_url($t)) ?>">
+        <a class="tcard <?= $tc[$i % count($tc)] ?>" href="<?= e(trade_url($t)) ?>" data-name="<?= e(strtolower($t['name'] . ' ' . $t['full_name'] . ' ' . $t['short_desc'])) ?>">
           <span class="tci"><?php if ($t['image']): ?><img src="<?= e(upload_url($t['image'])) ?>" alt="<?= e($t['name']) ?> ITI trade" width="44" height="44" loading="lazy"><?php else: ?><span aria-hidden="true"><?= e($t['emoji'] ?: '🛠️') ?></span><?php endif; ?></span>
           <h2><?= e($t['name']) ?></h2>
           <p><?= e($t['short_desc']) ?></p>
@@ -38,4 +44,18 @@ foreach ($all as $i => $t): ?>
     </div>
   </section>
 </main>
+<script>
+(function () {
+  var q = document.getElementById('tr-q'), cards = [].slice.call(document.querySelectorAll('.tcard')), ad = document.querySelector('.tgrid-ad'),
+      none = document.getElementById('tr-none'), term = document.getElementById('tr-term'), link = document.getElementById('tr-syl');
+  q.addEventListener('input', function () {
+    var w = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean), shown = 0;
+    cards.forEach(function (c) { var ok = w.every(function (x) { return c.dataset.name.indexOf(x) > -1; }); c.hidden = !ok; if (ok) shown++; });
+    if (ad) ad.hidden = w.length > 0;
+    none.hidden = shown > 0 || !w.length;
+    term.textContent = q.value.trim();
+    link.href = '/syllabus/?q=' + encodeURIComponent(q.value.trim());
+  });
+})();
+</script>
 <?php require __DIR__ . '/includes/footer.php'; ?>
