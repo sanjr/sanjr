@@ -65,7 +65,6 @@ require __DIR__ . '/includes/header.php';
           </select>
           <span class="syl-count" id="syl-count" aria-live="polite">Showing <?= count($rows) ?> trades</span>
         </div>
-        <a class="syl-src" href="<?= e($cstari) ?>" target="_blank" rel="noopener nofollow"><?= icon('globe') ?> All trades on CSTARI <?= icon('arrow') ?></a>
       </div>
 
       <div class="syl-table card" id="syl-list">

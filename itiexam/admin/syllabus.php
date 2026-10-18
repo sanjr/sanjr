@@ -25,7 +25,6 @@ if (is_post()) {
     }
     if ($action === 'settings') {
         setting_set('syllabus_intro', trim(post('syllabus_intro')));
-        setting_set('syllabus_source_url', trim(post('syllabus_source_url')));
         flash('Saved.'); redirect('/admin/syllabus.php');
     }
     foreach (['trade_name', 'sector', 'duration', 'nsqf', 'details', 'pdf_url', 'hindi_url', 'source'] as $k) $edit[$k] = mb_substr(post($k), 0, $k === 'details' ? 500 : 500);
@@ -121,7 +120,6 @@ admin_header('Syllabus PDFs', 'syllabus');
           <h2>Page settings</h2>
           <?= csrf_field() ?><input type="hidden" name="action" value="settings">
           <label>Intro text under the heading <textarea name="syllabus_intro" rows="3" placeholder="Leave empty for the default text"><?= e(setting('syllabus_intro')) ?></textarea></label>
-          <label>“All trades on CSTARI” button link <input name="syllabus_source_url" value="<?= e(setting('syllabus_source_url')) ?>" placeholder="https://www.cstaricalcutta.gov.in/en/cts-syllabus"></label>
           <div class="bar"><span></span><button class="btn alt">Save</button></div>
         </form>
       </div>
