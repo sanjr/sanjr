@@ -85,6 +85,7 @@ $ld[] = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' 
     '@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], $faqLd)];
 
 $meta = ['title' => $title, 'description' => $desc, 'keywords' => $keywords, 'path' => $path,
+    'rv' => ['t' => $name . ' Trade', 's' => $t['full_name'] ?: 'ITI Trade', 'i' => $t['emoji'] ?: '🛠️'],
     'image' => $t['image'] ? upload_url($t['image']) : null, 'jsonld' => $ld];
 
 /* Tabs / side menu: Overview + every section that has content */

@@ -58,13 +58,45 @@ foreach ($ps as [$l, $u]): ?>        <a href="<?= e($u) ?>"><?= e($l) ?></a>
   <a class="wa-float" href="<?= e($wa) ?>" target="_blank" rel="noopener" aria-label="Join our WhatsApp group"><?= icon('wa') ?><span>Join Group</span></a>
 <?php endif; ?>
 
+  <!-- Live search panel (full screen on phones) -->
+  <div class="sov" id="sov" role="dialog" aria-modal="true" aria-label="Search ITIExam" hidden>
+    <div class="sov-box">
+      <form class="sov-bar" action="/search/" method="get" role="search">
+        <button type="button" class="sov-back" aria-label="Close search"><?= icon('chev-l') ?></button>
+        <?= icon('search', 'ic sov-ic') ?>
+        <input type="search" name="q" id="sov-q" placeholder="Search trade, test, syllabus, job…" autocomplete="off" enterkeyhint="search" aria-controls="sov-res" aria-autocomplete="list">
+        <button type="button" class="sov-clear" aria-label="Clear" hidden><?= icon('close') ?></button>
+      </form>
+      <div class="sov-body">
+        <div class="sov-start">
+          <div class="sov-sec" id="sov-recent" hidden><h3>Recent searches <button type="button" class="sov-x" data-clear="itx_rs">Clear</button></h3><div class="sov-chips"></div></div>
+          <div class="sov-sec" id="sov-viewed" hidden><h3>Recently viewed <button type="button" class="sov-x" data-clear="itx_rv">Clear</button></h3><ul class="sov-list"></ul></div>
+          <div class="sov-sec"><h3>Popular searches</h3><div class="sov-chips">
+<?php foreach (array_merge(array_map(fn($t) => $t['name'], array_slice(trades(true), 0, 6)), ['Mock Test', 'Syllabus', 'Apprentice', 'Jobs']) as $c): ?>
+            <a href="/search/?q=<?= e(rawurlencode($c)) ?>" data-q="<?= e($c) ?>"><?= icon('search') ?><?= e($c) ?></a>
+<?php endforeach; ?>
+          </div></div>
+          <div class="sov-sec"><h3>Quick links</h3><div class="sov-quick">
+            <a href="/trades/"><span class="c-blue"><?= icon('grid') ?></span>All Trades</a>
+            <a href="/mock-test/"><span class="c-orange"><?= icon('clip') ?></span>Mock Tests</a>
+            <a href="/syllabus/"><span class="c-green"><?= icon('book') ?></span>Syllabus</a>
+            <a href="/jobs/"><span class="c-purple"><?= icon('brief') ?></span>Jobs</a>
+          </div></div>
+        </div>
+        <ul class="sov-list sov-res" id="sov-res" role="listbox" hidden></ul>
+        <p class="sov-msg" hidden></p>
+        <a class="sov-all" href="/search/" hidden></a>
+      </div>
+    </div>
+  </div>
+
   <!-- Phone bottom navigation -->
   <nav class="bnav" aria-label="Quick navigation">
 <?php
 $cp = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
 foreach ([['/', 'Home', 'home'], ['/trades/', 'Trades', 'grid'], ['/mock-test/', 'Tests', 'clip'], ['/jobs/', 'Jobs', 'brief'], ['/search/', 'Search', 'search']] as [$u, $l, $ic]):
     $on = $u === '/' ? $cp === '/' : str_starts_with($cp, $u); ?>
-    <a href="<?= $u ?>" class="<?= $u === '/mock-test/' ? 'fab' : '' ?><?= $on ? ' on' : '' ?>"<?= $on ? ' aria-current="page"' : '' ?>><span class="bi"><?= icon($ic) ?></span><span class="bl"><?= $l ?></span></a>
+    <a href="<?= $u ?>" class="<?= $u === '/mock-test/' ? 'fab' : '' ?><?= $on ? ' on' : '' ?>"<?= $on ? ' aria-current="page"' : '' ?><?= $u === '/search/' ? ' data-sov' : '' ?>><span class="bi"><?= icon($ic) ?></span><span class="bl"><?= $l ?></span></a>
 <?php endforeach; ?>
   </nav>
   <div class="nav-overlay" hidden></div>

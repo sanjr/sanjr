@@ -206,6 +206,14 @@ require __DIR__ . '/includes/header.php';
       </div>
     </section>
 
+    <!-- ===== Continue where you left off (filled from this browser's history by main.js) ===== -->
+    <section class="rv-home" id="rv-home" aria-label="Recently viewed" hidden>
+      <div class="container">
+        <div class="rv-head"><h2><?= icon('clock') ?> Continue where you left off</h2><button type="button" class="sov-x" data-clear="itx_rv">Clear</button></div>
+        <div class="rv-track"></div>
+      </div>
+    </section>
+
     <div class="container"><?= ad('home_top', 'wide') ?></div>
 
 <?php if ($show('trades')):

@@ -48,6 +48,7 @@ $meta = [
     'description' => $desc,
     'keywords' => "ITI $name mock test, ITI $name online test, {$test['title']}, ITI CBT mock test, NCVT online test",
     'path' => $path,
+    'rv' => ['t' => ($test['tname'] ? $test['tname'] . ' – ' : '') . $test['title'], 's' => 'Mock Test' . ($test['questions'] ? ' · ' . $test['questions'] . ' Questions' : ''), 'i' => '📝'],
     'jsonld' => [
         ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => array_map(fn($c, $i) =>
             ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $c[0], 'item' => SITE_URL . $c[1]], $crumbs, array_keys($crumbs))],
