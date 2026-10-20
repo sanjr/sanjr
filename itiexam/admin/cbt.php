@@ -98,7 +98,7 @@ admin_header('CBT Tests', 'cbt');
 ?>
     <div class="grid2 wide-left">
       <section class="box tablebox">
-        <h2>Your HTML tests</h2>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>Your HTML tests</h2><a class="btn" href="/admin/cbt-import.php">📦 Bulk import (all trades)</a></div>
         <p class="muted">Upload tests you made as HTML web pages. Each test gets its own page on the website (with your header, full-screen button and more tests) and can appear automatically in the trade's <b>Mock Tests</b> list.</p>
         <table>
           <thead><tr><th>Test</th><th>Trade</th><th>Status</th><th>Actions</th></tr></thead>
