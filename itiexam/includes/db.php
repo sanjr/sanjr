@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '12';
+const SCHEMA_VERSION = '13';
 
 function db(): PDO
 {
@@ -106,6 +106,17 @@ function db_migrate(PDO $pdo): void
     $pdo->exec("CREATE TABLE IF NOT EXISTS not_found_log (
         id $id, path VARCHAR(300) NOT NULL UNIQUE, hits INT NOT NULL DEFAULT 1, referrer VARCHAR(300) NOT NULL DEFAULT '',
         last_seen VARCHAR(20) NOT NULL)$engine");
+
+    // Students sign in with Google; every finished CBT test is one attempt
+    $pdo->exec("CREATE TABLE IF NOT EXISTS students (
+        id $id, google_id VARCHAR(64) NOT NULL UNIQUE, email VARCHAR(190) NOT NULL DEFAULT '', name VARCHAR(160) NOT NULL DEFAULT '',
+        picture VARCHAR(500) NOT NULL DEFAULT '', trade_id INT NOT NULL DEFAULT 0, created_at VARCHAR(20) NOT NULL, last_login VARCHAR(20) NOT NULL)$engine");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS attempts (
+        id $id, student_id INT NOT NULL, test_id INT NOT NULL DEFAULT 0, trade_id INT NOT NULL DEFAULT 0,
+        title VARCHAR(255) NOT NULL DEFAULT '', level VARCHAR(20) NOT NULL DEFAULT '', score INT NOT NULL DEFAULT 0, total INT NOT NULL DEFAULT 0,
+        pct INT NOT NULL DEFAULT 0, passed INT NOT NULL DEFAULT 0, time_sec INT NOT NULL DEFAULT 0, lang VARCHAR(20) NOT NULL DEFAULT '',
+        created_at VARCHAR(20) NOT NULL)$engine");
+    try { $pdo->exec('CREATE INDEX attempts_student ON attempts (student_id)'); } catch (PDOException $e) { /* already there */ }
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS syllabi (
         id $id, trade_name VARCHAR(160) NOT NULL, trade_id INT NOT NULL DEFAULT 0, sector VARCHAR(120) NOT NULL DEFAULT '',

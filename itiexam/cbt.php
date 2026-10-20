@@ -25,6 +25,16 @@ if (isset($_GET['p'])) {
     header('X-Content-Type-Options: nosniff');
     header('X-Robots-Tag: noindex');
     header('Cache-Control: ' . (in_array($ext, ['html', 'htm'], true) ? 'no-cache' : 'public, max-age=86400'));
+    if (in_array($ext, ['html', 'htm'], true)) {
+        // Tell the website page when the test is finished, so the result can go to the student's dashboard
+        $html = file_get_contents($file);
+        $bridge = '<script>' . file_get_contents(__DIR__ . '/assets/js/cbt-bridge.js') . '</script>';
+        $pos = strripos($html, '</body>');
+        $html = $pos === false ? $html . $bridge : substr($html, 0, $pos) . $bridge . substr($html, $pos);
+        header('Content-Length: ' . strlen($html));
+        echo $html;
+        exit;
+    }
     header('Content-Length: ' . filesize($file));
     readfile($file);
     exit;
@@ -58,6 +68,7 @@ $meta = [
          'provider' => ['@type' => 'Organization', 'name' => SITE_NAME, 'url' => SITE_URL . '/']],
     ],
 ];
+$me = student();
 require __DIR__ . '/includes/header.php';
 ?>
 <main id="main">
@@ -83,7 +94,8 @@ require __DIR__ . '/includes/header.php';
       </div>
       <div class="cbt-frame" id="cbt-frame">
         <button type="button" class="cbt-close" id="cbt-close" aria-label="Exit full screen">✕</button>
-        <iframe src="<?= e(cbt_play_url($test)) ?>" title="<?= e($test['title']) ?>" sandbox="<?= e(cbt_sandbox()) ?>" allow="fullscreen; geolocation" loading="eager"></iframe>
+        <iframe id="cbt-if" src="<?= e(cbt_play_url($test)) ?>" title="<?= e($test['title']) ?>" sandbox="<?= e(cbt_sandbox()) ?>" allow="fullscreen; geolocation" loading="eager"></iframe>
+        <div class="cbt-save" id="cbt-save" role="status" aria-live="polite" hidden></div>
       </div>
 <?php if ($test['description']): ?>      <p class="cbt-desc"><?= e($test['description']) ?></p>
 <?php endif; ?>
@@ -112,6 +124,35 @@ require __DIR__ . '/includes/header.php';
     });
     document.getElementById("cbt-close").addEventListener("click", function () {
       if (document.fullscreenElement) document.exitFullscreen(); else box.classList.remove("max");
+    });
+  })();
+  // Finished test → saved to the student's dashboard (guests are asked to log in; the result waits in this browser)
+  (function () {
+    var frame = document.getElementById("cbt-if"), box = document.getElementById("cbt-save");
+    var folder = <?= json_encode($test['folder']) ?>, me = <?= json_encode($me ? ['name' => $me['name'], 'csrf' => csrf_token()] : null, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE) ?>;
+    var login = <?= json_encode(login_url($path)) ?>;
+    function show(cls, html) {
+      box.className = "cbt-save " + cls; box.innerHTML = html + '<button type="button" class="cbt-save-x" aria-label="Close">✕</button>'; box.hidden = false;
+      box.lastChild.onclick = function () { box.hidden = true; };
+    }
+    window.addEventListener("message", function (e) {
+      if (!frame || e.source !== frame.contentWindow || !e.data || typeof e.data !== "object") return;
+      if (e.data.itx === "ready" && me) { frame.contentWindow.postMessage({ itx: "student", name: me.name }, "*"); return; }
+      if (e.data.itx !== "result" || !e.data.data) return;
+      var d = e.data.data, r = { folder: folder, score: +d.score || 0, total: +d.total || 0, pct: +d.pct || 0, status: String(d.status || ""), lang: String(d.lang || ""), time: +e.data.time || 0, at: Date.now() };
+      if (!me) {
+        try { var q = JSON.parse(localStorage.getItem("itx_pending") || "[]"); q.push(r); localStorage.setItem("itx_pending", JSON.stringify(q.slice(-20))); } catch (x) {}
+        show("guest", "<b>Score: " + r.score + (r.total ? " / " + r.total : "") + "</b> <span>Login with Google to save this result and track your progress.</span> <a class=\"btn-sm\" href=\"" + login + "\">Login &amp; Save</a>");
+        return;
+      }
+      r.csrf = me.csrf;
+      fetch("/api/attempt/", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) })
+        .then(function (res) { return res.json(); })
+        .then(function (j) {
+          if (!j.ok) throw 0;
+          show("ok", "<b>✓ Result saved</b> <span>" + r.score + (r.total ? " / " + r.total : "") + " added to your dashboard.</span> <a class=\"btn-sm\" href=\"/student/\">View Dashboard</a>");
+        })
+        .catch(function () { show("err", "<b>Could not save the result.</b> <span>Please check your internet and refresh the page.</span>"); });
     });
   })();
 </script>

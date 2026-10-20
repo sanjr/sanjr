@@ -25,6 +25,11 @@ RewriteRule ^syllabus/?$ syllabus.php [L,QSA]
 RewriteRule ^search/?$ search.php [L,QSA]
 RewriteRule ^cbt/([a-z0-9-]+)/?$ cbt.php?f=$1 [L,QSA]
 RewriteRule ^cbt/([a-z0-9-]+)/play/(.+)$ cbt.php?f=$1&p=$2 [L,QSA,B]
+RewriteRule ^login/?$ student-login.php [L,QSA]
+RewriteRule ^auth/google/?$ auth-google.php [L,QSA]
+RewriteRule ^logout/?$ student-logout.php [L,QSA]
+RewriteRule ^student/?$ student-dashboard.php [L,QSA]
+RewriteRule ^api/attempt/?$ api-attempt.php [L,QSA]
 
 # Add trailing slash to page URLs
 RewriteCond %{REQUEST_FILENAME} !-f

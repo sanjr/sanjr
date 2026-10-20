@@ -21,6 +21,11 @@ if (preg_match('~^/syllabus/?$~', $path)) { require __DIR__ . '/syllabus.php'; r
 if (preg_match('~^/search/?$~', $path)) { require __DIR__ . '/search.php'; return true; }
 if (preg_match('~^/cbt/([a-z0-9-]+)/play/(.+)$~', $path, $m)) { $_GET['f'] = $m[1]; $_GET['p'] = $m[2]; require __DIR__ . '/cbt.php'; return true; }
 if (preg_match('~^/cbt/([a-z0-9-]+)/?$~', $path, $m)) { $_GET['f'] = $m[1]; require __DIR__ . '/cbt.php'; return true; }
+if (preg_match('~^/login/?$~', $path)) { require __DIR__ . '/student-login.php'; return true; }
+if (preg_match('~^/auth/google/?$~', $path)) { require __DIR__ . '/auth-google.php'; return true; }
+if (preg_match('~^/logout/?$~', $path)) { require __DIR__ . '/student-logout.php'; return true; }
+if (preg_match('~^/student/?$~', $path)) { require __DIR__ . '/student-dashboard.php'; return true; }
+if (preg_match('~^/api/attempt/?$~', $path)) { require __DIR__ . '/api-attempt.php'; return true; }
 if ($path === '/') { require __DIR__ . '/index.php'; return true; }
 $_GET['slug'] = trim($path, '/');
 require __DIR__ . '/page.php';

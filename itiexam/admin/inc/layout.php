@@ -5,6 +5,7 @@ function admin_header(string $title, string $active = ''): void
         'dashboard' => ['/admin/', 'Dashboard', 'grid'],
         'trades'    => ['/admin/trades.php', 'Trades', 'tool'],
         'cbt'       => ['/admin/cbt.php', 'CBT Tests (HTML)', 'clip'],
+        'students'  => ['/admin/students.php', 'Students', 'users'],
         'syllabus'  => ['/admin/syllabus.php', 'Syllabus PDFs', 'open'],
         'jobs'      => ['/admin/jobs.php', 'Jobs', 'brief'],
         'employers' => ['/admin/employers.php', 'Employers', 'building'],

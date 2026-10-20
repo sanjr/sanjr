@@ -27,6 +27,10 @@ $groups = [
         'footer_about'   => ['Footer about text', 'textarea', 0],
         'footer_credit'  => ['Footer credit line (leave empty to hide)', 'input', 'Created & Developed by – Sanjay L. Rathod'],
     ],
+    'Student login (Google)' => [
+        'google_client_id'     => ['Google OAuth Client ID', 'input', '1234567890-abc….apps.googleusercontent.com'],
+        'google_client_secret' => ['Google OAuth Client Secret', 'input', 'GOCSPX-…'],
+    ],
     'Social media' => [
         'social_youtube'  => ['YouTube URL', 'input', 'https://www.youtube.com/@…'],
         'social_facebook' => ['Facebook URL', 'input', 'https://www.facebook.com/…'],
@@ -64,6 +68,7 @@ if (is_post()) {
             $v = $type === 'check' ? (isset($_POST[$k]) ? '1' : '0') : post($k);
             if (in_array($k, $urlKeys, true) && $v !== '' && !preg_match('~^https://~', $v)) { $err = "$label must start with https://"; break 2; }
             if ($k === 'contact_email' && $v !== '' && !filter_var($v, FILTER_VALIDATE_EMAIL)) { $err = 'Contact email is not valid.'; break 2; }
+            if ($k === 'google_client_id' && $v !== '' && !preg_match('/^[\w.-]+\.apps\.googleusercontent\.com$/', $v)) { $err = 'Google Client ID should end with .apps.googleusercontent.com'; break 2; }
             if ($k === 'ga4_id' && $v !== '' && !preg_match('/^G-[A-Z0-9]{4,15}$/', $v)) { $err = 'Analytics ID should look like G-ABC123XYZ.'; break 2; }
             if (str_ends_with($k, '_verification')) $v = preg_replace('/^.*content="([^"]+)".*$/s', '$1', $v);
             setting_set($k, $v);
@@ -102,6 +107,17 @@ admin_header('Settings', 'settings');
 <?php if (setting('favicon_file')): ?><label class="check"><input type="checkbox" name="reset_favicon"> Use the default favicon again</label><?php endif; ?>
           <div class="bar"><span></span><button class="btn">Save Logo</button></div>
         </form>
+        <div class="box form" id="google-login">
+          <h2>Student login – how to set up</h2>
+          <p class="muted">Status: <b><?= google_login_ready() ? '✓ On' : 'Off (add Client ID and Secret)' ?></b></p>
+          <ol class="muted" style="padding-left:18px;line-height:1.6">
+            <li>Open <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console → Credentials</a>.</li>
+            <li>Set up the <b>OAuth consent screen</b> (External, app name, your email).</li>
+            <li>Create credentials → <b>OAuth client ID</b> → type <b>Web application</b>.</li>
+            <li>Under <b>Authorized redirect URIs</b> add exactly:<br><code style="user-select:all;word-break:break-all"><?= e(google_redirect_uri()) ?></code></li>
+            <li>Copy the Client ID and Client Secret into the fields on the left and save.</li>
+          </ol>
+        </div>
         <form method="post" class="box form">
           <h2>Change password</h2>
           <?= csrf_field() ?><input type="hidden" name="action" value="password">

@@ -64,6 +64,33 @@
   // A deleted page (404) leaves "Recently viewed" straight away
   if (document.querySelector('meta[name="x-gone"]')) save("itx_rv", load("itx_rv").filter(function (x) { return x.u !== location.pathname; }));
 
+  // ---- Student account menu ----
+  var stMenu = document.querySelector(".st-menu");
+  if (stMenu) {
+    var stBtn = stMenu.querySelector(".st-chip");
+    stBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      stBtn.setAttribute("aria-expanded", String(stMenu.classList.toggle("open")));
+    });
+    document.addEventListener("click", function (e) {
+      if (!stMenu.contains(e.target)) { stMenu.classList.remove("open"); stBtn.setAttribute("aria-expanded", "false"); }
+    });
+  }
+
+  // Results finished before login are saved to the dashboard once the student logs in
+  var stMeta = document.querySelector('meta[name="x-st"]'), pending = load("itx_pending");
+  if (stMeta && pending.length && window.fetch) {
+    save("itx_pending", []);
+    Promise.all(pending.map(function (r) {
+      r.csrf = stMeta.content;
+      return fetch("/api/attempt/", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) })
+        .then(function (res) { return res.ok || res.status === 404; }, function () { return false; })
+        .then(function (ok) { if (!ok) save("itx_pending", load("itx_pending").concat([r])); return ok; });
+    })).then(function (oks) {
+      if (oks.some(Boolean) && document.body.classList.contains("st-dash")) location.reload();
+    });
+  }
+
   function rvRow(x) {
     return '<li><a href="' + esc(x.u) + '"><span class="sov-emo">' + esc(x.i || "📄") + '</span><span class="rt"><b>' + esc(x.t) + "</b>" +
       (x.s ? "<small>" + esc(x.s) + "</small>" : "") + '</span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>';
