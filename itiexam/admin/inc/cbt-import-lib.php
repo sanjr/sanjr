@@ -105,7 +105,7 @@ function import_describe(string $root, array $t, array $trades): array
     // Trade name: "Draughtsman Civil - Sem 1" → "Draughtsman Civil"; "Electrician - 1st Year (NCVT CBT 2022)" → "Electrician"
     $tradeName = trim(preg_replace('/\s*[-–]\s*(Sem(ester)?\s*\d.*|\d+(st|nd|rd|th)\s*Year.*)$/iu', '', $examTrade));
     // Folder and ZIP names from the top of the upload down to this test, in plain words
-    $segs = array_values(array_filter(array_map(fn($s) => trim(preg_replace('/\s+/', ' ', str_replace(['-', '_', '.'], ' ', $s))),
+    $segs = array_values(array_filter(array_map(fn($s) => trim(preg_replace(['/[-_]|(?<!\d)\.|\.(?!\d)/', '/\s+/'], ' ', $s)),   // "Module_2.1" → "Module 2.1"
         explode('/', ($t['dir'] !== '' ? $t['dir'] : ($t['name'] ?? ''))))));
     $level = level_of($examTrade) ?: level_of(implode(' / ', array_reverse($segs)));
 

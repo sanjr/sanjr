@@ -40,6 +40,15 @@ if (is_post() || $autoScan) {
             $found = import_find_tests($jobDir . '/files');
             if (!$found) { rrmdir($jobDir); throw new RuntimeException('No test folders found. Each test folder needs an index.html.'); }
             $rows = array_map(fn($t) => import_describe($jobDir . '/files', $t, $trades), $found);
+            // Chosen on the upload form: one trade and/or one year/semester for every test in the ZIP
+            $allTrade = (string)post('all_trade'); $newName = trim(mb_substr(post('new_trade'), 0, 120)); $allLevel = post('all_level');
+            foreach ($rows as &$r) {
+                if (ctype_digit($allTrade) && (int)$allTrade > 0) { $r['trade_id'] = (int)$allTrade; $r['trade_new'] = ''; }
+                elseif ($allTrade === 'new' && $newName !== '') { $r['trade_id'] = 0; $r['trade_new'] = $newName; }
+                if (in_array($allLevel, ['1st Year', '2nd Year', 'Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'], true))
+                    $r['title'] = $allLevel . ' – ' . preg_replace('/^\s*(Sem\s*\d|\d(st|nd)\s*Year)\s*[–:-]?\s*/iu', '', $r['title']);
+            }
+            unset($r);
             usort($rows, fn($a, $b) => strnatcasecmp($a['dir'], $b['dir']));
             file_put_contents($jobDir . '/rows.json', json_encode($rows, JSON_UNESCAPED_UNICODE));
             if ($autoScan) @unlink($src);
@@ -101,6 +110,17 @@ admin_header('Bulk import CBT tests', 'cbt');
 <?php if ($serverZips): ?>
         <label>…or a ZIP already on the server (data/import/) <select name="server_zip"><option value="">— choose —</option><?php foreach ($serverZips as $z): ?><option><?= e($z) ?></option><?php endforeach; ?></select></label>
 <?php endif; ?>
+        <div class="grid2 tight">
+          <label>Put all tests in trade <span class="hint">One trade for the whole ZIP</span>
+            <select name="all_trade" id="all-trade">
+              <option value="">Auto-detect (each test's own trade)</option>
+<?php foreach ($trades as $t): ?>              <option value="<?= $t['id'] ?>"><?= e($t['name']) ?></option>
+<?php endforeach; ?>              <option value="new">＋ New trade…</option>
+            </select></label>
+          <label>Year / Semester <span class="hint">Added before each test name</span>
+            <select name="all_level"><option value="">— from the files / none —</option><option>1st Year</option><option>2nd Year</option><option>Sem 1</option><option>Sem 2</option><option>Sem 3</option><option>Sem 4</option></select></label>
+        </div>
+        <label id="new-trade-row" hidden>New trade name <input name="new_trade" placeholder="e.g. Wireman"></label>
         <div class="bar"><a class="btn alt" href="/admin/cbt.php">Back</a><button class="btn">🔍 Scan ZIP</button></div>
         <p class="muted imp-wait" hidden>Unpacking and scanning… this can take a minute for big ZIPs.</p>
       </form>
@@ -115,7 +135,10 @@ admin_header('Bulk import CBT tests', 'cbt');
         </ul>
       </section>
     </div>
-    <script>document.getElementById('imp-form').addEventListener('submit', function () { this.querySelector('.imp-wait').hidden = false; this.querySelector('.bar .btn:not(.alt)').disabled = true; });</script>
+    <script>
+      document.getElementById('imp-form').addEventListener('submit', function () { this.querySelector('.imp-wait').hidden = false; this.querySelector('.bar .btn:not(.alt)').disabled = true; });
+      document.getElementById('all-trade').addEventListener('change', function () { document.getElementById('new-trade-row').hidden = this.value !== 'new'; });
+    </script>
 <?php else:
     $byTrade = [];
     foreach ($rows as $r) $byTrade[$r['trade_id'] ? 'id' . $r['trade_id'] : 'new' . $r['trade_new']] = true;
@@ -129,6 +152,17 @@ admin_header('Bulk import CBT tests', 'cbt');
         <label class="check"><input type="checkbox" name="starter" checked> New trades: add standard sections + menu link</label>
         <label class="check"><input type="checkbox" id="all" checked> Select all</label>
       </div>
+      <div class="apply-all">
+        <b>Apply to all ticked tests:</b>
+        <select id="aa-trade"><option value="">Trade – keep</option>
+<?php foreach ($newNames as $nn): ?>          <option value="new:<?= e($nn) ?>">＋ New: <?= e($nn) ?></option>
+<?php endforeach; foreach ($trades as $t): ?>          <option value="<?= $t['id'] ?>"><?= e($t['name']) ?></option>
+<?php endforeach; ?>        </select>
+        <select id="aa-level"><option value="">Year / Sem – keep</option><option>1st Year</option><option>2nd Year</option><option>Sem 1</option><option>Sem 2</option><option>Sem 3</option><option>Sem 4</option><option value="-">Remove year / sem</option></select>
+        <input type="number" id="aa-min" min="0" placeholder="Minutes" style="width:100px">
+        <button type="button" class="btn sm" id="aa-go">Apply</button>
+      </div>
+      <style>.apply-all { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 14px; margin: 6px 0 12px; border-radius: 12px; background: #eef3ff; border: 1px solid #d6e2ff; } .apply-all select { min-width: 170px; }</style>
       <div class="tablebox" style="overflow-x:auto">
       <table>
         <thead><tr><th></th><th>Trade</th><th>Test name</th><th>Q</th><th>Min</th><th>Folder</th></tr></thead>
@@ -156,6 +190,20 @@ admin_header('Bulk import CBT tests', 'cbt');
     </form>
     <script>
       document.getElementById('all').addEventListener('change', function () { var on = this.checked; document.querySelectorAll('.pick').forEach(function (c) { c.checked = on; }); });
+      document.getElementById('aa-go').addEventListener('click', function () {
+        var tr = document.getElementById('aa-trade').value, lv = document.getElementById('aa-level').value, mn = document.getElementById('aa-min').value, n = 0;
+        document.querySelectorAll('tbody tr').forEach(function (row) {
+          if (!row.querySelector('.pick').checked) return;
+          if (tr) row.querySelector('select').value = tr;
+          if (lv) {
+            var t = row.querySelector('input[name^=title]'), base = t.value.replace(/^\s*(Sem\s*\d|\d(st|nd)\s*Year)\s*[–:-]?\s*/i, '');
+            t.value = lv === '-' ? base : lv + ' – ' + base;
+          }
+          if (mn !== '') row.querySelector('input[type=number]').value = mn;
+          n++;
+        });
+        this.textContent = '✓ Applied to ' + n; var b = this; setTimeout(function () { b.textContent = 'Apply'; }, 1800);
+      });
     </script>
 <?php endif; ?>
 <?php admin_footer(); ?>
