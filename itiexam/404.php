@@ -2,7 +2,7 @@
 require_once __DIR__ . '/includes/functions.php';
 http_response_code(404);
 log_not_found();
-$meta = ['title' => 'Page Not Found | ' . SITE_NAME, 'description' => 'The page you are looking for does not exist.', 'robots' => 'noindex, follow', 'path' => '/404/'];
+$meta = ['title' => 'Page Not Found | ' . SITE_NAME, 'description' => 'The page you are looking for does not exist.', 'robots' => 'noindex, follow', 'path' => '/404/', 'gone' => true];
 require __DIR__ . '/includes/header.php';
 ?>
 <main id="main">

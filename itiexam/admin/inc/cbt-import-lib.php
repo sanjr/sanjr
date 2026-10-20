@@ -33,6 +33,19 @@ function import_unzip(string $zipFile, string $dest, int $depth, array &$stat): 
     $zip->close();
 }
 
+/** Removes a test everywhere: its row, its files and its entry in the trade's Mock Tests list. */
+function cbt_delete(int $id): bool
+{
+    $pdo = db();
+    $st = $pdo->prepare('SELECT * FROM cbt_tests WHERE id = ?'); $st->execute([$id]);
+    if (!($t = $st->fetch())) return false;
+    $pdo->prepare('DELETE FROM trade_items WHERE url = ?')->execute([cbt_url($t)]);
+    if ($t['folder'] !== '' && basename($t['folder']) === $t['folder']) rrmdir(CBT_DIR . '/' . $t['folder']);
+    $pdo->prepare('DELETE FROM cbt_tests WHERE id = ?')->execute([$id]);
+    if ($t['trade_id']) $pdo->prepare('UPDATE trades SET updated_at = ? WHERE id = ?')->execute([now(), (int)$t['trade_id']]);
+    return true;
+}
+
 /** True when an uploaded ZIP holds more than one test (several index.html files, or ZIPs inside). */
 function cbt_zip_is_bundle(string $file): bool
 {

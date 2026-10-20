@@ -66,7 +66,7 @@ $syl_url = fn(array $s) => '/syllabus/?q=' . rawurlencode($s['trade_name']);
 
 if ($json) {
     header('Content-Type: application/json; charset=utf-8');
-    header('Cache-Control: public, max-age=300');
+    header('Cache-Control: no-store');   // deleted tests/trades must disappear at once
     $map = [
         'trades' => fn($t) => ['k' => 'Trade', 'i' => $t['emoji'] ?: '🛠️', 't' => $t['name'], 's' => $t['full_name'] ?: $t['short_desc'], 'u' => trade_url($t)],
         'tests' => fn($c) => ['k' => 'Test', 'i' => '📝', 't' => ($c['tname'] ? $c['tname'] . ' – ' : '') . $c['title'], 's' => trim(($c['questions'] ? $c['questions'] . ' Questions' : '') . ($c['minutes'] ? ' · ' . $c['minutes'] . ' min' : ''), ' ·'), 'u' => cbt_url($c)],

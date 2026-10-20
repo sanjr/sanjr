@@ -9,10 +9,16 @@ if (is_post() && ($_POST['action'] ?? '') === 'delete') {
     $st->execute([(int)$_POST['id']]);
     $gone = $st->fetch() ?: ['image' => '', 'slug' => ''];
     if ($gone['image']) delete_upload($gone['image']);
+    $tid = (int)$_POST['id'];
     if ($gone['slug'] !== '') db()->prepare('DELETE FROM menu_items WHERE url = ? AND parent_id <> 0')->execute(['/trades/' . $gone['slug'] . '/']);
-    db()->prepare('DELETE FROM trade_items WHERE trade_id = ?')->execute([(int)$_POST['id']]);
-    db()->prepare('DELETE FROM trades WHERE id = ?')->execute([(int)$_POST['id']]);
-    flash('Trade deleted.');
+    // Its CBT tests go too (rows + uploaded files); syllabus rows stay but lose the link
+    require_once __DIR__ . '/inc/cbt-import-lib.php';
+    $tests = db()->prepare('SELECT id FROM cbt_tests WHERE trade_id = ?'); $tests->execute([$tid]);
+    $nt = 0; foreach ($tests->fetchAll(PDO::FETCH_COLUMN) as $cid) $nt += cbt_delete((int)$cid) ? 1 : 0;
+    db()->prepare('UPDATE syllabi SET trade_id = 0 WHERE trade_id = ?')->execute([$tid]);
+    db()->prepare('DELETE FROM trade_items WHERE trade_id = ?')->execute([$tid]);
+    db()->prepare('DELETE FROM trades WHERE id = ?')->execute([$tid]);
+    flash('Trade deleted' . ($nt ? " with its $nt CBT tests and their files" : '') . '.');
     redirect('/admin/trades.php');
 }
 
@@ -34,7 +40,7 @@ admin_header('Trades', 'trades');
           <td class="acts">
             <a class="btn sm" href="/admin/trade-content.php?id=<?= $r['id'] ?>">Content</a>
             <a class="btn sm alt" href="/admin/trade-edit.php?id=<?= $r['id'] ?>">Edit</a>
-            <form method="post" data-confirm="Delete <?= e($r['name']) ?> and all its content?"><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= $r['id'] ?>"><button class="btn sm danger">Delete</button></form>
+            <form method="post" data-confirm="Delete <?= e($r['name']) ?> with all its content and its CBT tests (files too)? This cannot be undone."><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= $r['id'] ?>"><button class="btn sm danger">Delete</button></form>
           </td>
         </tr>
 <?php endforeach; ?>

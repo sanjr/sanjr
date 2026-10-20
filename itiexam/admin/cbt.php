@@ -36,19 +36,25 @@ function sync_trade_item(array $t, bool $show): void
     $pdo->prepare('UPDATE trades SET updated_at = ? WHERE id = ?')->execute([now(), (int)$t['trade_id']]);
 }
 
+// Housekeeping: list entries and test folders whose test no longer exists
+$live = $pdo->query('SELECT folder FROM cbt_tests')->fetchAll(PDO::FETCH_COLUMN);
+foreach ($pdo->query("SELECT id, url FROM trade_items WHERE section = 'mock_tests' AND url LIKE '/cbt/%'")->fetchAll() as $ti) {
+    if (preg_match('~^/cbt/([a-z0-9-]+)/~', $ti['url'], $m) && !in_array($m[1], $live, true)) $pdo->prepare('DELETE FROM trade_items WHERE id = ?')->execute([$ti['id']]);
+}
+foreach (glob(CBT_DIR . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
+    if (!in_array(basename($dir), $live, true) && filemtime($dir) < time() - 3600) rrmdir($dir);   // an hour old, so uploads in progress are safe
+}
+
 $err = '';
 if (is_post()) {
     csrf_check();
     $action = $_POST['action'] ?? 'save';
-    if ($action === 'delete') {
-        $st = $pdo->prepare('SELECT * FROM cbt_tests WHERE id = ?'); $st->execute([(int)$_POST['id']]);
-        if ($t = $st->fetch()) {
-            $pdo->prepare("DELETE FROM trade_items WHERE url = ?")->execute([cbt_url($t)]);
-            rrmdir(CBT_DIR . '/' . $t['folder']);
-            $pdo->prepare('DELETE FROM cbt_tests WHERE id = ?')->execute([$t['id']]);
-            flash('Test deleted.');
-        }
-        redirect('/admin/cbt.php');
+    if ($action === 'delete' || $action === 'delete_many') {
+        $ids = $action === 'delete' ? [(int)$_POST['id']] : array_map('intval', (array)($_POST['ids'] ?? []));
+        $n = 0;
+        foreach (array_filter($ids) as $did) $n += cbt_delete($did) ? 1 : 0;
+        flash($n ? ($n === 1 ? 'Test deleted with its files.' : "$n tests deleted with their files.") : 'Nothing was selected.');
+        redirect('/admin/cbt.php' . (($tf = (int)($_POST['tf'] ?? 0)) ? '?tf=' . $tf : ''));
     }
     if ($action === 'storage') {
         setting_set('cbt_allow_storage', isset($_POST['cbt_allow_storage']) ? '1' : '0');
@@ -106,7 +112,11 @@ if (is_post()) {
 }
 
 $trades = $pdo->query('SELECT id, name FROM trades ORDER BY sort_order, name')->fetchAll();
-$rows = $pdo->query('SELECT c.*, t.name AS tname FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id ORDER BY c.created_at DESC')->fetchAll();
+$tf = (int)($_GET['tf'] ?? 0);   // show one trade's tests
+$st = $pdo->prepare('SELECT c.*, t.name AS tname FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id' . ($tf ? ' WHERE c.trade_id = ?' : '') . ' ORDER BY c.created_at DESC, c.id DESC');
+$st->execute($tf ? [$tf] : []);
+$rows = $st->fetchAll();
+$counts = $pdo->query('SELECT trade_id, COUNT(*) FROM cbt_tests GROUP BY trade_id')->fetchAll(PDO::FETCH_KEY_PAIR);
 $inTrade = true;
 if ($edit['id']) {
     $chk = $pdo->prepare("SELECT COUNT(*) FROM trade_items WHERE section = 'mock_tests' AND url = ?");
@@ -120,11 +130,23 @@ admin_header('CBT Tests', 'cbt');
       <section class="box tablebox">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>Your HTML tests</h2><a class="btn" href="/admin/cbt-import.php">📦 Bulk import (all trades)</a></div>
         <p class="muted">Upload tests you made as HTML web pages. Each test gets its own page on the website (with your header, full-screen button and more tests) and can appear automatically in the trade's <b>Mock Tests</b> list.</p>
+        <form method="post" id="bulkdel" data-confirm="Delete the selected tests and all their files? This cannot be undone."><?= csrf_field() ?><input type="hidden" name="action" value="delete_many"><input type="hidden" name="tf" value="<?= $tf ?>"></form>
+        <div class="bulk-bar">
+          <form method="get" class="tf-form"><select name="tf" onchange="this.form.submit()">
+            <option value="0">All trades (<?= array_sum($counts) ?>)</option>
+<?php foreach ($trades as $t): if (!empty($counts[$t['id']])): ?>            <option value="<?= $t['id'] ?>"<?= $tf == $t['id'] ? ' selected' : '' ?>><?= e($t['name']) ?> (<?= (int)$counts[$t['id']] ?>)</option>
+<?php endif; endforeach; if (!empty($counts[0])): ?>            <option value="-1" disabled>— No trade: <?= (int)$counts[0] ?> —</option>
+<?php endif; ?>
+          </select></form>
+          <label class="check"><input type="checkbox" id="pick-all"> Select all</label>
+          <button class="btn sm danger" form="bulkdel" id="del-sel" disabled>🗑 Delete selected <span>(0)</span></button>
+        </div>
         <table>
-          <thead><tr><th>Test</th><th>Trade</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th style="width:28px"></th><th>Test</th><th>Trade</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
 <?php foreach ($rows as $r): ?>
             <tr<?= $r['id'] == $edit['id'] ? ' class="editing"' : '' ?>>
+              <td><input type="checkbox" class="pick" name="ids[]" value="<?= $r['id'] ?>" form="bulkdel" aria-label="Select <?= e($r['title']) ?>"></td>
               <td><b><?= e($r['title']) ?></b><br><small class="muted"><?= $r['questions'] ? (int)$r['questions'] . ' Q · ' : '' ?><?= $r['minutes'] ? (int)$r['minutes'] . ' min · ' : '' ?><?= e(nice_date($r['created_at'])) ?></small></td>
               <td><?= e($r['tname'] ?: '—') ?></td>
               <td><span class="pill <?= $r['status'] === 'published' ? 'ok' : 'off' ?>"><?= e($r['status']) ?></span></td>
@@ -135,9 +157,23 @@ admin_header('CBT Tests', 'cbt');
               </td>
             </tr>
 <?php endforeach; ?>
-<?php if (!$rows): ?><tr><td colspan="4" class="muted">No tests yet. Upload your first test on the right.</td></tr><?php endif; ?>
+<?php if (!$rows): ?><tr><td colspan="5" class="muted">No tests yet. Upload your first test on the right.</td></tr><?php endif; ?>
           </tbody>
         </table>
+        <style>
+          .bulk-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 4px 0 10px; }
+          .bulk-bar .tf-form select { min-width: 200px; }
+          .bulk-bar .check { margin: 0; }
+          #del-sel[disabled] { opacity: .45; cursor: not-allowed; }
+        </style>
+        <script>
+          (function () {
+            var all = document.getElementById('pick-all'), btn = document.getElementById('del-sel'), picks = document.querySelectorAll('.pick');
+            function upd() { var n = document.querySelectorAll('.pick:checked').length; btn.disabled = !n; btn.querySelector('span').textContent = '(' + n + ')'; all.checked = n && n === picks.length; }
+            all.addEventListener('change', function () { picks.forEach(function (c) { c.checked = all.checked; }); upd(); });
+            picks.forEach(function (c) { c.addEventListener('change', upd); });
+          })();
+        </script>
       </section>
 
       <div>

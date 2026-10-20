@@ -61,6 +61,9 @@
     save("itx_rv", [cur].concat(load("itx_rv").filter(function (x) { return x.u !== cur.u; })).slice(0, 10));
   } catch (e) {}
 
+  // A deleted page (404) leaves "Recently viewed" straight away
+  if (document.querySelector('meta[name="x-gone"]')) save("itx_rv", load("itx_rv").filter(function (x) { return x.u !== location.pathname; }));
+
   function rvRow(x) {
     return '<li><a href="' + esc(x.u) + '"><span class="sov-emo">' + esc(x.i || "📄") + '</span><span class="rt"><b>' + esc(x.t) + "</b>" +
       (x.s ? "<small>" + esc(x.s) + "</small>" : "") + '</span><svg class="ic chev"><use href="#i-chev-r"/></svg></a></li>';
