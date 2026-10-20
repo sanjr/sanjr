@@ -1841,3 +1841,12 @@ body.sov-on { overflow: hidden; }
   .sd-trend .pt circle:first-child { r: 7; stroke-width: 3; }
   .sd-badges { grid-template-columns: 1fr 1fr; }
 }
+
+/* ===== CBT page: login needed ===== */
+.cbt-gate { text-align: center; background: linear-gradient(160deg, #fff 0%, #eef4ff 100%); border: 1px solid #c7d6fb; border-radius: var(--radius); box-shadow: var(--shadow); padding: 40px 20px; }
+.cbt-gate-i { width: 72px; height: 72px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center; font-size: 32px; background: #fff; box-shadow: var(--shadow); }
+.cbt-gate h2 { font-size: clamp(20px, 3vw, 26px); margin: 0 0 8px; }
+.cbt-gate p { color: var(--text); max-width: 520px; margin: 0 auto 20px; }
+.cbt-gate-btn { display: inline-flex; align-items: center; gap: 10px; background: #fff; color: var(--ink); border: 1px solid #dadce0; border-radius: 999px; padding: 13px 26px; font: 600 16px var(--font-head); box-shadow: 0 2px 6px rgba(11, 20, 48, .12); transition: box-shadow .2s, transform .2s; }
+.cbt-gate-btn:hover { box-shadow: 0 6px 18px rgba(31, 79, 214, .22); transform: translateY(-1px); }
+.cbt-gate-pts { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; color: var(--muted); font-size: 14px; }

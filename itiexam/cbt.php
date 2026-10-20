@@ -12,6 +12,11 @@ if (!$test || ($test['status'] !== 'published' && empty($_SESSION['admin'])) || 
 
 /* ---------- serve one file of the test ---------- */
 if (isset($_GET['p'])) {
+    if (tests_locked()) {                       // opened directly without logging in
+        http_response_code(403);
+        header('Content-Type: text/html; charset=utf-8');
+        exit('<!DOCTYPE html><meta charset="utf-8"><meta name="robots" content="noindex"><p style="font:16px sans-serif;text-align:center;margin:40px">Please <a href="' . e(login_url(cbt_url($test))) . '" target="_top">login with Google</a> to start this test.</p>');
+    }
     $rel = trim(str_replace('\\', '/', rawurldecode((string)$_GET['p'])), '/');
     $ext = strtolower(pathinfo($rel, PATHINFO_EXTENSION));
     $base = realpath(CBT_DIR . '/' . $folder);
@@ -69,6 +74,7 @@ $meta = [
     ],
 ];
 $me = student();
+$locked = tests_locked();
 require __DIR__ . '/includes/header.php';
 ?>
 <main id="main">
@@ -86,6 +92,15 @@ require __DIR__ . '/includes/header.php';
 
   <section class="section cbt-sec">
     <div class="container">
+<?php if ($locked): ?>
+      <div class="cbt-gate">
+        <div class="cbt-gate-i">🔒</div>
+        <h2>Login to start this mock test</h2>
+        <p>Sign in with your Google account – it takes 5 seconds and is free. Your score, history and progress are saved to your own dashboard.</p>
+        <a class="cbt-gate-btn" href="<?= e(login_url($path)) ?>" rel="nofollow"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.6 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.8-4.5l-7.9-6.2C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.2 1.5-5 2.3-8.2 2.3-6.2 0-11.5-4.1-13.4-9.8l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg> Login with Google &amp; Start</a>
+        <ul class="cbt-gate-pts"><li>✓ Free for all ITI students</li><li>✓ Real NCVT CBT exam pattern</li><li>✓ Track your score &amp; progress</li></ul>
+      </div>
+<?php else: ?>
       <div class="cbt-bar">
         <button type="button" class="btn-sm" id="cbt-full"><?= icon('layout') ?> Full screen</button>
         <a class="btn-sm ghost-b" href="<?= e(cbt_play_url($test)) ?>" target="_blank" rel="noopener"><?= icon('arrow') ?> Open in new tab</a>
@@ -97,6 +112,7 @@ require __DIR__ . '/includes/header.php';
         <iframe id="cbt-if" src="<?= e(cbt_play_url($test)) ?>" title="<?= e($test['title']) ?>" sandbox="<?= e(cbt_sandbox()) ?>" allow="fullscreen; geolocation" loading="eager"></iframe>
         <div class="cbt-save" id="cbt-save" role="status" aria-live="polite" hidden></div>
       </div>
+<?php endif; ?>
 <?php if ($test['description']): ?>      <p class="cbt-desc"><?= e($test['description']) ?></p>
 <?php endif; ?>
       <?= ad('trade_middle') ?>
@@ -105,7 +121,7 @@ require __DIR__ . '/includes/header.php';
         <div class="sec-head sm"><h2 id="more-h">More <?= e($name) ?> Mock Tests</h2><a class="view-all" href="/trades/<?= e($test['tslug']) ?>/#mock-tests">View All <?= icon('arrow') ?></a></div>
         <ul class="rows">
 <?php foreach ($more as $i => $o): ?>
-          <li><a href="<?= e(cbt_url($o)) ?>"><span class="ri <?= chip_color($i) ?> solid"><?= icon('clip') ?></span><span class="rt"><b><?= e($o['title']) ?></b><small><?= $o['questions'] ? (int)$o['questions'] . ' Questions' : '' ?><?= $o['questions'] && $o['minutes'] ? ' · ' : '' ?><?= $o['minutes'] ? (int)$o['minutes'] . ' Minutes' : '' ?></small></span><span class="btn-sm">Start Test</span></a></li>
+          <li><a href="<?= e(cbt_url($o)) ?>"><span class="ri <?= chip_color($i) ?> solid"><?= icon('clip') ?></span><span class="rt"><b><?= e($o['title']) ?></b><small><?= $o['questions'] ? (int)$o['questions'] . ' Questions' : '' ?><?= $o['questions'] && $o['minutes'] ? ' · ' : '' ?><?= $o['minutes'] ? (int)$o['minutes'] . ' Minutes' : '' ?></small></span><?= start_label() ?></a></li>
 <?php endforeach; ?>
         </ul>
       </section>
@@ -113,6 +129,7 @@ require __DIR__ . '/includes/header.php';
     </div>
   </section>
 </main>
+<?php if (!$locked): ?>
 <script>
   // Full screen for the test (falls back to a fixed full-window view on phones without the Fullscreen API)
   (function () {
@@ -141,6 +158,7 @@ require __DIR__ . '/includes/header.php';
       if (e.data.itx !== "result" || !e.data.data) return;
       var d = e.data.data, r = { folder: folder, score: +d.score || 0, total: +d.total || 0, pct: +d.pct || 0, status: String(d.status || ""), lang: String(d.lang || ""), location: String(d.location || "").slice(0, 160), time: +e.data.time || 0, at: Date.now() };
       if (!me) {
+        if (!<?= google_login_ready() ? 'true' : 'false' ?>) return;        // student login is not switched on
         try { var q = JSON.parse(localStorage.getItem("itx_pending") || "[]"); q.push(r); localStorage.setItem("itx_pending", JSON.stringify(q.slice(-20))); } catch (x) {}
         show("guest", "<b>Score: " + r.score + (r.total ? " / " + r.total : "") + "</b> <span>Login with Google to save this result and track your progress.</span> <a class=\"btn-sm\" href=\"" + login + "\">Login &amp; Save</a>");
         return;
@@ -156,4 +174,5 @@ require __DIR__ . '/includes/header.php';
     });
   })();
 </script>
+<?php endif; ?>
 <?php require __DIR__ . '/includes/footer.php'; ?>

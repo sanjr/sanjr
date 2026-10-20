@@ -39,7 +39,7 @@ function item_row(array $it, int $i, string $style, string $defIcon): string
         $sub = '<small>' . e($it['subtitle']) . '</small>';
     }
     $end = $style === 'mock'
-        ? ($it['url'] ? '<span class="btn-sm">Start Test</span>' : '')
+        ? ($it['url'] ? start_label() : '')
         : ($it['url'] ? icon('chev-r', 'ic chev') : '');
     return "<li><$tag$href class=\"row-$style\">$lead<span class=\"rt\"><b>" . e($it['title']) . "</b>$sub</span>$end</$tag></li>";
 }

@@ -465,7 +465,7 @@ function cbt_list(int $limit = 20, string $trade = ''): string
     foreach ($st as $i => $c) {
         $info = trim(($c['questions'] ? (int)$c['questions'] . ' Questions' : '') . ($c['questions'] && $c['minutes'] ? ' · ' : '') . ($c['minutes'] ? (int)$c['minutes'] . ' Minutes' : ''));
         $out .= '<li><a href="' . e(cbt_url($c)) . '" class="row-mock"><span class="ri ' . chip_color($i) . ' solid">' . icon('clip') . '</span><span class="rt"><b>'
-            . ($c['tname'] ? e($c['tname']) . ' – ' : '') . e($c['title']) . '</b>' . ($info ? '<small>' . e($info) . '</small>' : '') . '</span><span class="btn-sm">Start Test</span></a></li>';
+            . ($c['tname'] ? e($c['tname']) . ' – ' : '') . e($c['title']) . '</b>' . ($info ? '<small>' . e($info) . '</small>' : '') . '</span>' . start_label() . '</a></li>';
     }
     return $out ? '<ul class="rows sc">' . $out . '</ul>' : '<p>New online tests are coming soon.</p>';
 }

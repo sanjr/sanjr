@@ -93,3 +93,9 @@ function level_year(string $level): int
     if (preg_match('/Sem\s*([1-4])/i', $level, $m)) return (int)$m[1] <= 2 ? 1 : 2;
     return preg_match('/([12])(st|nd)\s*Year/i', $level, $m) ? (int)$m[1] : 0;
 }
+
+/** Mock tests need a signed-in student once Google login is switched on (admins can always open them). */
+function tests_locked(): bool { return google_login_ready() && !student() && empty($_SESSION['admin']); }
+
+/** The "Start Test" pill on test lists: guests see that they will be asked to log in. */
+function start_label(): string { return tests_locked() ? '<span class="btn-sm">🔒 Login &amp; Start</span>' : '<span class="btn-sm">Start Test</span>'; }
