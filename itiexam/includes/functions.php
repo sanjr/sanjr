@@ -444,7 +444,28 @@ const CBT_TYPES = ['html' => 'text/html; charset=utf-8', 'htm' => 'text/html; ch
     'mp3' => 'audio/mpeg', 'wav' => 'audio/wav', 'mp4' => 'video/mp4', 'pdf' => 'application/pdf'];
 
 function cbt_url(array $t): string { return '/cbt/' . $t['folder'] . '/'; }
-function cbt_play_url(array $t): string { return '/cbt/' . $t['folder'] . '/play/' . implode('/', array_map('rawurlencode', explode('/', $t['entry']))); }
+function cbt_play_url(array $t): string
+{
+    return '/cbt/' . $t['folder'] . '/play/k-' . cbt_play_key($t['folder']) . '/' . implode('/', array_map('rawurlencode', explode('/', $t['entry'])));
+}
+
+/** Short daily key in the test's address. The sandboxed test frame sends no cookies, so this key is what lets
+    a logged-in student (or the admin, for a draft) move between the test's own pages. */
+function cbt_play_key(string $folder, int $daysAgo = 0): string
+{
+    return substr(hash_hmac('sha256', 'play|' . $folder . '|' . date('Y-m-d', strtotime("-$daysAgo day")), app_secret()), 0, 16);
+}
+
+/** Random secret made once per website, used to sign keys and the student's login cookie. */
+function app_secret(): string
+{
+    static $k = null;
+    if ($k === null) {
+        $k = setting('app_secret');
+        if ($k === '') { $k = bin2hex(random_bytes(32)); setting_set('app_secret', $k); }
+    }
+    return $k;
+}
 
 /** Sandbox rules for a test page: scripts run, but the test cannot reach the website, its cookies or the admin panel. */
 function cbt_sandbox(): string

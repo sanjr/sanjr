@@ -8,7 +8,10 @@ $out = function (int $code, array $data) { http_response_code($code); echo json_
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') $out(405, ['ok' => false]);
 $in = json_decode((string)file_get_contents('php://input'), true);
 if (!is_array($in)) $out(400, ['ok' => false]);
-if (!hash_equals(csrf_token(), (string)($in['csrf'] ?? ''))) $out(403, ['ok' => false, 'error' => 'expired']);
+// Only this website may send results (the login cookie is SameSite=Lax, so other sites' POSTs carry no login anyway).
+// No session token here: the session can time out during a long test, the 60-day login cookie does not.
+$origin = (string)($_SERVER['HTTP_ORIGIN'] ?? '');
+if ($origin !== '' && parse_url($origin, PHP_URL_HOST) !== parse_url(SITE_URL, PHP_URL_HOST)) $out(403, ['ok' => false]);
 $me = student();
 if (!$me) $out(401, ['ok' => false, 'error' => 'login']);
 

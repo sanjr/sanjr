@@ -8,13 +8,35 @@ function student(): ?array
     static $s = false;
     if ($s !== false) return $s;
     $s = null;
-    if (!empty($_SESSION['student_id'])) {
+    $id = (int)($_SESSION['student_id'] ?? 0);
+    $fromCookie = false;
+    // The session ends after a short idle time; the signed login cookie keeps the student signed in for 60 days
+    if (!$id && preg_match('/^(\d+)\.(\d+)\.([a-f0-9]{64})$/', (string)($_COOKIE[STUDENT_COOKIE] ?? ''), $m) && (int)$m[2] > time()) {
+        $id = (int)$m[1];
+        $fromCookie = $m;
+    }
+    if ($id) {
         $st = db()->prepare('SELECT * FROM students WHERE id = ?');
-        $st->execute([(int)$_SESSION['student_id']]);
+        $st->execute([$id]);
         $s = $st->fetch() ?: null;
-        if (!$s) unset($_SESSION['student_id']);
+        if ($s && $fromCookie && !hash_equals(student_cookie_sig($s, (int)$fromCookie[2]), $fromCookie[3])) $s = null;
+        if ($s) $_SESSION['student_id'] = (int)$s['id'];
+        else { unset($_SESSION['student_id']); if (isset($_COOKIE[STUDENT_COOKIE]) && !headers_sent()) student_cookie(null); }
     }
     return $s;
+}
+
+const STUDENT_COOKIE = 'itx_st';
+
+function student_cookie_sig(array $s, int $exp): string { return hash_hmac('sha256', 'student|' . $s['id'] . '|' . $exp . '|' . $s['google_id'], app_secret()); }
+
+/** Sets (or, with null, removes) the 60-day login cookie. */
+function student_cookie(?array $s): void
+{
+    $exp = $s ? time() + 60 * 86400 : time() - 3600;
+    $val = $s ? $s['id'] . '.' . $exp . '.' . student_cookie_sig($s, $exp) : '';
+    setcookie(STUDENT_COOKIE, $val, ['expires' => $exp, 'path' => '/', 'httponly' => true, 'samesite' => 'Lax',
+        'secure' => !empty($_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https']);
 }
 
 function google_login_ready(): bool { return setting('google_client_id') !== '' && setting('google_client_secret') !== ''; }
@@ -78,6 +100,7 @@ function student_sign_in(array $g): void
     }
     session_regenerate_id(true);
     $_SESSION['student_id'] = $id;
+    student_cookie(['id' => $id, 'google_id' => (string)$g['sub']]);
 }
 
 /** Small round avatar: Google photo, or the first letter of the name. */

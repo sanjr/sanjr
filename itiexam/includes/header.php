@@ -24,7 +24,7 @@ $stu = student();
   <link rel="canonical" href="<?= e($canonical) ?>">
 <?php if (!empty($meta['gone'])): /* main.js drops this address from "Recently viewed" */ ?>  <meta name="x-gone" content="1">
 <?php endif; if (!empty($meta['rv'])): /* shown under "Recently viewed" in the search panel and on the homepage */ ?>  <meta name="x-rv" content="<?= e(json_encode($meta['rv'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>">
-<?php endif; if ($stu): /* lets main.js save results kept from before login */ ?>  <meta name="x-st" content="<?= e(csrf_token()) ?>">
+<?php endif; if ($stu): /* lets main.js save results kept from before login */ ?>  <meta name="x-st" content="1">
 <?php endif; ?>
   <meta name="theme-color" content="#0b2a6f">
   <meta property="og:type" content="website">
@@ -50,7 +50,7 @@ $stu = student();
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
   <?= adsense_head() ?>
   <link rel="stylesheet" href="/assets/css/style.css?v=27">
-  <script src="/assets/js/main.js?v=11" defer></script>
+  <script src="/assets/js/main.js?v=12" defer></script>
 <?php if (($ga = setting('ga4_id')) && preg_match('/^G-[A-Z0-9]{4,15}$/', $ga) && empty($_SESSION['admin'])): ?>
   <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($ga) ?>"></script>
   <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '<?= e($ga) ?>');</script>

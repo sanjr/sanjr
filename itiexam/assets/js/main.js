@@ -82,7 +82,6 @@
   if (stMeta && pending.length && window.fetch) {
     save("itx_pending", []);
     Promise.all(pending.map(function (r) {
-      r.csrf = stMeta.content;
       return fetch("/api/attempt/", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) })
         .then(function (res) { return res.ok || res.status === 404; }, function () { return false; })
         .then(function (ok) { if (!ok) save("itx_pending", load("itx_pending").concat([r])); return ok; });

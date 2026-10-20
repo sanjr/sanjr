@@ -8,11 +8,18 @@ $folder = preg_replace('/[^a-z0-9-]/', '', (string)($_GET['f'] ?? ''));
 $st = db()->prepare('SELECT c.*, t.name AS tname, t.slug AS tslug FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id WHERE c.folder = ?');
 $st->execute([$folder]);
 $test = $st->fetch();
-if (!$test || ($test['status'] !== 'published' && empty($_SESSION['admin'])) || !is_dir(CBT_DIR . '/' . $folder)) not_found();
+// A test file address may start with the daily key ("k-…/") given to whoever was allowed to open the test
+$keyOk = false;
+if (isset($_GET['p']) && preg_match('~^k-([a-f0-9]{16})/(.*)$~s', (string)$_GET['p'], $m)) {
+    $keyOk = hash_equals(cbt_play_key($folder), $m[1]) || hash_equals(cbt_play_key($folder, 1), $m[1]);
+    $_GET['p'] = $m[2];
+}
+if (!$test || ($test['status'] !== 'published' && empty($_SESSION['admin']) && !$keyOk) || !is_dir(CBT_DIR . '/' . $folder)) not_found();
 
 /* ---------- serve one file of the test ---------- */
 if (isset($_GET['p'])) {
-    if (tests_locked()) {                       // opened directly without logging in
+    // Only the test's pages are locked (its scripts, styles and images are of no use without them)
+    if (!$keyOk && in_array(strtolower(pathinfo((string)$_GET['p'], PATHINFO_EXTENSION)), ['html', 'htm'], true) && tests_locked()) {
         http_response_code(403);
         header('Content-Type: text/html; charset=utf-8');
         exit('<!DOCTYPE html><meta charset="utf-8"><meta name="robots" content="noindex"><p style="font:16px sans-serif;text-align:center;margin:40px">Please <a href="' . e(login_url(cbt_url($test))) . '" target="_top">login with Google</a> to start this test.</p>');
@@ -146,7 +153,7 @@ require __DIR__ . '/includes/header.php';
   // Finished test → saved to the student's dashboard (guests are asked to log in; the result waits in this browser)
   (function () {
     var frame = document.getElementById("cbt-if"), box = document.getElementById("cbt-save");
-    var folder = <?= json_encode($test['folder']) ?>, me = <?= json_encode($me ? ['name' => $me['name'], 'csrf' => csrf_token()] : null, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE) ?>;
+    var folder = <?= json_encode($test['folder']) ?>, me = <?= json_encode($me ? ['name' => $me['name']] : null, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE) ?>;
     var login = <?= json_encode(login_url($path)) ?>;
     function show(cls, html) {
       box.className = "cbt-save " + cls; box.innerHTML = html + '<button type="button" class="cbt-save-x" aria-label="Close">✕</button>'; box.hidden = false;
@@ -163,7 +170,6 @@ require __DIR__ . '/includes/header.php';
         show("guest", "<b>Score: " + r.score + (r.total ? " / " + r.total : "") + "</b> <span>Login with Google to save this result and track your progress.</span> <a class=\"btn-sm\" href=\"" + login + "\">Login &amp; Save</a>");
         return;
       }
-      r.csrf = me.csrf;
       fetch("/api/attempt/", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(r) })
         .then(function (res) { return res.json(); })
         .then(function (j) {
