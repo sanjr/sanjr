@@ -131,8 +131,22 @@ admin_header('CBT Tests', 'cbt');
             <label>Questions <input type="number" min="0" name="questions" value="<?= (int)$edit['questions'] ?>"></label>
             <label>Minutes <input type="number" min="0" name="minutes" value="<?= (int)$edit['minutes'] ?>"></label>
           </div>
-          <label><?= $edit['id'] ? 'Replace files (optional)' : 'Test file *' ?> <span class="hint">.html, or .zip with the HTML and its css/js/images</span>
-            <input type="file" name="test_file" accept=".html,.htm,.zip,text/html,application/zip"<?= $edit['id'] ? '' : ' required' ?>></label>
+          <fieldset class="up-mode">
+            <legend><?= $edit['id'] ? 'Replace files (optional)' : 'Test files *' ?></legend>
+            <div class="up-tabs" role="radiogroup">
+              <label><input type="radio" name="up_mode" value="folder" checked> 📁 Whole folder <small>Recommended</small></label>
+              <label><input type="radio" name="up_mode" value="file"> 🗜 ZIP or single HTML</label>
+            </div>
+            <div class="up-pane" data-mode="folder">
+              <input type="file" id="up-folder" webkitdirectory directory multiple>
+              <p class="hint">Choose the test folder that has <b>index.html</b> with <b>script.js</b>, <b>style.css</b>, logo and the <b>images</b> folder. Everything inside is uploaded together.</p>
+              <p class="up-info" hidden></p>
+            </div>
+            <div class="up-pane" data-mode="file" hidden>
+              <input type="file" name="test_file" id="up-file" accept=".html,.htm,.zip,text/html,application/zip">
+              <p class="hint">A <b>.zip</b> of the test folder, or one <b>.html</b> file that has everything inside it.</p>
+            </div>
+          </fieldset>
 <?php if ($edit['id'] && count($files = cbt_html_files($edit['folder'])) > 1): ?>
           <label>Start page <select name="entry"><?php foreach ($files as $fl): ?><option<?= $fl === $edit['entry'] ? ' selected' : '' ?>><?= e($fl) ?></option><?php endforeach; ?></select></label>
 <?php endif; ?>
@@ -141,6 +155,7 @@ admin_header('CBT Tests', 'cbt');
           <label>Status <select name="status"><option value="published"<?= $edit['status'] === 'published' ? ' selected' : '' ?>>Published</option><option value="draft"<?= $edit['status'] === 'draft' ? ' selected' : '' ?>>Draft (hidden)</option></select></label>
           <div class="bar"><?php if ($edit['id']): ?><a class="btn alt" href="/admin/cbt.php">Cancel</a><?php endif; ?><button class="btn"><?= $edit['id'] ? 'Save test' : '⬆ Upload test' ?></button></div>
         </form>
+<?php $cbtNew = !$edit['id']; require __DIR__ . '/inc/cbt-upload-js.php'; ?>
 
         <section class="box">
           <h2>How to prepare your test</h2>

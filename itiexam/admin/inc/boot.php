@@ -92,6 +92,15 @@ function save_cbt_upload(array $f, string $folder = ''): array
     if ($ext !== 'zip') {
         $html = file_get_contents($f['tmp_name']);
         if (stripos($html, '<') === false) { rrmdir($dir); throw new RuntimeException('This file does not look like an HTML page.'); }
+        // A lone HTML page that loads its own css/js/images would open broken: ask for the whole folder instead
+        preg_match_all('~\b(?:src|href)\s*=\s*["\']([^"\'#?]+)~i', $html, $m);
+        $local = array_values(array_unique(array_filter($m[1], fn($u) => !preg_match('~^(?:[a-z][a-z0-9+.-]*:|//|/)~i', trim($u))
+            && isset(CBT_TYPES[strtolower(pathinfo($u, PATHINFO_EXTENSION))]))));
+        if ($local) {
+            rrmdir($dir);
+            throw new RuntimeException('This HTML page needs its other files too (' . implode(', ', array_slice($local, 0, 4)) . (count($local) > 4 ? ', …' : '')
+                . '). Use “Whole folder” and choose the test folder, or upload a .zip of the folder.');
+        }
         file_put_contents($dir . '/index.html', $html);
         return [$folder, 'index.html'];
     }
