@@ -52,6 +52,58 @@ function section_card(string $key, string $heading, array $list, string $style, 
     return '<article class="card tsec" id="' . sec_id($key) . '"><div class="sec-head sm"><h2>' . $heading . '</h2>' . $va . "</div><ul class=\"rows\">$rows</ul></article>";
 }
 
+/** Year and semester a test belongs to, read from its name ("Sem 3 – Module 2: …", "2nd Year – Module 1: …"). */
+function test_level(string $title): array
+{
+    $sem = preg_match('/\bSem(?:ester)?\s*([1-4])\b|\b([1-4])(?:st|nd|rd|th)\s*Sem/i', $title, $m) ? (int)($m[1] ?: $m[2]) : 0;
+    $year = $sem ? ($sem <= 2 ? 1 : 2) : 0;
+    if (!$year && preg_match('/\b([12])(?:st|nd)?\s*Year\b|\bYear\s*([12])\b|\b(First|Second)\s*Year\b/i', $title, $m))
+        $year = (int)($m[1] ?: ($m[2] ?? 0)) ?: (strcasecmp($m[3] ?? '', 'Second') === 0 ? 2 : 1);
+    return [$year, $sem];
+}
+
+/** Mock tests card: 1st Year / 2nd Year tabs with semester headings when the tests carry that information. */
+function mock_card(string $name, array $list): string
+{
+    $groups = [];
+    foreach ($list as $it) { [$y, $s] = test_level($it['title']); $groups[$y][$s][] = $it; }
+    if (!array_filter(array_keys($groups))) return section_card('mock_tests', 'Latest ' . e($name) . ' Mock Tests', $list, 'mock', 'clip');
+    ksort($groups);
+    if (isset($groups[0])) { $g0 = $groups[0]; unset($groups[0]); $groups[0] = $g0; }    // tests without a year go last
+    $label = fn($y) => [1 => '1st Year', 2 => '2nd Year', 0 => 'Other Tests'][$y];
+    $tabs = count($groups) > 1;
+    $html = '<article class="card tsec mt-years" id="mock-tests"><div class="sec-head sm"><h2>' . e($name) . ' Mock Tests</h2></div>';
+    if ($tabs) {
+        $html .= '<div class="yr-tabs" role="tablist">';
+        $first = true;
+        foreach ($groups as $y => $sems) {
+            $n = array_sum(array_map('count', $sems));
+            $html .= '<button type="button" role="tab" aria-selected="' . ($first ? 'true' : 'false') . '" data-yr="' . $y . '"' . ($first ? ' class="on"' : '') . '>' . $label($y) . ' <span>' . $n . '</span></button>';
+            $first = false;
+        }
+        $html .= '</div>';
+    }
+    $first = true;
+    foreach ($groups as $y => $sems) {
+        ksort($sems);
+        $html .= '<div class="yr-pane" data-yr="' . $y . '"' . ($first ? '' : ' hidden') . '>';
+        if (!$tabs && $y) $html .= '<h3 class="yr-h">' . $label($y) . '</h3>';
+        foreach ($sems as $s => $items) {
+            if ($s) $html .= '<h4 class="sem-h">Semester ' . $s . ' <small>' . count($items) . ' tests</small></h4>';
+            $rows = '';
+            foreach ($items as $i => $it) {
+                // "Sem 1 – Module 3: Masonry" is shown as "Module 3: Masonry" under its semester heading
+                $short = trim(preg_replace('/^\s*(Sem(?:ester)?\s*\d|\d(?:st|nd|rd|th)\s*(?:Sem(?:ester)?|Year)|Year\s*\d)\s*[–:-]?\s*/iu', '', $it['title']));
+                $rows .= item_row(['title' => $short !== '' ? $short : $it['title']] + $it, $i, 'mock', 'clip');
+            }
+            $html .= '<ul class="rows">' . $rows . '</ul>';
+        }
+        $html .= '</div>';
+        $first = false;
+    }
+    return $html . '</article>';
+}
+
 /* ---------- SEO ---------- */
 $yr = date('Y');
 $title = $t['meta_title'] ?: "ITI $name Mock Test $yr – MCQ, Question Paper PDF & Syllabus | ITI Exam";
@@ -203,7 +255,7 @@ $rowsDef = [
 ];
 foreach ($rowsDef as $r => $row) {
     $cards = array_filter(array_map(fn($c) => $c[0] === 'syllabus' && $sylPdf ? section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3], $sylPdf, 'Syllabus PDF')
-        : section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3]), $row));
+        : ($c[0] === 'mock_tests' && $items['mock_tests'] ? mock_card($name, $items['mock_tests']) : section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3])), $row));
     if ($r === 0 && !$items['mock_tests']) array_unshift($cards, '<article class="card tsec mt-soon" id="mock-tests"><div class="sec-head sm"><h2>Latest ' . e($name) . ' Mock Tests</h2></div>'
         . '<div class="mt-empty"><span class="sti c-blue">' . icon('clip') . '</span><p><b>Module-wise ' . e($name) . ' mock tests are coming soon.</b> Until then, revise the syllabus and practise Employability Skills, which is common to all trades.</p>'
         . '<a class="btn-sm" href="/employability-skills/">Employability Skills MCQ ' . icon('arrow') . '</a></div></article>');

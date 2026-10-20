@@ -196,6 +196,15 @@
   // Homepage strip "Clear" (outside the panel)
   if (rvHome) rvHome.querySelector("[data-clear]").addEventListener("click", function () { save("itx_rv", []); drawHome(); });
 
+  // ---- Trade page: 1st Year / 2nd Year mock test tabs ----
+  document.querySelectorAll(".yr-tabs").forEach(function (bar) {
+    bar.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-yr]"); if (!b) return;
+      bar.querySelectorAll("[data-yr]").forEach(function (x) { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", String(x === b)); });
+      bar.parentElement.querySelectorAll(".yr-pane").forEach(function (p) { p.hidden = p.getAttribute("data-yr") !== b.getAttribute("data-yr"); });
+    });
+  });
+
   // ---- Footer link groups fold up on phones ----
   var fg = document.querySelector(".foot-grid");
   if (fg && window.matchMedia("(max-width: 767px)").matches) {

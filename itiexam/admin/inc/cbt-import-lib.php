@@ -65,6 +65,17 @@ function import_find_tests(string $root): array
     return $out;
 }
 
+/** "Sem 3" or "1st Year"/"2nd Year" found in a name (semester wins), '' when none. */
+function level_of(string $s): string
+{
+    if (preg_match('/\bSem(?:ester)?\s*([1-4])\b|\b([1-4])\s*(?:st|nd|rd|th)?\s*Sem(?:ester)?\b/i', $s, $m)) return 'Sem ' . ($m[1] ?: $m[2]);
+    if (preg_match('/\b([12])\s*(?:st|nd)?\s*Y(?:ea)?r\b|\bY(?:ea)?r\s*([12])\b|\b(First|Second)\s*Year\b/i', $s, $m)) {
+        $y = (int)($m[1] ?: ($m[2] ?? '')) ?: (strcasecmp($m[3] ?? '', 'Second') === 0 ? 2 : 1);
+        return $y === 2 ? '2nd Year' : '1st Year';
+    }
+    return '';
+}
+
 function norm(string $s): string { return preg_replace('/[^a-z0-9]/', '', strtolower(str_replace('&', 'and', $s))); }
 
 /** Reads the test's own trade/module names and question count from its files. */
@@ -79,18 +90,36 @@ function import_describe(string $root, array $t, array $trades): array
     $folder = basename($t['dir']) ?: ($t['name'] ?? 'Test');
     $examTrade = $mt[1] ?? '';
     // Trade name: "Draughtsman Civil - Sem 1" → "Draughtsman Civil"; "Electrician - 1st Year (NCVT CBT 2022)" → "Electrician"
-    $tradeName = trim(preg_replace('/\s*[-–]\s*(Sem(ester)?\s*\d.*|\d+(st|nd|rd|th)\s*Year.*)$/i', '', $examTrade));
-    $level = preg_match('/[-–]\s*(Sem(?:ester)?\s*\d|\d+(?:st|nd|rd|th)\s*Year)/i', $examTrade, $lv) ? preg_replace('/^Semester/i', 'Sem', $lv[1]) : '';
-    if (!$level && preg_match('/(?:^|[-_ ])(Sem(?:ester)?[-_ ]?\d|\d(?:st|nd|rd|th)[-_ ]Year)/i', $t['dir'] ?: $folder, $lv)) $level = str_replace(['-', '_'], ' ', $lv[1]);
-    $level = preg_replace(['/^Sem(ester)?\s*(\d)/i', '/\s+/'], ['Sem $2', ' '], $level);
+    $tradeName = trim(preg_replace('/\s*[-–]\s*(Sem(ester)?\s*\d.*|\d+(st|nd|rd|th)\s*Year.*)$/iu', '', $examTrade));
+    // Folder and ZIP names from the top of the upload down to this test, in plain words
+    $segs = array_values(array_filter(array_map(fn($s) => trim(preg_replace('/\s+/', ' ', str_replace(['-', '_', '.'], ' ', $s))),
+        explode('/', ($t['dir'] !== '' ? $t['dir'] : ($t['name'] ?? ''))))));
+    $level = level_of($examTrade) ?: level_of(implode(' / ', array_reverse($segs)));
+
+    // Module number + name: the test's own EXAM_MODULE, else the nearest folder name that says "Module N …"
+    $modNo = ''; $modName = '';
+    if (!empty($mm[1]) && preg_match('/^Module\s+([\w.]+)\s*-\s*(.+)$/i', $mm[1], $m2)) { $modNo = $m2[1]; $modName = $m2[2]; }
+    else foreach (array_reverse($segs) as $sg) {
+        if (preg_match('/\bModule\s*(\d+(?:\s?\.\s?\d+)?)\b\s*[:–-]?\s*(.*)$/iu', $sg, $m2)) {
+            $modNo = str_replace(' ', '', $m2[1]);
+            $modName = trim(preg_replace('/^(Sem(ester)?\s*\d|\d(st|nd|rd|th)\s*(Sem(ester)?|Year))\s*/i', '', $m2[2]));
+            break;
+        }
+    }
+    $modName = preg_replace("/^[\\s:–-]+|[\\s:–-]+$/u", "", $modName);
+    if ($modName === mb_strtolower($modName)) $modName = ucwords($modName);           // only fix all-lowercase names
 
     // Title
     if (preg_match('/CBT[-_ ]?Paper[-_ ]?(\d+)[-_ ]?(.*)$/i', $folder, $pp)) {
         $title = trim(($level ? $level . ' ' : '') . 'CBT Paper ' . $pp[1] . ($pp[2] ? ' – ' . str_replace(['-', '_'], ' ', $pp[2]) : ''));
-    } elseif (!empty($mm[1]) && preg_match('/^Module\s+([\w.]+)\s*-\s*(.+)$/i', $mm[1], $m2)) {
-        $title = ($level ? $level . ' – ' : '') . 'Module ' . $m2[1] . ': ' . $m2[2];
+    } elseif ($modNo !== '') {
+        $title = ($level ? $level . ' – ' : '') . 'Module ' . $modNo . ($modName !== '' ? ': ' . $modName : '');
     } else {
-        $title = trim(preg_replace('/\s+/', ' ', str_replace(['-', '_'], ' ', $folder)));
+        // Nearest folder that is not a generic name like "index" or "test"
+        $nm = '';
+        foreach (array_reverse($segs) as $sg) if (!preg_match('/^(index|test|tests|files?|new folder|cbt|html|all modules?|all papers|question(s| set)?)$/i', $sg)) { $nm = $sg; break; }
+        $nm = trim(preg_replace('/\b(Sem(ester)?\s*\d|\d(st|nd|rd|th)\s*(Sem(ester)?|Year)|Year\s*\d)\b/i', '', $nm)) ?: ($nm ?: 'Test');
+        $title = ($level && stripos($nm, $level) === false ? $level . ' – ' : '') . ($nm === mb_strtolower($nm) ? ucwords($nm) : $nm);
     }
 
     // Trade match: exact name/slug/full name/short form, else the longest trade name found in the path
@@ -103,7 +132,15 @@ function import_describe(string $root, array $t, array $trades): array
             if (strlen($n) > 2 && str_contains($where, $n) && strlen($n) > $bestLen) { $best = (int)$tr['id']; $bestLen = strlen($n); }
         }
     }
-    if (!$tradeName) $tradeName = $best ? '' : trim(preg_replace('/\s*(Sem\s*\d|Module|CBT).*$/i', '', str_replace(['-', '_'], ' ', $folder)));
+    if (!$tradeName && !$best) {
+        // Nearest folder above the test that still has a name once year/sem/module words are taken out ("Fitter Sem1 All Modules" → "Fitter")
+        foreach (array_reverse(count($segs) > 1 ? array_slice($segs, 0, -1) : $segs) as $sg) {
+            if (preg_match('/\bModule\s*\d/i', $sg)) continue;
+            $c = preg_replace(['/\b(Sem(ester)?\s*\d|\d\s*(st|nd|rd|th)?\s*(Sem(ester)?|Y(ea)?r)|Y(ea)?r\s*\d|First Year|Second Year)\b/i',
+                '/\b(all|modules?|papers?|tests?|cbt|mcq|questions?|question bank|bank|set|sets|nimi|ncvt|iti|hindi|english|marathi|online|mock|exam|files?|new folder|zip|\d+)\b/i'], ' ', $sg);
+            if (($c = trim(preg_replace('/\s+/', ' ', $c))) !== '') { $tradeName = ucwords($c); break; }
+        }
+    }
     return ['dir' => $t['dir'], 'entry' => $t['entry'], 'title' => mb_substr($title, 0, 250), 'questions' => $q, 'minutes' => $q ? $q * 2 : 0,
         'trade_id' => $best, 'trade_new' => $best ? '' : $tradeName];
 }
