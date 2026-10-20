@@ -2,6 +2,7 @@
 /* Admin → CBT Tests: upload ready-made HTML tests (.html or .zip), link them to a trade, edit, delete. */
 require __DIR__ . '/inc/boot.php';
 require __DIR__ . '/inc/layout.php';
+require __DIR__ . '/inc/cbt-import-lib.php';
 require_login();
 $pdo = db();
 
@@ -62,12 +63,31 @@ if (is_post()) {
     $edit['status'] = post('status') === 'draft' ? 'draft' : 'published';
     $file = $_FILES['test_file'] ?? null;
     $hasFile = $file && $file['error'] !== UPLOAD_ERR_NO_FILE;
-    if ($edit['title'] === '') $err = 'Test name is required.';
-    elseif (!$id && !$hasFile) $err = 'Choose the HTML file or ZIP of your test.';
+    // A ZIP that holds many tests goes to Bulk import (preview, trade-wise) instead
+    if (!$id && $hasFile && $file['error'] === UPLOAD_ERR_OK && strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)) === 'zip' && cbt_zip_is_bundle($file['tmp_name'])) {
+        @mkdir(IMPORT_DIR, 0775, true);
+        $hand = 'upload-' . bin2hex(random_bytes(5)) . '.zip';
+        if (move_uploaded_file($file['tmp_name'], IMPORT_DIR . '/' . $hand)) redirect('/admin/cbt-import.php?zip=' . $hand);
+        $err = 'Could not store the ZIP. Check that the data folder is writable.';
+    }
+    if ($err) {}
+    elseif ($edit['title'] === '' && !$hasFile) $err = 'Test name is required.';
+    elseif (!$id && !$hasFile) $err = 'Choose the test folder, a ZIP or an HTML file.';
     else {
         try {
             if ($hasFile) [$edit['folder'], $edit['entry']] = save_cbt_upload($file, $edit['folder']);
             elseif ($id && in_array(post('entry'), cbt_html_files($edit['folder']), true)) $edit['entry'] = post('entry');
+            if ($hasFile) {
+                // Fill what was left empty from the test itself (name, questions, minutes, trade)
+                $all = $pdo->query('SELECT id, name, slug, full_name FROM trades')->fetchAll();
+                $src = pathinfo((string)(post('src_name') ?: $file['name']), PATHINFO_FILENAME);
+                $d = import_describe(CBT_DIR . '/' . $edit['folder'], ['dir' => trim(dirname($edit['entry']), '.'), 'entry' => basename($edit['entry']), 'name' => $src], $all);
+                if (basename($d['dir']) === '' && $d['title'] === 'Test') $d['title'] = trim(str_replace(['-', '_'], ' ', $src));
+                if ($edit['title'] === '') $edit['title'] = $d['title'];
+                if (!$edit['questions']) $edit['questions'] = (int)$d['questions'];
+                if (!$edit['minutes']) $edit['minutes'] = (int)$d['minutes'];
+                if (!$edit['trade_id'] && $d['trade_id']) $edit['trade_id'] = $d['trade_id'];
+            }
         } catch (RuntimeException $ex) { $err = $ex->getMessage(); }
     }
     if (!$err) {
@@ -125,7 +145,11 @@ admin_header('CBT Tests', 'cbt');
           <h2><?= $edit['id'] ? 'Edit test' : 'Upload a test' ?></h2>
 <?php if ($err): ?><div class="flash err"><?= e($err) ?></div><?php endif; ?>
           <?= csrf_field() ?>
+<?php if ($edit['id']): ?>
           <label>Test name * <input name="title" required value="<?= e($edit['title']) ?>" placeholder="Computer Fundamentals – Set 2"></label>
+<?php else: ?>
+          <label>Test name <span class="hint">Optional – leave empty to take it from the test (e.g. “Sem 1 – Module 3: Masonry”)</span><input name="title" value="<?= e($edit['title']) ?>" placeholder="Taken from the test if left empty"></label>
+<?php endif; ?>
           <label>Trade <select name="trade_id"><option value="0">— No trade —</option><?php foreach ($trades as $t): ?><option value="<?= $t['id'] ?>"<?= $t['id'] == $edit['trade_id'] ? ' selected' : '' ?>><?= e($t['name']) ?></option><?php endforeach; ?></select></label>
           <div class="grid2 tight">
             <label>Questions <input type="number" min="0" name="questions" value="<?= (int)$edit['questions'] ?>"></label>

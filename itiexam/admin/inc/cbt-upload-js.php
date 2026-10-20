@@ -38,11 +38,13 @@ $cbtExts = array_keys(CBT_TYPES);
   }
   folder.addEventListener('change', function () {
     var l = picked(), html = l.filter(function (x) { return /\.html?$/i.test(x.path); }), size = l.reduce(function (a, x) { return a + x.file.size; }, 0),
-        idx = l.some(function (x) { return /^index\.html?$/i.test(x.path); });
+        idx = l.some(function (x) { return /^index\.html?$/i.test(x.path); }),
+        tests = l.filter(function (x) { return /(^|\/)index\.html?$/i.test(x.path); }).length;
     info.hidden = false;
     info.classList.toggle('bad', !html.length || size > MAX);
     info.textContent = !l.length ? 'No usable files in this folder.' : !html.length ? 'This folder has no .html file.' :
       size > MAX ? 'Folder is too big (' + (size / 1048576).toFixed(1) + ' MB, max ' + (MAX / 1048576) + ' MB).' :
+      tests > 1 ? '✓ ' + tests + ' tests found (' + (size / 1048576).toFixed(1) + ' MB) – they will open in Bulk import to check trades and names.' :
       '✓ ' + l.length + ' files ready (' + (size / 1048576).toFixed(2) + ' MB)' + (idx ? ' · start page: index.html' : ' · start page: ' + html[0].path);
   });
 
@@ -88,6 +90,7 @@ $cbtExts = array_keys(CBT_TYPES);
     makeZip(l).then(function (zip) {
       var fd = new FormData(form);
       fd.set('test_file', zip, 'test-folder.zip');
+      fd.set('src_name', ((folder.files[0] && folder.files[0].webkitRelativePath) || '').split('/')[0]);
       return fetch(form.action || location.href, { method: 'POST', body: fd, credentials: 'same-origin' });
     }).then(function (r) {
       if (r.redirected) { location.href = r.url; return; }
