@@ -49,6 +49,11 @@ $err = '';
 if (is_post()) {
     csrf_check();
     $action = $_POST['action'] ?? 'save';
+    if ($action === 'clean_lists') {
+        $n = $pdo->exec("DELETE FROM trade_items WHERE section = 'mock_tests' AND TRIM(url) IN ('', '#')");
+        flash($n ? "$n demo / no-link tests removed from the trade pages." : 'Nothing to remove.');
+        redirect('/admin/cbt.php');
+    }
     if ($action === 'delete' || $action === 'delete_many') {
         $ids = $action === 'delete' ? [(int)$_POST['id']] : array_map('intval', (array)($_POST['ids'] ?? []));
         $n = 0;
@@ -117,6 +122,7 @@ $st = $pdo->prepare('SELECT c.*, t.name AS tname FROM cbt_tests c LEFT JOIN trad
 $st->execute($tf ? [$tf] : []);
 $rows = $st->fetchAll();
 $counts = $pdo->query('SELECT trade_id, COUNT(*) FROM cbt_tests GROUP BY trade_id')->fetchAll(PDO::FETCH_KEY_PAIR);
+$demo = $pdo->query("SELECT t.name, i.title FROM trade_items i JOIN trades t ON t.id = i.trade_id WHERE i.section = 'mock_tests' AND TRIM(i.url) IN ('', '#') ORDER BY t.sort_order, i.sort_order")->fetchAll();
 $inTrade = true;
 if ($edit['id']) {
     $chk = $pdo->prepare("SELECT COUNT(*) FROM trade_items WHERE section = 'mock_tests' AND url = ?");
@@ -130,6 +136,14 @@ admin_header('CBT Tests', 'cbt');
       <section class="box tablebox">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>Your HTML tests</h2><a class="btn" href="/admin/cbt-import.php">📦 Bulk import (all trades)</a></div>
         <p class="muted">Upload tests you made as HTML web pages. Each test gets its own page on the website (with your header, full-screen button and more tests) and can appear automatically in the trade's <b>Mock Tests</b> list.</p>
+<?php if ($demo): ?>
+        <form method="post" class="flash" style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap" data-confirm="Remove these <?= count($demo) ?> demo tests from the trade pages?">
+          <?= csrf_field() ?><input type="hidden" name="action" value="clean_lists">
+          <span><b><?= count($demo) ?> demo / no-link tests</b> are in the trade lists (not real tests, “Start Test” opens nothing):
+            <small class="muted"><?= e(implode(', ', array_map(fn($d) => $d['name'] . ': ' . $d['title'], array_slice($demo, 0, 6)))) ?><?= count($demo) > 6 ? ' …' : '' ?></small></span>
+          <button class="btn sm danger">🧹 Remove them</button>
+        </form>
+<?php endif; ?>
         <form method="post" id="bulkdel" data-confirm="Delete the selected tests and all their files? This cannot be undone."><?= csrf_field() ?><input type="hidden" name="action" value="delete_many"><input type="hidden" name="tf" value="<?= $tf ?>"></form>
         <div class="bulk-bar">
           <form method="get" class="tf-form"><select name="tf" onchange="this.form.submit()">

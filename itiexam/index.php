@@ -112,7 +112,7 @@ foreach ($ld['@graph'] as &$node) {
 unset($node);
 
 $mockTests = db()->query("SELECT i.*, t.name AS tname, t.slug AS tslug FROM trade_items i JOIN trades t ON t.id = i.trade_id
-    WHERE i.section = 'mock_tests' AND t.status = 'published' ORDER BY i.is_new DESC, i.id DESC LIMIT 4")->fetchAll();
+    WHERE i.section = 'mock_tests' AND i.url NOT IN ('', '#') AND t.status = 'published' ORDER BY i.is_new DESC, i.id DESC LIMIT 4")->fetchAll();
 $homeJobs = latest_jobs(4);
 $examUpdates = latest_posts('exam-update', 4);
 $articles = latest_posts('article', 4);
@@ -218,7 +218,7 @@ require __DIR__ . '/includes/header.php';
 
 <?php if ($show('trades')):
     $homeTrades = array_slice(trades(true), 0, max(1, (int)(setting('home_trades_count') ?: 5)));
-    $testCount = db()->query("SELECT trade_id, COUNT(*) FROM trade_items WHERE section = 'mock_tests' GROUP BY trade_id")->fetchAll(PDO::FETCH_KEY_PAIR);
+    $testCount = db()->query("SELECT trade_id, COUNT(*) FROM trade_items WHERE section = 'mock_tests' AND url NOT IN ('', '#') GROUP BY trade_id")->fetchAll(PDO::FETCH_KEY_PAIR);
 ?>
     <!-- ===== Popular Trades ===== -->
     <section class="section htrades-sec" aria-labelledby="trades-h">

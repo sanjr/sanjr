@@ -9,6 +9,8 @@ $t = $st->fetch();
 if (!$t) not_found();
 
 $items = trade_items((int)$t['id']);
+// Mock tests without a working link (demo rows, '#') are not shown to students
+$items['mock_tests'] = array_values(array_filter($items['mock_tests'], fn($m) => !in_array(trim($m['url']), ['', '#'], true)));
 $sections = trade_sections();
 $name = $t['name'];
 $path = trade_url($t);
