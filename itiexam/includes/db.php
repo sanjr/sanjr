@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '13';
+const SCHEMA_VERSION = '14';
 
 function db(): PDO
 {
@@ -117,6 +117,9 @@ function db_migrate(PDO $pdo): void
         pct INT NOT NULL DEFAULT 0, passed INT NOT NULL DEFAULT 0, time_sec INT NOT NULL DEFAULT 0, lang VARCHAR(20) NOT NULL DEFAULT '',
         created_at VARCHAR(20) NOT NULL)$engine");
     try { $pdo->exec('CREATE INDEX attempts_student ON attempts (student_id)'); } catch (PDOException $e) { /* already there */ }
+    // v14: where the student took the test ("City, State (Country)", found by the test itself)
+    add_column($pdo, 'attempts', 'location', "VARCHAR(160) NOT NULL DEFAULT ''");
+    add_column($pdo, 'students', 'location', "VARCHAR(160) NOT NULL DEFAULT ''");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS syllabi (
         id $id, trade_name VARCHAR(160) NOT NULL, trade_id INT NOT NULL DEFAULT 0, sector VARCHAR(120) NOT NULL DEFAULT '',

@@ -17,7 +17,7 @@
     var f = window.saveResultToFirebase;
     if (typeof f === "function" && !f.__itx) {
       window.saveResultToFirebase = function (d) {
-        if (d) send({ score: d.score, total: d.total, pct: d.pct, status: d.status, lang: d.lang });
+        if (d) send({ score: d.score, total: d.total, pct: d.pct, status: d.status, lang: d.lang, location: d.location });
         return f.apply(this, arguments);
       };
       window.saveResultToFirebase.__itx = 1;
@@ -36,7 +36,8 @@
     setTimeout(function () {
       if (sent) return;
       var score = parseFloat(txt("res-score")), total = parseFloat(txt("res-total-display")), pct = parseFloat(txt("res-percent")), b = txt("res-status-badge");
-      if (!isNaN(score)) send({ score: score, total: isNaN(total) ? 0 : total, pct: isNaN(pct) ? 0 : pct, status: /PASS/i.test(b) ? "PASS" : (/FAIL/i.test(b) ? "FAIL" : "") });
+      var loc = ""; try { loc = typeof studentLocation === "string" ? studentLocation : ""; } catch (e) {}
+      if (!isNaN(score)) send({ score: score, total: isNaN(total) ? 0 : total, pct: isNaN(pct) ? 0 : pct, status: /PASS/i.test(b) ? "PASS" : (/FAIL/i.test(b) ? "FAIL" : ""), location: loc });
     }, 6500);
   }).observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ["style", "class"] });
   // 3) A signed-in student's name fills the test's name box

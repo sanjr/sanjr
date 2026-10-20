@@ -139,7 +139,7 @@ require __DIR__ . '/includes/header.php';
       if (!frame || e.source !== frame.contentWindow || !e.data || typeof e.data !== "object") return;
       if (e.data.itx === "ready" && me) { frame.contentWindow.postMessage({ itx: "student", name: me.name }, "*"); return; }
       if (e.data.itx !== "result" || !e.data.data) return;
-      var d = e.data.data, r = { folder: folder, score: +d.score || 0, total: +d.total || 0, pct: +d.pct || 0, status: String(d.status || ""), lang: String(d.lang || ""), time: +e.data.time || 0, at: Date.now() };
+      var d = e.data.data, r = { folder: folder, score: +d.score || 0, total: +d.total || 0, pct: +d.pct || 0, status: String(d.status || ""), lang: String(d.lang || ""), location: String(d.location || "").slice(0, 160), time: +e.data.time || 0, at: Date.now() };
       if (!me) {
         try { var q = JSON.parse(localStorage.getItem("itx_pending") || "[]"); q.push(r); localStorage.setItem("itx_pending", JSON.stringify(q.slice(-20))); } catch (x) {}
         show("guest", "<b>Score: " + r.score + (r.total ? " / " + r.total : "") + "</b> <span>Login with Google to save this result and track your progress.</span> <a class=\"btn-sm\" href=\"" + login + "\">Login &amp; Save</a>");

@@ -16,6 +16,8 @@ $stats = [
     ['Trade content items', $c('SELECT COUNT(*) FROM trade_items'), '/admin/trades.php', 'list', 'c-green'],
     ['Open jobs', $c('SELECT COUNT(*) FROM jobs j WHERE ' . job_active_sql()), '/admin/jobs.php?show=open', 'brief', 'c-orange'],
     ['Pages & articles', $c('SELECT COUNT(*) FROM pages'), '/admin/pages.php', 'doc', 'c-purple'],
+    ['Students', $c('SELECT COUNT(*) FROM students'), '/admin/students.php', 'users', 'c-blue'],
+    ['Exams taken', $c('SELECT COUNT(*) FROM attempts'), '/admin/students.php', 'clip', 'c-green'],
 ];
 $recent = $pdo->query('SELECT id, name, slug, updated_at FROM trades ORDER BY updated_at DESC LIMIT 5')->fetchAll();
 $sampleIds = array_filter(array_map('intval', explode(',', setting('sample_job_ids'))));
@@ -43,6 +45,7 @@ admin_header('Dashboard', 'dashboard');
         <a href="/admin/home.php"><?= icon('home') ?><b>Homepage</b><small>Hero text &amp; photo, sections, FAQ</small></a>
         <a href="/admin/trades.php"><?= icon('tool') ?><b>Trades</b><small>Add trades, mock tests, notes, papers</small></a>
         <a href="/admin/cbt.php"><?= icon('clip') ?><b>CBT Tests</b><small>Upload your HTML tests</small></a>
+        <a href="/admin/students.php"><?= icon('users') ?><b>Students &amp; Results</b><small>Trade-wise, location, pass rate</small></a>
         <a href="/admin/jobs.php"><?= icon('brief') ?><b>Jobs</b><small>Add, edit, copy, delete jobs</small></a>
         <a href="/admin/pages.php"><?= icon('doc') ?><b>Pages &amp; Articles</b><small>About, blog, exam updates</small></a>
         <a href="/admin/media.php"><?= icon('layout') ?><b>Media Library</b><small>Upload photos &amp; PDFs</small></a>

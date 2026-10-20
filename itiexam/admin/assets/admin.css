@@ -174,3 +174,17 @@ textarea.ed-src { margin: 0 !important; border: 0 !important; border-radius: 0 !
 .auth .forgot { margin-top: 12px; text-align: center; font-size: 14px; }
 .auth .steps { margin: 10px 0 14px 20px; display: grid; gap: 6px; font-size: 14px; }
 .auth code { background: #eef3ff; padding: 1px 6px; border-radius: 6px; }
+
+/* Students & Results report */
+.pill.bad { background: #ffe4e6; color: #be123c; }
+.box h2 small { font-size: 12px; font-weight: 500; }
+.seg { display: inline-flex; background: #fff; border-radius: 10px; padding: 4px; box-shadow: 0 2px 12px rgba(15, 42, 111, .06); flex-wrap: wrap; }
+.seg a { padding: 7px 14px; border-radius: 8px; color: var(--text); font-weight: 600; font-size: 13px; }
+.seg a.on { background: var(--blue); color: #fff; }
+.meter { display: inline-block; width: 70px; height: 8px; border-radius: 99px; background: #eef2f9; overflow: hidden; vertical-align: middle; margin-right: 4px; }
+.meter i { display: block; height: 100%; background: #2563eb; border-radius: 99px; }
+.dbars { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; height: 170px; align-items: end; }
+.dbars > div { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+.dbars i { display: block; width: 100%; max-width: 34px; background: #2563eb; border-radius: 4px 4px 0 0; }
+.dbars span { font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.dbars small { font-size: 11px; color: var(--muted); margin-top: 4px; }
