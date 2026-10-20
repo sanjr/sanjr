@@ -31,6 +31,7 @@ if (isset($_GET['p'])) {
 }
 
 /* ---------- the test page ---------- */
+if ($test['level'] ?? '') $test['title'] = $test['level'] . ' – ' . $test['title'];   // "1st Year – Module 3" on the test page
 $name = $test['tname'] ?: 'ITI';
 $path = cbt_url($test);
 $more = [];

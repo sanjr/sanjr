@@ -45,8 +45,7 @@ if (is_post() || $autoScan) {
             foreach ($rows as &$r) {
                 if (ctype_digit($allTrade) && (int)$allTrade > 0) { $r['trade_id'] = (int)$allTrade; $r['trade_new'] = ''; }
                 elseif ($allTrade === 'new' && $newName !== '') { $r['trade_id'] = 0; $r['trade_new'] = $newName; }
-                if (in_array($allLevel, ['1st Year', '2nd Year', 'Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'], true))
-                    $r['title'] = $allLevel . ' – ' . preg_replace('/^\s*(Sem\s*\d|\d(st|nd)\s*Year)\s*[–:-]?\s*/iu', '', $r['title']);
+                if (in_array($allLevel, LEVELS, true)) $r['level'] = $allLevel;
             }
             unset($r);
             usort($rows, fn($a, $b) => strnatcasecmp($a['dir'], $b['dir']));
@@ -57,11 +56,11 @@ if (is_post() || $autoScan) {
     }
     if ($action === 'import' && $jobDir && is_file($jobDir . '/rows.json')) {
         $rows = json_decode(file_get_contents($jobDir . '/rows.json'), true);
-        $use = $_POST['use'] ?? []; $tsel = $_POST['trade'] ?? []; $titles = $_POST['title'] ?? []; $mins = $_POST['minutes'] ?? [];
+        $use = $_POST['use'] ?? []; $tsel = $_POST['trade'] ?? []; $titles = $_POST['title'] ?? []; $mins = $_POST['minutes'] ?? []; $lvls = $_POST['level'] ?? [];
         $toList = isset($_POST['to_list']); $starter = isset($_POST['starter']);
         $newIds = []; $done = 0; $made = [];
-        $ins = $pdo->prepare('INSERT INTO cbt_tests (folder, title, trade_id, entry, questions, minutes, description, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-        $item = $pdo->prepare("INSERT INTO trade_items (trade_id, section, title, url, icon, questions, minutes, is_new, sort_order) VALUES (?, 'mock_tests', ?, ?, 'clip', ?, ?, ?, ?)");
+        $ins = $pdo->prepare('INSERT INTO cbt_tests (folder, title, level, trade_id, entry, questions, minutes, description, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $item = $pdo->prepare("INSERT INTO trade_items (trade_id, section, title, level, url, icon, questions, minutes, is_new, sort_order) VALUES (?, 'mock_tests', ?, ?, ?, 'clip', ?, ?, ?, ?)");
         foreach ($rows as $i => $r) {
             if (empty($use[$i])) continue;
             $sel = (string)($tsel[$i] ?? '0');
@@ -76,10 +75,11 @@ if (is_post() || $autoScan) {
             $from = $jobDir . '/files' . ($r['dir'] !== '' ? '/' . $r['dir'] : '');
             if (!is_dir($from) || !@rename($from, CBT_DIR . '/' . $folder)) continue;
             $minutes = max(0, (int)($mins[$i] ?? $r['minutes']));
-            $ins->execute([$folder, $title, $tid, $r['entry'], (int)$r['questions'], $minutes, '', 'published', now(), now()]);
+            $level = in_array($lv = (string)($lvls[$i] ?? $r['level']), LEVELS, true) ? $lv : '';
+            $ins->execute([$folder, $title, $level, $tid, $r['entry'], (int)$r['questions'], $minutes, '', 'published', now(), now()]);
             if ($toList && $tid) {
                 $next = (int)$pdo->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM trade_items WHERE trade_id = ' . $tid . " AND section = 'mock_tests'")->fetchColumn();
-                $item->execute([$tid, $title, '/cbt/' . $folder . '/', (int)$r['questions'], $minutes, 0, $next]);
+                $item->execute([$tid, $title, $level, '/cbt/' . $folder . '/', (int)$r['questions'], $minutes, 0, $next]);
                 $pdo->prepare('UPDATE trades SET updated_at = ? WHERE id = ?')->execute([now(), $tid]);
             }
             $done++;
@@ -117,7 +117,7 @@ admin_header('Bulk import CBT tests', 'cbt');
 <?php foreach ($trades as $t): ?>              <option value="<?= $t['id'] ?>"><?= e($t['name']) ?></option>
 <?php endforeach; ?>              <option value="new">＋ New trade…</option>
             </select></label>
-          <label>Year / Semester <span class="hint">Added before each test name</span>
+          <label>Year / Semester <span class="hint">Decides the 1st Year / 2nd Year tab</span>
             <select name="all_level"><option value="">— from the files / none —</option><option>1st Year</option><option>2nd Year</option><option>Sem 1</option><option>Sem 2</option><option>Sem 3</option><option>Sem 4</option></select></label>
         </div>
         <label id="new-trade-row" hidden>New trade name <input name="new_trade" placeholder="e.g. Wireman"></label>
@@ -158,14 +158,14 @@ admin_header('Bulk import CBT tests', 'cbt');
 <?php foreach ($newNames as $nn): ?>          <option value="new:<?= e($nn) ?>">＋ New: <?= e($nn) ?></option>
 <?php endforeach; foreach ($trades as $t): ?>          <option value="<?= $t['id'] ?>"><?= e($t['name']) ?></option>
 <?php endforeach; ?>        </select>
-        <select id="aa-level"><option value="">Year / Sem – keep</option><option>1st Year</option><option>2nd Year</option><option>Sem 1</option><option>Sem 2</option><option>Sem 3</option><option>Sem 4</option><option value="-">Remove year / sem</option></select>
+        <select id="aa-level"><option value="">Year / Sem – keep</option><option>1st Year</option><option>2nd Year</option><option>Sem 1</option><option>Sem 2</option><option>Sem 3</option><option>Sem 4</option><option value="-">No year / sem</option></select>
         <input type="number" id="aa-min" min="0" placeholder="Minutes" style="width:100px">
         <button type="button" class="btn sm" id="aa-go">Apply</button>
       </div>
       <style>.apply-all { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 14px; margin: 6px 0 12px; border-radius: 12px; background: #eef3ff; border: 1px solid #d6e2ff; } .apply-all select { min-width: 170px; }</style>
       <div class="tablebox" style="overflow-x:auto">
       <table>
-        <thead><tr><th></th><th>Trade</th><th>Test name</th><th>Q</th><th>Min</th><th>Folder</th></tr></thead>
+        <thead><tr><th></th><th>Trade</th><th>Year / Sem</th><th>Test name</th><th>Q</th><th>Min</th><th>Folder</th></tr></thead>
         <tbody>
 <?php foreach ($rows as $i => $r):
     $dup = $r['trade_id'] && isset($have[$r['trade_id'] . '|' . mb_strtolower($r['title'])]); ?>
@@ -177,6 +177,7 @@ admin_header('Bulk import CBT tests', 'cbt');
 <?php endforeach; foreach ($trades as $t): ?>              <option value="<?= $t['id'] ?>"<?= $t['id'] == $r['trade_id'] ? ' selected' : '' ?>><?= e($t['name']) ?></option>
 <?php endforeach; ?>
             </select></td>
+            <td><select name="level[<?= $i ?>]" class="lvl"><?= level_options($r['level'] ?? '') ?></select></td>
             <td><input name="title[<?= $i ?>]" value="<?= e($r['title']) ?>" style="min-width:260px"><?= $dup ? '<br><small class="muted">Already on the website</small>' : '' ?></td>
             <td><?= (int)$r['questions'] ?></td>
             <td><input type="number" min="0" name="minutes[<?= $i ?>]" value="<?= (int)$r['minutes'] ?>" style="width:70px"></td>
@@ -195,10 +196,7 @@ admin_header('Bulk import CBT tests', 'cbt');
         document.querySelectorAll('tbody tr').forEach(function (row) {
           if (!row.querySelector('.pick').checked) return;
           if (tr) row.querySelector('select').value = tr;
-          if (lv) {
-            var t = row.querySelector('input[name^=title]'), base = t.value.replace(/^\s*(Sem\s*\d|\d(st|nd)\s*Year)\s*[–:-]?\s*/i, '');
-            t.value = lv === '-' ? base : lv + ' – ' + base;
-          }
+          if (lv) row.querySelector('.lvl').value = lv === '-' ? '' : lv;
           if (mn !== '') row.querySelector('input[type=number]').value = mn;
           n++;
         });

@@ -69,7 +69,7 @@ if ($json) {
     header('Cache-Control: no-store');   // deleted tests/trades must disappear at once
     $map = [
         'trades' => fn($t) => ['k' => 'Trade', 'i' => $t['emoji'] ?: '🛠️', 't' => $t['name'], 's' => $t['full_name'] ?: $t['short_desc'], 'u' => trade_url($t)],
-        'tests' => fn($c) => ['k' => 'Test', 'i' => '📝', 't' => ($c['tname'] ? $c['tname'] . ' – ' : '') . $c['title'], 's' => trim(($c['questions'] ? $c['questions'] . ' Questions' : '') . ($c['minutes'] ? ' · ' . $c['minutes'] . ' min' : ''), ' ·'), 'u' => cbt_url($c)],
+        'tests' => fn($c) => ['k' => 'Test', 'i' => '📝', 't' => ($c['tname'] ? $c['tname'] . ' – ' : '') . (($c['level'] ?? '') ? $c['level'] . ' – ' : '') . $c['title'], 's' => trim(($c['questions'] ? $c['questions'] . ' Questions' : '') . ($c['minutes'] ? ' · ' . $c['minutes'] . ' min' : ''), ' ·'), 'u' => cbt_url($c)],
         'syllabus' => fn($s) => ['k' => 'Syllabus', 'i' => '📘', 't' => $s['trade_name'] . ' Syllabus', 's' => trim($s['duration'] . ($s['nsqf'] ? ' · NSQF ' . $s['nsqf'] : ''), ' ·'), 'u' => $syl_url($s)],
         'jobs' => fn($j) => ['k' => 'Job', 'i' => '💼', 't' => $j['title'], 's' => $j['emp_name'] ?: $j['company'], 'u' => job_url($j)],
         'pages' => fn($p) => ['k' => 'Article', 'i' => '📄', 't' => $p['title'], 's' => nice_date($p['created_at']), 'u' => '/' . $p['slug'] . '/'],
@@ -149,7 +149,7 @@ require __DIR__ . '/includes/header.php';
         <h2 class="res-h">Online Tests</h2>
         <ul class="card rows">
 <?php foreach ($res['tests'] as $i => $c): ?>
-          <li><a href="<?= e(cbt_url($c)) ?>" class="row-mock"><span class="ri <?= chip_color($i) ?> solid"><?= icon('clip') ?></span><span class="rt"><b><?= $c['tname'] ? hl($c['tname'], $q) . ' – ' : '' ?><?= hl($c['title'], $q) ?></b><?php if ($c['questions'] || $c['minutes']): ?><small><?= $c['questions'] ? (int)$c['questions'] . ' Questions' : '' ?><?= $c['questions'] && $c['minutes'] ? ' · ' : '' ?><?= $c['minutes'] ? (int)$c['minutes'] . ' min' : '' ?></small><?php endif; ?></span><span class="btn-sm">Start</span></a></li>
+          <li><a href="<?= e(cbt_url($c)) ?>" class="row-mock"><span class="ri <?= chip_color($i) ?> solid"><?= icon('clip') ?></span><span class="rt"><b><?= $c['tname'] ? hl($c['tname'], $q) . ' – ' : '' ?><?= ($c['level'] ?? '') ? e($c['level']) . ' – ' : '' ?><?= hl($c['title'], $q) ?></b><?php if ($c['questions'] || $c['minutes']): ?><small><?= $c['questions'] ? (int)$c['questions'] . ' Questions' : '' ?><?= $c['questions'] && $c['minutes'] ? ' · ' : '' ?><?= $c['minutes'] ? (int)$c['minutes'] . ' min' : '' ?></small><?php endif; ?></span><span class="btn-sm">Start</span></a></li>
 <?php endforeach; ?>
         </ul>
       </div>

@@ -1,6 +1,15 @@
 <?php
 /* Shared by Admin → CBT Tests (single upload) and Bulk import: unpack, find and describe test folders. */
 define('IMPORT_DIR', dirname(CBT_DIR) . '/import');
+const LEVELS = ['1st Year', '2nd Year', 'Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];   // what a test's "Year / Semester" can be
+
+/** <option> list for a Year / Semester select. */
+function level_options(string $sel, string $none = '— None —'): string
+{
+    $o = '<option value="">' . e($none) . '</option>';
+    foreach (LEVELS as $l) $o .= '<option' . ($l === $sel ? ' selected' : '') . '>' . $l . '</option>';
+    return $o;
+}
 
 /** Unpacks a ZIP into $dest; ZIPs found inside are unpacked into a folder of the same name. Only CBT file types are kept. */
 function import_unzip(string $zipFile, string $dest, int $depth, array &$stat): void
@@ -123,16 +132,16 @@ function import_describe(string $root, array $t, array $trades): array
     if ($modName === mb_strtolower($modName)) $modName = ucwords($modName);           // only fix all-lowercase names
 
     // Title
+    // Title (the year/semester is kept apart in 'level' and decides the 1st Year / 2nd Year tab)
     if (preg_match('/CBT[-_ ]?Paper[-_ ]?(\d+)[-_ ]?(.*)$/i', $folder, $pp)) {
-        $title = trim(($level ? $level . ' ' : '') . 'CBT Paper ' . $pp[1] . ($pp[2] ? ' – ' . str_replace(['-', '_'], ' ', $pp[2]) : ''));
-    } elseif ($modNo !== '') {
-        $title = ($level ? $level . ' – ' : '') . 'Module ' . $modNo . ($modName !== '' ? ': ' . $modName : '');
+        $title = trim('CBT Paper ' . $pp[1] . ($pp[2] ? ' – ' . str_replace(['-', '_'], ' ', $pp[2]) : ''));
+    } elseif (!empty($mm[1]) && $modNo !== '') {
+        $title = 'Module ' . $modNo . ($modName !== '' ? ': ' . $modName : '');          // from the test's own script.js
     } else {
-        // Nearest folder that is not a generic name like "index" or "test"
+        // The test's folder name as it is ("Module_2.1" → "Module 2.1"); a generic name like "index" uses the folder above
         $nm = '';
-        foreach (array_reverse($segs) as $sg) if (!preg_match('/^(index|test|tests|files?|new folder|cbt|html|all modules?|all papers|question(s| set)?)$/i', $sg)) { $nm = $sg; break; }
-        $nm = trim(preg_replace('/\b(Sem(ester)?\s*\d|\d(st|nd|rd|th)\s*(Sem(ester)?|Year)|Year\s*\d)\b/i', '', $nm)) ?: ($nm ?: 'Test');
-        $title = ($level && stripos($nm, $level) === false ? $level . ' – ' : '') . ($nm === mb_strtolower($nm) ? ucwords($nm) : $nm);
+        foreach (array_reverse($segs) as $sg) if (!preg_match('/^(index|test|tests|files?|new folder|cbt|html|question(s| set)?)$/i', $sg)) { $nm = $sg; break; }
+        $title = $nm !== '' ? $nm : 'Test';
     }
 
     // Trade match: exact name/slug/full name/short form, else the longest trade name found in the path
@@ -154,7 +163,7 @@ function import_describe(string $root, array $t, array $trades): array
             if (($c = trim(preg_replace('/\s+/', ' ', $c))) !== '') { $tradeName = ucwords($c); break; }
         }
     }
-    return ['dir' => $t['dir'], 'entry' => $t['entry'], 'title' => mb_substr($title, 0, 250), 'questions' => $q, 'minutes' => $q ? $q * 2 : 0,
+    return ['dir' => $t['dir'], 'entry' => $t['entry'], 'title' => mb_substr($title, 0, 250), 'level' => $level, 'questions' => $q, 'minutes' => $q ? $q * 2 : 0,
         'trade_id' => $best, 'trade_new' => $best ? '' : $tradeName];
 }
 

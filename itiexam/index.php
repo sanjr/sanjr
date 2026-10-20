@@ -258,7 +258,7 @@ require __DIR__ . '/includes/header.php';
           <div class="sec-head sm"><h2 id="mock-h">Latest Mock Tests</h2><a href="/mock-test/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <ul class="rows">
 <?php foreach ($mockTests as $i => $m): $href = $m['url'] && $m['url'][0] !== '#' ? $m['url'] : '/trades/' . $m['tslug'] . '/#mock-tests'; ?>
-            <li><a href="<?= e($href) ?>"<?= link_attrs($href) ?>><span class="ri <?= chip_color($i + 5) ?>"><?= icon($m['icon'] ?: 'clip') ?></span><span class="rt"><b><?= e($m['tname']) ?> – <?= e($m['title']) ?></b><small><?= $m['questions'] ? icon('doc') . (int)$m['questions'] . ' Questions ' : '' ?><?= $m['minutes'] ? icon('clock') . (int)$m['minutes'] . ' Minutes ' : '' ?><?= $m['is_new'] ? '<em class="new">New</em>' : '' ?></small></span><?= icon('chev-r', 'ic chev') ?></a></li>
+            <li><a href="<?= e($href) ?>"<?= link_attrs($href) ?>><span class="ri <?= chip_color($i + 5) ?>"><?= icon($m['icon'] ?: 'clip') ?></span><span class="rt"><b><?= e($m['tname']) ?> – <?= ($m['level'] ?? '') ? e($m['level']) . ' – ' : '' ?><?= e($m['title']) ?></b><small><?= $m['questions'] ? icon('doc') . (int)$m['questions'] . ' Questions ' : '' ?><?= $m['minutes'] ? icon('clock') . (int)$m['minutes'] . ' Minutes ' : '' ?><?= $m['is_new'] ? '<em class="new">New</em>' : '' ?></small></span><?= icon('chev-r', 'ic chev') ?></a></li>
 <?php endforeach; if (!$mockTests): ?>
             <li class="muted-row">Mock tests will appear here once added from the admin panel.</li>
 <?php endif; ?>

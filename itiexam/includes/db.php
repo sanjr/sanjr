@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '11';
+const SCHEMA_VERSION = '12';
 
 function db(): PDO
 {
@@ -87,6 +87,15 @@ function db_migrate(PDO $pdo): void
     add_column($pdo, 'pages', 'image', "VARCHAR(255) NOT NULL DEFAULT ''");
     add_column($pdo, 'menu_items', 'subtitle', "VARCHAR(255) NOT NULL DEFAULT ''");
     add_column($pdo, 'menu_items', 'icon', "VARCHAR(40) NOT NULL DEFAULT ''");
+    // v12: year/semester of a mock test kept apart from its name ("1st Year", "Sem 3")
+    add_column($pdo, 'trade_items', 'level', "VARCHAR(20) NOT NULL DEFAULT ''");
+    add_column($pdo, 'cbt_tests', 'level', "VARCHAR(20) NOT NULL DEFAULT ''");
+    foreach (['trade_items', 'cbt_tests'] as $tb) {
+        foreach ($pdo->query("SELECT id, title FROM $tb WHERE level = ''")->fetchAll() as $r) {
+            if (preg_match('/^\s*(1st Year|2nd Year|Sem [1-4])\s*[–:-]\s*(.+)$/u', $r['title'], $m))
+                $pdo->prepare("UPDATE $tb SET level = ?, title = ? WHERE id = ?")->execute([$m[1], trim($m[2]), $r['id']]);
+        }
+    }
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS cbt_tests (
         id $id, folder VARCHAR(60) NOT NULL UNIQUE, title VARCHAR(255) NOT NULL, trade_id INT NOT NULL DEFAULT 0,

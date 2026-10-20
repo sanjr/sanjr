@@ -7,7 +7,7 @@ require_login();
 $pdo = db();
 
 $id = (int)($_GET['id'] ?? 0);
-$edit = ['id' => 0, 'title' => '', 'trade_id' => (int)($_GET['trade'] ?? 0), 'questions' => 0, 'minutes' => 0, 'description' => '', 'status' => 'published', 'folder' => '', 'entry' => ''];
+$edit = ['id' => 0, 'title' => '', 'trade_id' => (int)($_GET['trade'] ?? 0), 'questions' => 0, 'minutes' => 0, 'description' => '', 'status' => 'published', 'folder' => '', 'entry' => '', 'level' => ''];
 if ($id) {
     $st = $pdo->prepare('SELECT * FROM cbt_tests WHERE id = ?');
     $st->execute([$id]);
@@ -28,10 +28,10 @@ function sync_trade_item(array $t, bool $show): void
         return;
     }
     if ($itemId) {
-        $pdo->prepare('UPDATE trade_items SET title = ?, questions = ?, minutes = ? WHERE id = ?')->execute([$t['title'], (int)$t['questions'], (int)$t['minutes'], $itemId]);
+        $pdo->prepare('UPDATE trade_items SET title = ?, level = ?, questions = ?, minutes = ? WHERE id = ?')->execute([$t['title'], $t['level'] ?? '', (int)$t['questions'], (int)$t['minutes'], $itemId]);
     } else {
-        $pdo->prepare("INSERT INTO trade_items (trade_id, section, title, url, icon, questions, minutes, is_new, sort_order) VALUES (?, 'mock_tests', ?, ?, 'clip', ?, ?, 1, 0)")
-            ->execute([(int)$t['trade_id'], $t['title'], $url, (int)$t['questions'], (int)$t['minutes']]);
+        $pdo->prepare("INSERT INTO trade_items (trade_id, section, title, level, url, icon, questions, minutes, is_new, sort_order) VALUES (?, 'mock_tests', ?, ?, ?, 'clip', ?, ?, 1, 0)")
+            ->execute([(int)$t['trade_id'], $t['title'], $t['level'] ?? '', $url, (int)$t['questions'], (int)$t['minutes']]);
     }
     $pdo->prepare('UPDATE trades SET updated_at = ? WHERE id = ?')->execute([now(), (int)$t['trade_id']]);
 }
@@ -72,6 +72,7 @@ if (is_post()) {
     $edit['minutes'] = max(0, (int)post('minutes'));
     $edit['description'] = mb_substr(post('description'), 0, 500);
     $edit['status'] = post('status') === 'draft' ? 'draft' : 'published';
+    $edit['level'] = in_array(post('level'), LEVELS, true) ? post('level') : '';
     $file = $_FILES['test_file'] ?? null;
     $hasFile = $file && $file['error'] !== UPLOAD_ERR_NO_FILE;
     // A ZIP that holds many tests goes to Bulk import (preview, trade-wise) instead
@@ -95,6 +96,7 @@ if (is_post()) {
                 $d = import_describe(CBT_DIR . '/' . $edit['folder'], ['dir' => trim(dirname($edit['entry']), '.'), 'entry' => basename($edit['entry']), 'name' => $src], $all);
                 if (basename($d['dir']) === '' && $d['title'] === 'Test') $d['title'] = trim(str_replace(['-', '_'], ' ', $src));
                 if ($edit['title'] === '') $edit['title'] = $d['title'];
+                if ($edit['level'] === '' && !$id) $edit['level'] = $d['level'];
                 if (!$edit['questions']) $edit['questions'] = (int)$d['questions'];
                 if (!$edit['minutes']) $edit['minutes'] = (int)$d['minutes'];
                 if (!$edit['trade_id'] && $d['trade_id']) $edit['trade_id'] = $d['trade_id'];
@@ -103,11 +105,11 @@ if (is_post()) {
     }
     if (!$err) {
         if ($id) {
-            $pdo->prepare('UPDATE cbt_tests SET title = ?, trade_id = ?, questions = ?, minutes = ?, description = ?, status = ?, folder = ?, entry = ?, updated_at = ? WHERE id = ?')
-                ->execute([$edit['title'], $edit['trade_id'], $edit['questions'], $edit['minutes'], $edit['description'], $edit['status'], $edit['folder'], $edit['entry'], now(), $id]);
+            $pdo->prepare('UPDATE cbt_tests SET title = ?, level = ?, trade_id = ?, questions = ?, minutes = ?, description = ?, status = ?, folder = ?, entry = ?, updated_at = ? WHERE id = ?')
+                ->execute([$edit['title'], $edit['level'], $edit['trade_id'], $edit['questions'], $edit['minutes'], $edit['description'], $edit['status'], $edit['folder'], $edit['entry'], now(), $id]);
         } else {
-            $pdo->prepare('INSERT INTO cbt_tests (folder, title, trade_id, entry, questions, minutes, description, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-                ->execute([$edit['folder'], $edit['title'], $edit['trade_id'], $edit['entry'], $edit['questions'], $edit['minutes'], $edit['description'], $edit['status'], now(), now()]);
+            $pdo->prepare('INSERT INTO cbt_tests (folder, title, level, trade_id, entry, questions, minutes, description, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+                ->execute([$edit['folder'], $edit['title'], $edit['level'], $edit['trade_id'], $edit['entry'], $edit['questions'], $edit['minutes'], $edit['description'], $edit['status'], now(), now()]);
             $id = (int)$pdo->lastInsertId();
         }
         sync_trade_item($edit, isset($_POST['add_to_trade']));
@@ -161,7 +163,7 @@ admin_header('CBT Tests', 'cbt');
 <?php foreach ($rows as $r): ?>
             <tr<?= $r['id'] == $edit['id'] ? ' class="editing"' : '' ?>>
               <td><input type="checkbox" class="pick" name="ids[]" value="<?= $r['id'] ?>" form="bulkdel" aria-label="Select <?= e($r['title']) ?>"></td>
-              <td><b><?= e($r['title']) ?></b><br><small class="muted"><?= $r['questions'] ? (int)$r['questions'] . ' Q · ' : '' ?><?= $r['minutes'] ? (int)$r['minutes'] . ' min · ' : '' ?><?= e(nice_date($r['created_at'])) ?></small></td>
+              <td><?= $r['level'] ? '<span class="pill">' . e($r['level']) . '</span> ' : '' ?><b><?= e($r['title']) ?></b><br><small class="muted"><?= $r['questions'] ? (int)$r['questions'] . ' Q · ' : '' ?><?= $r['minutes'] ? (int)$r['minutes'] . ' min · ' : '' ?><?= e(nice_date($r['created_at'])) ?></small></td>
               <td><?= e($r['tname'] ?: '—') ?></td>
               <td><span class="pill <?= $r['status'] === 'published' ? 'ok' : 'off' ?>"><?= e($r['status']) ?></span></td>
               <td class="acts">
@@ -201,6 +203,7 @@ admin_header('CBT Tests', 'cbt');
           <label>Test name <span class="hint">Optional – leave empty to take it from the test (e.g. “Sem 1 – Module 3: Masonry”)</span><input name="title" value="<?= e($edit['title']) ?>" placeholder="Taken from the test if left empty"></label>
 <?php endif; ?>
           <label>Trade <select name="trade_id"><option value="0">— No trade —</option><?php foreach ($trades as $t): ?><option value="<?= $t['id'] ?>"<?= $t['id'] == $edit['trade_id'] ? ' selected' : '' ?>><?= e($t['name']) ?></option><?php endforeach; ?></select></label>
+          <label>Year / Semester <span class="hint">Puts the test in the trade page's 1st Year / 2nd Year tab</span><select name="level"><?= level_options($edit['level'] ?? '', $edit['id'] ? '— None —' : '— Take from the test / none —') ?></select></label>
           <div class="grid2 tight">
             <label>Questions <input type="number" min="0" name="questions" value="<?= (int)$edit['questions'] ?>"></label>
             <label>Minutes <input type="number" min="0" name="minutes" value="<?= (int)$edit['minutes'] ?>"></label>

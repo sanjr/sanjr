@@ -68,7 +68,7 @@ function test_level(string $title): array
 function mock_card(string $name, array $list): string
 {
     $groups = [];
-    foreach ($list as $it) { [$y, $s] = test_level($it['title']); $groups[$y][$s][] = $it; }
+    foreach ($list as $it) { [$y, $s] = test_level(($it['level'] ?? '') !== '' ? $it['level'] : $it['title']); $groups[$y][$s][] = $it; }
     if (!array_filter(array_keys($groups))) return section_card('mock_tests', 'Latest ' . e($name) . ' Mock Tests', $list, 'mock', 'clip');
     ksort($groups);
     if (isset($groups[0])) { $g0 = $groups[0]; unset($groups[0]); $groups[0] = $g0; }    // tests without a year go last
