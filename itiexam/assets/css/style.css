@@ -1850,3 +1850,28 @@ body.sov-on { overflow: hidden; }
 .cbt-gate-btn { display: inline-flex; align-items: center; gap: 10px; background: #fff; color: var(--ink); border: 1px solid #dadce0; border-radius: 999px; padding: 13px 26px; font: 600 16px var(--font-head); box-shadow: 0 2px 6px rgba(11, 20, 48, .12); transition: box-shadow .2s, transform .2s; }
 .cbt-gate-btn:hover { box-shadow: 0 6px 18px rgba(31, 79, 214, .22); transform: translateY(-1px); }
 .cbt-gate-pts { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; color: var(--muted); font-size: 14px; }
+
+/* ===== Header fit: the logo and the buttons are never squeezed under the menu ===== */
+@media (min-width: 1024px) {
+  .site-header .logo, .nav-actions { flex-shrink: 0; }
+  .site-header .logo-text small { white-space: nowrap; }
+  .main-nav { min-width: 0; }
+}
+@media (min-width: 1280px) {
+  .site-header .container { max-width: 1320px; }
+  .site-header .nav-wrap { gap: 12px; }
+}
+/* small laptops: logo mark only and a round Google button */
+@media (min-width: 1024px) and (max-width: 1179px) {
+  .site-header .logo-text { display: none; }
+  .main-nav a, .main-nav button { padding-left: 4px; padding-right: 4px; }
+  .st-login { width: 38px; padding: 0; justify-content: center; }
+  .st-login span { display: none; }
+}
+/* safety net when the admin adds more menu items than fit (set by main.js) */
+.nav-tight .site-header .logo-text small { display: none; }
+.nav-tight .st-login { width: 38px; padding: 0; justify-content: center; }
+.nav-tight .st-login span, .nav-tight .st-chip-n { display: none; }
+.nav-tight .st-chip { padding: 3px; }
+.nav-tight .main-nav a, .nav-tight .main-nav button { padding-left: 4px; padding-right: 4px; }
+.nav-tight.nav-tight2 .site-header .logo-text { display: none; }

@@ -49,6 +49,19 @@
     }
   });
 
+  // ---- Desktop menu bar: if it does not fit next to the logo and buttons, make it more compact ----
+  var navUl = nav.querySelector("ul"), logoEl = document.querySelector(".site-header .logo"), acts = document.querySelector(".nav-actions");
+  function fitNav() {
+    var root = document.documentElement;
+    root.classList.remove("nav-tight", "nav-tight2");
+    if (!desktop.matches || !navUl || !logoEl || !acts) return;
+    function over() { var r = navUl.getBoundingClientRect(); return r.left < logoEl.getBoundingClientRect().right + 4 || r.right > acts.getBoundingClientRect().left - 4; }
+    if (over()) { root.classList.add("nav-tight"); if (over()) root.classList.add("nav-tight2"); }
+  }
+  fitNav();
+  window.addEventListener("resize", fitNav);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNav);
+
   // ---- Saved lists in this browser (recent searches, recently viewed pages) ----
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
