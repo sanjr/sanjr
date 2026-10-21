@@ -361,7 +361,7 @@ function ads_txt(): string
    Brand: logo, favicon, contact, WhatsApp group (Admin → Settings)
    ========================================================= */
 function logo_url(): string { return ($f = setting('logo_file')) ? upload_url($f) : '/assets/img/logo-mark.webp'; }
-function favicon_url(): string { return ($f = setting('favicon_file')) ? upload_url($f) : '/assets/img/favicon-48.png'; }
+function favicon_url(): string { return ($f = setting('favicon_file')) ? upload_url($f) : '/assets/img/favicon-48.png?v=2'; }
 function contact_email(): string { return setting('contact_email', 'contact@itiexam.com') ?: 'contact@itiexam.com'; }
 function whatsapp_group(): string { $u = trim(setting('whatsapp_group')); return preg_match('~^https://~', $u) ? $u : ''; }
 function telegram_channel(): string { $u = trim(setting('social_telegram')); return preg_match('~^https://~', $u) ? $u : ''; }

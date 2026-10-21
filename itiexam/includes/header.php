@@ -38,9 +38,9 @@ $stu = student();
   <meta name="twitter:title" content="<?= e($title) ?>">
   <meta name="twitter:description" content="<?= e($desc) ?>">
   <meta name="twitter:image" content="<?= e($ogImage) ?>">
-  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon.ico?v=2" sizes="any">
   <link rel="icon" href="<?= e(favicon_url()) ?>" type="image/png" sizes="48x48">
-  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png?v=2">
 <?php if ($v = setting('google_verification')): ?>  <meta name="google-site-verification" content="<?= e($v) ?>">
 <?php endif; if ($v = setting('bing_verification')): ?>  <meta name="msvalidate.01" content="<?= e($v) ?>">
 <?php endif; ?>

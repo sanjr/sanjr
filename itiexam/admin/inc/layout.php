@@ -24,7 +24,7 @@ function admin_header(string $title, string $active = ''): void
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title><?= e($title) ?> – <?= e(SITE_NAME) ?> Admin</title>
-  <link rel="icon" href="/assets/img/favicon-48.png" type="image/png">
+  <link rel="icon" href="/assets/img/favicon-48.png?v=2" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/assets/admin.css?v=4">
 </head>

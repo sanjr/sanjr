@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '15';
+const SCHEMA_VERSION = '16';
 
 function db(): PDO
 {
@@ -123,6 +123,10 @@ function db_migrate(PDO $pdo): void
     // v15: new wide ITIExam logo is the default; an old uploaded square logo would hide it
     if ((int)$pdo->query("SELECT svalue FROM settings WHERE skey = 'schema_version'")->fetchColumn() < 15) {
         $pdo->exec("DELETE FROM settings WHERE skey = 'logo_file'");
+    }
+    // v16: new round ITIExam favicon is the default; an old uploaded favicon would hide it
+    if ((int)$pdo->query("SELECT svalue FROM settings WHERE skey = 'schema_version'")->fetchColumn() < 16) {
+        $pdo->exec("DELETE FROM settings WHERE skey = 'favicon_file'");
     }
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS syllabi (
