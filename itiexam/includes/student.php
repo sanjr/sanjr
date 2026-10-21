@@ -122,3 +122,27 @@ function tests_locked(): bool { return google_login_ready() && !student() && emp
 
 /** The "Start Test" pill on test lists: guests see that they will be asked to log in. */
 function start_label(): string { return tests_locked() ? '<span class="btn-sm">🔒 Login &amp; Start</span>' : '<span class="btn-sm">Start Test</span>'; }
+
+/* ---------- Android app: Google login runs in the phone's browser, then the student is handed back to the app ---------- */
+
+const APP_PACKAGE = 'com.itiexam.app';
+/** Signing key of the app built for this website (more can be added in Admin → Settings, e.g. the Play App Signing key). */
+const APP_SHA256 = 'CE:F4:35:06:ED:CB:52:C8:68:DC:D3:32:5D:F8:3C:38:F9:26:1A:5D:A2:24:65:DC:0F:F0:BC:77:B8:EB:19:C1';
+
+/** The app's one-time "challenge" from /login/?app=… (base64url SHA-256 of a secret only the app knows). */
+function app_challenge(string $c): string { return preg_match('/^[A-Za-z0-9_-]{43}$/', $c) ? $c : ''; }
+
+/** Sends a student who just logged in (in the browser) back to the app with a one-time code. */
+function app_handoff(int $studentId, string $challenge, string $next): void
+{
+    $code = bin2hex(random_bytes(24));
+    db()->prepare('DELETE FROM app_codes WHERE created_at < ?')->execute([time() - 3600]);
+    db()->prepare('INSERT INTO app_codes (code, student_id, challenge, next_url, created_at) VALUES (?, ?, ?, ?, ?)')
+        ->execute([$code, $studentId, $challenge, mb_substr(safe_next($next), 0, 300), time()]);
+    unset($_SESSION['g_app']);
+    $back = SITE_URL . '/app-auth/?' . http_build_query(['code' => $code]);
+    // Chrome opens the app from an intent:// address; if it cannot, the page behind the fallback has a button
+    header('Location: intent://auth?' . http_build_query(['code' => $code, 'next' => safe_next($next)])
+        . '#Intent;scheme=itiexam;package=' . APP_PACKAGE . ';S.browser_fallback_url=' . rawurlencode($back) . ';end');
+    exit;
+}

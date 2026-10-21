@@ -2,7 +2,13 @@
 /* /login/ – hands the student straight to Google; /auth/google/ brings them back. */
 require __DIR__ . '/includes/functions.php';
 $next = safe_next((string)($_GET['next'] ?? '/student/'));
-if (student()) { header('Location: ' . $next); exit; }
+$app = app_challenge((string)($_GET['app'] ?? ''));        // opened by the Android app
+if ($app !== '') $_SESSION['g_app'] = $app;
+if ($me = student()) {
+    if ($app !== '') app_handoff((int)$me['id'], $app, $next);
+    header('Location: ' . $next);
+    exit;
+}
 
 if (google_login_ready()) {
     $_SESSION['g_state'] = bin2hex(random_bytes(16));

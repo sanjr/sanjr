@@ -30,6 +30,9 @@ RewriteRule ^auth/google/?$ auth-google.php [L,QSA]
 RewriteRule ^logout/?$ student-logout.php [L,QSA]
 RewriteRule ^student/?$ student-dashboard.php [L,QSA]
 RewriteRule ^api/attempt/?$ api-attempt.php [L,QSA]
+RewriteRule ^app-auth/claim/?$ app-auth.php?claim=1 [L,QSA]
+RewriteRule ^app-auth/?$ app-auth.php [L,QSA]
+RewriteRule ^\.well-known/assetlinks\.json$ assetlinks.php [L]
 
 # Add trailing slash to page URLs
 RewriteCond %{REQUEST_FILENAME} !-f

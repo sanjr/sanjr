@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '16';
+const SCHEMA_VERSION = '17';
 
 function db(): PDO
 {
@@ -117,6 +117,10 @@ function db_migrate(PDO $pdo): void
         pct INT NOT NULL DEFAULT 0, passed INT NOT NULL DEFAULT 0, time_sec INT NOT NULL DEFAULT 0, lang VARCHAR(20) NOT NULL DEFAULT '',
         created_at VARCHAR(20) NOT NULL)$engine");
     try { $pdo->exec('CREATE INDEX attempts_student ON attempts (student_id)'); } catch (PDOException $e) { /* already there */ }
+    // v17: one-time codes that hand a Google login from the phone's browser back to the Android app
+    $pdo->exec("CREATE TABLE IF NOT EXISTS app_codes (
+        code VARCHAR(64) NOT NULL PRIMARY KEY, student_id INT NOT NULL, challenge VARCHAR(64) NOT NULL,
+        next_url VARCHAR(300) NOT NULL DEFAULT '', created_at INT NOT NULL)$engine");
     // v14: where the student took the test ("City, State (Country)", found by the test itself)
     add_column($pdo, 'attempts', 'location', "VARCHAR(160) NOT NULL DEFAULT ''");
     add_column($pdo, 'students', 'location', "VARCHAR(160) NOT NULL DEFAULT ''");

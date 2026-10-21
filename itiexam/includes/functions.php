@@ -313,13 +313,17 @@ function adsense_client(): string
 }
 
 /** Ads are hidden for the logged-in admin so you never click (or inflate) your own ads. */
-function ads_active(): bool { return adsense_client() !== '' && empty($_SESSION['admin']); }
+function ads_active(): bool { return adsense_client() !== '' && empty($_SESSION['admin']) && !in_app(); }
+
+/** Page opened inside the ITI Exam Android app (its web view adds "ITIExamApp/…" to the user agent).
+    AdSense is not shown there: Google allows ads inside apps only through its mobile ads SDK. */
+function in_app(): bool { return str_contains((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 'ITIExamApp/'); }
 
 /** The <script> that loads AdSense (also runs Auto Ads when switched on in your AdSense account). */
 function adsense_head(): string
 {
     $c = adsense_client();
-    if ($c === '') return '';
+    if ($c === '' || in_app()) return '';
     $out = '<meta name="google-adsense-account" content="' . e($c) . '">' . "\n";
     if (ads_active()) $out .= '  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' . e($c) . '" crossorigin="anonymous"></script>' . "\n";
     return $out;
@@ -362,6 +366,7 @@ function ads_txt(): string
    ========================================================= */
 function logo_url(): string { return ($f = setting('logo_file')) ? upload_url($f) : '/assets/img/logo-mark.webp'; }
 function favicon_url(): string { return ($f = setting('favicon_file')) ? upload_url($f) : '/assets/img/favicon-48.png?v=2'; }
+function app_store_url(): string { $u = trim(setting('app_url')); return preg_match('~^https://play\.google\.com/~', $u) ? $u : ''; }
 function contact_email(): string { return setting('contact_email', 'contact@itiexam.com') ?: 'contact@itiexam.com'; }
 function whatsapp_group(): string { $u = trim(setting('whatsapp_group')); return preg_match('~^https://~', $u) ? $u : ''; }
 function telegram_channel(): string { $u = trim(setting('social_telegram')); return preg_match('~^https://~', $u) ? $u : ''; }

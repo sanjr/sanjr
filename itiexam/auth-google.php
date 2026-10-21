@@ -3,7 +3,8 @@
 require __DIR__ . '/includes/functions.php';
 $next = safe_next((string)($_SESSION['g_next'] ?? '/student/'));
 $state = (string)($_SESSION['g_state'] ?? '');
-unset($_SESSION['g_state'], $_SESSION['g_next']);
+$app = app_challenge((string)($_SESSION['g_app'] ?? ''));
+unset($_SESSION['g_state'], $_SESSION['g_next'], $_SESSION['g_app']);
 
 $fail = function (string $why) {
     $meta = ['title' => 'Login failed | ' . SITE_NAME, 'description' => '', 'robots' => 'noindex, nofollow', 'path' => '/auth/google/'];
@@ -30,5 +31,6 @@ if (!$g || ($g['aud'] ?? '') !== setting('google_client_id') || !in_array($g['is
     $fail('Google could not confirm your account. Please try again.');
 }
 student_sign_in($g);
+if ($app !== '') app_handoff((int)$_SESSION['student_id'], $app, $next . (str_contains($next, '?') ? '&' : '?') . 'welcome=1');
 header('Location: ' . $next . (str_contains($next, '?') ? '&' : '?') . 'welcome=1');
 exit;

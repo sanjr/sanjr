@@ -1887,3 +1887,15 @@ body.sov-on { overflow: hidden; }
 .nav-tight.nav-tight2 .site-header .logo .logo-full { height: 34px; }
 /* footer: the logo sits on its own white card */
 .logo.light .logo-full { height: 64px; max-width: 100%; background: #fff; padding: 8px 12px; border-radius: 14px; box-sizing: content-box; }
+
+/* ===== Android app ===== */
+.play-badge { display: inline-flex; align-items: center; gap: 10px; margin-top: 14px; padding: 8px 18px 8px 14px; background: #000; color: #fff; border: 1px solid rgba(255, 255, 255, .35); border-radius: 12px; line-height: 1.1; transition: transform .2s, box-shadow .2s; }
+.play-badge:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0, 0, 0, .35); color: #fff; }
+.play-badge small { display: block; font-size: 10px; letter-spacing: .06em; opacity: .85; }
+.play-badge b { display: block; font: 600 18px var(--font-head); }
+.app-back { max-width: 520px; margin: 30px auto; text-align: center; }
+.app-back-i { width: 72px; height: 72px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center; background: #dcfce7; color: #15803d; font-size: 36px; font-weight: 700; }
+.app-back h1 { font-size: 24px; margin-bottom: 6px; }
+.app-back p { margin-bottom: 18px; }
+/* inside the app: no "open in a new tab" (the app has no tabs) */
+.in-app .cbt-bar a[target="_blank"] { display: none; }

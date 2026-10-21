@@ -31,6 +31,10 @@ $groups = [
         'google_client_id'     => ['Google OAuth Client ID', 'input', '1234567890-abc….apps.googleusercontent.com'],
         'google_client_secret' => ['Google OAuth Client Secret', 'input', 'GOCSPX-…'],
     ],
+    'Android app' => [
+        'app_url'    => ['Google Play link of the app (shows a "Get it on Google Play" button in the footer)', 'input', 'https://play.google.com/store/apps/details?id=com.itiexam.app'],
+        'app_sha256' => ['Extra app signing fingerprints (SHA-256) for app links – paste the "App signing key" fingerprint from Play Console', 'textarea', 0],
+    ],
     'Social media' => [
         'social_youtube'  => ['YouTube URL', 'input', 'https://www.youtube.com/@…'],
         'social_facebook' => ['Facebook URL', 'input', 'https://www.facebook.com/…'],
@@ -67,6 +71,7 @@ if (is_post()) {
         foreach ($groups as $fields) foreach ($fields as $k => [$label, $type]) {
             $v = $type === 'check' ? (isset($_POST[$k]) ? '1' : '0') : post($k);
             if (in_array($k, $urlKeys, true) && $v !== '' && !preg_match('~^https://~', $v)) { $err = "$label must start with https://"; break 2; }
+            if ($k === 'app_url' && $v !== '' && !preg_match('~^https://play\.google\.com/~', $v)) { $err = 'Google Play link must start with https://play.google.com/'; break 2; }
             if ($k === 'contact_email' && $v !== '' && !filter_var($v, FILTER_VALIDATE_EMAIL)) { $err = 'Contact email is not valid.'; break 2; }
             if ($k === 'google_client_id' && $v !== '' && !preg_match('/^[\w.-]+\.apps\.googleusercontent\.com$/', $v)) { $err = 'Google Client ID should end with .apps.googleusercontent.com'; break 2; }
             if ($k === 'ga4_id' && $v !== '' && !preg_match('/^G-[A-Z0-9]{4,15}$/', $v)) { $err = 'Analytics ID should look like G-ABC123XYZ.'; break 2; }
