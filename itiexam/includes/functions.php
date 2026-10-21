@@ -369,9 +369,12 @@ function telegram_channel(): string { $u = trim(setting('social_telegram')); ret
 /** Logo used in header and footer. */
 function site_logo(bool $light = false): string
 {
-    return '<a href="/" class="logo' . ($light ? ' light' : '') . '" aria-label="' . e(SITE_NAME) . ' home">'
-        . '<img class="logo-img" src="' . e(logo_url()) . '" alt="" width="46" height="46" decoding="async">'
-        . '<span class="logo-text"><strong><b class="l-i1">I</b><b class="l-t">T</b><b class="l-i2">I</b><span>Exam</span></strong><small>Learn • Test • Get Jobs</small></span></a>';
+    $alt = 'ITIExam – Online Mock Test, Study Material, Syllabus, Jobs, All Trades';
+    $open = '<a href="/" class="logo' . ($light ? ' light' : '') . '" aria-label="' . e(SITE_NAME) . ' home">';
+    if ($f = setting('logo_file')) return $open . '<img class="logo-full" src="' . e(upload_url($f)) . '" alt="' . e($alt) . '" decoding="async"></a>';
+    // Small laptops get the round emblem only, so the whole menu fits next to it
+    return $open . '<picture>' . ($light ? '' : '<source media="(min-width: 1024px) and (max-width: 1179px)" srcset="/assets/img/logo-mark.webp" width="160" height="160">')
+        . '<img class="logo-full" src="/assets/img/logo-full.webp" alt="' . e($alt) . '" width="700" height="224" decoding="async"></picture></a>';
 }
 
 /** "Join our WhatsApp group" card ('' when the admin has not added a group link). */

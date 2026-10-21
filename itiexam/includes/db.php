@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '14';
+const SCHEMA_VERSION = '15';
 
 function db(): PDO
 {
@@ -120,6 +120,10 @@ function db_migrate(PDO $pdo): void
     // v14: where the student took the test ("City, State (Country)", found by the test itself)
     add_column($pdo, 'attempts', 'location', "VARCHAR(160) NOT NULL DEFAULT ''");
     add_column($pdo, 'students', 'location', "VARCHAR(160) NOT NULL DEFAULT ''");
+    // v15: new wide ITIExam logo is the default; an old uploaded square logo would hide it
+    if ((int)$pdo->query("SELECT svalue FROM settings WHERE skey = 'schema_version'")->fetchColumn() < 15) {
+        $pdo->exec("DELETE FROM settings WHERE skey = 'logo_file'");
+    }
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS syllabi (
         id $id, trade_name VARCHAR(160) NOT NULL, trade_id INT NOT NULL DEFAULT 0, sector VARCHAR(120) NOT NULL DEFAULT '',

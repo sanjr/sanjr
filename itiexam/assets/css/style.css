@@ -1875,3 +1875,15 @@ body.sov-on { overflow: hidden; }
 .nav-tight .st-chip { padding: 3px; }
 .nav-tight .main-nav a, .nav-tight .main-nav button { padding-left: 4px; padding-right: 4px; }
 .nav-tight.nav-tight2 .site-header .logo-text { display: none; }
+
+/* ===== New wide ITIExam logo ===== */
+.logo .logo-full { display: block; height: 42px; width: auto; max-width: 62vw; object-fit: contain; }
+.logo picture { display: block; }
+@media (max-width: 380px) { .logo .logo-full { height: 36px; } }
+@media (min-width: 1024px) and (max-width: 1179px) { .site-header .logo .logo-full { height: 46px; } }
+@media (min-width: 1180px) { .site-header .logo .logo-full { height: 46px; } }
+@media (min-width: 1366px) { .site-header .logo .logo-full { height: 52px; } }
+.nav-tight .site-header .logo .logo-full { height: 40px; }
+.nav-tight.nav-tight2 .site-header .logo .logo-full { height: 34px; }
+/* footer: the logo sits on its own white card */
+.logo.light .logo-full { height: 64px; max-width: 100%; background: #fff; padding: 8px 12px; border-radius: 14px; box-sizing: content-box; }

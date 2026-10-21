@@ -100,8 +100,8 @@ admin_header('Settings', 'settings');
         <form method="post" enctype="multipart/form-data" class="box form" id="brand">
           <h2>Logo &amp; favicon</h2>
           <?= csrf_field() ?><input type="hidden" name="action" value="brand">
-          <div class="brand-prev"><img src="<?= e(logo_url()) ?>" alt="Logo" width="64" height="64"><img src="<?= e(favicon_url()) ?>" alt="Favicon" width="32" height="32"></div>
-          <label>Logo (square PNG/WEBP, shown in header &amp; footer) <input type="file" name="logo" accept="image/png,image/webp,image/jpeg"></label>
+          <div class="brand-prev"><img src="<?= e(setting('logo_file') ? upload_url(setting('logo_file')) : '/assets/img/logo-full.webp') ?>" alt="Logo" style="height:56px;width:auto"><img src="<?= e(favicon_url()) ?>" alt="Favicon" width="32" height="32"></div>
+          <label>Logo (wide PNG/WEBP, about 3:1, shown in header &amp; footer – leave empty to keep the ITIExam logo) <input type="file" name="logo" accept="image/png,image/webp,image/jpeg"></label>
 <?php if (setting('logo_file')): ?><label class="check"><input type="checkbox" name="reset_logo"> Use the default logo again</label><?php endif; ?>
           <label>Favicon (square PNG, 48×48 or larger) <input type="file" name="favicon" accept="image/png"></label>
 <?php if (setting('favicon_file')): ?><label class="check"><input type="checkbox" name="reset_favicon"> Use the default favicon again</label><?php endif; ?>
