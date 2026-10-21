@@ -49,8 +49,8 @@ $stu = student();
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
   <?= adsense_head() ?>
-  <link rel="stylesheet" href="/assets/css/style.css?v=30">
-  <script src="/assets/js/main.js?v=13" defer></script>
+  <link rel="stylesheet" href="/assets/css/style.css?v=31">
+  <script src="/assets/js/main.js?v=14" defer></script>
 <?php if (($ga = setting('ga4_id')) && preg_match('/^G-[A-Z0-9]{4,15}$/', $ga) && empty($_SESSION['admin'])): ?>
   <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($ga) ?>"></script>
   <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '<?= e($ga) ?>');</script>
@@ -62,6 +62,14 @@ $stu = student();
 <?php $bodyClass = trim(($meta['body'] ?? '') . (in_app() ? ' in-app' : '')); ?>
 <body<?= $bodyClass !== '' ? ' class="' . e($bodyClass) . '"' : '' ?>>
   <a class="skip-link" href="#main">Skip to content</a>
+<?php if (!in_app() && app_apk_ready() && !str_starts_with($currentPath, '/app')): /* shown by main.js on Android phones only */ ?>
+  <div class="app-bar" id="app-bar" hidden>
+    <button type="button" class="app-bar-x" aria-label="Close">✕</button>
+    <img src="/assets/img/favicon-48.png?v=2" alt="" width="40" height="40">
+    <span class="app-bar-t"><b>ITI Exam App</b><small>Free · Faster tests · Scores saved</small></span>
+    <a class="app-bar-go" href="/app/">Get App</a>
+  </div>
+<?php endif; ?>
 <?php require __DIR__ . '/icons.php'; ?>
 
   <header class="site-header" id="top">

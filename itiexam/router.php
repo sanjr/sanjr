@@ -25,6 +25,8 @@ if (preg_match('~^/login/?$~', $path)) { require __DIR__ . '/student-login.php';
 if (preg_match('~^/auth/google/?$~', $path)) { require __DIR__ . '/auth-google.php'; return true; }
 if (preg_match('~^/logout/?$~', $path)) { require __DIR__ . '/student-logout.php'; return true; }
 if (preg_match('~^/student/?$~', $path)) { require __DIR__ . '/student-dashboard.php'; return true; }
+if (preg_match('~^/app/download/?$~', $path)) { $_GET['dl'] = 1; require __DIR__ . '/app-page.php'; return true; }
+if (preg_match('~^/app/?$~', $path)) { require __DIR__ . '/app-page.php'; return true; }
 if (preg_match('~^/app-auth/claim/?$~', $path)) { $_GET['claim'] = 1; require __DIR__ . '/app-auth.php'; return true; }
 if (preg_match('~^/app-auth/?$~', $path)) { require __DIR__ . '/app-auth.php'; return true; }
 if ($path === '/.well-known/assetlinks.json') { require __DIR__ . '/assetlinks.php'; return true; }

@@ -32,6 +32,7 @@ $groups = [
         'google_client_secret' => ['Google OAuth Client Secret', 'input', 'GOCSPX-…'],
     ],
     'Android app' => [
+        'app_version' => ['App version shown on the /app/ download page', 'input', '1.0.0'],
         'app_url'    => ['Google Play link of the app (shows a "Get it on Google Play" button in the footer)', 'input', 'https://play.google.com/store/apps/details?id=com.itiexam.app'],
         'app_sha256' => ['Extra app signing fingerprints (SHA-256) for app links – paste the "App signing key" fingerprint from Play Console', 'textarea', 0],
     ],
@@ -58,6 +59,29 @@ if (is_post()) {
         else {
             db()->prepare('UPDATE users SET password_hash = ? WHERE id = ?')->execute([password_hash($new, PASSWORD_DEFAULT), admin_user()['id']]);
             flash('Password changed.'); redirect('/admin/settings.php');
+        }
+    } elseif ($action === 'apk') {
+        // New Android app file for /app/download/ (kept in the private data folder)
+        $f = $_FILES['apk'] ?? null;
+        $err = !$f || $f['error'] === UPLOAD_ERR_NO_FILE ? 'Choose the .apk file first.'
+            : ($f['error'] !== UPLOAD_ERR_OK ? 'Upload failed (error ' . $f['error'] . '). The file may be larger than your hosting allows (' . ini_get('upload_max_filesize') . ').' : '');
+        if (!$err) {
+            $isApk = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION)) === 'apk' && file_get_contents($f['tmp_name'], false, null, 0, 2) === 'PK';
+            if ($isApk && class_exists('ZipArchive')) {
+                $zip = new ZipArchive();
+                $isApk = $zip->open($f['tmp_name']) === true && $zip->locateName('AndroidManifest.xml') !== false && $zip->locateName('classes.dex') !== false;
+                if ($isApk) $zip->close();
+            }
+            if (!$isApk) {
+                $err = 'This is not an Android app (.apk) file.';
+            } else {
+                if (!is_dir(dirname(APP_APK))) mkdir(dirname(APP_APK), 0775, true);
+                if (!move_uploaded_file($f['tmp_name'], APP_APK)) $err = 'Could not save the file. Check that the data folder is writable.';
+                else {
+                    if (($v = post('apk_version')) !== '') setting_set('app_version', mb_substr($v, 0, 20));
+                    flash('New app file uploaded. Visitors now download it from /app/.'); redirect('/admin/settings.php#app');
+                }
+            }
         }
     } elseif ($action === 'brand') {
         try {
@@ -123,6 +147,16 @@ admin_header('Settings', 'settings');
             <li>Copy the Client ID and Client Secret into the fields on the left and save.</li>
           </ol>
         </div>
+        <form method="post" enctype="multipart/form-data" class="box form" id="app">
+          <h2>Android app (APK)</h2>
+          <?= csrf_field() ?><input type="hidden" name="action" value="apk">
+<?php if (app_apk_ready()): ?>          <p class="muted">Current file: <b>v<?= e(app_version()) ?></b>, <?= e(app_apk_size()) ?>, updated <?= e(date('d M Y', filemtime(APP_APK))) ?> · <b><?= (int)setting('app_downloads') ?></b> downloads · <a href="/app/" target="_blank">View page ↗</a></p>
+<?php else: ?>          <p class="muted">No app file yet – the /app/ page shows “coming soon”.</p>
+<?php endif; ?>
+          <label>New .apk file <input type="file" name="apk" accept=".apk,application/vnd.android.package-archive"></label>
+          <label>Its version <input name="apk_version" placeholder="e.g. 1.0.1"></label>
+          <div class="bar"><span></span><button class="btn">Upload App</button></div>
+        </form>
         <form method="post" class="box form">
           <h2>Change password</h2>
           <?= csrf_field() ?><input type="hidden" name="action" value="password">

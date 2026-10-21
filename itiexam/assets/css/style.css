@@ -1899,3 +1899,89 @@ body.sov-on { overflow: hidden; }
 .app-back p { margin-bottom: 18px; }
 /* inside the app: no "open in a new tab" (the app has no tabs) */
 .in-app .cbt-bar a[target="_blank"] { display: none; }
+
+/* ===== "Get the app" bar (Android phones) ===== */
+.app-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px; background: #fff; border-bottom: 1px solid var(--line); box-shadow: 0 2px 8px rgba(11, 20, 48, .06); position: relative; z-index: 61; }
+.app-bar[hidden] { display: none; }
+.app-bar img { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
+.app-bar-x { border: 0; background: none; color: var(--muted); font-size: 14px; width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; cursor: pointer; }
+.app-bar-t { flex: 1; min-width: 0; line-height: 1.2; }
+.app-bar-t b { display: block; font: 700 14px var(--font-head); color: var(--ink); }
+.app-bar-t small { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-bar-go { background: linear-gradient(135deg, var(--orange), #fb9a1f); color: #fff; font: 700 13px var(--font-head); padding: 8px 16px; border-radius: 999px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(247, 116, 15, .3); }
+.app-bar-go:hover { color: #fff; }
+
+/* footer "Download ITI Exam App" */
+.foot-app { display: inline-flex; align-items: center; gap: 10px; margin-top: 14px; margin-right: 8px; padding: 8px 18px 8px 12px; border-radius: 12px; background: linear-gradient(135deg, var(--orange), #fb9a1f); color: #fff; line-height: 1.15; box-shadow: 0 8px 20px rgba(247, 116, 15, .3); transition: transform .2s; }
+.foot-app:hover { transform: translateY(-1px); color: #fff; }
+.foot-app > span:first-child { font-size: 24px; }
+.foot-app small { display: block; font-size: 11px; opacity: .9; }
+.foot-app b { display: block; font: 700 15px var(--font-head); }
+
+/* ===== /app/ download page ===== */
+.appp-hero { background: radial-gradient(circle at 85% 15%, rgba(61, 111, 240, .55) 0, transparent 45%), linear-gradient(135deg, #071a4a 0%, var(--navy) 50%, var(--blue) 100%); color: #fff; padding: 48px 0 0; overflow: hidden; }
+.appp-hero-in { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 32px; align-items: end; }
+.appp-copy { padding-bottom: 56px; }
+.appp-tag { display: inline-block; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .25); padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+.appp-hero h1 { color: #fff; font-size: clamp(36px, 6vw, 60px); line-height: 1.05; margin: 14px 0 12px; }
+.appp-hero h1 span { color: var(--amber); }
+.appp-lead { color: #dbeafe; font-size: 17px; max-width: 520px; margin: 0 0 22px; }
+.appp-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 26px; }
+.appp-meta span { background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .18); border-radius: 12px; padding: 8px 14px; font-size: 12px; color: #c7d2fe; text-align: center; min-width: 74px; }
+.appp-meta b { display: block; color: #fff; font: 700 16px var(--font-head); }
+.appp-cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.appp-dl { display: inline-flex; align-items: center; gap: 12px; padding: 12px 26px 12px 18px; border-radius: 16px; background: linear-gradient(135deg, var(--orange), #fb9a1f); color: #fff; line-height: 1.15; box-shadow: 0 14px 30px rgba(247, 116, 15, .45); transition: transform .2s, box-shadow .2s; }
+.appp-dl:hover { transform: translateY(-2px); color: #fff; box-shadow: 0 18px 36px rgba(247, 116, 15, .55); }
+.appp-dl small { display: block; font-size: 12px; opacity: .9; }
+.appp-dl b { display: block; font: 800 20px var(--font-head); }
+.appp-dl.sm { padding: 12px 24px; font: 700 15px var(--font-head); }
+.play-badge.big { margin-top: 0; padding: 10px 20px 10px 16px; }
+.appp-safe { color: #c7d2fe; font-size: 13px; margin: 16px 0 0; }
+.appp-soon, .appp-inapp { background: rgba(255, 255, 255, .12); border-radius: 12px; padding: 12px 16px; display: inline-block; font-weight: 600; }
+.appp-phone { position: relative; height: 470px; }
+.appp-frame { position: absolute; width: 240px; border-radius: 34px; padding: 10px; background: #0b1430; box-shadow: 0 30px 60px rgba(0, 0, 0, .45), inset 0 0 0 2px #2a3558; }
+.appp-frame img { display: block; width: 100%; height: auto; border-radius: 26px; }
+.appp-phone .appp-frame { left: 50%; bottom: -60px; transform: translateX(-30%); z-index: 2; }
+.appp-phone .appp-frame.back { transform: translateX(-95%) rotate(-8deg) scale(.88); bottom: -90px; z-index: 1; opacity: .9; }
+.appp-badge-float { position: absolute; right: 4%; top: 70px; z-index: 3; background: #fff; color: var(--ink); font: 700 14px var(--font-head); padding: 10px 16px; border-radius: 14px; box-shadow: var(--shadow-h); animation: appfloat 3s ease-in-out infinite; }
+@keyframes appfloat { 50% { transform: translateY(-8px); } }
+.appp .sec-head.center { justify-content: center; text-align: center; }
+.appp-feats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.appp-feat { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; transition: transform .2s, box-shadow .2s; }
+.appp-feat:hover { transform: translateY(-3px); box-shadow: var(--shadow-h); }
+.appp-fi { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; font-size: 26px; background: color-mix(in srgb, var(--c) 14%, #fff); margin-bottom: 12px; }
+.appp-feat b { display: block; font: 700 17px var(--font-head); color: var(--ink); margin-bottom: 4px; }
+.appp-feat p { margin: 0; color: var(--muted); font-size: 14px; }
+.appp-shots-sec { background: linear-gradient(180deg, transparent, var(--tint)); }
+.appp-shots { display: flex; gap: 22px; overflow-x: auto; padding: 8px 4px 22px; scroll-snap-type: x mandatory; justify-content: safe center; }
+.appp-shots figure { margin: 0; flex: 0 0 auto; scroll-snap-align: center; text-align: center; }
+.appp-frame.sm { position: relative; width: 190px; border-radius: 28px; padding: 8px; box-shadow: 0 16px 34px rgba(11, 20, 48, .25), inset 0 0 0 2px #2a3558; }
+.appp-frame.sm img { border-radius: 21px; }
+.appp-shots figcaption { margin-top: 10px; font: 600 14px var(--font-head); color: var(--ink); }
+.appp-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; counter-reset: none; }
+.appp-steps li { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); }
+.appp-steps span { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--blue); color: #fff; font: 700 18px var(--font-head); margin-bottom: 10px; }
+.appp-steps li > b { display: block; font: 700 17px var(--font-head); color: var(--ink); margin-bottom: 4px; }
+.appp-steps p b { color: var(--ink); }
+.appp-steps p { margin: 0; color: var(--muted); font-size: 14px; }
+.appp-again { text-align: center; margin-top: 22px; }
+.appp-faq { max-width: 760px; }
+.appp-faq details { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 10px; box-shadow: var(--shadow); }
+.appp-faq summary { font: 600 16px var(--font-head); color: var(--ink); cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.appp-faq summary::-webkit-details-marker { display: none; }
+.appp-faq summary::after { content: "+"; color: var(--blue); font-size: 20px; line-height: 1; }
+.appp-faq details[open] summary::after { content: "–"; }
+.appp-faq details p { margin: 10px 0 0; color: var(--text); }
+@media (max-width: 899px) {
+  .appp-hero { padding-top: 30px; }
+  .appp-hero-in { grid-template-columns: 1fr; gap: 0; }
+  .appp-copy { padding-bottom: 20px; }
+  .appp-phone { height: 290px; }
+  .appp-frame { width: 200px; }
+  .appp-phone .appp-frame { bottom: -120px; }
+  .appp-phone .appp-frame.back { bottom: -150px; }
+  .appp-badge-float { top: 0; right: 2%; }
+  .appp-feats, .appp-steps { grid-template-columns: 1fr; }
+  .appp-dl { width: 100%; justify-content: center; }
+  .appp-shots { justify-content: flex-start; }
+}

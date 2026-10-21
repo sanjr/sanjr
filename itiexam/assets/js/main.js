@@ -62,6 +62,18 @@
   window.addEventListener("resize", fitNav);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNav);
 
+  // ---- "Get the app" bar for Android phone visitors (closed for 14 days after ✕) ----
+  var appBar = document.getElementById("app-bar");
+  if (appBar && /Android/i.test(navigator.userAgent)) {
+    var closedAt = 0;
+    try { closedAt = +localStorage.getItem("itx_appbar") || 0; } catch (e) {}
+    if (Date.now() - closedAt > 14 * 864e5) appBar.hidden = false;
+    appBar.querySelector(".app-bar-x").addEventListener("click", function () {
+      appBar.hidden = true;
+      try { localStorage.setItem("itx_appbar", String(Date.now())); } catch (e) {}
+    });
+  }
+
   // ---- Saved lists in this browser (recent searches, recently viewed pages) ----
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }

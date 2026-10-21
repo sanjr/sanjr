@@ -146,3 +146,11 @@ function app_handoff(int $studentId, string $challenge, string $next): void
         . '#Intent;scheme=itiexam;package=' . APP_PACKAGE . ';S.browser_fallback_url=' . rawurlencode($back) . ';end');
     exit;
 }
+
+/* ---------- Android app download from the website (/app/) ---------- */
+
+const APP_APK = __DIR__ . '/../data/app/ITIExam.apk';      // private folder: only sent through /app/download/
+
+function app_apk_ready(): bool { return is_file(APP_APK); }
+function app_version(): string { return setting('app_version') ?: '1.0.0'; }
+function app_apk_size(): string { return app_apk_ready() ? number_format(filesize(APP_APK) / 1048576, 1) . ' MB' : ''; }
