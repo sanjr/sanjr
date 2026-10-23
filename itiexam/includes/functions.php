@@ -113,6 +113,7 @@ function trade_sections(): array
 
 /* ---------- Video Learning (trade_items with section 'videos': a YouTube link or an uploaded video file) ---------- */
 
+if (!defined('MAX_VIDEO_BYTES')) define('MAX_VIDEO_BYTES', 1024 * 1024 * 1024);   // one video up to 1 GB (can be set in config.php)
 const VIDEO_TYPES = ['video/mp4' => 'mp4', 'video/webm' => 'webm', 'video/ogg' => 'ogv', 'video/x-m4v' => 'm4v', 'video/quicktime' => 'mp4'];
 
 /** The 11-character id of a YouTube video link (watch, youtu.be, shorts, embed, live), or ''. */
