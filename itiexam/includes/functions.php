@@ -105,10 +105,66 @@ function trade_sections(): array
         'practical'           => ['label' => 'Practical Exercises', 'tab' => 'Practical', 'icon' => 'flask', 'fields' => ['subtitle' => true]],
         'previous_papers'     => ['label' => 'Previous Year Papers', 'tab' => 'Previous Papers', 'icon' => 'doc', 'fields' => ['subtitle' => true, 'label' => 'Year (e.g. 2024)']],
         'important_questions' => ['label' => 'Important Questions', 'tab' => 'Important Questions', 'icon' => 'help', 'fields' => ['subtitle' => true]],
-        'videos'              => ['label' => 'Video Tutorials', 'tab' => 'Video Tutorials', 'icon' => 'play', 'fields' => ['subtitle' => true]],
+        'videos'              => ['label' => 'Video Learning', 'tab' => 'Video Learning', 'icon' => 'play', 'fields' => ['subtitle' => true]],
         'resources'           => ['label' => 'Software & Resources', 'tab' => 'Resources', 'icon' => 'link', 'fields' => ['subtitle' => true]],
         'faq'                 => ['label' => 'FAQ', 'tab' => 'FAQ', 'icon' => 'help', 'fields' => ['subtitle' => true]],
     ];
+}
+
+/* ---------- Video Learning (trade_items with section 'videos': a YouTube link or an uploaded video file) ---------- */
+
+const VIDEO_TYPES = ['video/mp4' => 'mp4', 'video/webm' => 'webm', 'video/ogg' => 'ogv', 'video/x-m4v' => 'm4v', 'video/quicktime' => 'mp4'];
+
+/** The 11-character id of a YouTube video link (watch, youtu.be, shorts, embed, live), or ''. */
+function youtube_id(string $url): string
+{
+    $url = trim($url);
+    if (preg_match('~^[A-Za-z0-9_-]{11}$~', $url)) return $url;
+    if (!preg_match('~^https?://(?:www\.|m\.|music\.)?(?:youtube\.com|youtube-nocookie\.com|youtu\.be)/~i', $url)) return '';
+    if (preg_match('~youtu\.be/([A-Za-z0-9_-]{11})~', $url, $m)) return $m[1];
+    if (preg_match('~/(?:shorts|embed|live|v)/([A-Za-z0-9_-]{11})~', $url, $m)) return $m[1];
+    parse_str((string)parse_url($url, PHP_URL_QUERY), $q);
+    return isset($q['v']) && preg_match('~^[A-Za-z0-9_-]{11}$~', $q['v']) ? $q['v'] : '';
+}
+
+/** How to play one video item: type youtube|file|link, plus thumbnail and play address. */
+function video_info(array $it): array
+{
+    $url = trim($it['url']);
+    $thumb = !empty($it['image']) ? upload_url($it['image']) : '';
+    if ($id = youtube_id($url)) {
+        return ['type' => 'youtube', 'id' => $id, 'src' => 'https://www.youtube-nocookie.com/embed/' . $id . '?autoplay=1&rel=0&modestbranding=1&playsinline=1',
+            'watch' => 'https://www.youtube.com/watch?v=' . $id, 'thumb' => $thumb ?: 'https://i.ytimg.com/vi/' . $id . '/hqdefault.jpg'];
+    }
+    if (str_starts_with($url, UPLOAD_URL . '/videos/') || preg_match('~\.(mp4|webm|ogv|m4v)(\?|$)~i', $url)) {
+        return ['type' => 'file', 'id' => '', 'src' => $url, 'watch' => '', 'thumb' => $thumb];
+    }
+    return ['type' => 'link', 'id' => '', 'src' => $url, 'watch' => $url, 'thumb' => $thumb];
+}
+
+/** Title of a YouTube video (YouTube oEmbed), or '' when it cannot be fetched. */
+function youtube_title(string $id): string
+{
+    $u = 'https://www.youtube.com/oembed?format=json&url=' . rawurlencode('https://www.youtube.com/watch?v=' . $id);
+    $out = @file_get_contents($u, false, stream_context_create(['http' => ['timeout' => 6, 'ignore_errors' => true], 'ssl' => ['verify_peer' => true]]));
+    $j = is_string($out) ? json_decode($out, true) : null;
+    return is_array($j) ? mb_substr(trim((string)($j['title'] ?? '')), 0, 255) : '';
+}
+
+/** Deletes an uploaded video (and its thumbnail) once no trade uses it any more. */
+function video_cleanup(string $url, string $image = ''): void
+{
+    $chk = db()->prepare('SELECT COUNT(*) FROM trade_items WHERE url = ?');
+    if (str_starts_with($url, UPLOAD_URL . '/videos/')) {
+        $chk->execute([$url]);
+        $f = UPLOAD_DIR . '/videos/' . basename(rawurldecode($url));
+        if (!(int)$chk->fetchColumn() && is_file($f)) @unlink($f);
+    }
+    if ($image !== '') {
+        $q = db()->prepare('SELECT COUNT(*) FROM trade_items WHERE image = ?');
+        $q->execute([$image]);
+        if (!(int)$q->fetchColumn() && is_file(UPLOAD_DIR . '/' . $image)) @unlink(UPLOAD_DIR . '/' . $image);
+    }
 }
 
 /** Items of a trade grouped by section. */

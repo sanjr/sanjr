@@ -74,6 +74,51 @@
     });
   }
 
+  // ---- Video Learning: play in a pop-up (YouTube or uploaded video), year tabs, "show all" ----
+  var vsec = document.querySelector(".vsec"), vm = document.getElementById("vmodal");
+  if (vsec && vm) {
+    var frame = vm.querySelector(".vm-frame"), ytLink = vm.querySelector(".vm-yt"), lastFocus = null;
+    function closeVideo(fromPop) {
+      if (vm.hidden) return;
+      vm.hidden = true;
+      frame.innerHTML = "";                                   // stops the video
+      document.body.classList.remove("vm-open");
+      if (!fromPop && history.state && history.state.vm) history.back();
+      if (lastFocus) lastFocus.focus();
+    }
+    function openVideo(card) {
+      lastFocus = card;
+      vm.querySelector("#vm-t").textContent = card.dataset.title;
+      if (card.dataset.v === "youtube") {
+        frame.innerHTML = '<iframe src="' + esc(card.dataset.src) + '" title="' + esc(card.dataset.title) + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+        ytLink.href = card.dataset.watch; ytLink.hidden = false;
+      } else {
+        frame.innerHTML = '<video src="' + esc(card.dataset.src) + '" controls autoplay playsinline controlslist="nodownload"></video>';
+        ytLink.hidden = true;
+      }
+      vm.hidden = false;
+      document.body.classList.add("vm-open");
+      history.pushState({ vm: 1 }, "");
+      vm.querySelector(".vm-x").focus();
+    }
+    vsec.addEventListener("click", function (e) {
+      var card = e.target.closest(".vcard[data-v]");
+      if (card) { e.preventDefault(); openVideo(card); return; }
+      var tab = e.target.closest(".vtabs button");
+      if (tab) {
+        vsec.querySelectorAll(".vtabs button").forEach(function (b) { b.classList.toggle("on", b === tab); });
+        vsec.classList.toggle("filtered", tab.dataset.f !== "all");
+        vsec.querySelectorAll(".vcard").forEach(function (c) { c.hidden = tab.dataset.f !== "all" && c.dataset.yr !== tab.dataset.f; });
+        return;
+      }
+      var all = e.target.closest(".vall");
+      if (all) { vsec.classList.add("expanded"); all.remove(); }
+    });
+    vm.addEventListener("click", function (e) { if (e.target === vm || e.target.closest(".vm-x")) closeVideo(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeVideo(); });
+    window.addEventListener("popstate", function () { closeVideo(true); });
+  }
+
   // ---- Saved lists in this browser (recent searches, recently viewed pages) ----
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }

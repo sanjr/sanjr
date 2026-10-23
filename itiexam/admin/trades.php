@@ -16,7 +16,11 @@ if (is_post() && ($_POST['action'] ?? '') === 'delete') {
     $tests = db()->prepare('SELECT id FROM cbt_tests WHERE trade_id = ?'); $tests->execute([$tid]);
     $nt = 0; foreach ($tests->fetchAll(PDO::FETCH_COLUMN) as $cid) $nt += cbt_delete((int)$cid) ? 1 : 0;
     db()->prepare('UPDATE syllabi SET trade_id = 0 WHERE trade_id = ?')->execute([$tid]);
+    $vids = db()->prepare("SELECT url, image FROM trade_items WHERE trade_id = ? AND section = 'videos'");
+    $vids->execute([$tid]);
+    $vids = $vids->fetchAll();
     db()->prepare('DELETE FROM trade_items WHERE trade_id = ?')->execute([$tid]);
+    foreach ($vids as $v) video_cleanup($v['url'], $v['image']);        // uploaded videos no other trade uses
     db()->prepare('DELETE FROM trades WHERE id = ?')->execute([$tid]);
     flash('Trade deleted' . ($nt ? " with its $nt CBT tests and their files" : '') . '.');
     redirect('/admin/trades.php');

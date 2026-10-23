@@ -54,6 +54,36 @@ function section_card(string $key, string $heading, array $list, string $style, 
     return '<article class="card tsec" id="' . sec_id($key) . '"><div class="sec-head sm"><h2>' . $heading . '</h2>' . $va . "</div><ul class=\"rows\">$rows</ul></article>";
 }
 
+/** Video Learning: cards that open a player (YouTube or uploaded video), with 1st / 2nd Year tabs when years are set. */
+function video_section(string $name, array $list): string
+{
+    if (!$list) return '';
+    $years = array_unique(array_map(fn($v) => level_year((string)$v['level']), $list));
+    $tabs = count(array_filter($years)) >= 1 && count($years) > 1;
+    $html = '<section class="card tsec vsec" id="videos" aria-labelledby="vid-h"><div class="sec-head sm"><h2 id="vid-h">' . icon('play') . ' ' . e($name) . ' Video Learning</h2>'
+        . '<span class="vcount">' . count($list) . ' video' . (count($list) === 1 ? '' : 's') . '</span></div>';
+    if ($tabs) {
+        $html .= '<div class="vtabs" role="tablist"><button type="button" class="on" data-f="all">All</button>';
+        foreach ([1 => '1st Year', 2 => '2nd Year', 0 => 'Other'] as $y => $l) if (in_array($y, $years, true)) $html .= '<button type="button" data-f="' . $y . '">' . $l . '</button>';
+        $html .= '</div>';
+    }
+    $html .= '<div class="vgrid">';
+    foreach ($list as $i => $it) {
+        $v = video_info($it);
+        $attrs = $v['type'] === 'link' ? link_attrs($v['src']) : ' data-v="' . $v['type'] . '" data-src="' . e($v['src']) . '" data-watch="' . e($v['watch']) . '" data-title="' . e($it['title']) . '"';
+        $thumb = $v['thumb'] ? '<img src="' . e($v['thumb']) . '" alt="" loading="lazy" decoding="async">'
+            : ($v['type'] === 'file' ? '<video src="' . e($v['src']) . '#t=1" preload="metadata" muted playsinline tabindex="-1"></video>' : '<span class="vph">' . icon('play') . '</span>');
+        $html .= '<a class="vcard' . ($i >= 6 ? ' vmore' : '') . '" href="' . e($v['watch'] ?: $v['src']) . '" data-yr="' . level_year((string)$it['level']) . '"' . $attrs . '>'
+            . '<span class="vthumb">' . $thumb . '<span class="vplay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>'
+            . ($it['label'] !== '' ? '<span class="vdur">' . e($it['label']) . '</span>' : '') . ($v['type'] === 'youtube' ? '<span class="vsrc-yt">YouTube</span>' : '') . '</span>'
+            . '<span class="vbody"><b>' . e($it['title']) . '</b>' . ($it['subtitle'] !== '' ? '<small>' . e($it['subtitle']) . '</small>' : '')
+            . ($it['level'] !== '' ? '<em>' . e($it['level']) . '</em>' : '') . '</span></a>';
+    }
+    $html .= '</div>';
+    if (count($list) > 6) $html .= '<button type="button" class="vall">Show all ' . count($list) . ' videos ' . icon('chev') . '</button>';
+    return $html . '</section>';
+}
+
 /** Year and semester a test belongs to, read from its name ("Sem 3 – Module 2: …", "2nd Year – Module 1: …"). */
 function test_level(string $title): array
 {
@@ -135,6 +165,14 @@ $ld = [
         'educationalCredentialAwarded' => 'NCVT Certificate',
         'provider' => ['@type' => 'Organization', 'name' => SITE_NAME, 'sameAs' => SITE_URL . '/']],
 ];
+foreach (array_slice($items['videos'], 0, 12) as $vd) {
+    $v = video_info($vd);
+    if ($v['type'] === 'link' || $v['thumb'] === '') continue;
+    $ld[] = ['@context' => 'https://schema.org', '@type' => 'VideoObject', 'name' => $vd['title'], 'description' => $vd['subtitle'] ?: "ITI $name video: " . $vd['title'],
+        'thumbnailUrl' => str_starts_with($v['thumb'], 'http') ? $v['thumb'] : SITE_URL . $v['thumb'],
+        'uploadDate' => date('c', strtotime($vd['created_at'] ?: $t['updated_at'])),
+        ($v['type'] === 'youtube' ? 'embedUrl' : 'contentUrl') => $v['type'] === 'youtube' ? 'https://www.youtube.com/embed/' . $v['id'] : SITE_URL . $v['src']];
+}
 $ld[] = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(fn($f) => [
     '@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], $faqLd)];
 
@@ -253,7 +291,7 @@ $sylPdf = (string)$sp->fetchColumn();
 $rowsDef = [
     [['mock_tests', "Latest " . e($name) . " Mock Tests", 'mock', 'clip'], ['syllabus', 'Syllabus &amp; Modules', 'num', 'open']],
     [['study_material', 'Study Material', 'rows', 'pdf'], ['previous_papers', 'Previous Year Papers', 'year', 'doc'], ['important_questions', 'Important Questions', 'rows', 'help']],
-    [['practical', 'Practical Exercises', 'rows', 'flask'], ['videos', 'Video Tutorials', 'rows', 'play'], ['resources', 'Software &amp; Resources', 'rows', 'link']],
+    [['practical', 'Practical Exercises', 'rows', 'flask'], ['resources', 'Software &amp; Resources', 'rows', 'link']],
 ];
 foreach ($rowsDef as $r => $row) {
     $cards = array_filter(array_map(fn($c) => $c[0] === 'syllabus' && $sylPdf ? section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3], $sylPdf, 'Syllabus PDF')
@@ -263,6 +301,7 @@ foreach ($rowsDef as $r => $row) {
         . '<a class="btn-sm" href="/employability-skills/">Employability Skills MCQ ' . icon('arrow') . '</a></div></article>');
     if ($cards) echo '      <div class="trow n' . count($cards) . '">' . implode('', $cards) . "</div>\n";
     if ($r === 0) echo ad('trade_middle');
+    if ($r === 0) echo video_section($name, $items['videos']);     // Video Learning: full width, right after tests & syllabus
 }
 ?>
 
@@ -312,6 +351,15 @@ foreach ($rowsDef as $r => $row) {
     </div>
   </div>
 
+<?php if ($items['videos']): ?>
+  <div class="vmodal" id="vmodal" hidden role="dialog" aria-modal="true" aria-labelledby="vm-t">
+    <div class="vm-box">
+      <div class="vm-head"><b id="vm-t"></b><button type="button" class="vm-x" aria-label="Close video">✕</button></div>
+      <div class="vm-frame"></div>
+      <div class="vm-foot"><span><?= icon('play') ?> ITI <?= e($name) ?> Video Learning</span><a class="vm-yt" href="#" target="_blank" rel="noopener" hidden>Watch on YouTube ↗</a></div>
+    </div>
+  </div>
+<?php endif; ?>
 <?php if ($related): ?>
   <section class="section related" aria-labelledby="rel-h">
     <div class="container">

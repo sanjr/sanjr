@@ -28,5 +28,6 @@ define('MAX_UPLOAD_BYTES', 3 * 1024 * 1024);      // images: 3 MB
 define('MAX_PDF_BYTES', 20 * 1024 * 1024);        // PDFs (notes, papers): 20 MB
 define('CBT_DIR', __DIR__ . '/../data/tests');     // uploaded HTML CBT tests (served only through /cbt/…)
 define('MAX_CBT_BYTES', 30 * 1024 * 1024);        // HTML file or ZIP: 30 MB
+define('MAX_VIDEO_BYTES', 1024 * 1024 * 1024);    // Video Learning: one video up to 1 GB (sent in small pieces)
 
 date_default_timezone_set('Asia/Kolkata');

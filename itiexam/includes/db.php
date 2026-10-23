@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '17';
+const SCHEMA_VERSION = '18';
 
 function db(): PDO
 {
@@ -89,6 +89,9 @@ function db_migrate(PDO $pdo): void
     add_column($pdo, 'menu_items', 'icon', "VARCHAR(40) NOT NULL DEFAULT ''");
     // v12: year/semester of a mock test kept apart from its name ("1st Year", "Sem 3")
     add_column($pdo, 'trade_items', 'level', "VARCHAR(20) NOT NULL DEFAULT ''");
+    // v18: Video Learning – a thumbnail for uploaded videos, and when an item was added
+    add_column($pdo, 'trade_items', 'image', "VARCHAR(255) NOT NULL DEFAULT ''");
+    add_column($pdo, 'trade_items', 'created_at', "VARCHAR(20) NOT NULL DEFAULT ''");
     add_column($pdo, 'cbt_tests', 'level', "VARCHAR(20) NOT NULL DEFAULT ''");
     foreach (['trade_items', 'cbt_tests'] as $tb) {
         foreach ($pdo->query("SELECT id, title FROM $tb WHERE level = ''")->fetchAll() as $r) {
