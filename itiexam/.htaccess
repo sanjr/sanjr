@@ -1,0 +1,93 @@
+# ITIExam.com – Apache rules (works on most shared hosting: Hostinger, GoDaddy, BigRock, cPanel)
+Options -Indexes
+ServerSignature Off
+DirectoryIndex index.php
+ErrorDocument 404 /404.php
+
+# PHP2Shell (CVE-2026-109618 / CVE-2026-109619) – extra protection only. The real fix is a patched PHP:
+# 8.2.35, 8.3.36, 8.4.27, 8.5.12 or newer (choose it in the hosting panel). Turns off the known attack path.
+<IfModule php_module>
+  php_flag session.upload_progress.enabled off
+</IfModule>
+<IfModule mod_php7.c>
+  php_flag session.upload_progress.enabled off
+</IfModule>
+<IfModule LiteSpeed>
+  php_flag session.upload_progress.enabled off
+</IfModule>
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Only the admin panel takes file uploads: everywhere else a file-upload request is refused before PHP reads it
+RewriteCond %{REQUEST_METHOD} =POST
+RewriteCond %{HTTP:Content-Type} multipart/form-data [NC]
+RewriteCond %{REQUEST_URI} !^/admin/
+RewriteRule ^ - [F,L]
+
+# One main address: www.itiexam.com → itiexam.com (Google sees one website, not two)
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+# Old address → new domain. Turn on (remove the # of the next 2 lines) only in the OLD website's .htaccess after moving:
+# RewriteCond %{HTTP_HOST} ^blog\.copamcq\.com$ [NC]
+# RewriteRule ^ https://itiexam.com%{REQUEST_URI} [L,R=301]
+
+# Force HTTPS, keeping the same domain/subdomain (remove these 3 lines if SSL is not active yet)
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Block private folders and files that are not web pages
+RewriteRule ^(data|includes|admin/inc)(/|$) - [F,L]
+RewriteRule ^(router\.php|README\.md|composer\.(json|lock)|.*\.(sqlite|sqlite3|db|log|bak|sql|ini|sh))$ - [F,L,NC]
+# Hidden files and folders (.git, .env, .user.ini …) – except /.well-known/ (app links, SSL checks)
+RewriteCond %{REQUEST_URI} !^/\.well-known/
+RewriteRule (^|/)\. - [F,L]
+
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+RewriteRule ^ads\.txt$ ads.php [L]
+RewriteRule ^robots\.txt$ robots.php [L]
+RewriteRule ^trades/?$ trades.php [L]
+RewriteRule ^trades/([a-z0-9-]+)/?$ trade.php?slug=$1 [L,QSA]
+RewriteRule ^jobs/?$ jobs.php [L,QSA]
+RewriteRule ^jobs/([a-z0-9-]+)/?$ jobs.php?seg=$1 [L,QSA]
+RewriteRule ^syllabus/?$ syllabus.php [L,QSA]
+RewriteRule ^search/?$ search.php [L,QSA]
+RewriteRule ^cbt/([a-z0-9-]+)/?$ cbt.php?f=$1 [L,QSA]
+RewriteRule ^cbt/([a-z0-9-]+)/play/(.+)$ cbt.php?f=$1&p=$2 [L,QSA,B]
+RewriteRule ^login/?$ student-login.php [L,QSA]
+RewriteRule ^auth/google/?$ auth-google.php [L,QSA]
+RewriteRule ^logout/?$ student-logout.php [L,QSA]
+RewriteRule ^student/?$ student-dashboard.php [L,QSA]
+RewriteRule ^api/attempt/?$ api-attempt.php [L,QSA]
+RewriteRule ^app/download/?$ app-page.php?dl=1 [L,QSA]
+RewriteRule ^app/?$ app-page.php [L,QSA]
+RewriteRule ^app-auth/claim/?$ app-auth.php?claim=1 [L,QSA]
+RewriteRule ^app-auth/?$ app-auth.php [L,QSA]
+RewriteRule ^\.well-known/assetlinks\.json$ assetlinks.php [L]
+
+# Add trailing slash to page URLs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/admin
+RewriteRule ^(.+[^/])$ /$1/ [L,R=301]
+
+# Everything else that is not a real file/folder → admin-created page
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+?)/?$ page.php?slug=$1 [L,QSA]
+</IfModule>
+
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/xml
+</IfModule>
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType text/css "access plus 1 month"
+ExpiresByType application/javascript "access plus 1 month"
+ExpiresByType image/svg+xml "access plus 1 month"
+ExpiresByType image/png "access plus 1 month"
+ExpiresByType image/jpeg "access plus 1 month"
+ExpiresByType image/webp "access plus 1 month"
+</IfModule>
