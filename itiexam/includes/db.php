@@ -92,6 +92,13 @@ function db_migrate(PDO $pdo): void
     // v18: Video Learning – a thumbnail for uploaded videos, and when an item was added
     add_column($pdo, 'trade_items', 'image', "VARCHAR(255) NOT NULL DEFAULT ''");
     add_column($pdo, 'trade_items', 'created_at', "VARCHAR(20) NOT NULL DEFAULT ''");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS cbt_tests (
+        id $id, folder VARCHAR(60) NOT NULL UNIQUE, title VARCHAR(255) NOT NULL, trade_id INT NOT NULL DEFAULT 0,
+        entry VARCHAR(255) NOT NULL DEFAULT 'index.html', questions INT NOT NULL DEFAULT 0, minutes INT NOT NULL DEFAULT 0,
+        description VARCHAR(500) NOT NULL DEFAULT '', status VARCHAR(20) NOT NULL DEFAULT 'published',
+        created_at VARCHAR(20) NOT NULL, updated_at VARCHAR(20) NOT NULL)$engine");
+    // v12 (after the table exists, so a brand-new install works too)
     add_column($pdo, 'cbt_tests', 'level', "VARCHAR(20) NOT NULL DEFAULT ''");
     foreach (['trade_items', 'cbt_tests'] as $tb) {
         foreach ($pdo->query("SELECT id, title FROM $tb WHERE level = ''")->fetchAll() as $r) {
@@ -99,12 +106,6 @@ function db_migrate(PDO $pdo): void
                 $pdo->prepare("UPDATE $tb SET level = ?, title = ? WHERE id = ?")->execute([$m[1], trim($m[2]), $r['id']]);
         }
     }
-
-    $pdo->exec("CREATE TABLE IF NOT EXISTS cbt_tests (
-        id $id, folder VARCHAR(60) NOT NULL UNIQUE, title VARCHAR(255) NOT NULL, trade_id INT NOT NULL DEFAULT 0,
-        entry VARCHAR(255) NOT NULL DEFAULT 'index.html', questions INT NOT NULL DEFAULT 0, minutes INT NOT NULL DEFAULT 0,
-        description VARCHAR(500) NOT NULL DEFAULT '', status VARCHAR(20) NOT NULL DEFAULT 'published',
-        created_at VARCHAR(20) NOT NULL, updated_at VARCHAR(20) NOT NULL)$engine");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS not_found_log (
         id $id, path VARCHAR(300) NOT NULL UNIQUE, hits INT NOT NULL DEFAULT 1, referrer VARCHAR(300) NOT NULL DEFAULT '',
