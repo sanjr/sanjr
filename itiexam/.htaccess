@@ -4,8 +4,26 @@ ServerSignature Off
 DirectoryIndex index.php
 ErrorDocument 404 /404.php
 
+# PHP2Shell (CVE-2026-109618 / CVE-2026-109619) – extra protection only. The real fix is a patched PHP:
+# 8.2.35, 8.3.36, 8.4.27, 8.5.12 or newer (choose it in the hosting panel). Turns off the known attack path.
+<IfModule php_module>
+  php_flag session.upload_progress.enabled off
+</IfModule>
+<IfModule mod_php7.c>
+  php_flag session.upload_progress.enabled off
+</IfModule>
+<IfModule LiteSpeed>
+  php_flag session.upload_progress.enabled off
+</IfModule>
+
 <IfModule mod_rewrite.c>
 RewriteEngine On
+
+# Only the admin panel takes file uploads: everywhere else a file-upload request is refused before PHP reads it
+RewriteCond %{REQUEST_METHOD} =POST
+RewriteCond %{HTTP:Content-Type} multipart/form-data [NC]
+RewriteCond %{REQUEST_URI} !^/admin/
+RewriteRule ^ - [F,L]
 
 # One main address: www.itiexam.com → itiexam.com (Google sees one website, not two)
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]

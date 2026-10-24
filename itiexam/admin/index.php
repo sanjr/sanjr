@@ -22,6 +22,15 @@ $stats = [
 $recent = $pdo->query('SELECT id, name, slug, updated_at FROM trades ORDER BY updated_at DESC LIMIT 5')->fetchAll();
 $sampleIds = array_filter(array_map('intval', explode(',', setting('sample_job_ids'))));
 $samples = $sampleIds ? (int)$pdo->query('SELECT COUNT(*) FROM jobs WHERE updated_at = posted_at AND id IN (' . implode(',', $sampleIds) . ')')->fetchColumn() : 0;
+/** PHP versions with the PHP2Shell fix (released 21 Oct 2026); older branches got no official release. */
+function php2shell_patched(): bool
+{
+    $fixed = ['8.2' => '8.2.35', '8.3' => '8.3.36', '8.4' => '8.4.27', '8.5' => '8.5.12'];
+    $branch = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+    if (version_compare($branch, '8.5', '>')) return true;
+    return isset($fixed[$branch]) && version_compare(PHP_VERSION, $fixed[$branch], '>=');
+}
+
 /* Security check of the live server (the web request to /data/ is cached for 6 hours) */
 if (is_post() && ($_POST['action'] ?? '') === 'recheck') { csrf_check(); setting_set('sec_probe', ''); redirect('/admin/#security'); }
 $probe = json_decode(setting('sec_probe'), true);
@@ -44,7 +53,10 @@ $checks = [
         : 'DANGER: the data folder is public. Your hosting ignores .htaccess files – ask hosting support to block the /data/ folder.'],
     [!filter_var(ini_get('display_errors'), FILTER_VALIDATE_BOOLEAN), 'PHP errors are hidden from visitors', 'Turn off “display_errors” in the hosting PHP settings.'],
     [!is_file(dirname(DB_SQLITE_PATH) . '/reset.txt'), 'No password-reset file is left on the server', 'Delete data/reset.txt in the File Manager.'],
-    [version_compare(PHP_VERSION, '8.1', '>='), 'PHP ' . PHP_VERSION . ' is up to date', 'Choose PHP 8.2 or newer in the hosting panel.'],
+    [php2shell_patched(), 'PHP ' . PHP_VERSION . ' is patched against PHP2Shell (CVE-2026-109618 / 109619)',
+        'URGENT: this PHP version has the PHP2Shell security hole. In the hosting panel choose PHP 8.3 or 8.4 and make sure it is 8.2.35 / 8.3.36 / 8.4.27 / 8.5.12 or newer, or ask hosting support to update PHP.'],
+    [!filter_var(ini_get('session.upload_progress.enabled'), FILTER_VALIDATE_BOOLEAN), 'PHP2Shell attack path (session upload progress) is off',
+        'Ask hosting support to set session.upload_progress.enabled = 0 for this site (extra protection until PHP is updated).'],
     [google_login_ready(), 'Google login for students is set up', 'Add the Google Client ID and Secret in Settings.'],
 ];
 $empty = !$c('SELECT COUNT(*) FROM trades') || !$c('SELECT COUNT(*) FROM menu_items') || !$c('SELECT COUNT(*) FROM pages');
