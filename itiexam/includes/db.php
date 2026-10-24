@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '19';
+const SCHEMA_VERSION = '20';
 
 function db(): PDO
 {
@@ -89,6 +89,8 @@ function db_migrate(PDO $pdo): void
     add_column($pdo, 'menu_items', 'icon', "VARCHAR(40) NOT NULL DEFAULT ''");
     // v12: year/semester of a mock test kept apart from its name ("1st Year", "Sem 3")
     add_column($pdo, 'trade_items', 'level', "VARCHAR(20) NOT NULL DEFAULT ''");
+    // v20: a "trade" can also be a common subject (Employability Skills …) – same tools, own address, not in trade lists
+    add_column($pdo, 'trades', 'kind', "VARCHAR(20) NOT NULL DEFAULT 'trade'");
     // v18: Video Learning – a thumbnail for uploaded videos, and when an item was added
     add_column($pdo, 'trade_items', 'image', "VARCHAR(255) NOT NULL DEFAULT ''");
     add_column($pdo, 'trade_items', 'created_at', "VARCHAR(20) NOT NULL DEFAULT ''");
@@ -156,12 +158,44 @@ function db_migrate(PDO $pdo): void
     if ((int)$pdo->query('SELECT COUNT(*) FROM trades')->fetchColumn() === 0 && (int)$pdo->query('SELECT COUNT(*) FROM menu_items')->fetchColumn() === 0) {
         seed_starter();
     }
+    if (!setting('es_subject_done')) { make_es_subject($pdo); setting_set('es_subject_done', '1'); }
     // One-time fixes for sites installed with an older version (missing starter pages, old menu links)
     if ((int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() > 0) upgrade_content();
     if (setting('footer_credit', "\0") === "\0") setting_set('footer_credit', 'Created & Developed by – Sanjay L. Rathod');
 
     $pdo->prepare('DELETE FROM settings WHERE skey = ?')->execute(['schema_version']);
     $pdo->prepare('INSERT INTO settings (skey, svalue) VALUES (?, ?)')->execute(['schema_version', SCHEMA_VERSION]);
+}
+
+/** Employability Skills as a common subject at /employability-skills/: mock tests, notes, papers and videos like a trade.
+    The old text page's content moves into it (the page itself is kept as a hidden draft). */
+function make_es_subject(PDO $pdo): void
+{
+    $st = $pdo->prepare('SELECT id FROM trades WHERE slug = ?');
+    $st->execute(['employability-skills']);
+    if ($st->fetchColumn()) return;
+    $pg = $pdo->prepare("SELECT * FROM pages WHERE slug = 'employability-skills'");
+    $pg->execute();
+    $page = $pg->fetch() ?: [];
+    $sort = (int)$pdo->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM trades')->fetchColumn();
+    $pdo->prepare("INSERT INTO trades (slug, name, full_name, short_desc, description, content, duration, nsqf_level, sector, exam_pattern, emoji, card_color,
+        meta_title, meta_description, meta_keywords, is_popular, status, sort_order, kind, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'published', ?, 'subject', ?, ?)")
+        ->execute(['employability-skills', 'Employability Skills', 'Common subject for all ITI trades', 'Common for every trade · 1st & 2nd Year',
+            'Employability Skills (ES) is a common CBT subject in every ITI trade. Practise module-wise ES mock tests, read notes and solve previous year questions for 1st and 2nd year.',
+            str_replace('<p>Use the mock tests on each trade page to practise ES questions.</p>', '', (string)($page['content'] ?? '')), '2 Years', '', 'All ITI trades', 'NCVT CBT (MCQ)', '💼', '#fff4e6',
+            'ITI Employability Skills MCQ ' . date('Y') . ' – Mock Test, Notes PDF & Question Paper', (string)($page['meta_description'] ?? ''), '', $sort, now(), now()]);
+    $id = (int)$pdo->lastInsertId();
+    $mods = [
+        ['Introduction to Employability Skills', 'Need of employability skills, job market'], ['Constitutional Values – Citizenship', 'Fundamental rights & duties, civic responsibility'],
+        ['Becoming a Professional in the 21st Century', 'Self-learning, work ethics, time management'], ['Basic English Skills', 'Speaking, reading and writing at work'],
+        ['Career Development & Goal Setting', 'Career planning, SMART goals'], ['Communication Skills', 'Verbal, non-verbal and written communication'],
+        ['Diversity & Inclusion', 'Gender sensitivity, PwD, POSH'], ['Financial & Legal Literacy', 'Banking, digital payments, consumer rights'],
+        ['Essential Digital Skills', 'Computer, internet, e-mail, cyber safety'], ['Entrepreneurship', 'Business ideas, government schemes, MSME'],
+        ['Customer Service', 'Customer needs, handling complaints'], ['Getting Ready for Apprenticeship & Jobs', 'Resume, interview, apprenticeship portals'],
+    ];
+    $ins = $pdo->prepare("INSERT INTO trade_items (trade_id, section, title, subtitle, sort_order) VALUES (?, 'syllabus', ?, ?, ?)");
+    foreach ($mods as $i => [$t, $d]) $ins->execute([$id, $t, $d, $i + 1]);
+    if ($page) $pdo->prepare("UPDATE pages SET status = 'draft' WHERE id = ?")->execute([$page['id']]);
 }
 
 function add_column(PDO $pdo, string $table, string $col, string $def): void

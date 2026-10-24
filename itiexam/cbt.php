@@ -5,7 +5,7 @@
 require __DIR__ . '/includes/functions.php';
 
 $folder = preg_replace('/[^a-z0-9-]/', '', (string)($_GET['f'] ?? ''));
-$st = db()->prepare('SELECT c.*, t.name AS tname, t.slug AS tslug, t.duration AS tdur FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id WHERE c.folder = ?');
+$st = db()->prepare('SELECT c.*, t.name AS tname, t.slug AS tslug, t.duration AS tdur, t.kind AS tkind FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id WHERE c.folder = ?');
 $st->execute([$folder]);
 $test = $st->fetch();
 // A test file address may start with the daily key ("k-…/") given to whoever was allowed to open the test
@@ -64,7 +64,8 @@ if ($test['trade_id']) {
 }
 $desc = $test['description'] ?: "Free online CBT mock test: $name – {$test['title']}" . ($test['questions'] ? ", {$test['questions']} questions" : '') . ($test['minutes'] ? ", {$test['minutes']} minutes" : '') . '. Practise in the real NCVT ITI exam pattern.';
 $crumbs = [['Home', '/']];
-if ($test['tslug']) { $crumbs[] = ['Trades', '/trades/']; $crumbs[] = [$name, '/trades/' . $test['tslug'] . '/']; }
+$tpath = $test['tslug'] ? trade_url(['slug' => $test['tslug'], 'kind' => $test['tkind']]) : '';     // trade or common subject page
+if ($test['tslug']) { if ($test['tkind'] !== 'subject') $crumbs[] = ['Trades', '/trades/']; $crumbs[] = [$name, $tpath]; }
 $crumbs[] = [$test['title'], $path];
 $meta = [
     'title' => ($test['tname'] ? "ITI $name " : '') . $test['title'] . ' – Free Online CBT Mock Test | ITI Exam',
@@ -111,7 +112,7 @@ require __DIR__ . '/includes/header.php';
       <div class="cbt-bar">
         <button type="button" class="btn-sm" id="cbt-full"><?= icon('layout') ?> Full screen</button>
         <a class="btn-sm ghost-b" href="<?= e(cbt_play_url($test)) ?>" target="_blank" rel="noopener"><?= icon('arrow') ?> Open in new tab</a>
-<?php if ($test['tslug']): ?>        <a class="btn-sm ghost-b" href="/trades/<?= e($test['tslug']) ?>/#mock-tests"><?= icon('list') ?> All <?= e($name) ?> tests</a>
+<?php if ($test['tslug']): ?>        <a class="btn-sm ghost-b" href="<?= e($tpath) ?>#mock-tests"><?= icon('list') ?> All <?= e($name) ?> tests</a>
 <?php endif; ?>
       </div>
       <div class="cbt-frame" id="cbt-frame">
@@ -125,7 +126,7 @@ require __DIR__ . '/includes/header.php';
       <?= ad('trade_middle') ?>
 <?php if ($more): ?>
       <section class="card" aria-labelledby="more-h">
-        <div class="sec-head sm"><h2 id="more-h">More <?= e($name) ?> Mock Tests</h2><a class="view-all" href="/trades/<?= e($test['tslug']) ?>/#mock-tests">View All <?= icon('arrow') ?></a></div>
+        <div class="sec-head sm"><h2 id="more-h">More <?= e($name) ?> Mock Tests</h2><a class="view-all" href="<?= e($tpath) ?>#mock-tests">View All <?= icon('arrow') ?></a></div>
         <ul class="rows">
 <?php foreach ($more as $i => $o): ?>
           <li><a href="<?= e(cbt_url($o)) ?>"><span class="ri <?= chip_color($i) ?> solid"><?= icon('clip') ?></span><span class="rt"><b><?= e($o['title']) ?></b><small><?= $o['questions'] ? (int)$o['questions'] . ' Questions' : '' ?><?= $o['questions'] && $o['minutes'] ? ' · ' : '' ?><?= $o['minutes'] ? (int)$o['minutes'] . ' Minutes' : '' ?></small></span><?= start_label() ?></a></li>

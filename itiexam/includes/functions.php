@@ -124,10 +124,17 @@ function link_attrs(string $url): string { return is_external($url) ? ' target="
 /* ---------- Trades ---------- */
 function trades(bool $popularOnly = false): array
 {
-    $sql = "SELECT * FROM trades WHERE status = 'published'" . ($popularOnly ? ' AND is_popular = 1' : '') . ' ORDER BY sort_order, name';
+    $sql = "SELECT * FROM trades WHERE status = 'published' AND kind = 'trade'" . ($popularOnly ? ' AND is_popular = 1' : '') . ' ORDER BY sort_order, name';
     return db()->query($sql)->fetchAll();
 }
-function trade_url(array $t): string { return '/trades/' . $t['slug'] . '/'; }
+/** Trades live at /trades/{slug}/; common subjects (Employability Skills …) at /{slug}/. */
+function trade_url(array $t): string { return (($t['kind'] ?? 'trade') === 'subject' ? '/' : '/trades/') . $t['slug'] . '/'; }
+
+/** Common subjects (Employability Skills, …): like trades, but not listed among the trades. */
+function subjects(): array
+{
+    return db()->query("SELECT * FROM trades WHERE status = 'published' AND kind = 'subject' ORDER BY sort_order, name")->fetchAll();
+}
 function upload_url(string $file): string { return $file ? UPLOAD_URL . '/' . rawurlencode($file) : ''; }
 
 /**

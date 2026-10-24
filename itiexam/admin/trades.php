@@ -29,15 +29,15 @@ if (is_post() && ($_POST['action'] ?? '') === 'delete') {
 $rows = db()->query('SELECT t.*, (SELECT COUNT(*) FROM trade_items i WHERE i.trade_id = t.id) AS items FROM trades t ORDER BY sort_order, name')->fetchAll();
 admin_header('Trades', 'trades');
 ?>
-    <div class="bar"><p class="muted">Every trade uses the same page design. Add the trade, then click <b>Content</b> to add its mock tests, syllabus, notes and papers.</p><a class="btn" href="/admin/trade-edit.php">+ Add New Trade</a></div>
+    <div class="bar"><p class="muted">Every trade uses the same page design. Add the trade, then click <b>Content</b> to add its mock tests, syllabus, notes, papers and videos. <b>Common subjects</b> (Employability Skills …) work the same way but are not listed among the trades.</p><a class="btn" href="/admin/trade-edit.php">+ Add New Trade</a></div>
     <div class="box tablebox"><table>
       <thead><tr><th></th><th>Trade</th><th>URL</th><th>Items</th><th>Status</th><th>Order</th><th>Actions</th></tr></thead>
       <tbody>
 <?php foreach ($rows as $r): ?>
         <tr>
           <td class="thumb"><?php if ($r['image']): ?><img src="<?= e(upload_url($r['image'])) ?>" alt=""><?php else: ?><span><?= e($r['emoji'] ?: '🛠️') ?></span><?php endif; ?></td>
-          <td><b><?= e($r['name']) ?></b><br><small class="muted"><?= e($r['full_name'] ?: $r['short_desc']) ?></small></td>
-          <td><a href="/trades/<?= e($r['slug']) ?>/" target="_blank">/trades/<?= e($r['slug']) ?>/ ↗</a></td>
+          <td><b><?= e($r['name']) ?></b><?= ($r['kind'] ?? 'trade') === 'subject' ? ' <span class="pill star">Common subject</span>' : '' ?><br><small class="muted"><?= e($r['full_name'] ?: $r['short_desc']) ?></small></td>
+          <td><a href="<?= e(trade_url($r)) ?>" target="_blank"><?= e(trade_url($r)) ?> ↗</a></td>
           <td><?= (int)$r['items'] ?></td>
           <td><span class="pill <?= $r['status'] === 'published' ? 'ok' : 'off' ?>"><?= e($r['status']) ?></span><?= $r['is_popular'] ? ' <span class="pill star">Home</span>' : '' ?></td>
           <td><?= (int)$r['sort_order'] ?></td>

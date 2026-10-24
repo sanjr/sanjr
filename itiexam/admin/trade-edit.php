@@ -6,7 +6,7 @@ require_login();
 $id = (int)($_GET['id'] ?? 0);
 $t = ['name' => '', 'slug' => '', 'full_name' => '', 'short_desc' => '', 'description' => '', 'content' => '', 'duration' => '', 'nsqf_level' => '', 'sector' => '',
       'exam_pattern' => 'NCVT (CBT + Practical)', 'emoji' => '', 'image' => '', 'card_color' => '#eef4ff', 'meta_title' => '', 'meta_description' => '', 'meta_keywords' => '',
-      'is_popular' => 1, 'status' => 'published', 'sort_order' => 0];
+      'is_popular' => 1, 'status' => 'published', 'sort_order' => 0, 'kind' => 'trade'];
 if ($id) {
     $st = db()->prepare('SELECT * FROM trades WHERE id = ?');
     $st->execute([$id]);
@@ -23,13 +23,17 @@ if (is_post()) {
     $t['is_popular'] = isset($_POST['is_popular']) ? 1 : 0;
     $t['status'] = post('status') === 'draft' ? 'draft' : 'published';
     $t['sort_order'] = (int)post('sort_order');
+    $t['kind'] = post('kind') === 'subject' ? 'subject' : 'trade';
+    if ($t['kind'] === 'subject') $t['is_popular'] = 0;
     if (!preg_match('/^#[0-9a-f]{6}$/i', $t['card_color'])) $t['card_color'] = '#eef4ff';
 
     $dup = db()->prepare('SELECT COUNT(*) FROM trades WHERE slug = ? AND id <> ?');
     $dup->execute([$t['slug'], $id]);
     if ($t['name'] === '') $err = 'Trade name is required.';
     elseif ($t['slug'] === '') $err = 'URL slug is required.';
-    elseif ($dup->fetchColumn()) $err = 'Another trade already uses the URL /trades/' . $t['slug'] . '/. Choose a different slug.';
+    elseif ($dup->fetchColumn()) $err = 'Another trade already uses the URL slug “' . $t['slug'] . '”. Choose a different slug.';
+    elseif ($t['kind'] === 'subject' && in_array(strtok($t['slug'], '/'), ['trades', 'jobs', 'syllabus', 'search', 'cbt', 'admin', 'login', 'logout', 'auth', 'student', 'app', 'app-auth', 'api', 'uploads', 'assets', 'data', 'includes'], true))
+        $err = 'The address /' . $t['slug'] . '/ is used by the website itself. Choose another slug.';
     else {
         try {
             $new = handle_upload('image');
@@ -37,7 +41,7 @@ if (is_post()) {
         } catch (RuntimeException $ex) { $err = $ex->getMessage(); }
     }
     if (!$err) {
-        $cols = array_merge($fields, ['content', 'slug', 'is_popular', 'status', 'sort_order', 'image']);
+        $cols = array_merge($fields, ['content', 'slug', 'is_popular', 'status', 'sort_order', 'image', 'kind']);
         $vals = array_map(fn($c) => $t[$c], $cols);
         if ($id) {
             $sql = 'UPDATE trades SET ' . implode(', ', array_map(fn($c) => "$c = ?", $cols)) . ', updated_at = ? WHERE id = ?';
@@ -58,7 +62,7 @@ if (is_post()) {
                 if ($parent) {
                     $next = (int)db()->query("SELECT COALESCE(MAX(sort_order), 0) + 1 FROM menu_items WHERE parent_id = $parent")->fetchColumn();
                     db()->prepare("INSERT INTO menu_items (location, parent_id, label, url, sort_order, subtitle, icon) VALUES ('header', ?, ?, ?, ?, '', '')")
-                        ->execute([$parent, $t['name'], '/trades/' . $t['slug'] . '/', $next]);
+                        ->execute([$parent, $t['name'], trade_url($t), $next]);
                 }
             }
             flash(isset($_POST['starter']) ? 'Trade added with the standard sections (quick links, tiles, notes, papers, practical, FAQ). Now add its syllabus modules and mock tests.' : 'Trade added. Now add its content (mock tests, syllabus, notes…).');
@@ -77,7 +81,8 @@ admin_header($id ? 'Edit Trade: ' . $t['name'] : 'Add New Trade', 'trades');
         <section class="box">
           <h2>Trade details</h2>
           <label>Trade name * <input id="name" name="name" required value="<?= e($t['name']) ?>" placeholder="e.g. COPA"></label>
-          <label>URL slug <span class="hint">/trades/<b>slug</b>/</span><input name="slug" data-slug-from="name" value="<?= e($t['slug']) ?>" placeholder="copa"></label>
+          <label>Type <select name="kind"><option value="trade">ITI Trade – listed under Trades, address /trades/slug/</option><option value="subject"<?= ($t['kind'] ?? 'trade') === 'subject' ? ' selected' : '' ?>>Common subject for all trades (Employability Skills, Workshop Calculation …) – address /slug/</option></select></label>
+          <label>URL slug <span class="hint"><?= ($t['kind'] ?? 'trade') === 'subject' ? '/<b>slug</b>/' : '/trades/<b>slug</b>/' ?></span><input name="slug" data-slug-from="name" value="<?= e($t['slug']) ?>" placeholder="copa"></label>
           <label>Full name <input name="full_name" value="<?= e($t['full_name']) ?>" placeholder="Computer Operator and Programming Assistant"></label>
           <label>Short line (shown on trade cards) <input name="short_desc" value="<?= e($t['short_desc']) ?>" maxlength="255"></label>
           <label>Hero description <textarea name="description" rows="3"><?= e($t['description']) ?></textarea></label>

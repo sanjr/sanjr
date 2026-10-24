@@ -1,7 +1,11 @@
 <?php
 /* Custom pages, articles and exam updates created by the admin (any URL, e.g. /about/ or /blog/iti-cbt-tips/). */
-require __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/functions.php';
 $slug = slugify($_GET['slug'] ?? '', true);
+// A common subject (e.g. /employability-skills/) uses the trade page with all its sections
+$sub = db()->prepare("SELECT slug FROM trades WHERE slug = ? AND kind = 'subject' AND status = 'published'");
+$sub->execute([$slug]);
+if ($sub->fetchColumn()) { $_GET['slug'] = $slug; require __DIR__ . '/trade.php'; exit; }
 $st = db()->prepare("SELECT * FROM pages WHERE slug = ? AND status = 'published'");
 $st->execute([$slug]);
 $p = $st->fetch();

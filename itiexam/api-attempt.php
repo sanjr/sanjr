@@ -15,7 +15,7 @@ if ($origin !== '' && parse_url($origin, PHP_URL_HOST) !== parse_url(SITE_URL, P
 $me = student();
 if (!$me) $out(401, ['ok' => false, 'error' => 'login']);
 
-$st = db()->prepare("SELECT id, title, level, trade_id FROM cbt_tests WHERE folder = ? AND status = 'published'");
+$st = db()->prepare("SELECT c.id, c.title, c.level, c.trade_id, t.kind FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id WHERE c.folder = ? AND c.status = 'published'");
 $st->execute([preg_replace('/[^a-z0-9-]/', '', (string)($in['folder'] ?? ''))]);
 $test = $st->fetch();
 if (!$test) $out(404, ['ok' => false]);
@@ -45,5 +45,6 @@ if ($id = $dup->fetchColumn()) $out(200, ['ok' => true, 'id' => (int)$id]);
 db()->prepare('INSERT INTO attempts (student_id, test_id, trade_id, title, level, score, total, pct, passed, time_sec, lang, location, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
     ->execute([$me['id'], $test['id'], $test['trade_id'], $test['title'], $test['level'], $score, $total, $pct, $passed, $time, mb_substr((string)($in['lang'] ?? ''), 0, 20), $loc, $when]);
 if ($loc !== '') db()->prepare('UPDATE students SET location = ? WHERE id = ?')->execute([$loc, $me['id']]);
-if (!$me['trade_id'] && $test['trade_id']) db()->prepare('UPDATE students SET trade_id = ? WHERE id = ?')->execute([$test['trade_id'], $me['id']]);
+if (!$me['trade_id'] && $test['trade_id'] && $test['kind'] === 'trade')     // a common subject is not the student's trade
+    db()->prepare('UPDATE students SET trade_id = ? WHERE id = ?')->execute([$test['trade_id'], $me['id']]);
 $out(200, ['ok' => true, 'id' => (int)db()->lastInsertId()]);

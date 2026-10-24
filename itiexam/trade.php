@@ -1,12 +1,14 @@
 <?php
 /* Trade page template – same design for every trade, content comes from the admin panel. */
-require __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/functions.php';
 
 $slug = slugify($_GET['slug'] ?? '');
 $st = db()->prepare("SELECT * FROM trades WHERE slug = ? AND status = 'published'");
 $st->execute([$slug]);
 $t = $st->fetch();
 if (!$t) not_found();
+$isSubject = ($t['kind'] ?? 'trade') === 'subject';       // common subject, e.g. Employability Skills
+if ($isSubject && str_starts_with((string)($_SERVER['REQUEST_URI'] ?? ''), '/trades/')) { header('Location: ' . trade_url($t), true, 301); exit; }
 
 $items = trade_items((int)$t['id']);
 // Mock tests without a working link (demo rows, '#') are not shown to students
@@ -152,7 +154,7 @@ function mock_card(string $name, array $list, int $years = 2): string
 $yr = date('Y');
 $title = $t['meta_title'] ?: "ITI $name Mock Test $yr – MCQ, Question Paper PDF & Syllabus | ITI Exam";
 $desc = $t['meta_description'] ?: trim("ITI $name" . ($t['full_name'] ? " ({$t['full_name']})" : '') . " $yr – free online CBT mock test, MCQ in English, Hindi & Marathi, NCVT syllabus, notes PDF, previous year question papers and important questions.");
-$keywords = $t['meta_keywords'] ?: "ITI $name mock test, ITI $name MCQ, ITI $name question paper PDF, ITI $name previous year paper, ITI $name online test, ITI $name CBT test, ITI $name syllabus $yr, ITI $name notes PDF, " . ($years > 1 ? "$name 1st year MCQ, $name 2nd year MCQ, " : '') . "$name 1st semester, ITI $name MCQ in Hindi, ITI $name MCQ in Marathi, NIMI $name question bank, ITI $name jobs, {$t['full_name']}";
+$keywords = $t['meta_keywords'] ?: "ITI $name mock test, ITI $name MCQ, ITI $name question paper PDF, ITI $name previous year paper, ITI $name online test, ITI $name CBT test, ITI $name syllabus $yr, ITI $name notes PDF, " . ($years > 1 ? "$name 1st year MCQ, $name 2nd year MCQ, " : '') . "$name 1st semester, ITI $name MCQ in Hindi, ITI $name MCQ in Marathi, NIMI $name question bank, " . ($isSubject ? "ITI $name MCQ all trades" : "ITI $name jobs") . ", {$t['full_name']}";
 
 /* Built-in exam guide + FAQ, so every trade page has useful text even before the admin writes any */
 $full = $t['full_name'] ? " ({$t['full_name']})" : '';
@@ -160,7 +162,8 @@ $dur = $t['duration'] ?: '1 or 2 years';
 $autoFaq = [
     ["Is the ITI $name mock test free?", "Yes. All ITI $name mock tests on " . SITE_NAME . " are free. You can practise module-wise and full-length tests in the NCVT CBT pattern without registration."],
     ["What is the ITI $name exam pattern?", "The ITI $name exam is a computer based test (CBT) with multiple choice questions on Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills, followed by a practical exam. The CBT paper usually has 75 questions for 150 marks in 2 hours, and you need at least 33% in each part. Always check the latest DGT/NCVT notice for your batch."],
-    ["How long is the ITI $name course?", "The ITI $name$full course duration is $dur" . ($t['nsqf_level'] ? ", at NSQF level {$t['nsqf_level']}" : '') . ". The syllabus is divided into semesters and modules, and questions come from each module."],
+    $isSubject ? ["Which ITI trades have $name?", "$name is a common subject in every ITI trade, in both 1st and 2nd year. The same $name questions come in the CBT exam of COPA, Electrician, Fitter, Welder and all other trades, so practising it helps every student."]
+        : ["How long is the ITI $name course?", "The ITI $name$full course duration is $dur" . ($t['nsqf_level'] ? ", at NSQF level {$t['nsqf_level']}" : '') . ". The syllabus is divided into semesters and modules, and questions come from each module."],
     ["Where can I get ITI $name previous year question papers?", "Open the Previous Papers section on this page to practise ITI $name previous year questions with answers. Solving old papers shows you the question style and the topics asked most often."],
     ["Are ITI $name questions available in Hindi and Marathi?", "Yes. Our ITI $name mock tests show every question in English with Hindi and Marathi, so you can study in the language you are comfortable with."],
 ];
@@ -169,8 +172,8 @@ $faqLd = $items['faq'] ? array_map(fn($f) => [$f['title'], $f['subtitle']], $ite
 $ld = [
     ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => SITE_URL . '/'],
-        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Trades', 'item' => SITE_URL . '/trades/'],
-        ['@type' => 'ListItem', 'position' => 3, 'name' => $name, 'item' => SITE_URL . $path],
+        ...($isSubject ? [] : [['@type' => 'ListItem', 'position' => 2, 'name' => 'Trades', 'item' => SITE_URL . '/trades/']]),
+        ['@type' => 'ListItem', 'position' => $isSubject ? 2 : 3, 'name' => $name, 'item' => SITE_URL . $path],
     ]],
     ['@context' => 'https://schema.org', '@type' => 'Course', 'name' => "ITI $name" . ($t['full_name'] ? " – {$t['full_name']}" : ''),
         'description' => strip_tags($t['description'] ?: $desc), 'url' => SITE_URL . $path,
@@ -212,7 +215,7 @@ $stats = array_filter([
     ['target', 'Exam Pattern', $t['exam_pattern'], 'c-orange'],
 ], fn($s) => $s[2] !== '');
 
-$tradeJobs = latest_jobs(4, $name);
+$tradeJobs = $isSubject ? [] : latest_jobs(4, $name);
 if ($tradeJobs) $nav[] = ['jobs', $name . ' Jobs', 'brief'];
 
 $related = array_values(array_filter(trades(), fn($r) => $r['id'] !== $t['id']));
@@ -225,8 +228,8 @@ require __DIR__ . '/includes/header.php';
   <section class="hero thero">
     <div class="container hero-grid">
       <div class="hero-copy">
-        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <?= icon('chev-r') ?> <a href="/trades/">Trades</a> <?= icon('chev-r') ?> <span aria-current="page"><?= e($name) ?><?= $t['full_name'] ? ' (' . e($t['full_name']) . ')' : '' ?></span></nav>
-        <span class="tbadge">ITI Trade</span>
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <?= icon('chev-r') ?> <?php if (!$isSubject): ?><a href="/trades/">Trades</a> <?= icon('chev-r') ?> <?php endif; ?><span aria-current="page"><?= e($name) ?><?= $t['full_name'] ? ' (' . e($t['full_name']) . ')' : '' ?></span></nav>
+        <span class="tbadge"><?= $isSubject ? 'Common Subject · All ITI Trades' : 'ITI Trade' ?></span>
         <h1><span class="tname<?= mb_strlen($name) > 9 ? ' long' : '' ?>"><?= e($name) ?></span><?php if ($t['full_name']): ?> <span class="tfull"><?= e($t['full_name']) ?></span><?php endif; ?></h1>
 <?php if ($t['description']): ?>        <p class="lead"><?= e($t['description']) ?></p>
 <?php endif; ?>
@@ -272,7 +275,7 @@ require __DIR__ . '/includes/header.php';
   <div class="container tlayout">
     <!-- Side menu -->
     <aside class="tmenu card" aria-label="<?= e($name) ?> trade menu">
-      <h2><?= e($name) ?> Trade Menu</h2>
+      <h2><?= e($name) ?> <?= $isSubject ? 'Menu' : 'Trade Menu' ?></h2>
       <ul>
 <?php foreach ($nav as $i => [$id, $lbl, $ic]): ?>
         <li><a href="#<?= $id ?>"<?= $i === 0 ? ' class="on"' : '' ?>><span class="ri <?= chip_color($i) ?>"><?= icon($ic) ?></span><?= e($lbl) ?><?= icon('chev-r', 'ic mchev') ?></a></li>
@@ -308,7 +311,9 @@ $rowsDef = [
 foreach ($rowsDef as $r => $row) {
     $cards = array_filter(array_map(fn($c) => $c[0] === 'syllabus' && $sylPdf ? section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3], $sylPdf, 'Syllabus PDF')
         : ($c[0] === 'mock_tests' && $items['mock_tests'] ? mock_card($name, $items['mock_tests'], $years) : section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3])), $row));
-    if ($r === 0 && !$items['mock_tests']) array_unshift($cards, '<article class="card tsec mt-soon" id="mock-tests"><div class="sec-head sm"><h2>Latest ' . e($name) . ' Mock Tests</h2></div>'
+    if ($r === 0 && !$items['mock_tests'] && $isSubject) array_unshift($cards, '<article class="card tsec mt-soon" id="mock-tests"><div class="sec-head sm"><h2>' . e($name) . ' Mock Tests</h2></div>'
+        . '<div class="mt-empty"><span class="sti c-blue">' . icon('clip') . '</span><p><b>Module-wise ' . e($name) . ' mock tests are coming soon.</b> Meanwhile read the modules below and the notes.</p></div></article>');
+    elseif ($r === 0 && !$items['mock_tests']) array_unshift($cards, '<article class="card tsec mt-soon" id="mock-tests"><div class="sec-head sm"><h2>Latest ' . e($name) . ' Mock Tests</h2></div>'
         . '<div class="mt-empty"><span class="sti c-blue">' . icon('clip') . '</span><p><b>Module-wise ' . e($name) . ' mock tests are coming soon.</b> Until then, revise the syllabus and practise Employability Skills, which is common to all trades.</p>'
         . '<a class="btn-sm" href="/employability-skills/">Employability Skills MCQ ' . icon('arrow') . '</a></div></article>');
     if ($cards) echo '      <div class="trow n' . count($cards) . '">' . implode('', $cards) . "</div>\n";
@@ -326,20 +331,20 @@ foreach ($rowsDef as $r => $row) {
 
 <?php if ($t['content']): ?>
       <article class="card tsec prose" id="about">
-        <h2>About ITI <?= e($name) ?> Trade</h2>
+        <h2>About ITI <?= e($name) ?><?= $isSubject ? '' : ' Trade' ?></h2>
         <?= $t['content'] /* trusted HTML written by the admin */ ?>
       </article>
 <?php endif; ?>
 
       <article class="card tsec prose exam-guide" id="exam-guide">
         <h2>ITI <?= e($name) ?> Exam <?= $yr ?>: Pattern, Syllabus &amp; How to Prepare</h2>
-        <p><strong>ITI <?= e($name) ?></strong><?= e($full) ?> is an NCVT trade. On this page you get free <strong>ITI <?= e($name) ?> mock tests</strong> in the real CBT pattern, module-wise <strong><?= e($name) ?> MCQ</strong>, the latest syllabus, theory notes, practical exercises and <strong>previous year question papers with answers</strong><?= $years > 1 ? ' for 1st and 2nd year' : '' ?>.</p>
+        <p><strong>ITI <?= e($name) ?></strong><?= e($full) ?> is <?= $isSubject ? 'a common subject in every NCVT ITI trade' : 'an NCVT trade' ?>. On this page you get free <strong>ITI <?= e($name) ?> mock tests</strong> in the real CBT pattern, module-wise <strong><?= e($name) ?> MCQ</strong>, the latest syllabus, theory notes, practical exercises and <strong>previous year question papers with answers</strong><?= $years > 1 ? ' for 1st and 2nd year' : '' ?>.</p>
         <div class="eg-facts">
           <div><span>Exam mode</span><b>Online CBT + Practical</b></div>
           <div><span>CBT paper</span><b>75 MCQ · 150 marks · 2 hours</b></div>
           <div><span>Pass marks</span><b>33% in each part</b></div>
           <div><span>Course duration</span><b><?= e($dur) ?></b></div>
-          <div><span>Subjects</span><b>Trade Theory, WCS, Engg. Drawing, Employability Skills</b></div>
+          <div><span><?= $isSubject ? 'Common to' : 'Subjects' ?></span><b><?= $isSubject ? 'All ITI trades, 1st &amp; 2nd year' : 'Trade Theory, WCS, Engg. Drawing, Employability Skills' ?></b></div>
           <div><span>Languages</span><b>English · हिंदी · मराठी</b></div>
         </div>
         <h3>How to prepare for the ITI <?= e($name) ?> CBT exam</h3>
