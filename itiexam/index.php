@@ -111,7 +111,7 @@ foreach ($ld['@graph'] as &$node) {
 }
 unset($node);
 
-$mockTests = db()->query("SELECT i.*, t.name AS tname, t.slug AS tslug FROM trade_items i JOIN trades t ON t.id = i.trade_id
+$mockTests = db()->query("SELECT i.*, t.name AS tname, t.slug AS tslug, t.duration AS tdur FROM trade_items i JOIN trades t ON t.id = i.trade_id
     WHERE i.section = 'mock_tests' AND i.url NOT IN ('', '#') AND t.status = 'published' ORDER BY i.is_new DESC, i.id DESC LIMIT 4")->fetchAll();
 $homeJobs = latest_jobs(4);
 $examUpdates = latest_posts('exam-update', 4);
@@ -258,7 +258,7 @@ require __DIR__ . '/includes/header.php';
           <div class="sec-head sm"><h2 id="mock-h">Latest Mock Tests</h2><a href="/mock-test/" class="view-all">View All <?= icon('arrow') ?></a></div>
           <ul class="rows">
 <?php foreach ($mockTests as $i => $m): $href = $m['url'] && $m['url'][0] !== '#' ? $m['url'] : '/trades/' . $m['tslug'] . '/#mock-tests'; ?>
-            <li><a href="<?= e($href) ?>"<?= link_attrs($href) ?>><span class="ri <?= chip_color($i + 5) ?>"><?= icon($m['icon'] ?: 'clip') ?></span><span class="rt"><b><?= e($m['tname']) ?> – <?= ($m['level'] ?? '') ? e($m['level']) . ' – ' : '' ?><?= e($m['title']) ?></b><small><?= $m['questions'] ? icon('doc') . (int)$m['questions'] . ' Questions ' : '' ?><?= $m['minutes'] ? icon('clock') . (int)$m['minutes'] . ' Minutes ' : '' ?><?= $m['is_new'] ? '<em class="new">New</em>' : '' ?></small></span><?= icon('chev-r', 'ic chev') ?></a></li>
+            <li><a href="<?= e($href) ?>"<?= link_attrs($href) ?>><span class="ri <?= chip_color($i + 5) ?>"><?= icon($m['icon'] ?: 'clip') ?></span><span class="rt"><b><?= e($m['tname']) ?> – <?= ($lv = shown_level($m['level'] ?? '', $m['tdur'])) ? e($lv) . ' – ' : '' ?><?= e($m['title']) ?></b><small><?= $m['questions'] ? icon('doc') . (int)$m['questions'] . ' Questions ' : '' ?><?= $m['minutes'] ? icon('clock') . (int)$m['minutes'] . ' Minutes ' : '' ?><?= $m['is_new'] ? '<em class="new">New</em>' : '' ?></small></span><?= icon('chev-r', 'ic chev') ?></a></li>
 <?php endforeach; if (!$mockTests): ?>
             <li class="muted-row">Mock tests will appear here once added from the admin panel.</li>
 <?php endif; ?>

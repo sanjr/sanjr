@@ -13,6 +13,8 @@ $items = trade_items((int)$t['id']);
 $items['mock_tests'] = array_values(array_filter($items['mock_tests'], fn($m) => !in_array(trim($m['url']), ['', '#'], true)));
 $sections = trade_sections();
 $name = $t['name'];
+$years = trade_years($t['duration']);        // 1-year trades show no "1st Year" / "2nd Year"
+foreach (['mock_tests', 'videos'] as $sk) foreach ($items[$sk] as &$it) { $it['level'] = shown_level($it['level'] ?? '', $t['duration']); } unset($it);
 $path = trade_url($t);
 
 /** Anchor id for a section key. */
@@ -55,11 +57,11 @@ function section_card(string $key, string $heading, array $list, string $style, 
 }
 
 /** Video Learning: cards that open a player (YouTube or uploaded video), with 1st / 2nd Year tabs when years are set. */
-function video_section(string $name, array $list): string
+function video_section(string $name, array $list, int $tradeYears = 2): string
 {
     if (!$list) return '';
     $years = array_unique(array_map(fn($v) => level_year((string)$v['level']), $list));
-    $tabs = count(array_filter($years)) >= 1 && count($years) > 1;
+    $tabs = $tradeYears > 1 && count(array_filter($years)) >= 1 && count($years) > 1;
     $html = '<section class="card tsec vsec" id="videos" aria-labelledby="vid-h"><div class="sec-head sm"><h2 id="vid-h">' . icon('play') . ' ' . e($name) . ' Video Learning</h2>'
         . '<span class="vcount">' . count($list) . ' video' . (count($list) === 1 ? '' : 's') . '</span></div>';
     if ($tabs) {
@@ -95,15 +97,25 @@ function test_level(string $title): array
 }
 
 /** Mock tests card: 1st Year / 2nd Year tabs with semester headings when the tests carry that information. */
-function mock_card(string $name, array $list): string
+function mock_card(string $name, array $list, int $years = 2): string
 {
     $groups = [];
-    foreach ($list as $it) { [$y, $s] = test_level(($it['level'] ?? '') !== '' ? $it['level'] : $it['title']); $groups[$y][$s][] = $it; }
+    foreach ($list as $it) {
+        [$y, $s] = test_level(($it['level'] ?? '') !== '' ? $it['level'] : $it['title']);
+        if ($years === 1) $y = $s ? 1 : 0;                        // one year only: group by semester, never "1st Year"
+        $groups[$y][$s][] = $it;
+    }
+    if ($years === 1) {
+        $sems = [];
+        foreach ($groups as $g) foreach ($g as $sk => $its) $sems[$sk] = array_merge($sems[$sk] ?? [], $its);
+        if (!array_filter(array_keys($sems))) return section_card('mock_tests', 'Latest ' . e($name) . ' Mock Tests', $list, 'mock', 'clip');
+        $groups = [1 => $sems];
+    }
     if (!array_filter(array_keys($groups))) return section_card('mock_tests', 'Latest ' . e($name) . ' Mock Tests', $list, 'mock', 'clip');
     ksort($groups);
     if (isset($groups[0])) { $g0 = $groups[0]; unset($groups[0]); $groups[0] = $g0; }    // tests without a year go last
     $label = fn($y) => [1 => '1st Year', 2 => '2nd Year', 0 => 'Other Tests'][$y];
-    $tabs = count($groups) > 1;
+    $tabs = count($groups) > 1 && $years > 1;
     $html = '<article class="card tsec mt-years" id="mock-tests"><div class="sec-head sm"><h2>' . e($name) . ' Mock Tests</h2></div>';
     if ($tabs) {
         $html .= '<div class="yr-tabs" role="tablist">';
@@ -119,7 +131,7 @@ function mock_card(string $name, array $list): string
     foreach ($groups as $y => $sems) {
         ksort($sems);
         $html .= '<div class="yr-pane" data-yr="' . $y . '"' . ($first ? '' : ' hidden') . '>';
-        if (!$tabs && $y) $html .= '<h3 class="yr-h">' . $label($y) . '</h3>';
+        if (!$tabs && $y && $years > 1) $html .= '<h3 class="yr-h">' . $label($y) . '</h3>';
         foreach ($sems as $s => $items) {
             if ($s) $html .= '<h4 class="sem-h">Semester ' . $s . ' <small>' . count($items) . ' tests</small></h4>';
             $rows = '';
@@ -140,7 +152,7 @@ function mock_card(string $name, array $list): string
 $yr = date('Y');
 $title = $t['meta_title'] ?: "ITI $name Mock Test $yr – MCQ, Question Paper PDF & Syllabus | ITI Exam";
 $desc = $t['meta_description'] ?: trim("ITI $name" . ($t['full_name'] ? " ({$t['full_name']})" : '') . " $yr – free online CBT mock test, MCQ in English, Hindi & Marathi, NCVT syllabus, notes PDF, previous year question papers and important questions.");
-$keywords = $t['meta_keywords'] ?: "ITI $name mock test, ITI $name MCQ, ITI $name question paper PDF, ITI $name previous year paper, ITI $name online test, ITI $name CBT test, ITI $name syllabus $yr, ITI $name notes PDF, $name 1st year MCQ, $name 2nd year MCQ, $name 1st semester, ITI $name MCQ in Hindi, ITI $name MCQ in Marathi, NIMI $name question bank, ITI $name jobs, {$t['full_name']}";
+$keywords = $t['meta_keywords'] ?: "ITI $name mock test, ITI $name MCQ, ITI $name question paper PDF, ITI $name previous year paper, ITI $name online test, ITI $name CBT test, ITI $name syllabus $yr, ITI $name notes PDF, " . ($years > 1 ? "$name 1st year MCQ, $name 2nd year MCQ, " : '') . "$name 1st semester, ITI $name MCQ in Hindi, ITI $name MCQ in Marathi, NIMI $name question bank, ITI $name jobs, {$t['full_name']}";
 
 /* Built-in exam guide + FAQ, so every trade page has useful text even before the admin writes any */
 $full = $t['full_name'] ? " ({$t['full_name']})" : '';
@@ -295,13 +307,13 @@ $rowsDef = [
 ];
 foreach ($rowsDef as $r => $row) {
     $cards = array_filter(array_map(fn($c) => $c[0] === 'syllabus' && $sylPdf ? section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3], $sylPdf, 'Syllabus PDF')
-        : ($c[0] === 'mock_tests' && $items['mock_tests'] ? mock_card($name, $items['mock_tests']) : section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3])), $row));
+        : ($c[0] === 'mock_tests' && $items['mock_tests'] ? mock_card($name, $items['mock_tests'], $years) : section_card($c[0], $c[1], $items[$c[0]], $c[2], $c[3])), $row));
     if ($r === 0 && !$items['mock_tests']) array_unshift($cards, '<article class="card tsec mt-soon" id="mock-tests"><div class="sec-head sm"><h2>Latest ' . e($name) . ' Mock Tests</h2></div>'
         . '<div class="mt-empty"><span class="sti c-blue">' . icon('clip') . '</span><p><b>Module-wise ' . e($name) . ' mock tests are coming soon.</b> Until then, revise the syllabus and practise Employability Skills, which is common to all trades.</p>'
         . '<a class="btn-sm" href="/employability-skills/">Employability Skills MCQ ' . icon('arrow') . '</a></div></article>');
     if ($cards) echo '      <div class="trow n' . count($cards) . '">' . implode('', $cards) . "</div>\n";
     if ($r === 0) echo ad('trade_middle');
-    if ($r === 0) echo video_section($name, $items['videos']);     // Video Learning: full width, right after tests & syllabus
+    if ($r === 0) echo video_section($name, $items['videos'], $years);     // Video Learning: full width, right after tests & syllabus
 }
 ?>
 
@@ -321,7 +333,7 @@ foreach ($rowsDef as $r => $row) {
 
       <article class="card tsec prose exam-guide" id="exam-guide">
         <h2>ITI <?= e($name) ?> Exam <?= $yr ?>: Pattern, Syllabus &amp; How to Prepare</h2>
-        <p><strong>ITI <?= e($name) ?></strong><?= e($full) ?> is an NCVT trade. On this page you get free <strong>ITI <?= e($name) ?> mock tests</strong> in the real CBT pattern, module-wise <strong><?= e($name) ?> MCQ</strong>, the latest syllabus, theory notes, practical exercises and <strong>previous year question papers with answers</strong> for 1st and 2nd year.</p>
+        <p><strong>ITI <?= e($name) ?></strong><?= e($full) ?> is an NCVT trade. On this page you get free <strong>ITI <?= e($name) ?> mock tests</strong> in the real CBT pattern, module-wise <strong><?= e($name) ?> MCQ</strong>, the latest syllabus, theory notes, practical exercises and <strong>previous year question papers with answers</strong><?= $years > 1 ? ' for 1st and 2nd year' : '' ?>.</p>
         <div class="eg-facts">
           <div><span>Exam mode</span><b>Online CBT + Practical</b></div>
           <div><span>CBT paper</span><b>75 MCQ · 150 marks · 2 hours</b></div>

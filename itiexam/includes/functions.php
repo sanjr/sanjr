@@ -208,6 +208,21 @@ function video_cleanup(string $url, string $image = ''): void
     }
 }
 
+/** How many years a trade runs, from its Duration ("1 Year", "2 Years", "6 Months"); 2 when it is not filled in. */
+function trade_years(string $duration): int
+{
+    if (preg_match('/(\d+(?:\.\d+)?)\s*(?:years?|yrs?|वर्ष)/iu', $duration, $m)) return (float)$m[1] > 1 ? 2 : 1;
+    if (preg_match('/\d+\s*months?|\b(one|single)\s*years?\b/i', $duration)) return 1;
+    return 2;
+}
+
+/** A test's Year/Semester as students see it: one-year trades have no "1st Year" (semesters still show). */
+function shown_level(?string $level, string $duration): string
+{
+    $level = trim((string)$level);
+    return trade_years($duration) === 1 && preg_match('/^(1st|first)\s*year$/i', $level) ? '' : $level;
+}
+
 /** Items of a trade grouped by section. */
 function trade_items(int $tradeId): array
 {

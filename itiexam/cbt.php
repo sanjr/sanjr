@@ -5,7 +5,7 @@
 require __DIR__ . '/includes/functions.php';
 
 $folder = preg_replace('/[^a-z0-9-]/', '', (string)($_GET['f'] ?? ''));
-$st = db()->prepare('SELECT c.*, t.name AS tname, t.slug AS tslug FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id WHERE c.folder = ?');
+$st = db()->prepare('SELECT c.*, t.name AS tname, t.slug AS tslug, t.duration AS tdur FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id WHERE c.folder = ?');
 $st->execute([$folder]);
 $test = $st->fetch();
 // A test file address may start with the daily key ("k-…/") given to whoever was allowed to open the test
@@ -53,7 +53,7 @@ if (isset($_GET['p'])) {
 }
 
 /* ---------- the test page ---------- */
-if ($test['level'] ?? '') $test['title'] = $test['level'] . ' – ' . $test['title'];   // "1st Year – Module 3" on the test page
+if ($lv = shown_level($test['level'] ?? '', (string)$test['tdur'])) $test['title'] = $lv . ' – ' . $test['title'];   // "1st Year – Module 3" on the test page
 $name = $test['tname'] ?: 'ITI';
 $path = cbt_url($test);
 $more = [];

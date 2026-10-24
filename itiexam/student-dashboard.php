@@ -5,11 +5,13 @@ $me = student();
 if (!$me) { header('Location: ' . login_url('/student/')); exit; }
 header('Cache-Control: private, no-store');
 
-$st = db()->prepare("SELECT a.*, c.folder, c.status AS cstatus, t.name AS tname FROM attempts a
+$st = db()->prepare("SELECT a.*, c.folder, c.status AS cstatus, t.name AS tname, t.duration AS tdur FROM attempts a
     LEFT JOIN cbt_tests c ON c.id = a.test_id LEFT JOIN trades t ON t.id = a.trade_id
     WHERE a.student_id = ? ORDER BY a.created_at DESC, a.id DESC LIMIT 1000");
 $st->execute([$me['id']]);
 $rows = $st->fetchAll();
+foreach ($rows as &$r) $r['level'] = shown_level($r['level'], (string)$r['tdur']);   // one-year trades: no "1st Year"
+unset($r);
 
 $full = fn(array $a) => ($a['level'] ? $a['level'] . ' – ' : '') . $a['title'];
 $total = count($rows);
@@ -46,7 +48,7 @@ foreach (array_reverse(array_keys($days)) as $day) {
 $tradeId = (int)($me['trade_id'] ?: ($rows[0]['trade_id'] ?? 0));
 $next = null; $nextWhy = '';
 if ($tradeId) {
-    $q = db()->prepare("SELECT c.*, t.name AS tname FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id
+    $q = db()->prepare("SELECT c.*, t.name AS tname, t.duration AS tdur FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id
         WHERE c.trade_id = ? AND c.status = 'published' AND c.id NOT IN (SELECT test_id FROM attempts WHERE student_id = ?)");
     $q->execute([$tradeId, $me['id']]);
     $todo = $q->fetchAll();
@@ -56,13 +58,14 @@ if ($tradeId) {
 if (!$next && $perf) {
     $weak = null;
     foreach ($rows as $a) if ($a['folder'] && $a['cstatus'] === 'published' && (!$weak || $a['pct'] < $weak['pct'])) $weak = $a;
-    if ($weak && $weak['pct'] < 90) { $next = ['folder' => $weak['folder'], 'title' => $weak['title'], 'level' => $weak['level'], 'tname' => $weak['tname'], 'questions' => 0, 'minutes' => 0]; $nextWhy = 'Your lowest score was ' . (int)$weak['pct'] . '% – try again to improve it.'; }
+    if ($weak && $weak['pct'] < 90) { $next = ['folder' => $weak['folder'], 'title' => $weak['title'], 'level' => $weak['level'], 'tname' => $weak['tname'], 'tdur' => $weak['tdur'], 'questions' => 0, 'minutes' => 0]; $nextWhy = 'Your lowest score was ' . (int)$weak['pct'] . '% – try again to improve it.'; }
 }
 if (!$next && !$total) {
-    $next = db()->query("SELECT c.*, t.name AS tname FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id WHERE c.status = 'published' ORDER BY c.created_at DESC LIMIT 1")->fetch() ?: null;
+    $next = db()->query("SELECT c.*, t.name AS tname, t.duration AS tdur FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id WHERE c.status = 'published' ORDER BY c.created_at DESC LIMIT 1")->fetch() ?: null;
     $nextWhy = 'Start with a free mock test.';
 }
 
+if ($next) $next['level'] = shown_level($next['level'] ?? '', (string)($next['tdur'] ?? ''));
 $myTrade = null;
 if ($tradeId) { $q = db()->prepare('SELECT name, slug FROM trades WHERE id = ?'); $q->execute([$tradeId]); $myTrade = $q->fetch() ?: null; }
 
