@@ -22,6 +22,31 @@ $stats = [
 $recent = $pdo->query('SELECT id, name, slug, updated_at FROM trades ORDER BY updated_at DESC LIMIT 5')->fetchAll();
 $sampleIds = array_filter(array_map('intval', explode(',', setting('sample_job_ids'))));
 $samples = $sampleIds ? (int)$pdo->query('SELECT COUNT(*) FROM jobs WHERE updated_at = posted_at AND id IN (' . implode(',', $sampleIds) . ')')->fetchColumn() : 0;
+/* Security check of the live server (the web request to /data/ is cached for 6 hours) */
+if (is_post() && ($_POST['action'] ?? '') === 'recheck') { csrf_check(); setting_set('sec_probe', ''); redirect('/admin/#security'); }
+$probe = json_decode(setting('sec_probe'), true);
+if (!is_array($probe) || ($probe['at'] ?? 0) < time() - 6 * 3600) {
+    $code = 0;
+    if (function_exists('curl_init')) {
+        $ch = curl_init(SITE_URL . '/data/itiexam.sqlite');
+        curl_setopt_array($ch, [CURLOPT_NOBODY => true, CURLOPT_TIMEOUT => 4, CURLOPT_CONNECTTIMEOUT => 3, CURLOPT_FOLLOWLOCATION => false]);
+        curl_exec($ch);
+        $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+    }
+    $probe = ['at' => time(), 'data' => $code];
+    setting_set('sec_probe', json_encode($probe));
+}
+$checks = [
+    [is_https(), 'HTTPS (SSL) is on', 'Turn on the free SSL certificate in your hosting panel.'],
+    [$probe['data'] === 0 ? null : !in_array($probe['data'], [200, 206], true), 'Database and private files cannot be downloaded',
+        $probe['data'] === 0 ? 'Could not test from the server – open ' . SITE_URL . '/data/itiexam.sqlite in a browser: it must show “Forbidden” or “Not found”.'
+        : 'DANGER: the data folder is public. Your hosting ignores .htaccess files – ask hosting support to block the /data/ folder.'],
+    [!filter_var(ini_get('display_errors'), FILTER_VALIDATE_BOOLEAN), 'PHP errors are hidden from visitors', 'Turn off “display_errors” in the hosting PHP settings.'],
+    [!is_file(dirname(DB_SQLITE_PATH) . '/reset.txt'), 'No password-reset file is left on the server', 'Delete data/reset.txt in the File Manager.'],
+    [version_compare(PHP_VERSION, '8.1', '>='), 'PHP ' . PHP_VERSION . ' is up to date', 'Choose PHP 8.2 or newer in the hosting panel.'],
+    [google_login_ready(), 'Google login for students is set up', 'Add the Google Client ID and Secret in Settings.'],
+];
 $empty = !$c('SELECT COUNT(*) FROM trades') || !$c('SELECT COUNT(*) FROM menu_items') || !$c('SELECT COUNT(*) FROM pages');
 admin_header('Dashboard', 'dashboard');
 ?>
@@ -39,6 +64,15 @@ admin_header('Dashboard', 'dashboard');
       <a href="<?= $u ?>" class="stat"><span class="chip <?= $col ?>"><?= icon($i) ?></span><b><?= $n ?></b><small><?= $l ?></small></a>
 <?php endforeach; ?>
     </div>
+    <section class="box" id="security">
+      <h2>Security check</h2>
+      <ul class="secl">
+<?php foreach ($checks as [$ok, $label, $fix]): ?>
+        <li class="<?= $ok === null ? 'warn' : ($ok ? 'ok' : 'bad') ?>"><b><?= $ok === null ? '?' : ($ok ? '✓' : '✕') ?></b><span><?= e($label) ?><?php if ($ok !== true): ?><small><?= e($fix) ?></small><?php endif; ?></span></li>
+<?php endforeach; ?>
+      </ul>
+      <form method="post" class="secre"><?= csrf_field() ?><input type="hidden" name="action" value="recheck"><button class="btn sm alt">Check again</button><span class="muted">Last checked <?= e(date('d M, h:i A', $probe['at'])) ?></span></form>
+    </section>
     <section class="box">
       <h2>Manage your website</h2>
       <div class="manage">

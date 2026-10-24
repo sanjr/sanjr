@@ -4,16 +4,16 @@
     <shortcut android:shortcutId="tests" android:enabled="true" android:icon="@drawable/sc_tests"
         android:shortcutShortLabel="@string/sc_tests">
         <intent android:action="android.intent.action.VIEW" android:targetPackage="com.itiexam.app"
-            android:targetClass="com.itiexam.app.MainActivity" android:data="https://blog.copamcq.com/mock-test/" />
+            android:targetClass="com.itiexam.app.MainActivity" android:data="https://itiexam.com/mock-test/" />
     </shortcut>
     <shortcut android:shortcutId="dashboard" android:enabled="true" android:icon="@drawable/sc_dashboard"
         android:shortcutShortLabel="@string/sc_dashboard">
         <intent android:action="android.intent.action.VIEW" android:targetPackage="com.itiexam.app"
-            android:targetClass="com.itiexam.app.MainActivity" android:data="https://blog.copamcq.com/student/" />
+            android:targetClass="com.itiexam.app.MainActivity" android:data="https://itiexam.com/student/" />
     </shortcut>
     <shortcut android:shortcutId="jobs" android:enabled="true" android:icon="@drawable/sc_jobs"
         android:shortcutShortLabel="@string/sc_jobs">
         <intent android:action="android.intent.action.VIEW" android:targetPackage="com.itiexam.app"
-            android:targetClass="com.itiexam.app.MainActivity" android:data="https://blog.copamcq.com/jobs/" />
+            android:targetClass="com.itiexam.app.MainActivity" android:data="https://itiexam.com/jobs/" />
     </shortcut>
 </shortcuts>

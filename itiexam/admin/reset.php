@@ -13,18 +13,17 @@ $users = db()->query('SELECT id, username FROM users ORDER BY id')->fetchAll();
 $err = '';
 if ($ready && is_post()) {
     csrf_check();
-    $_SESSION['reset_tries'] = ($_SESSION['reset_tries'] ?? 0) + 1;
     $uid = (int)($_POST['user'] ?? 0);
-    $p = $_POST['password'] ?? ''; $p2 = $_POST['password2'] ?? '';
-    if ($_SESSION['reset_tries'] > 10) $err = 'Too many attempts. Close the browser and try again later.';
-    elseif (!hash_equals($code, trim($_POST['code'] ?? ''))) $err = 'The reset code does not match the text in data/reset.txt.';
+    $p = is_string($_POST['password'] ?? null) ? $_POST['password'] : ''; $p2 = is_string($_POST['password2'] ?? null) ? $_POST['password2'] : '';
+    if (attempt_wait('reset') > 0) $err = 'Too many attempts. Try again in an hour.';
+    elseif (!hash_equals($code, post('code'))) { attempt_failed('reset'); $err = 'The reset code does not match the text in data/reset.txt.'; }
     elseif (!in_array($uid, array_column($users, 'id'), false)) $err = 'Choose the admin account.';
     elseif (strlen($p) < 8) $err = 'New password must be at least 8 characters.';
     elseif ($p !== $p2) $err = 'The two passwords do not match.';
     else {
         db()->prepare('UPDATE users SET password_hash = ? WHERE id = ?')->execute([password_hash($p, PASSWORD_DEFAULT), $uid]);
         @unlink($file);
-        unset($_SESSION['reset_tries'], $_SESSION['login_fails'], $_SESSION['login_lock']);
+        attempts_clear('reset'); attempts_clear('login');
         flash('Password changed. Log in with your new password. (data/reset.txt has been deleted.)');
         redirect('/admin/login.php');
     }

@@ -32,6 +32,11 @@ $when = $at > time() - 7 * 86400 && $at <= time() + 60 ? date('Y-m-d H:i:s', $at
 $loc = trim(preg_replace('/[\x00-\x1f<>]+/u', ' ', (string)($in['location'] ?? '')));
 $loc = preg_match('/^(unknown|location denied|.*not available.*)$/i', $loc) ? '' : mb_substr($loc, 0, 160);
 
+// A normal student finishes far fewer tests a day; this stops scripts filling the dashboard and reports
+$today = db()->prepare('SELECT COUNT(*) FROM attempts WHERE student_id = ? AND created_at >= ?');
+$today->execute([$me['id'], date('Y-m-d H:i:s', time() - 86400)]);
+if ((int)$today->fetchColumn() >= 300) $out(429, ['ok' => false, 'error' => 'limit']);
+
 // The same result sent twice (e.g. a double submit) is kept once
 $dup = db()->prepare('SELECT id FROM attempts WHERE student_id = ? AND test_id = ? AND score = ? AND total = ? AND (created_at >= ? OR created_at = ?)');
 $dup->execute([$me['id'], $test['id'], $score, $total, date('Y-m-d H:i:s', time() - 120), $when]);

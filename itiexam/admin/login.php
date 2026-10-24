@@ -6,25 +6,24 @@ if (!(int)db()->query('SELECT COUNT(*) FROM users')->fetchColumn()) redirect('/a
 if (admin_user()) redirect('/admin/');
 
 $err = '';
-$wait = ($_SESSION['login_lock'] ?? 0) - time();
 if (is_post()) {
     csrf_check();
-    if ($wait > 0) {
-        $err = "Too many wrong attempts. Try again in $wait seconds.";
+    if (($wait = attempt_wait('login', post('username'))) > 0) {
+        $err = 'Too many wrong attempts. Try again in ' . ceil($wait / 60) . ' minute' . ($wait > 60 ? 's' : '') . '.';
     } else {
         $st = db()->prepare('SELECT * FROM users WHERE username = ?');
         $st->execute([post('username')]);
         $user = $st->fetch();
-        if ($user && password_verify($_POST['password'] ?? '', $user['password_hash'])) {
+        $pass = $_POST['password'] ?? '';
+        if ($user && is_string($pass) && password_verify($pass, $user['password_hash'])) {
             session_regenerate_id(true);
             $_SESSION['admin'] = ['id' => (int)$user['id'], 'username' => $user['username']];
             $_SESSION['admin_seen'] = time();
-            unset($_SESSION['login_fails'], $_SESSION['login_lock']);
+            attempts_clear('login');
             redirect('/admin/');
         }
+        attempt_failed('login', post('username'));
         sleep(1);
-        $_SESSION['login_fails'] = ($_SESSION['login_fails'] ?? 0) + 1;
-        if ($_SESSION['login_fails'] >= 5) { $_SESSION['login_lock'] = time() + 300; $_SESSION['login_fails'] = 0; }
         $err = 'Wrong username or password.';
     }
 }

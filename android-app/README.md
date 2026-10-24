@@ -19,7 +19,7 @@ Minimum Android 7.0 (API 24), target API 36. Package `com.itiexam.app`.
 
 ## Change the website address
 
-Edit `BASE_URL` (and `HOSTS` if needed) in `app/src/main/java/com/itiexam/app/Config.java`. Update the hosts in `AndroidManifest.xml` and `res/xml/shortcuts.xml` to match, then raise the version.
+Edit `BASE_URL` (now https://itiexam.com; and `HOSTS` if needed) in `app/src/main/java/com/itiexam/app/Config.java`. Update the hosts in `AndroidManifest.xml` and `res/xml/shortcuts.xml` to match, then raise the version.
 
 ## New version
 

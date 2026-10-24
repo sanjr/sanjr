@@ -36,7 +36,7 @@ function student_cookie(?array $s): void
     $exp = $s ? time() + 60 * 86400 : time() - 3600;
     $val = $s ? $s['id'] . '.' . $exp . '.' . student_cookie_sig($s, $exp) : '';
     setcookie(STUDENT_COOKIE, $val, ['expires' => $exp, 'path' => '/', 'httponly' => true, 'samesite' => 'Lax',
-        'secure' => !empty($_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https']);
+        'secure' => is_https()]);
 }
 
 function google_login_ready(): bool { return setting('google_client_id') !== '' && setting('google_client_secret') !== ''; }
@@ -152,5 +152,5 @@ function app_handoff(int $studentId, string $challenge, string $next): void
 const APP_APK = __DIR__ . '/../data/app/ITIExam.apk';      // private folder: only sent through /app/download/
 
 function app_apk_ready(): bool { return is_file(APP_APK); }
-function app_version(): string { return setting('app_version') ?: '1.0.0'; }
+function app_version(): string { return setting('app_version') ?: '1.0.1'; }
 function app_apk_size(): string { return app_apk_ready() ? number_format(filesize(APP_APK) / 1048576, 1) . ' MB' : ''; }

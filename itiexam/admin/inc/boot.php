@@ -16,7 +16,37 @@ function require_login(): void
     $_SESSION['admin_seen'] = time();
 }
 
-function post(string $k, string $d = ''): string { return trim((string)($_POST[$k] ?? $d)); }
+/* Brute-force protection: failed attempts are kept per IP address (and per user name), not in the browser's session */
+function client_ip(): string { return substr((string)($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'), 0, 64); }
+
+/** Seconds to wait before the next try, or 0. */
+function attempt_wait(string $kind, string $username = ''): int
+{
+    $pdo = db();
+    $pdo->prepare('DELETE FROM login_attempts WHERE at_time < ?')->execute([time() - 86400]);
+    [$limit, $window] = $kind === 'reset' ? [10, 3600] : [8, 900];
+    $st = $pdo->prepare('SELECT COUNT(*), MIN(at_time) FROM login_attempts WHERE kind = ? AND ip = ? AND at_time > ?');
+    $st->execute([$kind, client_ip(), time() - $window]);
+    [$n, $first] = $st->fetch(PDO::FETCH_NUM);
+    if ((int)$n >= $limit) return (int)$first + $window - time();
+    if ($username !== '') {                                   // many IPs guessing one account
+        $st = $pdo->prepare('SELECT COUNT(*), MIN(at_time) FROM login_attempts WHERE kind = ? AND username = ? AND at_time > ?');
+        $st->execute([$kind, mb_strtolower($username), time() - 3600]);
+        [$n, $first] = $st->fetch(PDO::FETCH_NUM);
+        if ((int)$n >= 30) return (int)$first + 3600 - time();
+    }
+    return 0;
+}
+function attempt_failed(string $kind, string $username = ''): void
+{
+    db()->prepare('INSERT INTO login_attempts (kind, ip, username, at_time) VALUES (?, ?, ?, ?)')->execute([$kind, client_ip(), mb_strtolower(mb_substr($username, 0, 80)), time()]);
+}
+function attempts_clear(string $kind): void
+{
+    db()->prepare('DELETE FROM login_attempts WHERE kind = ? AND ip = ?')->execute([$kind, client_ip()]);
+}
+
+function post(string $k, string $d = ''): string { $v = $_POST[$k] ?? $d; return is_string($v) ? trim($v) : ''; }
 function is_post(): bool { return ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST'; }
 
 /** Saves an uploaded image and returns its file name ('' when nothing was uploaded). */

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '18';
+const SCHEMA_VERSION = '19';
 
 function db(): PDO
 {
@@ -120,6 +120,10 @@ function db_migrate(PDO $pdo): void
         pct INT NOT NULL DEFAULT 0, passed INT NOT NULL DEFAULT 0, time_sec INT NOT NULL DEFAULT 0, lang VARCHAR(20) NOT NULL DEFAULT '',
         created_at VARCHAR(20) NOT NULL)$engine");
     try { $pdo->exec('CREATE INDEX attempts_student ON attempts (student_id)'); } catch (PDOException $e) { /* already there */ }
+    // v19: failed admin logins / reset codes, counted per IP address (brute-force protection)
+    $pdo->exec("CREATE TABLE IF NOT EXISTS login_attempts (
+        id $id, kind VARCHAR(20) NOT NULL, ip VARCHAR(64) NOT NULL, username VARCHAR(80) NOT NULL DEFAULT '', at_time INT NOT NULL)$engine");
+    try { $pdo->exec('CREATE INDEX login_attempts_ip ON login_attempts (kind, ip, at_time)'); } catch (PDOException $e) { /* already there */ }
     // v17: one-time codes that hand a Google login from the phone's browser back to the Android app
     $pdo->exec("CREATE TABLE IF NOT EXISTS app_codes (
         code VARCHAR(64) NOT NULL PRIMARY KEY, student_id INT NOT NULL, challenge VARCHAR(64) NOT NULL,

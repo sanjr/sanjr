@@ -1,18 +1,31 @@
 # ITIExam.com – Apache rules (works on most shared hosting: Hostinger, GoDaddy, BigRock, cPanel)
 Options -Indexes
+ServerSignature Off
 DirectoryIndex index.php
 ErrorDocument 404 /404.php
 
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
+# One main address: www.itiexam.com → itiexam.com (Google sees one website, not two)
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+# Old address → new domain. Turn on (remove the # of the next 2 lines) only in the OLD website's .htaccess after moving:
+# RewriteCond %{HTTP_HOST} ^blog\.copamcq\.com$ [NC]
+# RewriteRule ^ https://itiexam.com%{REQUEST_URI} [L,R=301]
+
 # Force HTTPS, keeping the same domain/subdomain (remove these 3 lines if SSL is not active yet)
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# Block private folders
-RewriteRule ^(data|includes)(/|$) - [F,L]
+# Block private folders and files that are not web pages
+RewriteRule ^(data|includes|admin/inc)(/|$) - [F,L]
+RewriteRule ^(router\.php|README\.md|composer\.(json|lock)|.*\.(sqlite|sqlite3|db|log|bak|sql|ini|sh))$ - [F,L,NC]
+# Hidden files and folders (.git, .env, .user.ini …) – except /.well-known/ (app links, SSL checks)
+RewriteCond %{REQUEST_URI} !^/\.well-known/
+RewriteRule (^|/)\. - [F,L]
 
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 RewriteRule ^ads\.txt$ ads.php [L]

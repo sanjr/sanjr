@@ -5,13 +5,17 @@
 
 define('SITE_NAME', 'ITIExam.com');
 
-// Your website address, no trailing slash, e.g. 'https://blog.copamcq.com'.
-// Leave empty to use the address the site is opened on.
+// Your website address, no trailing slash, e.g. 'https://itiexam.com'.
+// Leave empty to use the address the site is opened on (only the addresses listed in $siteHosts are trusted).
 $siteUrl = '';
+// Domains this website answers on. The first one is the main address: an unknown or faked address falls back to it.
+$siteHosts = ['itiexam.com', 'www.itiexam.com', 'blog.copamcq.com'];
 if ($siteUrl === '') {
     $https = ($_SERVER['HTTPS'] ?? '') === 'on' || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
-    $host = preg_replace('/[^A-Za-z0-9.:-]/', '', $_SERVER['HTTP_HOST'] ?? 'localhost');
-    $siteUrl = ($https || !preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', $host) ? 'https' : 'http') . '://' . $host;
+    $host = strtolower(preg_replace('/[^A-Za-z0-9.:-]/', '', $_SERVER['HTTP_HOST'] ?? 'localhost'));
+    $local = preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', $host);
+    if (!$local && !in_array(preg_replace('/:\d+$/', '', $host), $siteHosts, true)) $host = $siteHosts[0];
+    $siteUrl = ($https || !$local ? 'https' : 'http') . '://' . $host;
 }
 define('SITE_URL', rtrim($siteUrl, '/'));
 

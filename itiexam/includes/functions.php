@@ -2,8 +2,48 @@
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/student.php';
 
+/* ---------- Safety for every request ---------- */
+
+/** True when the visitor uses HTTPS (also behind a proxy / CDN that terminates SSL). */
+function is_https(): bool
+{
+    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'
+        || ($_SERVER['SERVER_PORT'] ?? '') === '443';
+}
+
+// Visitors never see PHP errors (they reveal server paths); they go to data/php-errors.log instead
+if (PHP_SAPI !== 'cli' && !preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', (string)($_SERVER['HTTP_HOST'] ?? ''))) {
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '1');
+    ini_set('error_log', __DIR__ . '/../data/php-errors.log');
+}
+set_exception_handler(function (Throwable $ex) {
+    error_log('Uncaught ' . get_class($ex) . ': ' . $ex->getMessage() . ' in ' . $ex->getFile() . ':' . $ex->getLine());
+    if (!headers_sent()) { http_response_code(500); header('Content-Type: text/html; charset=utf-8'); }
+    echo '<!DOCTYPE html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Something went wrong</title>'
+        . '<div style="font:16px/1.5 system-ui,sans-serif;max-width:520px;margin:12vh auto;padding:24px;text-align:center"><h1 style="font-size:22px">Something went wrong</h1>'
+        . '<p>Please go back and try again in a moment.</p><p><a href="/">Go to the homepage</a></p></div>';
+});
+
+// Address-bar values are plain text, except the job filters that are lists (?type[]=…); anything else odd is dropped
+foreach ($_GET as $k => $v) {
+    if (is_array($v) && !in_array($k, ['type', 'qual', 'exp'], true)) unset($_GET[$k]);
+}
+foreach ($_COOKIE as $k => $v) if (is_array($v)) unset($_COOKIE[$k]);
+
+if (PHP_SAPI !== 'cli' && !headers_sent()) {
+    header_remove('X-Powered-By');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(), microphone=(), payment=(), usb=(), interest-cohort=()');
+    header('X-Frame-Options: SAMEORIGIN');                        // no clickjacking from other websites
+    if (is_https()) header('Strict-Transport-Security: max-age=31536000');
+}
+
 if (session_status() === PHP_SESSION_NONE) {
-    session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => !empty($_SERVER['HTTPS'])]);
+    ini_set('session.use_strict_mode', '1');                      // a session id is only accepted if this site made it
+    ini_set('session.use_only_cookies', '1');
+    session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => is_https()]);
     session_start();
 }
 

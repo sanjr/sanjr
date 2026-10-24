@@ -1,7 +1,11 @@
 <?php
 /* Local testing only: php -S localhost:8000 router.php  (mimics .htaccess) */
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-if (preg_match('~^/(data|includes)(/|$)~', $path)) { http_response_code(403); exit('Forbidden'); }
+$path = rawurldecode((string)parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+// Like Apache: resolve "." and ".." first, so /uploads/../data/… cannot reach a private folder
+$segs = [];
+foreach (explode('/', $path) as $seg) { if ($seg === '..') array_pop($segs); elseif ($seg !== '.' && $seg !== '') $segs[] = $seg; }
+$path = '/' . implode('/', $segs) . (str_ends_with($path, '/') && $segs ? '/' : '');
+if (preg_match('~^/(data|includes|admin/inc)(/|$)|^/router\.php$|(^|/)\.(?!well-known/)~', $path)) { http_response_code(403); exit('Forbidden'); }
 if ($path !== '/' && is_file(__DIR__ . $path)) {
     if (str_starts_with($path, '/uploads/') && preg_match('/\.php/i', $path)) { http_response_code(403); exit; }
     return false;

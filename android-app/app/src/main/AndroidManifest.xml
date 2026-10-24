@@ -44,9 +44,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" />
-                <data android:host="blog.copamcq.com" />
                 <data android:host="itiexam.com" />
                 <data android:host="www.itiexam.com" />
+                <data android:host="blog.copamcq.com" />
             </intent-filter>
 
             <!-- Back from Google login in the browser -->

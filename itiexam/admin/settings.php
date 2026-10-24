@@ -32,7 +32,7 @@ $groups = [
         'google_client_secret' => ['Google OAuth Client Secret', 'input', 'GOCSPX-…'],
     ],
     'Android app' => [
-        'app_version' => ['App version shown on the /app/ download page', 'input', '1.0.0'],
+        'app_version' => ['App version shown on the /app/ download page', 'input', '1.0.1'],
         'app_url'    => ['Google Play link of the app (shows a "Get it on Google Play" button in the footer)', 'input', 'https://play.google.com/store/apps/details?id=com.itiexam.app'],
         'app_sha256' => ['Extra app signing fingerprints (SHA-256) for app links – paste the "App signing key" fingerprint from Play Console', 'textarea', 0],
     ],
