@@ -30,6 +30,7 @@ $groups = [
     'Student login (Google)' => [
         'google_client_id'     => ['Google OAuth Client ID', 'input', '1234567890-abc….apps.googleusercontent.com'],
         'google_client_secret' => ['Google OAuth Client Secret', 'input', 'GOCSPX-…'],
+        'tests_need_login'     => ['Students must log in with Google to start a mock test (works once the Client ID and Secret above are filled in)', 'check', ''],
     ],
     'Android app' => [
         'app_version' => ['App version shown on the /app/ download page', 'input', '1.0.1'],

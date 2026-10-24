@@ -2042,3 +2042,5 @@ body.vm-open { overflow: hidden; }
   .vmodal { padding: 0; place-items: center; }
   .vm-box { border-radius: 0; }
 }
+.cbt-admin-note { margin: 0; padding: 10px 14px; border-radius: 12px; background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; font-size: 14px; }
+.cbt-admin-note a { color: #c2410c; font-weight: 600; text-decoration: underline; }

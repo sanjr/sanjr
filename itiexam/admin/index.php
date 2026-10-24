@@ -62,6 +62,9 @@ $checks = [
 $empty = !$c('SELECT COUNT(*) FROM trades') || !$c('SELECT COUNT(*) FROM menu_items') || !$c('SELECT COUNT(*) FROM pages');
 admin_header('Dashboard', 'dashboard');
 ?>
+<?php if (!tests_need_login()): ?>
+    <div class="flash err"><b>Mock tests are open to everyone</b> – <?= google_login_ready() ? 'the “Students must log in” rule is switched off' : 'Google login for students is not set up yet' ?>. <a href="/admin/settings.php">Settings → Student login (Google)</a></div>
+<?php endif; ?>
 <?php if ($empty): ?>
     <form method="post" class="flash err starter"><?= csrf_field() ?><input type="hidden" name="action" value="starter">
       <span><b>Your website is missing its starter content</b> (menus, trades or pages). Add the ready-made menus, trades, pages and homepage lists, then edit them as you like.</span>

@@ -109,6 +109,11 @@ require __DIR__ . '/includes/header.php';
         <ul class="cbt-gate-pts"><li>✓ Free for all ITI students</li><li>✓ Real NCVT CBT exam pattern</li><li>✓ Track your score &amp; progress</li></ul>
       </div>
 <?php else: ?>
+<?php if (!empty($_SESSION['admin']) && !$me): ?>
+      <p class="cbt-admin-note"><?= tests_need_login()
+          ? '👤 Admin preview: you see this test because you are logged in as admin. Students must log in with Google first.'
+          : '⚠ Mock tests are open to everyone: ' . (google_login_ready() ? 'the login rule is switched off' : 'Google login is not set up yet') . '. <a href="/admin/settings.php">Admin → Settings → Student login</a>' ?></p>
+<?php endif; ?>
       <div class="cbt-bar">
         <button type="button" class="btn-sm" id="cbt-full"><?= icon('layout') ?> Full screen</button>
         <a class="btn-sm ghost-b" href="<?= e(cbt_play_url($test)) ?>" target="_blank" rel="noopener"><?= icon('arrow') ?> Open in new tab</a>
