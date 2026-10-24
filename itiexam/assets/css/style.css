@@ -294,7 +294,7 @@ body.nav-open { overflow: hidden; }
 .job .muted { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .job .last { font-size: 12px; color: var(--ink); font-weight: 500; margin-top: 6px; }
 @media (min-width: 560px) { .jobs { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1280px) { .jobs { grid-template-columns: repeat(4, 1fr); } .job { flex-direction: column; } }
+@media (min-width: 760px) { .jobs { grid-template-columns: repeat(3, 1fr); } .job { flex-direction: column; } }
 
 /* articles */
 .thumb { width: 64px; height: 50px; flex-shrink: 0; display: grid; place-items: center; border-radius: 8px; font-size: 24px; }

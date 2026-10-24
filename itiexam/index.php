@@ -113,7 +113,7 @@ unset($node);
 
 $mockTests = db()->query("SELECT i.*, t.name AS tname, t.slug AS tslug, t.duration AS tdur FROM trade_items i JOIN trades t ON t.id = i.trade_id
     WHERE i.section = 'mock_tests' AND i.url NOT IN ('', '#') AND t.status = 'published' ORDER BY i.is_new DESC, i.id DESC LIMIT 4")->fetchAll();
-$homeJobs = latest_jobs(4);
+$homeJobs = latest_jobs(9);                 // 3 rows of 3; "View All" opens every job
 $examUpdates = latest_posts('exam-update', 4);
 $articles = latest_posts('article', 4);
 $tradeCount = count(trades());
