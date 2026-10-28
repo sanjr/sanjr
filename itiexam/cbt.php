@@ -83,58 +83,124 @@ $meta = [
 ];
 $me = student();
 $locked = tests_locked();
+// The student's own results: best on this test (side card) and on the other tests listed below
+$mine = null; $moreBest = [];
+if ($me) {
+    $ids = array_merge([(int)$test['id']], array_map(fn($o) => (int)$o['id'], $more));
+    $st = db()->prepare('SELECT test_id, COUNT(*) n, MAX(pct) best FROM attempts WHERE student_id = ? AND test_id IN (' . implode(',', $ids) . ') GROUP BY test_id');
+    $st->execute([$me['id']]);
+    foreach ($st as $r) $moreBest[(int)$r['test_id']] = (int)$r['best'];
+    if (isset($moreBest[(int)$test['id']])) {
+        $st = db()->prepare('SELECT score, total, pct FROM attempts WHERE student_id = ? AND test_id = ? ORDER BY pct DESC, id DESC LIMIT 1');
+        $st->execute([$me['id'], $test['id']]);
+        $b = $st->fetch();
+        $c = db()->prepare('SELECT COUNT(*) FROM attempts WHERE student_id = ? AND test_id = ?');
+        $c->execute([$me['id'], $test['id']]);
+        $mine = ['best' => (int)$b['pct'], 'score' => (int)$b['score'], 'total' => (int)$b['total'], 'n' => (int)$c->fetchColumn()];
+    }
+}
 require __DIR__ . '/includes/header.php';
 ?>
 <main id="main">
-  <section class="hero thero slim cbt-hero">
+  <!-- One dark "exam hall": title, the test and its details side by side -->
+  <section class="cbt-stage">
     <div class="container">
       <nav class="crumbs" aria-label="Breadcrumb"><?php foreach ($crumbs as $i => [$l, $u]): ?><?php if ($i === count($crumbs) - 1): ?><span aria-current="page"><?= e($l) ?></span><?php else: ?><a href="<?= e($u) ?>"><?= e($l) ?></a> <?= icon('chev-r') ?> <?php endif; endforeach; ?></nav>
-      <h1><?= $test['tname'] ? '<span class="cbt-trade">' . e($name) . '</span> ' : '' ?><?= e($test['title']) ?></h1>
-      <p class="cbt-meta">
-        <?php if ($test['questions']): ?><span><?= icon('doc') ?> <?= (int)$test['questions'] ?> Questions</span><?php endif; ?>
-        <?php if ($test['minutes']): ?><span><?= icon('clock') ?> <?= (int)$test['minutes'] ?> Minutes</span><?php endif; ?>
-        <span><?= icon('star') ?> Free</span>
-      </p>
+      <div class="cbt-head">
+        <div>
+          <h1><?= $test['tname'] ? '<span class="cbt-trade">' . e($name) . '</span> ' : '' ?><?= e($test['title']) ?></h1>
+          <p class="cbt-meta">
+            <span><?= icon('clip') ?> Online CBT Mock Test</span>
+            <?php if ($test['questions']): ?><span><?= icon('doc') ?> <?= (int)$test['questions'] ?> Questions</span><?php endif; ?>
+            <?php if ($test['minutes']): ?><span><?= icon('clock') ?> <?= (int)$test['minutes'] ?> Minutes</span><?php endif; ?>
+            <span class="free"><?= icon('star') ?> Free</span>
+          </p>
+        </div>
+<?php if (!$locked): ?>
+        <div class="cbt-bar">
+          <button type="button" class="cbt-act main" id="cbt-full"><?= icon('layout') ?> Full screen</button>
+          <a class="cbt-act" href="<?= e(cbt_play_url($test)) ?>" target="_blank" rel="noopener"><?= icon('share') ?> New tab</a>
+        </div>
+<?php endif; ?>
+      </div>
+
+<?php if (!empty($_SESSION['admin']) && !$me && !$locked): ?>
+      <p class="cbt-admin-note"><?= tests_need_login()
+          ? '👤 Admin preview: you see this test because you are logged in as admin. Students must log in with Google first.'
+          : '⚠ Mock tests are open to everyone: ' . (google_login_ready() ? 'the login rule is switched off' : 'Google login is not set up yet') . '. <a href="/admin/settings.php">Admin → Settings → Student login</a>' ?></p>
+<?php endif; ?>
+      <div class="cbt-layout">
+        <div class="cbt-main">
+<?php if ($locked): ?>
+          <div class="cbt-gate">
+            <div class="cbt-gate-i">🔒</div>
+            <h2>Login to start this mock test</h2>
+            <p>Sign in with your Google account – it takes 5 seconds and is free. Your score, history and progress are saved to your own dashboard.</p>
+            <a class="cbt-gate-btn" href="<?= e(login_url($path)) ?>" rel="nofollow"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.6 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.8-4.5l-7.9-6.2C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.2 1.5-5 2.3-8.2 2.3-6.2 0-11.5-4.1-13.4-9.8l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg> Login with Google &amp; Start</a>
+            <ul class="cbt-gate-pts"><li>✓ Free for all ITI students</li><li>✓ Real NCVT CBT exam pattern</li><li>✓ Track your score &amp; progress</li></ul>
+          </div>
+<?php else: ?>
+          <div class="cbt-frame" id="cbt-frame">
+            <div class="cbt-win" aria-hidden="true"><i></i><i></i><i></i><span><?= e(($test['tname'] ? $name . ' · ' : '') . $test['title']) ?></span><b><span class="dot"></span> Live</b></div>
+            <button type="button" class="cbt-close" id="cbt-close" aria-label="Exit full screen">✕</button>
+            <iframe id="cbt-if" src="<?= e(cbt_play_url($test)) ?>" title="<?= e($test['title']) ?>" sandbox="<?= e(cbt_sandbox()) ?>" allow="fullscreen; geolocation" loading="eager"></iframe>
+            <div class="cbt-save" id="cbt-save" role="status" aria-live="polite" hidden></div>
+          </div>
+<?php endif; ?>
+        </div>
+
+        <aside class="cbt-side" aria-label="About this test">
+<?php if ($mine): ?>
+          <div class="cs-card cs-me">
+            <span class="mtd-ring" style="--p:<?= (int)$mine['best'] ?>"><b><?= (int)$mine['best'] ?><small>%</small></b></span>
+            <div><small>Your best score</small><b><?= $mine['total'] ? (int)$mine['score'] . ' / ' . (int)$mine['total'] : (int)$mine['best'] . '%' ?></b><small><?= (int)$mine['n'] ?> attempt<?= $mine['n'] > 1 ? 's' : '' ?> · <a href="/student/">My Dashboard</a></small></div>
+          </div>
+<?php elseif ($me): ?>
+          <div class="cs-card cs-me"><span class="mtd-ring" style="--p:0"><b>🎯</b></span><div><small>Hi <?= e(strtok($me['name'], ' ') ?: 'there') ?>!</small><b>First attempt</b><small>Your result is saved to <a href="/student/">your dashboard</a>.</small></div></div>
+<?php endif; ?>
+          <div class="cs-card">
+            <h2><?= icon('clip') ?> Test details</h2>
+            <dl class="cs-dl">
+<?php if ($test['tname']): ?>              <div><dt>Trade</dt><dd><?= e($name) ?></dd></div>
+<?php endif; ?>
+<?php if ($test['questions']): ?>              <div><dt>Questions</dt><dd><?= (int)$test['questions'] ?> MCQ</dd></div>
+<?php endif; ?>
+<?php if ($test['minutes']): ?>              <div><dt>Time</dt><dd><?= (int)$test['minutes'] ?> minutes</dd></div>
+<?php endif; ?>
+              <div><dt>Pattern</dt><dd>NCVT CBT</dd></div>
+              <div><dt>Passing</dt><dd>33%</dd></div>
+              <div><dt>Fee</dt><dd class="ok">Free</dd></div>
+            </dl>
+          </div>
+          <div class="cs-card">
+            <h2><?= icon('help') ?> How to attempt</h2>
+            <ol class="cs-steps">
+              <li>Choose your language – you can change it during the test.</li>
+              <li>Read each question and tap one answer.</li>
+              <li>Unsure? Skip it and come back before you submit.</li>
+              <li>Don't refresh the page while the test is running.</li>
+              <li>Submit to see your score<?= $me ? ' – it is saved to your dashboard' : '' ?>.</li>
+            </ol>
+          </div>
+<?php if ($test['tslug']): ?>
+          <a class="cs-all" href="<?= e($tpath) ?>#mock-tests"><?= icon('list') ?> All <?= e($name) ?> Mock Tests <?= icon('arrow') ?></a>
+<?php endif; ?>
+        </aside>
+      </div>
     </div>
   </section>
 
   <section class="section cbt-sec">
     <div class="container">
-<?php if ($locked): ?>
-      <div class="cbt-gate">
-        <div class="cbt-gate-i">🔒</div>
-        <h2>Login to start this mock test</h2>
-        <p>Sign in with your Google account – it takes 5 seconds and is free. Your score, history and progress are saved to your own dashboard.</p>
-        <a class="cbt-gate-btn" href="<?= e(login_url($path)) ?>" rel="nofollow"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.6 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.8-4.5l-7.9-6.2C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.2 1.5-5 2.3-8.2 2.3-6.2 0-11.5-4.1-13.4-9.8l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg> Login with Google &amp; Start</a>
-        <ul class="cbt-gate-pts"><li>✓ Free for all ITI students</li><li>✓ Real NCVT CBT exam pattern</li><li>✓ Track your score &amp; progress</li></ul>
-      </div>
-<?php else: ?>
-<?php if (!empty($_SESSION['admin']) && !$me): ?>
-      <p class="cbt-admin-note"><?= tests_need_login()
-          ? '👤 Admin preview: you see this test because you are logged in as admin. Students must log in with Google first.'
-          : '⚠ Mock tests are open to everyone: ' . (google_login_ready() ? 'the login rule is switched off' : 'Google login is not set up yet') . '. <a href="/admin/settings.php">Admin → Settings → Student login</a>' ?></p>
-<?php endif; ?>
-      <div class="cbt-bar">
-        <button type="button" class="btn-sm" id="cbt-full"><?= icon('layout') ?> Full screen</button>
-        <a class="btn-sm ghost-b" href="<?= e(cbt_play_url($test)) ?>" target="_blank" rel="noopener"><?= icon('arrow') ?> Open in new tab</a>
-<?php if ($test['tslug']): ?>        <a class="btn-sm ghost-b" href="<?= e($tpath) ?>#mock-tests"><?= icon('list') ?> All <?= e($name) ?> tests</a>
-<?php endif; ?>
-      </div>
-      <div class="cbt-frame" id="cbt-frame">
-        <button type="button" class="cbt-close" id="cbt-close" aria-label="Exit full screen">✕</button>
-        <iframe id="cbt-if" src="<?= e(cbt_play_url($test)) ?>" title="<?= e($test['title']) ?>" sandbox="<?= e(cbt_sandbox()) ?>" allow="fullscreen; geolocation" loading="eager"></iframe>
-        <div class="cbt-save" id="cbt-save" role="status" aria-live="polite" hidden></div>
-      </div>
-<?php endif; ?>
 <?php if ($test['description']): ?>      <p class="cbt-desc"><?= e($test['description']) ?></p>
 <?php endif; ?>
       <?= ad('trade_middle') ?>
 <?php if ($more): ?>
-      <section class="card" aria-labelledby="more-h">
+      <section class="card cbt-more" aria-labelledby="more-h">
         <div class="sec-head sm"><h2 id="more-h">More <?= e($name) ?> Mock Tests</h2><a class="view-all" href="<?= e($tpath) ?>#mock-tests">View All <?= icon('arrow') ?></a></div>
-        <ul class="rows">
-<?php foreach ($more as $i => $o): ?>
-          <li><a href="<?= e(cbt_url($o)) ?>"><span class="ri <?= chip_color($i) ?> solid"><?= icon('clip') ?></span><span class="rt"><b><?= e($o['title']) ?></b><small><?= $o['questions'] ? (int)$o['questions'] . ' Questions' : '' ?><?= $o['questions'] && $o['minutes'] ? ' · ' : '' ?><?= $o['minutes'] ? (int)$o['minutes'] . ' Minutes' : '' ?></small></span><?= start_label() ?></a></li>
+        <ul class="cm-grid">
+<?php foreach ($more as $i => $o): $ob = $moreBest[$o['id']] ?? null; ?>
+          <li><a href="<?= e(cbt_url($o)) ?>"><span class="ri <?= chip_color($i) ?> solid"><?= icon('clip') ?></span><span class="rt"><b><?= e($o['title']) ?></b><small><?php if ($o['questions']): ?><span class="nw"><?= icon('cal') ?><?= (int)$o['questions'] ?> Questions</span> <?php endif; ?><?php if ($o['minutes']): ?><span class="nw"><?= icon('clock') ?><?= (int)$o['minutes'] ?> Minutes</span> <?php endif; ?><?php if ($ob): ?><em class="mine <?= $ob >= 33 ? 'ok' : 'low' ?>">✓ <?= $ob ?>%</em><?php endif; ?></small></span><?= $ob ? '<span class="btn-sm ghost-b">↻ Retake</span>' : start_label() ?></a></li>
 <?php endforeach; ?>
         </ul>
       </section>
