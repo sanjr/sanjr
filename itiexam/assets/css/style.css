@@ -2111,3 +2111,34 @@ body.vm-open { overflow: hidden; }
 /* search box: a soft glow while it is waiting */
 .hero-live .hero-copy > .search { animation: heroIn .7s var(--ease) both .3s, searchGlow 3.5s ease-in-out infinite 1.5s; }
 @keyframes searchGlow { 50% { box-shadow: 0 0 0 6px rgba(255, 255, 255, .12), 0 18px 40px rgba(2, 8, 30, .35); } }
+
+/* ===== Trade MCQ dashboard (top of the Mock Tests card) ===== */
+.mtd { display: grid; gap: 10px; margin: 2px 0 12px; }
+.mtd-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; }
+.mtd-stats li { position: relative; overflow: hidden; padding: 10px 12px; border-radius: 12px; background: var(--grad-brand); color: #fff; }
+.mtd-stats li:nth-child(2) { background: linear-gradient(135deg, #0e9f8e, #12708f); }
+.mtd-stats li:last-child { background: var(--grad-warm); }
+.mtd-stats li::after { content: ""; position: absolute; right: -18px; top: -18px; width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 255, 255, .14); }
+.mtd-stats b { display: block; font: 700 20px/1.15 var(--font-head); }
+.mtd-stats small { font-size: 11.5px; opacity: .9; }
+.mtd-me { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--tint); }
+.mtd-me .btn-sm { margin-left: auto; flex: none; }
+.mtd-ring { --p: 0; flex: none; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%;
+  background: conic-gradient(var(--green) calc(var(--p) * 1%), #dfe6f5 0); }
+.mtd-ring b { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #fff; font: 700 15px var(--font-head); color: var(--ink); }
+.mtd-ring b small { font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 3px; }
+.mtd-txt { display: grid; min-width: 0; }
+.mtd-txt b { font: 600 14px var(--font-head); color: var(--ink); }
+.mtd-txt small { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.mine { font-style: normal; font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 4px; }
+.mine.ok { background: #dcfce7; color: #15803d; }
+.mine.low { background: #fee2e2; color: #b91c1c; }
+@media (max-width: 480px) {
+  .mtd-stats { gap: 6px; }
+  .mtd-stats li { padding: 9px 10px; }
+  .mtd-stats b { font-size: 18px; }
+  .mtd-stats small { font-size: 11px; white-space: nowrap; }
+  .mtd-me { display: grid; grid-template-columns: auto 1fr; }
+  .mtd-me .btn-sm { grid-column: 1 / -1; margin: 0; justify-content: center; }
+}
+.rt small .nw { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }

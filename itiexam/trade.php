@@ -19,6 +19,28 @@ $years = trade_years($t['duration']);        // 1-year trades show no "1st Year"
 foreach (['mock_tests', 'videos'] as $sk) foreach ($items[$sk] as &$it) { $it['level'] = shown_level($it['level'] ?? '', $t['duration']); } unset($it);
 $path = trade_url($t);
 
+/* MCQ dashboard: the logged-in student's best score on each test of this trade */
+$me = student();
+$mine = [];
+if ($me && $items['mock_tests']) {
+    $folders = [];
+    foreach ($items['mock_tests'] as $m) if (preg_match('~^(?:https?://[^/]+)?/cbt/([a-z0-9-]+)/~', $m['url'], $mm)) $folders[$mm[1]] = true;
+    if ($folders) {
+        $st = db()->prepare('SELECT c.folder, a.score, a.total, a.pct FROM attempts a JOIN cbt_tests c ON c.id = a.test_id
+            WHERE a.student_id = ? AND c.folder IN (' . implode(',', array_fill(0, count($folders), '?')) . ')');
+        $st->execute([$me['id'], ...array_keys($folders)]);
+        foreach ($st as $a) {
+            $b = &$mine[$a['folder']];
+            $b['n'] = ($b['n'] ?? 0) + 1;
+            if (!isset($b['pct']) || $a['pct'] > $b['pct']) { $b['pct'] = (int)$a['pct']; $b['score'] = (int)$a['score']; $b['total'] = (int)$a['total']; }
+            unset($b);
+        }
+    }
+    foreach ($items['mock_tests'] as &$it)
+        if (preg_match('~/cbt/([a-z0-9-]+)/~', $it['url'], $mm) && isset($mine[$mm[1]])) $it['mine'] = $mine[$mm[1]];
+    unset($it);
+}
+
 /** Anchor id for a section key. */
 function sec_id(string $key): string { return str_replace('_', '-', $key); }
 
@@ -35,15 +57,19 @@ function item_row(array $it, int $i, string $style, string $defIcon): string
     $sub = '';
     if ($style === 'mock') {
         $bits = [];
-        if ($it['questions']) $bits[] = icon('cal') . (int)$it['questions'] . ' Questions';
-        if ($it['minutes']) $bits[] = icon('clock') . (int)$it['minutes'] . ' Minutes';
-        if ($it['is_new']) $bits[] = '<em class="new">New</em>';
+        if ($it['questions']) $bits[] = '<span class="nw">' . icon('cal') . (int)$it['questions'] . ' Questions</span>';
+        if ($it['minutes']) $bits[] = '<span class="nw">' . icon('clock') . (int)$it['minutes'] . ' Minutes</span>';
+        if (!empty($it['mine'])) {
+            $b = $it['mine'];
+            $bits[] = '<em class="mine ' . ($b['pct'] >= 33 ? 'ok' : 'low') . '" title="Your best score' . ($b['n'] > 1 ? ' in ' . $b['n'] . ' attempts' : '') . '">✓ '
+                . ($b['total'] ? $b['score'] . '/' . $b['total'] . ' · ' : '') . $b['pct'] . '%</em>';
+        } elseif ($it['is_new']) $bits[] = '<em class="new">New</em>';
         if ($bits) $sub = '<small>' . implode(' ', $bits) . '</small>';
     } elseif ($it['subtitle'] !== '') {
         $sub = '<small>' . e($it['subtitle']) . '</small>';
     }
     $end = $style === 'mock'
-        ? ($it['url'] ? start_label() : '')
+        ? ($it['url'] ? (!empty($it['mine']) ? '<span class="btn-sm ghost-b">↻ Retake</span>' : start_label()) : '')
         : ($it['url'] ? icon('chev-r', 'ic chev') : '');
     return "<li><$tag$href class=\"row-$style\">$lead<span class=\"rt\"><b>" . e($it['title']) . "</b>$sub</span>$end</$tag></li>";
 }
@@ -98,6 +124,35 @@ function test_level(string $title): array
     return [$year, $sem];
 }
 
+/** Top of the mock tests card: how many tests and questions, and the student's own progress (or a login prompt). */
+function mock_dash(array $list): string
+{
+    $q = array_sum(array_map(fn($m) => (int)$m['questions'], $list));
+    $html = '<div class="mtd"><ul class="mtd-stats">'
+        . '<li><b>' . count($list) . '</b><small>Mock Tests</small></li>'
+        . ($q ? '<li><b>' . number_format($q) . '</b><small>MCQ Questions</small></li>' : '')
+        . '<li><b>Free</b><small>CBT Pattern</small></li></ul>';
+    if ($me = student()) {
+        $done = array_values(array_filter(array_column($list, 'mine')));
+        $n = count($done);
+        $p = count($list) ? (int)round($n * 100 / count($list)) : 0;
+        $avg = $n ? (int)round(array_sum(array_column($done, 'pct')) / $n) : 0;
+        $html .= '<div class="mtd-me"><span class="mtd-ring" style="--p:' . $p . '"><b>' . $n . '<small>/' . count($list) . '</small></b></span><span class="mtd-txt"><b>'
+            . ($n ? 'Your progress' : 'Start your first test') . '</b><small>' . ($n ? "$n of " . count($list) . " tests done · Average $avg% · Best " . max(array_column($done, 'pct')) . '%'
+            : 'Your score on every test is saved here and on your dashboard.') . '</small></span><a class="btn-sm ghost-b" href="/student/">My Dashboard</a></div>';
+    } elseif (google_login_ready()) {
+        $html .= '<div class="mtd-me guest"><span class="mtd-ring" style="--p:0"><b>🔒</b></span><span class="mtd-txt"><b>Track your progress</b><small>Login with Google to save every score and see how you improve.</small></span>'
+            . '<a class="btn-sm" href="' . e(login_url(($_SERVER['REQUEST_URI'] ?? '/') . '#mock-tests')) . '" rel="nofollow">Login</a></div>';
+    }
+    return $html . '</div>';
+}
+
+/** Mock tests without year or semester: one list under the dashboard. */
+function mock_plain(string $name, array $list): string
+{
+    return str_replace('<ul class="rows">', mock_dash($list) . '<ul class="rows">', section_card('mock_tests', 'Latest ' . e($name) . ' Mock Tests', $list, 'mock', 'clip'));
+}
+
 /** Mock tests card: 1st Year / 2nd Year tabs with semester headings when the tests carry that information. */
 function mock_card(string $name, array $list, int $years = 2): string
 {
@@ -110,15 +165,15 @@ function mock_card(string $name, array $list, int $years = 2): string
     if ($years === 1) {
         $sems = [];
         foreach ($groups as $g) foreach ($g as $sk => $its) $sems[$sk] = array_merge($sems[$sk] ?? [], $its);
-        if (!array_filter(array_keys($sems))) return section_card('mock_tests', 'Latest ' . e($name) . ' Mock Tests', $list, 'mock', 'clip');
+        if (!array_filter(array_keys($sems))) return mock_plain($name, $list);
         $groups = [1 => $sems];
     }
-    if (!array_filter(array_keys($groups))) return section_card('mock_tests', 'Latest ' . e($name) . ' Mock Tests', $list, 'mock', 'clip');
+    if (!array_filter(array_keys($groups))) return mock_plain($name, $list);
     ksort($groups);
     if (isset($groups[0])) { $g0 = $groups[0]; unset($groups[0]); $groups[0] = $g0; }    // tests without a year go last
     $label = fn($y) => [1 => '1st Year', 2 => '2nd Year', 0 => 'Other Tests'][$y];
     $tabs = count($groups) > 1 && $years > 1;
-    $html = '<article class="card tsec mt-years" id="mock-tests"><div class="sec-head sm"><h2>' . e($name) . ' Mock Tests</h2></div>';
+    $html = '<article class="card tsec mt-years" id="mock-tests"><div class="sec-head sm"><h2>' . e($name) . ' Mock Tests</h2></div>' . mock_dash($list);
     if ($tabs) {
         $html .= '<div class="yr-tabs" role="tablist">';
         $first = true;
