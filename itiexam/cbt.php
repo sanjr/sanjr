@@ -40,7 +40,10 @@ if (isset($_GET['p'])) {
     if (in_array($ext, ['html', 'htm'], true)) {
         // Tell the website page when the test is finished, so the result can go to the student's dashboard
         $html = file_get_contents($file);
-        $bridge = '<script>' . file_get_contents(__DIR__ . '/assets/js/cbt-bridge.js') . '</script>';
+        // Website look for the test's language and start screens: placed at the end, after the test's own styles
+        // (many tests write their page with a script, so the end is the only place that is surely after them)
+        $bridge = '<style>' . file_get_contents(__DIR__ . '/assets/css/cbt-skin.css') . '</style>'
+            . '<script>' . file_get_contents(__DIR__ . '/assets/js/cbt-bridge.js') . '</script>';
         $pos = strripos($html, '</body>');
         $html = $pos === false ? $html . $bridge : substr($html, 0, $pos) . $bridge . substr($html, $pos);
         header('Content-Length: ' . strlen($html));
