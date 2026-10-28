@@ -119,6 +119,59 @@
     window.addEventListener("popstate", function () { closeVideo(true); });
   }
 
+  // ---- Animated homepage hero: changing highlight word, numbers counting up, search examples typing ----
+  var heroLive = document.querySelector(".hero-live"), calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (heroLive && !calm) {
+    var rotw = heroLive.querySelector(".rotw"), words = [];
+    try { words = JSON.parse((rotw && rotw.dataset.words) || "[]"); } catch (e) {}
+    if (rotw && words.length > 1) {
+      var wi = 0, word = rotw.querySelector(".rot");
+      setInterval(function () {
+        if (document.hidden) return;
+        rotw.classList.add("out");
+        setTimeout(function () {
+          wi = (wi + 1) % words.length;
+          word.textContent = words[wi];
+          rotw.classList.remove("out"); rotw.classList.add("in");
+          void rotw.offsetWidth;                                    // restart the transition from below
+          rotw.classList.remove("in");
+        }, 350);
+      }, 2800);
+    }
+    // "10,000+" → counts 0 … 10,000+
+    function countUp(el) {
+      var m = (el.dataset.count ? el.dataset.count + (el.dataset.suffix || "") : el.textContent).match(/^([^0-9]*)([\d,]+)(.*)$/);
+      if (!m) return;
+      var target = parseInt(m[2].replace(/,/g, ""), 10), start = null, comma = m[2].indexOf(",") > -1;
+      if (!target) return;
+      (function step(t) {
+        if (!start) start = t;
+        var p = Math.min(1, (t - start) / 1400), v = Math.round(target * (1 - Math.pow(1 - p, 3)));
+        el.textContent = m[1] + (comma ? v.toLocaleString("en-IN") : v) + m[3];
+        if (p < 1) requestAnimationFrame(step);
+      })(performance.now());
+    }
+    setTimeout(function () { heroLive.querySelectorAll(".hero-stats b, .fcard b[data-count]").forEach(countUp); }, 600);
+    // search box shows example searches being typed until the visitor uses it
+    var hq = document.getElementById("q");
+    if (hq) {
+      var base = hq.getAttribute("placeholder"), ex = ["COPA mock test", "Electrician MCQ", "Fitter question paper", "Employability Skills", "ITI apprentice jobs", "Welder 1st year"],
+          ei = 0, ci = 0, typing = true, stop = false;
+      hq.addEventListener("focus", function () { stop = true; hq.setAttribute("placeholder", base); });
+      (function type() {
+        if (stop) return;
+        var w = ex[ei];
+        if (!document.hidden && hq.value === "") {
+          ci += typing ? 1 : -1;
+          hq.setAttribute("placeholder", "Search " + w.slice(0, ci) + (typing ? "|" : ""));
+          if (typing && ci === w.length) { typing = false; return setTimeout(type, 1400); }
+          if (!typing && ci === 0) { typing = true; ei = (ei + 1) % ex.length; }
+        }
+        setTimeout(type, typing ? 85 : 40);
+      })();
+    }
+  }
+
   // ---- Saved lists in this browser (recent searches, recently viewed pages) ----
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }

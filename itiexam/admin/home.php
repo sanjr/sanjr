@@ -7,7 +7,7 @@ require_login();
 $texts = [
     'home_hero_small'     => ['Hero – small line', 'Your Complete Platform for'],
     'home_hero_title'     => ['Hero – big title', 'ITI Exam'],
-    'home_hero_highlight' => ['Hero – coloured word', 'Preparation'],
+    'home_hero_highlight' => ['Hero – coloured word (several words change one after another: Preparation|Mock Tests|Success)', 'Preparation'],
     'home_hero_text'      => ['Hero – description', 'Online ITI Mock Tests, Previous Year Questions, Study Material, Jobs, Apprenticeship and Expert Content for all ITI Trades.'],
     'home_quote'          => ['Hero – handwritten quote (one word per line)', "“Practice\nLearn\nImprove\nSucceed”"],
     'home_cta_title'      => ['Bottom banner – heading', 'Empowering ITI Students for a Brighter Future'],

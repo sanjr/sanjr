@@ -142,10 +142,15 @@ require __DIR__ . '/includes/header.php';
 
   <main id="main">
     <!-- ===== Hero ===== -->
-    <section class="hero">
+    <section class="hero hero-live">
+      <div class="hero-fx" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="beam"></span></div>
       <div class="container hero-grid">
         <div class="hero-copy">
-          <h1><span class="h1-sm"><?= e($H('home_hero_small', 'Your Complete Platform for')) ?></span> <?= e($H('home_hero_title', 'ITI Exam')) ?> <span class="grad"><?= e($H('home_hero_highlight', 'Preparation')) ?></span></h1>
+          <h1><span class="h1-sm"><?= e($H('home_hero_small', 'Your Complete Platform for')) ?></span> <?= e($H('home_hero_title', 'ITI Exam')) ?> <?php
+          // Highlighted word changes every few seconds ("Preparation|Mock Tests|Success" in Admin → Homepage; one word gets two more)
+          $hw = array_values(array_filter(array_map('trim', explode('|', $H('home_hero_highlight', 'Preparation')))));
+          if (count($hw) === 1) array_push($hw, 'Mock Tests', 'Success');
+          ?><span class="rotw" data-words="<?= e(json_encode($hw, JSON_UNESCAPED_UNICODE)) ?>"><span class="grad rot"><?= e($hw[0] ?? 'Preparation') ?></span></span></h1>
           <p class="lead"><?= e($H('home_hero_text', 'Online ITI Mock Tests, Previous Year Questions, Study Material, Jobs, Apprenticeship and Expert Content for all ITI Trades.')) ?></p>
 
           <form class="search" id="hero-search" role="search" action="/search/" method="get">
@@ -173,11 +178,12 @@ require __DIR__ . '/includes/header.php';
           <div class="art-stage">
             <span class="art-glow"></span>
             <span class="art-ring r1"></span><span class="art-ring r2"></span>
+            <span class="art-orbit o-a"><i></i></span><span class="art-orbit o-b"><i></i></span>
             <img class="art-emblem" src="/assets/img/hero-emblem.webp" alt="ITI Exam – learn, test and get jobs" width="260" height="260" fetchpriority="high">
             <span class="orb o1"><?= icon('tool') ?></span>
             <span class="orb o2"><?= icon('monitor') ?></span>
             <span class="orb o3"><?= icon('bulb') ?></span>
-            <div class="fcard f1"><span class="fi c-green"><?= icon('target') ?></span><span><b>25/25</b><small>Mock test score</small></span></div>
+            <div class="fcard f1"><span class="fi c-green"><?= icon('target') ?></span><span><b data-count="25" data-suffix="/25">25/25</b><small>Mock test score</small></span></div>
             <div class="fcard f2"><span class="fi c-amber"><?= icon('star') ?></span><span><b>Top Rank</b><small>In your trade</small></span></div>
             <div class="fcard f4"><span class="fi c-orange"><?= icon('brief') ?></span><span><b>New Job Alert</b><small>ITI Apprentice</small></span></div>
           </div>
