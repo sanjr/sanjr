@@ -2223,3 +2223,4 @@ body.vm-open { overflow: hidden; }
 .in-app .cbt-bar a[target="_blank"] { display: none; }
 .in-app .cbt-stage .cbt-bar { grid-template-columns: 1fr; }
 .cs-me .mtd-ring b { color: var(--ink); font-size: 14px; }
+.cbt-gate p.cbt-gate-mr { margin-top: -10px; font-size: 14px; color: var(--muted); }

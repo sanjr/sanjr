@@ -46,7 +46,16 @@ if (!is_array($probe) || ($probe['at'] ?? 0) < time() - 6 * 3600) {
     $probe = ['at' => time(), 'data' => $code];
     setting_set('sec_probe', json_encode($probe));
 }
+// Every file from the same update? (an old file next to new ones breaks pages, e.g. "Something went wrong" on tests)
+$root = dirname(__DIR__);
+$stale = array_merge(
+    array_filter(['tests_need_login', 'mysql_connect_db', 'trade_years', 'shown_level', 'cbt_play_url'], fn($f) => !function_exists($f)),
+    array_filter(['admin/database.php', 'assets/css/cbt-skin.css', 'assets/js/cbt-bridge.js'], fn($f) => !is_file("$root/$f")),
+    !str_contains((string)@file_get_contents("$root/assets/css/style.css"), '.cbt-gate-mr') ? ['assets/css/style.css'] : []
+);
 $checks = [
+    [!$stale, 'All website files are from the latest update',
+        'Some files on the server are old (' . implode(', ', $stale) . '). Upload the full website ZIP again and choose “Replace” for every file – your data is not touched.'],
     [is_https(), 'HTTPS (SSL) is on', 'Turn on the free SSL certificate in your hosting panel.'],
     [$probe['data'] === 0 ? null : !in_array($probe['data'], [200, 206], true), 'Database and private files cannot be downloaded',
         $probe['data'] === 0 ? 'Could not test from the server – open ' . SITE_URL . '/data/itiexam.sqlite in a browser: it must show “Forbidden” or “Not found”.'
@@ -62,7 +71,10 @@ $checks = [
 $empty = !$c('SELECT COUNT(*) FROM trades') || !$c('SELECT COUNT(*) FROM menu_items') || !$c('SELECT COUNT(*) FROM pages');
 admin_header('Dashboard', 'dashboard');
 ?>
-<?php if (!tests_need_login()): ?>
+<?php if ($stale): ?>
+    <div class="flash err"><b>Old files on the server</b> – some pages can show “Something went wrong” (<?= e(implode(', ', $stale)) ?>). Upload the full website ZIP again and choose “Replace” for every file; your data is not touched.</div>
+<?php endif; ?>
+<?php if (function_exists('tests_need_login') && !tests_need_login()): ?>
     <div class="flash err"><b>Mock tests are open to everyone</b> – <?= google_login_ready() ? 'the “Students must log in” rule is switched off' : 'Google login for students is not set up yet' ?>. <a href="/admin/settings.php">Settings → Student login (Google)</a></div>
 <?php endif; ?>
 <?php if ($empty): ?>

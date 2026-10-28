@@ -22,7 +22,16 @@ if (isset($_GET['p'])) {
     if (!$keyOk && in_array(strtolower(pathinfo((string)$_GET['p'], PATHINFO_EXTENSION)), ['html', 'htm'], true) && tests_locked()) {
         http_response_code(403);
         header('Content-Type: text/html; charset=utf-8');
-        exit('<!DOCTYPE html><meta charset="utf-8"><meta name="robots" content="noindex"><p style="font:16px sans-serif;text-align:center;margin:40px">Please <a href="' . e(login_url(cbt_url($test))) . '" target="_top">login with Google</a> to start this test.</p>');
+        // Opened without login (e.g. a shared direct link): say plainly that a login is needed, in the website's look
+        exit('<!DOCTYPE html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Login required – ' . e(SITE_NAME) . '</title>'
+            . '<body style="margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#06143c,#0a1f5c 55%,#0b2a6f)">'
+            . '<div style="max-width:420px;width:100%;background:#fff;border-radius:22px;padding:32px 24px;text-align:center;box-shadow:0 30px 80px rgba(2,8,30,.5)">'
+            . '<div style="width:68px;height:68px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;font-size:30px;background:#fff4e8">🔒</div>'
+            . '<h1 style="margin:0 0 8px;font-size:22px;color:#0b1430">Login required</h1>'
+            . '<p style="margin:0 0 6px;color:#3b4763;line-height:1.55">Mock tests are free, but you need to <b>login with Google</b> first. It takes 5 seconds, and your score is saved to your dashboard.</p>'
+            . '<p style="margin:0 0 20px;color:#64748b;font-size:14px">टेस्ट देण्यासाठी आधी Google ने लॉगिन करा.</p>'
+            . '<a href="' . e(login_url(cbt_url($test))) . '" target="_top" style="display:inline-block;padding:13px 26px;border-radius:999px;background:linear-gradient(135deg,#f7740f,#fbb117);color:#2a1600;font-weight:700;text-decoration:none">Login with Google &amp; Start</a>'
+            . '</div></body></html>');
     }
     $rel = trim(str_replace('\\', '/', rawurldecode((string)$_GET['p'])), '/');
     $ext = strtolower(pathinfo($rel, PATHINFO_EXTENSION));
@@ -139,6 +148,7 @@ require __DIR__ . '/includes/header.php';
             <div class="cbt-gate-i">🔒</div>
             <h2>Login to start this mock test</h2>
             <p>Sign in with your Google account – it takes 5 seconds and is free. Your score, history and progress are saved to your own dashboard.</p>
+            <p class="cbt-gate-mr">टेस्ट देण्यासाठी आधी Google ने लॉगिन करा – फक्त 5 सेकंद, पूर्णपणे मोफत.</p>
             <a class="cbt-gate-btn" href="<?= e(login_url($path)) ?>" rel="nofollow"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.6 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.8-4.5l-7.9-6.2C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.2 1.5-5 2.3-8.2 2.3-6.2 0-11.5-4.1-13.4-9.8l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg> Login with Google &amp; Start</a>
             <ul class="cbt-gate-pts"><li>✓ Free for all ITI students</li><li>✓ Real NCVT CBT exam pattern</li><li>✓ Track your score &amp; progress</li></ul>
           </div>
