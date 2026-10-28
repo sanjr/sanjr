@@ -157,7 +157,7 @@ require __DIR__ . '/includes/header.php';
       </section>
 
       <section class="card sd-card sd-span2" aria-labelledby="tr-h">
-        <h2 id="tr-h">Score Trend <small>last <?= count($trend) ?> tests</small></h2>
+        <h2 id="tr-h">Score Trend <small>last <?= count($trend) ?> test<?= count($trend) === 1 ? '' : 's' ?></small></h2>
 <?php
 $W = 600; $H = 210; $L = 36; $R = 14; $T = 14; $B = 26;
 $n = count($trend);

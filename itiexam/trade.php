@@ -129,8 +129,8 @@ function mock_dash(array $list): string
 {
     $q = array_sum(array_map(fn($m) => (int)$m['questions'], $list));
     $html = '<div class="mtd"><ul class="mtd-stats">'
-        . '<li><b>' . count($list) . '</b><small>Mock Tests</small></li>'
-        . ($q ? '<li><b>' . number_format($q) . '</b><small>MCQ Questions</small></li>' : '')
+        . '<li><b>' . count($list) . '</b><small>Mock Test' . (count($list) === 1 ? '' : 's') . '</small></li>'
+        . ($q ? '<li><b>' . number_format($q) . '</b><small>MCQ Question' . ($q === 1 ? '' : 's') . '</small></li>' : '')
         . '<li><b>Free</b><small>CBT Pattern</small></li></ul>';
     if ($me = student()) {
         $done = array_values(array_filter(array_column($list, 'mine')));
@@ -190,7 +190,7 @@ function mock_card(string $name, array $list, int $years = 2): string
         $html .= '<div class="yr-pane" data-yr="' . $y . '"' . ($first ? '' : ' hidden') . '>';
         if (!$tabs && $y && $years > 1) $html .= '<h3 class="yr-h">' . $label($y) . '</h3>';
         foreach ($sems as $s => $items) {
-            if ($s) $html .= '<h4 class="sem-h">Semester ' . $s . ' <small>' . count($items) . ' tests</small></h4>';
+            if ($s) $html .= '<h4 class="sem-h">Semester ' . $s . ' <small>' . count($items) . ' test' . (count($items) === 1 ? '' : 's') . '</small></h4>';
             $rows = '';
             foreach ($items as $i => $it) {
                 // "Sem 1 – Module 3: Masonry" is shown as "Module 3: Masonry" under its semester heading
