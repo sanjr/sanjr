@@ -17,6 +17,9 @@ if (PHP_SAPI !== 'cli' && !preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', (st
     ini_set('log_errors', '1');
     ini_set('error_log', __DIR__ . '/../data/php-errors.log');
 }
+/** Short code shown on the error page and in the admin's error list, so a visitor's screenshot points to the exact error. */
+function error_code(string $msg, string $file, int $line): string { return strtoupper(substr(md5($msg . '|' . basename($file) . '|' . $line), 0, 6)); }
+
 /** The "Something went wrong" page. Visitors see no details; a logged-in admin sees the cause, to fix it quickly. */
 function error_page(string $msg, string $file, int $line): void
 {
@@ -26,6 +29,7 @@ function error_page(string $msg, string $file, int $line): void
     echo '<!DOCTYPE html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Something went wrong</title>'
         . '<div style="font:16px/1.5 system-ui,sans-serif;max-width:620px;margin:12vh auto;padding:24px;text-align:center"><h1 style="font-size:22px">Something went wrong</h1>'
         . '<p>Please go back and try again in a moment.</p><p><a href="/">Go to the homepage</a></p>'
+        . '<p style="color:#94a3b8;font-size:13px">Error code: ' . error_code($msg, $file, $line) . '</p>'
         . ($admin ? '<div style="margin-top:22px;padding:14px 16px;border-radius:12px;background:#fff4ed;border:1px solid #fdcfae;text-align:left;font-size:14px;color:#7c2d12">'
             . '<b>Only you (admin) see this:</b><br>' . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . '<br><code>' . htmlspecialchars($where, ENT_QUOTES, 'UTF-8') . ' line ' . $line . '</code>'
             . (str_contains($msg, 'undefined function') || str_contains($msg, 'not found') ? '<br><br>An old file is on the server. Upload the full website ZIP again and choose “Replace” for every file.' : '')
@@ -33,7 +37,8 @@ function error_page(string $msg, string $file, int $line): void
         . '</div>';
 }
 set_exception_handler(function (Throwable $ex) {
-    error_log('Uncaught ' . get_class($ex) . ': ' . $ex->getMessage() . ' in ' . $ex->getFile() . ':' . $ex->getLine());
+    $msg = get_class($ex) . ': ' . $ex->getMessage();
+    error_log('Uncaught ' . $msg . ' in ' . $ex->getFile() . ':' . $ex->getLine() . ' (code ' . error_code($msg, $ex->getFile(), $ex->getLine()) . ', ' . ($_SERVER['REQUEST_URI'] ?? '') . ')');
     error_page(get_class($ex) . ': ' . $ex->getMessage(), $ex->getFile(), $ex->getLine());
 });
 // Errors that stop PHP without an exception (e.g. a broken or half-uploaded file) get the same page
