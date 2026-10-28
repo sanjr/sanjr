@@ -32,6 +32,17 @@ function php2shell_patched(): bool
 }
 
 /* Security check of the live server (the web request to /data/ is cached for 6 hours) */
+// Latest PHP errors of the website (data/php-errors.log), so a "Something went wrong" page can be traced
+$errLog = dirname(__DIR__) . '/data/php-errors.log';
+if (is_post() && ($_POST['action'] ?? '') === 'clearlog') { csrf_check(); @file_put_contents($errLog, ''); flash('Error list cleared.'); redirect('/admin/#errors'); }
+$errors = [];
+if (is_file($errLog) && ($fh = @fopen($errLog, 'r'))) {
+    fseek($fh, max(0, filesize($errLog) - 20000));
+    $tail = (string)stream_get_contents($fh);
+    fclose($fh);
+    preg_match_all('/^\[([^\]]+)\] (PHP (?:Fatal|Parse)[^\n]*|Uncaught[^\n]*|ITIExam:[^\n]*)$/m', $tail, $mm, PREG_SET_ORDER);
+    foreach (array_slice(array_reverse($mm), 0, 8) as $m) $errors[] = [$m[1], str_replace(dirname(__DIR__) . '/', '', $m[2])];
+}
 if (is_post() && ($_POST['action'] ?? '') === 'recheck') { csrf_check(); setting_set('sec_probe', ''); redirect('/admin/#security'); }
 $probe = json_decode(setting('sec_probe'), true);
 if (!is_array($probe) || ($probe['at'] ?? 0) < time() - 6 * 3600) {
@@ -100,6 +111,21 @@ admin_header('Dashboard', 'dashboard');
       </ul>
       <form method="post" class="secre"><?= csrf_field() ?><input type="hidden" name="action" value="recheck"><button class="btn sm alt">Check again</button><span class="muted">Last checked <?= e(date('d M, h:i A', $probe['at'])) ?></span></form>
     </section>
+<?php if ($errors): ?>
+    <section class="box" id="errors">
+      <div class="bar"><h2 style="margin:0">Recent website errors</h2>
+        <form method="post"><?= csrf_field() ?><input type="hidden" name="action" value="clearlog"><button class="btn sm alt">Clear list</button></form></div>
+      <p class="muted">Pages that showed “Something went wrong” to someone. “undefined function” or “not found” means an old file is on the server: upload the full website ZIP again with “Replace”.</p>
+      <div class="tablebox"><table>
+        <thead><tr><th>When</th><th>Error</th></tr></thead>
+        <tbody>
+<?php foreach ($errors as [$when, $msg]): ?>
+          <tr><td class="muted" style="white-space:nowrap"><?= e($when) ?></td><td><code style="white-space:normal"><?= e(mb_strimwidth($msg, 0, 400, '…')) ?></code></td></tr>
+<?php endforeach; ?>
+        </tbody>
+      </table></div>
+    </section>
+<?php endif; ?>
     <section class="box">
       <h2>Manage your website</h2>
       <div class="manage">

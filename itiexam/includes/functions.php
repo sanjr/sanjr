@@ -17,12 +17,29 @@ if (PHP_SAPI !== 'cli' && !preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', (st
     ini_set('log_errors', '1');
     ini_set('error_log', __DIR__ . '/../data/php-errors.log');
 }
+/** The "Something went wrong" page. Visitors see no details; a logged-in admin sees the cause, to fix it quickly. */
+function error_page(string $msg, string $file, int $line): void
+{
+    if (!headers_sent()) { http_response_code(500); header('Content-Type: text/html; charset=utf-8'); }
+    $admin = session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['admin']);
+    $where = ltrim(str_replace('\\', '/', substr($file, strlen(dirname(__DIR__)))), '/');
+    echo '<!DOCTYPE html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Something went wrong</title>'
+        . '<div style="font:16px/1.5 system-ui,sans-serif;max-width:620px;margin:12vh auto;padding:24px;text-align:center"><h1 style="font-size:22px">Something went wrong</h1>'
+        . '<p>Please go back and try again in a moment.</p><p><a href="/">Go to the homepage</a></p>'
+        . ($admin ? '<div style="margin-top:22px;padding:14px 16px;border-radius:12px;background:#fff4ed;border:1px solid #fdcfae;text-align:left;font-size:14px;color:#7c2d12">'
+            . '<b>Only you (admin) see this:</b><br>' . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . '<br><code>' . htmlspecialchars($where, ENT_QUOTES, 'UTF-8') . ' line ' . $line . '</code>'
+            . (str_contains($msg, 'undefined function') || str_contains($msg, 'not found') ? '<br><br>An old file is on the server. Upload the full website ZIP again and choose “Replace” for every file.' : '')
+            . '</div>' : '')
+        . '</div>';
+}
 set_exception_handler(function (Throwable $ex) {
     error_log('Uncaught ' . get_class($ex) . ': ' . $ex->getMessage() . ' in ' . $ex->getFile() . ':' . $ex->getLine());
-    if (!headers_sent()) { http_response_code(500); header('Content-Type: text/html; charset=utf-8'); }
-    echo '<!DOCTYPE html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Something went wrong</title>'
-        . '<div style="font:16px/1.5 system-ui,sans-serif;max-width:520px;margin:12vh auto;padding:24px;text-align:center"><h1 style="font-size:22px">Something went wrong</h1>'
-        . '<p>Please go back and try again in a moment.</p><p><a href="/">Go to the homepage</a></p></div>';
+    error_page(get_class($ex) . ': ' . $ex->getMessage(), $ex->getFile(), $ex->getLine());
+});
+// Errors that stop PHP without an exception (e.g. a broken or half-uploaded file) get the same page
+register_shutdown_function(function () {
+    $e = error_get_last();
+    if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) error_page($e['message'], $e['file'], $e['line']);
 });
 
 // Address-bar values are plain text, except the job filters that are lists (?type[]=…); anything else odd is dropped
