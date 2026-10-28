@@ -96,21 +96,30 @@ if (is_post()) {
         if ($action === 'test' || $action === 'move') {
             if (DB_DRIVER === 'mysql') throw new RuntimeException('The website already uses MySQL.');
             if ($form['name'] === '' || $form['user'] === '') throw new RuntimeException('Fill in the database name and the username.');
+            // After "Test connection" the page does not show the password again, so it is remembered (for 15 minutes,
+            // only on the server) for the copy that follows with the same details
+            $pass = (string)($_POST['pass'] ?? '');
+            $mem = $_SESSION['dbx_pass'] ?? null;
+            $same = $mem && $mem['at'] > time() - 900 && [$mem['host'], $mem['name'], $mem['user']] === [$form['host'] ?: 'localhost', $form['name'], $form['user']];
+            if ($pass === '' && $same) $pass = $mem['pass'];
+            if ($pass === '') throw new RuntimeException('Type the MySQL password – the password box was empty.');
             try {
-                $my = mysql_connect_db($form['host'] ?: 'localhost', $form['name'], $form['user'], (string)($_POST['pass'] ?? ''));
+                $my = mysql_connect_db($form['host'] ?: 'localhost', $form['name'], $form['user'], $pass);
             } catch (PDOException $e) {
                 throw new RuntimeException('Could not connect to MySQL: ' . preg_replace('/^SQLSTATE\[[^\]]*\]\s*(\[\d+\]\s*)?/', '', $e->getMessage()) . ' Check the name, username and password in hPanel → Databases.');
             }
             $filled = array_sum(dbx_counts($my));
             if ($action === 'test') {
+                $_SESSION['dbx_pass'] = ['host' => $form['host'] ?: 'localhost', 'name' => $form['name'], 'user' => $form['user'], 'pass' => $pass, 'at' => time()];
                 flash('✔ Connected to MySQL ' . $my->query('SELECT VERSION()')->fetchColumn() . '. ' . ($filled ? "This database already holds $filled rows – they will be replaced." : 'The database is empty and ready.'));
             } else {
                 if ($filled && empty($_POST['replace'])) throw new RuntimeException("This MySQL database already holds $filled rows. Tick “Replace what is in this MySQL database” to overwrite them.");
                 $report = dbx_copy(db(), $my);
                 $bad = array_filter($report, fn($c) => $c[0] !== $c[1]);
                 if ($bad) throw new RuntimeException('Not all rows were copied (' . implode(', ', array_keys($bad)) . '). The website stays on SQLite; nothing was changed.');
-                dbx_save_config(['driver' => 'mysql', 'host' => $form['host'] ?: 'localhost', 'name' => $form['name'], 'user' => $form['user'], 'pass' => (string)($_POST['pass'] ?? '')]);
+                dbx_save_config(['driver' => 'mysql', 'host' => $form['host'] ?: 'localhost', 'name' => $form['name'], 'user' => $form['user'], 'pass' => $pass]);
                 @unlink(DB_CONFIG_OFF);
+                unset($_SESSION['dbx_pass']);
                 $_SESSION['dbx_report'] = $report;
                 flash('✔ The website now runs on MySQL. ' . count($report) . ' tables and ' . array_sum(array_column($report, 0)) . ' rows were copied and checked. The old SQLite file is kept as a backup.');
                 redirect('/admin/database.php');
@@ -183,7 +192,8 @@ admin_header('Database', 'database');
           <label>Host <input name="host" value="<?= e($form['host'] ?: 'localhost') ?>" placeholder="localhost"></label>
           <label>MySQL database name <input name="name" value="<?= e($form['name']) ?>" placeholder="u123456789_newmcq" required></label>
           <label>MySQL username <input name="user" value="<?= e($form['user']) ?>" placeholder="u123456789_newmcq" required></label>
-          <label>Password <input type="password" name="pass" autocomplete="new-password"></label>
+<?php $remembered = !empty($_SESSION['dbx_pass']) && $_SESSION['dbx_pass']['at'] > time() - 900 && $_SESSION['dbx_pass']['name'] === $form['name'] && $_SESSION['dbx_pass']['user'] === $form['user']; ?>
+          <label>Password <input type="password" name="pass" autocomplete="new-password" placeholder="<?= $remembered ? '✔ Remembered from the test – you can leave this empty' : '' ?>"></label>
           <label class="check"><input type="checkbox" name="replace"> Replace what is in this MySQL database (only needed if it is not empty)</label>
           <p class="muted">Copying takes a few seconds. All data is copied, then every table is counted; the website switches only if everything arrived. The SQLite file stays as a backup.</p>
           <div class="bar"><button class="btn alt" name="action" value="test">Test connection</button>
