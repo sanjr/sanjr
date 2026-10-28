@@ -15,6 +15,7 @@ function admin_header(string $title, string $active = ''): void
         'menus'     => ['/admin/menus.php', 'Menus & Links', 'link'],
         'ads'       => ['/admin/ads.php', 'Ads (AdSense)', 'rupee'],
         'links'     => ['/admin/links.php', 'Link Checker', 'alert'],
+        'database'  => ['/admin/database.php', 'Database', 'db'],
         'settings'  => ['/admin/settings.php', 'Settings', 'gear'],
     ];
     ?><!DOCTYPE html>
@@ -26,7 +27,7 @@ function admin_header(string $title, string $active = ''): void
   <title><?= e($title) ?> – <?= e(SITE_NAME) ?> Admin</title>
   <link rel="icon" href="/assets/img/favicon-48.png?v=2" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/admin/assets/admin.css?v=5">
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=6">
 </head>
 <body>
 <?php require __DIR__ . '/../../includes/icons.php'; ?>
@@ -62,7 +63,7 @@ function admin_footer(): void
   <script>
     // Confirm before destructive actions
     document.addEventListener('submit', function (e) {
-      var m = e.target.getAttribute('data-confirm');
+      var m = (e.submitter && e.submitter.getAttribute('data-confirm')) || e.target.getAttribute('data-confirm');
       if (m && !confirm(m)) e.preventDefault();
     });
     // Auto-fill slug from name

@@ -8,7 +8,17 @@ function db(): PDO
     static $pdo = null;
     if ($pdo) return $pdo;
     if (DB_DRIVER === 'mysql') {
-        $pdo = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4', DB_USER, DB_PASS);
+        try {
+            $pdo = mysql_connect_db(DB_HOST, DB_NAME, DB_USER, DB_PASS);
+        } catch (PDOException $e) {
+            // Never show the error (it can name the database user); tell the visitor to come back
+            error_log('ITIExam: MySQL connection failed: ' . $e->getMessage());
+            http_response_code(503);
+            header('Retry-After: 120');
+            exit('<!DOCTYPE html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Back soon</title>'
+                . '<div style="font:16px/1.6 system-ui,sans-serif;text-align:center;padding:60px 20px"><h1 style="font-size:22px">We will be back in a minute</h1>'
+                . '<p>The website cannot reach its database right now. Please try again shortly.</p></div>');
+        }
     } else {
         $dir = dirname(DB_SQLITE_PATH);
         if (!is_dir($dir)) mkdir($dir, 0775, true);
@@ -21,13 +31,30 @@ function db(): PDO
     return $pdo;
 }
 
+/** A MySQL connection set up like the SQLite one (also used by Admin → Database to fill a new MySQL database). */
+function mysql_connect_db(string $host, string $name, string $user, string $pass): PDO
+{
+    $port = '';
+    if (preg_match('/^(.+):(\d+)$/', $host, $m)) { $host = $m[1]; $port = ';port=' . $m[2]; }
+    $pdo = new PDO("mysql:host=$host$port;dbname=$name;charset=utf8mb4", $user, $pass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_TIMEOUT => 10,
+        PDO::ATTR_EMULATE_PREPARES => false,              // real prepared statements: LIMIT ? and numbers work as on SQLite
+    ]);
+    // Same forgiving rules as SQLite (no ONLY_FULL_GROUP_BY / strict errors on long text), Indian time for NOW()
+    $pdo->exec("SET SESSION sql_mode = 'NO_ENGINE_SUBSTITUTION', time_zone = '+05:30'");
+    return $pdo;
+}
+
+/** True for a MySQL connection. */
+function is_mysql(PDO $pdo): bool { return $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql'; }
+
 /** Creates tables on first run (works for SQLite and MySQL). */
 function db_migrate(PDO $pdo): void
 {
     try {   // skip when the schema is already current
         if ($pdo->query("SELECT svalue FROM settings WHERE skey = 'schema_version'")->fetchColumn() === SCHEMA_VERSION) return;
     } catch (PDOException $e) { /* first run: settings table does not exist yet */ }
-    $mysql = DB_DRIVER === 'mysql';
+    $mysql = is_mysql($pdo);
     $id = $mysql ? 'INT AUTO_INCREMENT PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
     $txt = $mysql ? 'MEDIUMTEXT' : 'TEXT';
     $engine = $mysql ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4' : '';
@@ -200,7 +227,7 @@ function make_es_subject(PDO $pdo): void
 
 function add_column(PDO $pdo, string $table, string $col, string $def): void
 {
-    $cols = DB_DRIVER === 'mysql'
+    $cols = is_mysql($pdo)
         ? $pdo->query("SHOW COLUMNS FROM $table")->fetchAll(PDO::FETCH_COLUMN)
         : array_column($pdo->query("PRAGMA table_info($table)")->fetchAll(PDO::FETCH_ASSOC), 'name');
     if (!in_array($col, $cols, true)) $pdo->exec("ALTER TABLE $table ADD COLUMN $col $def");

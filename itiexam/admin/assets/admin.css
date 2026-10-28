@@ -197,3 +197,13 @@ textarea.ed-src { margin: 0 !important; border: 0 !important; border-radius: 0 !
 .secl li.bad { background: #fff1f2; } .secl li.bad b { background: #e11d48; }
 .secl li.warn { background: #fffbeb; } .secl li.warn b { background: #d97706; }
 .secre { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+
+/* Database page */
+.dbx-now { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.dbx-now .chip { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; background: var(--c); color: #fff; font-size: 22px; }
+.dbx-now b { display: block; font: 700 20px "Poppins", sans-serif; color: var(--ink); }
+.dbx-now small { color: var(--muted, #64748b); }
+.dbx-stats { list-style: none; margin: 0 0 14px; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+.dbx-stats li { padding: 12px; border-radius: 12px; background: #f5f8ff; border: 1px solid #e3e9f6; }
+.dbx-stats b { display: block; font: 700 20px "Poppins", sans-serif; color: var(--ink); }
+.dbx-stats small { color: var(--muted, #64748b); font-size: 12.5px; }

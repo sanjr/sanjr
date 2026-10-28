@@ -1,7 +1,7 @@
 <?php
 /* ITIExam.com – site configuration
-   Default database is SQLite (no setup needed). To use MySQL, set DB_DRIVER to 'mysql'
-   and fill in the MySQL details from your hosting panel. */
+   Default database is SQLite (no setup needed). To use MySQL, open Admin → Database: it copies the data
+   and switches the website over. */
 
 define('SITE_NAME', 'ITIExam.com');
 
@@ -19,12 +19,16 @@ if ($siteUrl === '') {
 }
 define('SITE_URL', rtrim($siteUrl, '/'));
 
-define('DB_DRIVER', 'sqlite');                    // 'sqlite' or 'mysql'
+// Database: SQLite works with no setup. MySQL is switched on in Admin → Database, which keeps its details in
+// data/db-config.php – a file that is never part of a website update, so uploading new files cannot undo it.
+$dbc = is_file(__DIR__ . '/../data/db-config.php') ? (array)(include __DIR__ . '/../data/db-config.php') : [];
+define('DB_DRIVER', ($dbc['driver'] ?? '') === 'mysql' ? 'mysql' : 'sqlite');
 define('DB_SQLITE_PATH', __DIR__ . '/../data/itiexam.sqlite');
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'itiexam');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_HOST', (string)($dbc['host'] ?? 'localhost'));
+define('DB_NAME', (string)($dbc['name'] ?? ''));
+define('DB_USER', (string)($dbc['user'] ?? ''));
+define('DB_PASS', (string)($dbc['pass'] ?? ''));
+unset($dbc);
 
 define('UPLOAD_DIR', __DIR__ . '/../uploads');
 define('UPLOAD_URL', '/uploads');

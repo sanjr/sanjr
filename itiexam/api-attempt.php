@@ -44,7 +44,8 @@ if ($id = $dup->fetchColumn()) $out(200, ['ok' => true, 'id' => (int)$id]);
 
 db()->prepare('INSERT INTO attempts (student_id, test_id, trade_id, title, level, score, total, pct, passed, time_sec, lang, location, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
     ->execute([$me['id'], $test['id'], $test['trade_id'], $test['title'], $test['level'], $score, $total, $pct, $passed, $time, mb_substr((string)($in['lang'] ?? ''), 0, 20), $loc, $when]);
+$newId = (int)db()->lastInsertId();                                // read now: MySQL forgets it after the next query
 if ($loc !== '') db()->prepare('UPDATE students SET location = ? WHERE id = ?')->execute([$loc, $me['id']]);
 if (!$me['trade_id'] && $test['trade_id'] && $test['kind'] === 'trade')     // a common subject is not the student's trade
     db()->prepare('UPDATE students SET trade_id = ? WHERE id = ?')->execute([$test['trade_id'], $me['id']]);
-$out(200, ['ok' => true, 'id' => (int)db()->lastInsertId()]);
+$out(200, ['ok' => true, 'id' => $newId]);

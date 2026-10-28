@@ -58,8 +58,10 @@ Upload the new files (keep the `data` and `uploads` folders). On the first page 
 4. Open `https://your-domain/admin/`. The first time, it asks you to create your admin username and password. After that, setup is locked.
 5. Log in and start adding trades.
 
-To use MySQL instead of SQLite: create a database in your hosting panel, then in `includes/config.php`
-set `DB_DRIVER` to `'mysql'` and fill in `DB_HOST`, `DB_NAME`, `DB_USER` and `DB_PASS`. The tables are created automatically.
+To use MySQL instead of SQLite, first create a database and user in your hosting panel. Then open **Admin → Database**, enter the details and click *Copy data & switch to MySQL*.
+- The tool copies every table and counts the rows. The website switches only when everything arrived.
+- The MySQL details are saved in `data/db-config.php`. That file is never part of a website update, and the web server never serves it.
+- The same page can copy the data back and switch to SQLite.
 
 If your domain or subdomain doesn't have SSL yet, remove the 3 “Force HTTPS” lines from `.htaccess`.
 

@@ -41,8 +41,15 @@ $live = $pdo->query('SELECT folder FROM cbt_tests')->fetchAll(PDO::FETCH_COLUMN)
 foreach ($pdo->query("SELECT id, url FROM trade_items WHERE section = 'mock_tests' AND url LIKE '/cbt/%'")->fetchAll() as $ti) {
     if (preg_match('~^/cbt/([a-z0-9-]+)/~', $ti['url'], $m) && !in_array($m[1], $live, true)) $pdo->prepare('DELETE FROM trade_items WHERE id = ?')->execute([$ti['id']]);
 }
-foreach (glob(CBT_DIR . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
-    if (!in_array(basename($dir), $live, true) && filemtime($dir) < time() - 3600) rrmdir($dir);   // an hour old, so uploads in progress are safe
+// Folders without a test are leftovers of an upload that stopped half way. Only those are removed: between an hour
+// (an upload may still be running) and two days old, a few at a time, and never while the database lists no tests –
+// after a database change or restore the folders are real tests whose rows are simply not there (yet).
+if ($live) {
+    $gone = 0;
+    foreach (glob(CBT_DIR . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
+        $age = time() - filemtime($dir);
+        if ($gone < 3 && !in_array(basename($dir), $live, true) && $age > 3600 && $age < 2 * 86400) { rrmdir($dir); $gone++; }
+    }
 }
 
 $err = '';
