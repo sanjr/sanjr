@@ -13,8 +13,8 @@ if (!$p) not_found();
 
 $path = '/' . $p['slug'] . '/';
 $isPost = $p['category'] !== '';
-$plain = trim(preg_replace('/\s+/', ' ', strip_tags(preg_replace('/\[[^\]]+\]/', '', $p['content']))));
-$desc = $p['meta_description'] ?: ($p['excerpt'] ?: mb_substr($plain, 0, 158));
+$plain = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags(str_replace('<', ' <', preg_replace('/\[[^\]]+\]/', '', $p['content']))), ENT_QUOTES, 'UTF-8')));
+$desc = seo_desc($p['meta_description'] ?: $p['excerpt'], $plain);
 $catName = ['exam-update' => 'Exam Updates', 'article' => 'Articles'][$p['category']] ?? '';
 $catUrl = ['exam-update' => '/exam/', 'article' => '/blog/'][$p['category']] ?? '';
 

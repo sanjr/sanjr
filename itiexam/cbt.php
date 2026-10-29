@@ -207,6 +207,11 @@ require __DIR__ . '/includes/header.php';
     <div class="container">
 <?php if ($test['description']): ?>      <p class="cbt-desc"><?= e($test['description']) ?></p>
 <?php endif; ?>
+      <div class="seo-text card">
+        <h2>About this <?= $test['tname'] ? 'ITI ' . e($name) . ' ' : '' ?>mock test</h2>
+        <p><strong><?= e(($test['tname'] ? 'ITI ' . $name . ' – ' : '') . $test['title']) ?></strong> is a free online <strong>CBT mock test</strong> in the NCVT exam pattern<?= $test['questions'] ? ' with <strong>' . (int)$test['questions'] . ' multiple choice questions</strong>' : '' ?><?= $test['minutes'] ? ' and a <strong>' . (int)$test['minutes'] . '-minute</strong> timer' : '' ?>. Choose English, Hindi, Marathi or another language, answer each question, and submit to see your score, the correct answers and whether you passed (33%).</p>
+        <p>Your result is saved to your <a href="/student/">dashboard</a>, so you can see how you improve test by test.<?php if ($tpath): ?> For more practice open the <a href="<?= e($tpath) ?>"><?= e($name) ?> page</a> – it has every <?= e($name) ?> mock test, module-wise notes, the syllabus and previous year papers.<?php endif; ?> Practise <a href="/employability-skills/">Employability Skills</a> too: it is part of every ITI trade's CBT exam.</p>
+      </div>
       <?= ad('trade_middle') ?>
 <?php if ($more): ?>
       <section class="card cbt-more" aria-labelledby="more-h">

@@ -1,13 +1,23 @@
 <?php
 require __DIR__ . '/includes/functions.php';
 $all = trades();
+$sylCount = (int)db()->query("SELECT COUNT(*) FROM syllabi WHERE status = 'published'")->fetchColumn();
+$yr = date('Y');
+$names = implode(', ', array_slice(array_column($all, 'name'), 0, 8));
+$faq = [
+    ['How many trades are there in ITI?', 'DGT (Directorate General of Training) runs more than 140 NCVT trades in engineering and non-engineering fields. ' . SITE_NAME . ' has mock tests and study material for ' . count($all) . ' popular trades, and the syllabus of ' . ($sylCount ?: '160+') . ' trades.'],
+    ['Which ITI trade is best?', 'It depends on your interest. Electrician, Fitter and COPA have the most jobs and apprenticeship seats; Electrician, Fitter and Wireman are good for government jobs (Railway, power companies); COPA suits computer and office work; MMV and Diesel Mechanic suit the automobile sector.'],
+    ['What is the duration of an ITI course?', 'Engineering trades such as Electrician, Fitter and Turner are usually 2 years (4 semesters). Trades such as COPA, Welder and Plumber are 1 year (2 semesters).'],
+    ['How is the ITI exam conducted?', 'The ITI theory exam is a computer based test (CBT) with multiple choice questions on Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills, followed by a practical exam. You need at least 33% to pass.'],
+];
 $meta = [
     'title' => 'All ITI Trades List 2026 – Mock Tests, Syllabus & Notes | ' . SITE_NAME,
     'description' => 'Complete list of ITI trades (NCVT): COPA, Electrician, Fitter, Turner, Welder, MMV and more. Choose your trade for free mock tests, syllabus, notes PDF and previous papers.',
     'keywords' => 'ITI trades list, all ITI trades, NCVT trades, ITI courses list, ITI trade names',
     'path' => '/trades/',
     'jsonld' => [['@context' => 'https://schema.org', '@type' => 'ItemList', 'name' => 'ITI Trades',
-        'itemListElement' => array_map(fn($t, $i) => ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $t['name'], 'url' => SITE_URL . trade_url($t)], $all, array_keys($all))]],
+        'itemListElement' => array_map(fn($t, $i) => ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $t['name'], 'url' => SITE_URL . trade_url($t)], $all, array_keys($all))],
+        ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(fn($f) => ['@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], $faq)]],
 ];
 require __DIR__ . '/includes/header.php';
 ?>
@@ -41,6 +51,18 @@ foreach ($all as $i => $t): ?>
 <?php endif; endforeach; ?>
       </div>
 <?php if (!$all): ?><p>No trades yet.</p><?php endif; ?>
+
+      <div class="seo-text card" style="margin-top:28px">
+        <h2>ITI Trades List <?= $yr ?>: Choose Your Trade</h2>
+        <p>ITI (Industrial Training Institute) courses are run under <strong>NCVT</strong> and the state councils (SCVT) by DGT, Government of India. Each <strong>ITI trade</strong> teaches one skill – for example <?= e($names) ?> – with Trade Theory, Workshop Calculation &amp; Science, Engineering Drawing and Employability Skills. Open your trade above to get free <strong>ITI mock tests</strong> in the real CBT pattern, module-wise MCQ in English, Hindi and Marathi, notes PDF, the latest syllabus and <strong>previous year question papers</strong>.</p>
+        <p><strong>Engineering trades</strong> (Electrician, Fitter, Turner, Machinist, Wireman, MMV, Diesel Mechanic) are mostly 2 years; <strong>non-engineering and short trades</strong> (COPA, Welder, Plumber) are 1 year. Every trade has the common subject <a href="/employability-skills/">Employability Skills</a>, so practise it whatever your trade is. Not finding your trade? Search the <a href="/syllabus/">syllabus of <?= $sylCount ?: '160+' ?> ITI trades</a>, and see the latest <a href="/jobs/">ITI jobs</a> and <a href="/apprenticeship/">apprenticeship</a> openings.</p>
+      </div>
+      <section class="card faq" style="margin-top:20px" aria-labelledby="tfaq-h">
+        <h2 id="tfaq-h">ITI Trades – Frequently Asked Questions</h2>
+<?php foreach ($faq as [$q, $a]): ?>
+        <details><summary><?= e($q) ?></summary><p><?= e($a) ?></p></details>
+<?php endforeach; ?>
+      </section>
     </div>
   </section>
 </main>

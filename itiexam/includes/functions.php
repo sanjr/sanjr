@@ -89,6 +89,26 @@ function csrf_token(): string
     return $_SESSION['csrf'];
 }
 function csrf_field(): string { return '<input type="hidden" name="csrf" value="' . csrf_token() . '">'; }
+/** A Google description of 110–158 characters: a short one is completed with the first sentences of the page's own text. */
+function seo_desc(string $base, string $more, int $max = 158): string
+{
+    $base = trim(preg_replace('/\s+/', ' ', $base));
+    if (mb_strlen($base) >= 110 || $more === '') return mb_strlen($base) > $max + 7 ? rtrim(mb_substr($base, 0, $max - 1), ' ,;:–-') . '…' : $base;
+    $more = trim(preg_replace('/\s+/', ' ', $more));
+    if ($base !== '' && str_starts_with(mb_strtolower($more), mb_strtolower(mb_substr($base, 0, 40)))) $more = trim(mb_substr($more, mb_strlen($base)));
+    $out = $base;
+    foreach (preg_split('/(?<=[.!?।])\s+/u', $more) as $sent) {
+        if ($sent === '' || mb_stripos($out, mb_substr($sent, 0, 30)) !== false) continue;
+        $try = trim($out . ' ' . $sent);
+        if (mb_strlen($try) > $max) {
+            if (mb_strlen($out) < 110) $out = rtrim(mb_substr($try, 0, mb_strrpos(mb_substr($try, 0, $max - 1), ' ') ?: $max - 1), ' ,;:–-') . '…';
+            break;
+        }
+        $out = $try;
+    }
+    return $out;
+}
+
 /** A php.ini size such as "64M" in bytes. */
 function ini_bytes(string $v): int
 {

@@ -208,7 +208,8 @@ function mock_card(string $name, array $list, int $years = 2): string
 /* ---------- SEO ---------- */
 $yr = date('Y');
 $title = $t['meta_title'] ?: "ITI $name Mock Test $yr – MCQ, Question Paper PDF & Syllabus | ITI Exam";
-$desc = $t['meta_description'] ?: trim("ITI $name" . ($t['full_name'] ? " ({$t['full_name']})" : '') . " $yr – free online CBT mock test, MCQ in English, Hindi & Marathi, NCVT syllabus, notes PDF, previous year question papers and important questions.");
+$auto = trim("ITI $name" . ($t['full_name'] ? " ({$t['full_name']})" : '') . " $yr – free online CBT mock test, MCQ in English, Hindi & Marathi, NCVT syllabus, notes PDF, previous year question papers and important questions.");
+$desc = seo_desc($t['meta_description'], $auto);
 $keywords = $t['meta_keywords'] ?: "ITI $name mock test, ITI $name MCQ, ITI $name question paper PDF, ITI $name previous year paper, ITI $name online test, ITI $name CBT test, ITI $name syllabus $yr, ITI $name notes PDF, " . ($years > 1 ? "$name 1st year MCQ, $name 2nd year MCQ, " : '') . "$name 1st semester, ITI $name MCQ in Hindi, ITI $name MCQ in Marathi, NIMI $name question bank, " . ($isSubject ? "ITI $name MCQ all trades" : "ITI $name jobs") . ", {$t['full_name']}";
 
 /* Built-in exam guide + FAQ, so every trade page has useful text even before the admin writes any */
