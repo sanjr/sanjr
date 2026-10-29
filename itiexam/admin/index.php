@@ -11,7 +11,11 @@ if (is_post() && ($_POST['action'] ?? '') === 'starter') {
 }
 $pdo = db();
 $c = fn($sql) => (int)$pdo->query($sql)->fetchColumn();
+$liveNow = $c('SELECT COUNT(*) FROM visitors_live WHERE last_seen >= ' . (time() - 300));
+$visToday = $c("SELECT COUNT(DISTINCT vid) FROM visits WHERE day = '" . date('Y-m-d') . "'");
 $stats = [
+    ['Live visitors now', $liveNow, '/admin/visitors.php', 'globe', 'c-green'],
+    ['Visitors today', $visToday, '/admin/visitors.php', 'users', 'c-orange'],
     ['Trades', $c('SELECT COUNT(*) FROM trades'), '/admin/trades.php', 'tool', 'c-blue'],
     ['Trade content items', $c('SELECT COUNT(*) FROM trade_items'), '/admin/trades.php', 'list', 'c-green'],
     ['Open jobs', $c('SELECT COUNT(*) FROM jobs j WHERE ' . job_active_sql()), '/admin/jobs.php?show=open', 'brief', 'c-orange'],
@@ -61,7 +65,7 @@ if (!is_array($probe) || ($probe['at'] ?? 0) < time() - 6 * 3600) {
 $root = dirname(__DIR__);
 $stale = array_merge(
     array_filter(['tests_need_login', 'mysql_connect_db', 'trade_years', 'shown_level', 'cbt_play_url'], fn($f) => !function_exists($f)),
-    array_filter(['admin/database.php', 'assets/css/cbt-skin.css', 'assets/js/cbt-bridge.js'], fn($f) => !is_file("$root/$f")),
+    array_filter(['admin/database.php', 'admin/visitors.php', 'api-hit.php', 'includes/visits.php', 'assets/css/cbt-skin.css', 'assets/js/cbt-bridge.js'], fn($f) => !is_file("$root/$f")),
     !str_contains((string)@file_get_contents("$root/assets/css/style.css"), '.cbt-gate-mr') ? ['assets/css/style.css'] : []
 );
 $checks = [

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '20';
+const SCHEMA_VERSION = '21';
 
 function db(): PDO
 {
@@ -169,6 +169,19 @@ function db_migrate(PDO $pdo): void
     if ((int)$pdo->query("SELECT svalue FROM settings WHERE skey = 'schema_version'")->fetchColumn() < 16) {
         $pdo->exec("DELETE FROM settings WHERE skey = 'favicon_file'");
     }
+
+    // v21: website visitors – one row per page view (no cookies; a visitor is a daily hash), and who is on the site right now
+    $pdo->exec("CREATE TABLE IF NOT EXISTS visits (
+        id $id, day VARCHAR(10) NOT NULL, at_time INT NOT NULL, vid VARCHAR(16) NOT NULL, path VARCHAR(255) NOT NULL DEFAULT '',
+        title VARCHAR(160) NOT NULL DEFAULT '', source VARCHAR(40) NOT NULL DEFAULT '', ref_host VARCHAR(120) NOT NULL DEFAULT '',
+        device VARCHAR(10) NOT NULL DEFAULT '', ip VARCHAR(64) NOT NULL DEFAULT '', country VARCHAR(60) NOT NULL DEFAULT '',
+        region VARCHAR(80) NOT NULL DEFAULT '', city VARCHAR(80) NOT NULL DEFAULT '')$engine");
+    try { $pdo->exec('CREATE INDEX visits_day ON visits (day, vid)'); } catch (PDOException $e) { /* already there */ }
+    try { $pdo->exec('CREATE INDEX visits_ip ON visits (ip)'); } catch (PDOException $e) { /* already there */ }
+    $pdo->exec("CREATE TABLE IF NOT EXISTS visitors_live (
+        vid VARCHAR(16) NOT NULL PRIMARY KEY, last_seen INT NOT NULL, path VARCHAR(255) NOT NULL DEFAULT '', title VARCHAR(160) NOT NULL DEFAULT '',
+        source VARCHAR(40) NOT NULL DEFAULT '', device VARCHAR(10) NOT NULL DEFAULT '', ip VARCHAR(64) NOT NULL DEFAULT '',
+        country VARCHAR(60) NOT NULL DEFAULT '', region VARCHAR(80) NOT NULL DEFAULT '', city VARCHAR(80) NOT NULL DEFAULT '')$engine");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS syllabi (
         id $id, trade_name VARCHAR(160) NOT NULL, trade_id INT NOT NULL DEFAULT 0, sector VARCHAR(120) NOT NULL DEFAULT '',

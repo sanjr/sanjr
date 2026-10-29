@@ -412,4 +412,17 @@
   var top = document.querySelector(".to-top");
   window.addEventListener("scroll", function () { top.classList.toggle("show", window.scrollY > 600); }, { passive: true });
 
+  // Visitor count for Admin → Visitors: one note per page view, then "still here" every minute while the tab is open
+  (function () {
+    var page = location.pathname + (/[?&]utm_source=/.test(location.search) ? location.search : "");
+    function hit(kind) {
+      var body = JSON.stringify({ k: kind, p: page, t: document.title, r: kind === "v" ? document.referrer : "" });
+      try { if (navigator.sendBeacon && navigator.sendBeacon("/api/hit/", body)) return; } catch (e) {}
+      try { fetch("/api/hit/", { method: "POST", body: body, keepalive: true, credentials: "same-origin" }); } catch (e) {}
+    }
+    hit("v");
+    setInterval(function () { if (!document.hidden) hit("p"); }, 60000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) hit("p"); });
+  })();
+
 })();

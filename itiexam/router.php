@@ -35,6 +35,7 @@ if (preg_match('~^/app-auth/claim/?$~', $path)) { $_GET['claim'] = 1; require __
 if (preg_match('~^/app-auth/?$~', $path)) { require __DIR__ . '/app-auth.php'; return true; }
 if ($path === '/.well-known/assetlinks.json') { require __DIR__ . '/assetlinks.php'; return true; }
 if (preg_match('~^/api/attempt/?$~', $path)) { require __DIR__ . '/api-attempt.php'; return true; }
+if (preg_match('~^/api/hit/?$~', $path)) { require __DIR__ . '/api-hit.php'; return true; }
 if ($path === '/') { require __DIR__ . '/index.php'; return true; }
 $_GET['slug'] = trim($path, '/');
 require __DIR__ . '/page.php';
