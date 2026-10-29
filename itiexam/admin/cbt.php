@@ -7,38 +7,45 @@ require_login();
 $pdo = db();
 
 $id = (int)($_GET['id'] ?? 0);
-$edit = ['id' => 0, 'title' => '', 'trade_id' => (int)($_GET['trade'] ?? 0), 'questions' => 0, 'minutes' => 0, 'description' => '', 'status' => 'published', 'folder' => '', 'entry' => '', 'level' => ''];
+$edit = ['id' => 0, 'title' => '', 'trade_id' => (int)($_GET['trade'] ?? 0), 'questions' => 0, 'minutes' => 0, 'description' => '', 'status' => 'published', 'folder' => '', 'entry' => '', 'level' => '',
+    'kind' => ($_GET['kind'] ?? '') === 'paper' ? 'paper' : 'mock', 'paper_year' => ''];
 if ($id) {
     $st = $pdo->prepare('SELECT * FROM cbt_tests WHERE id = ?');
     $st->execute([$id]);
     $edit = $st->fetch() ?: redirect('/admin/cbt.php');
 }
 
-/** Keeps the trade's Mock Tests list in step with this test. */
+/** Keeps the trade's Mock Tests (or Previous Year Papers) list in step with this test. */
 function sync_trade_item(array $t, bool $show): void
 {
     $pdo = db();
     $url = cbt_url($t);
-    $pdo->prepare("DELETE FROM trade_items WHERE section = 'mock_tests' AND url = ? AND trade_id <> ?")->execute([$url, (int)$t['trade_id']]);
-    $ex = $pdo->prepare("SELECT id FROM trade_items WHERE section = 'mock_tests' AND url = ? AND trade_id = ?");
-    $ex->execute([$url, (int)$t['trade_id']]);
+    $sec = cbt_section($t);
+    // Gone from other trades, and from the other list when it changed between mock test and previous paper
+    $pdo->prepare("DELETE FROM trade_items WHERE url = ? AND section IN ('mock_tests', 'previous_papers') AND (trade_id <> ? OR section <> ?)")->execute([$url, (int)$t['trade_id'], $sec]);
+    $ex = $pdo->prepare('SELECT id FROM trade_items WHERE section = ? AND url = ? AND trade_id = ?');
+    $ex->execute([$sec, $url, (int)$t['trade_id']]);
     $itemId = $ex->fetchColumn();
     if (!$show || !$t['trade_id'] || $t['status'] !== 'published') {
         if ($itemId) $pdo->prepare('DELETE FROM trade_items WHERE id = ?')->execute([$itemId]);
         return;
     }
+    // A paper shows its year in the list's year box, and "Online CBT · 75 Questions" under its name
+    $label = $sec === 'previous_papers' ? ($t['paper_year'] ?? '') : '';
+    $sub = $sec === 'previous_papers' ? trim('Online CBT paper' . ($t['questions'] ? ' · ' . (int)$t['questions'] . ' Questions' : '') . ($t['minutes'] ? ' · ' . (int)$t['minutes'] . ' min' : '')) : '';
     if ($itemId) {
-        $pdo->prepare('UPDATE trade_items SET title = ?, level = ?, questions = ?, minutes = ? WHERE id = ?')->execute([$t['title'], $t['level'] ?? '', (int)$t['questions'], (int)$t['minutes'], $itemId]);
+        $pdo->prepare('UPDATE trade_items SET title = ?, level = ?, questions = ?, minutes = ?, label = ?, subtitle = ? WHERE id = ?')
+            ->execute([$t['title'], $t['level'] ?? '', (int)$t['questions'], (int)$t['minutes'], $label, $sub, $itemId]);
     } else {
-        $pdo->prepare("INSERT INTO trade_items (trade_id, section, title, level, url, icon, questions, minutes, is_new, sort_order) VALUES (?, 'mock_tests', ?, ?, ?, 'clip', ?, ?, 1, 0)")
-            ->execute([(int)$t['trade_id'], $t['title'], $t['level'] ?? '', $url, (int)$t['questions'], (int)$t['minutes']]);
+        $pdo->prepare("INSERT INTO trade_items (trade_id, section, title, level, url, icon, questions, minutes, label, subtitle, is_new, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0)")
+            ->execute([(int)$t['trade_id'], $sec, $t['title'], $t['level'] ?? '', $url, $sec === 'previous_papers' ? 'doc' : 'clip', (int)$t['questions'], (int)$t['minutes'], $label, $sub]);
     }
     $pdo->prepare('UPDATE trades SET updated_at = ? WHERE id = ?')->execute([now(), (int)$t['trade_id']]);
 }
 
 // Housekeeping: list entries and test folders whose test no longer exists
 $live = $pdo->query('SELECT folder FROM cbt_tests')->fetchAll(PDO::FETCH_COLUMN);
-foreach ($pdo->query("SELECT id, url FROM trade_items WHERE section = 'mock_tests' AND url LIKE '/cbt/%'")->fetchAll() as $ti) {
+foreach ($pdo->query("SELECT id, url FROM trade_items WHERE section IN ('mock_tests', 'previous_papers') AND url LIKE '/cbt/%'")->fetchAll() as $ti) {
     if (preg_match('~^/cbt/([a-z0-9-]+)/~', $ti['url'], $m) && !in_array($m[1], $live, true)) $pdo->prepare('DELETE FROM trade_items WHERE id = ?')->execute([$ti['id']]);
 }
 // Folders without a test are leftovers of an upload that stopped half way. Only those are removed: between an hour
@@ -80,6 +87,7 @@ if (is_post()) {
     $edit['description'] = mb_substr(post('description'), 0, 500);
     $edit['status'] = post('status') === 'draft' ? 'draft' : 'published';
     $edit['level'] = in_array(post('level'), LEVELS, true) ? post('level') : '';
+    $edit['kind'] = post('kind') === 'paper' ? 'paper' : 'mock';
     $file = $_FILES['test_file'] ?? null;
     $hasFile = $file && $file['error'] !== UPLOAD_ERR_NO_FILE;
     // A ZIP that holds many tests goes to Bulk import (preview, trade-wise) instead
@@ -111,16 +119,17 @@ if (is_post()) {
         } catch (RuntimeException $ex) { $err = $ex->getMessage(); }
     }
     if (!$err) {
+        $edit['paper_year'] = $edit['kind'] === 'paper' ? paper_year(post('paper_year'), $edit['title']) : '';
         if ($id) {
-            $pdo->prepare('UPDATE cbt_tests SET title = ?, level = ?, trade_id = ?, questions = ?, minutes = ?, description = ?, status = ?, folder = ?, entry = ?, updated_at = ? WHERE id = ?')
-                ->execute([$edit['title'], $edit['level'], $edit['trade_id'], $edit['questions'], $edit['minutes'], $edit['description'], $edit['status'], $edit['folder'], $edit['entry'], now(), $id]);
+            $pdo->prepare('UPDATE cbt_tests SET title = ?, level = ?, trade_id = ?, questions = ?, minutes = ?, description = ?, status = ?, folder = ?, entry = ?, kind = ?, paper_year = ?, updated_at = ? WHERE id = ?')
+                ->execute([$edit['title'], $edit['level'], $edit['trade_id'], $edit['questions'], $edit['minutes'], $edit['description'], $edit['status'], $edit['folder'], $edit['entry'], $edit['kind'], $edit['paper_year'], now(), $id]);
         } else {
-            $pdo->prepare('INSERT INTO cbt_tests (folder, title, level, trade_id, entry, questions, minutes, description, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-                ->execute([$edit['folder'], $edit['title'], $edit['level'], $edit['trade_id'], $edit['entry'], $edit['questions'], $edit['minutes'], $edit['description'], $edit['status'], now(), now()]);
+            $pdo->prepare('INSERT INTO cbt_tests (folder, title, level, trade_id, entry, questions, minutes, description, status, kind, paper_year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+                ->execute([$edit['folder'], $edit['title'], $edit['level'], $edit['trade_id'], $edit['entry'], $edit['questions'], $edit['minutes'], $edit['description'], $edit['status'], $edit['kind'], $edit['paper_year'], now(), now()]);
             $id = (int)$pdo->lastInsertId();
         }
         sync_trade_item($edit, isset($_POST['add_to_trade']));
-        flash('Test saved. Open it with “View”.');
+        flash(($edit['kind'] === 'paper' ? 'Previous year paper saved' . ($edit['paper_year'] ? ' (' . $edit['paper_year'] . ')' : '') . ' – it shows in the trade\'s “Previous Year Papers”.' : 'Test saved.') . ' Open it with “View”.');
         redirect('/admin/cbt.php');
     }
 }
@@ -134,7 +143,7 @@ $counts = $pdo->query('SELECT trade_id, COUNT(*) FROM cbt_tests GROUP BY trade_i
 $demo = $pdo->query("SELECT t.name, i.title FROM trade_items i JOIN trades t ON t.id = i.trade_id WHERE i.section = 'mock_tests' AND TRIM(i.url) IN ('', '#') ORDER BY t.sort_order, i.sort_order")->fetchAll();
 $inTrade = true;
 if ($edit['id']) {
-    $chk = $pdo->prepare("SELECT COUNT(*) FROM trade_items WHERE section = 'mock_tests' AND url = ?");
+    $chk = $pdo->prepare("SELECT COUNT(*) FROM trade_items WHERE section IN ('mock_tests', 'previous_papers') AND url = ?");
     $chk->execute([cbt_url($edit)]);
     $inTrade = (bool)$chk->fetchColumn();
 }
@@ -143,8 +152,8 @@ admin_header('CBT Tests', 'cbt');
 ?>
     <div class="grid2 wide-left">
       <section class="box tablebox">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>Your HTML tests</h2><a class="btn" href="/admin/cbt-import.php">📦 Bulk import (all trades)</a></div>
-        <p class="muted">Upload tests you made as HTML web pages. Each test gets its own page on the website (with your header, full-screen button and more tests) and can appear automatically in the trade's <b>Mock Tests</b> list.</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>Your HTML tests</h2><span style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn alt" href="/admin/cbt.php?kind=paper#form">📄 + Previous year paper</a><a class="btn" href="/admin/cbt-import.php">📦 Bulk import (all trades)</a></span></div>
+        <p class="muted">Upload tests you made as HTML web pages. Each test gets its own page on the website (with your header, full-screen button and more tests) and can appear automatically in the trade's <b>Mock Tests</b> or <b>Previous Year Papers</b> list.</p>
 <?php if ($demo): ?>
         <form method="post" class="flash" style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap" data-confirm="Remove these <?= count($demo) ?> demo tests from the trade pages?">
           <?= csrf_field() ?><input type="hidden" name="action" value="clean_lists">
@@ -170,7 +179,7 @@ admin_header('CBT Tests', 'cbt');
 <?php foreach ($rows as $r): ?>
             <tr<?= $r['id'] == $edit['id'] ? ' class="editing"' : '' ?>>
               <td><input type="checkbox" class="pick" name="ids[]" value="<?= $r['id'] ?>" form="bulkdel" aria-label="Select <?= e($r['title']) ?>"></td>
-              <td><?= $r['level'] ? '<span class="pill">' . e($r['level']) . '</span> ' : '' ?><b><?= e($r['title']) ?></b><br><small class="muted"><?= $r['questions'] ? (int)$r['questions'] . ' Q · ' : '' ?><?= $r['minutes'] ? (int)$r['minutes'] . ' min · ' : '' ?><?= e(nice_date($r['created_at'])) ?></small></td>
+              <td><?= ($r['kind'] ?? '') === 'paper' ? '<span class="pill" style="background:#fff4e8;color:#c2570c">📄 Paper' . ($r['paper_year'] ? ' ' . e($r['paper_year']) : '') . '</span> ' : '' ?><?= $r['level'] ? '<span class="pill">' . e($r['level']) . '</span> ' : '' ?><b><?= e($r['title']) ?></b><br><small class="muted"><?= $r['questions'] ? (int)$r['questions'] . ' Q · ' : '' ?><?= $r['minutes'] ? (int)$r['minutes'] . ' min · ' : '' ?><?= e(nice_date($r['created_at'])) ?></small></td>
               <td><?= e($r['tname'] ?: '—') ?></td>
               <td><span class="pill <?= $r['status'] === 'published' ? 'ok' : 'off' ?>"><?= e($r['status']) ?></span></td>
               <td class="acts">
@@ -201,7 +210,7 @@ admin_header('CBT Tests', 'cbt');
 
       <div>
         <form method="post" enctype="multipart/form-data" class="box form" id="form">
-          <h2><?= $edit['id'] ? 'Edit test' : 'Upload a test' ?></h2>
+          <h2><?= $edit['id'] ? 'Edit test' : 'Upload a test or paper' ?></h2>
 <?php if ($err): ?><div class="flash err"><?= e($err) ?></div><?php endif; ?>
           <?= csrf_field() ?>
 <?php if ($edit['id']): ?>
@@ -210,6 +219,16 @@ admin_header('CBT Tests', 'cbt');
           <label>Test name <span class="hint">Optional – leave empty to take it from the test (e.g. “Sem 1 – Module 3: Masonry”)</span><input name="title" value="<?= e($edit['title']) ?>" placeholder="Taken from the test if left empty"></label>
 <?php endif; ?>
           <label>Trade <select name="trade_id"><option value="0">— No trade —</option><?php foreach ($trades as $t): ?><option value="<?= $t['id'] ?>"<?= $t['id'] == $edit['trade_id'] ? ' selected' : '' ?>><?= e($t['name']) ?></option><?php endforeach; ?></select></label>
+          <fieldset class="up-mode">
+            <legend>Add as</legend>
+            <div class="up-tabs" role="radiogroup">
+              <label><input type="radio" name="kind" value="mock"<?= ($edit['kind'] ?? 'mock') !== 'paper' ? ' checked' : '' ?>> 📝 Mock Test</label>
+              <label><input type="radio" name="kind" value="paper"<?= ($edit['kind'] ?? '') === 'paper' ? ' checked' : '' ?>> 📄 Previous Year Paper</label>
+            </div>
+            <label class="paper-only"<?= ($edit['kind'] ?? '') === 'paper' ? '' : ' hidden' ?>>Paper year <span class="hint">e.g. 2024 – leave empty to take it from the name</span>
+              <input name="paper_year" inputmode="numeric" maxlength="4" pattern="(19|20)[0-9]{2}" value="<?= e($edit['paper_year'] ?? '') ?>" placeholder="2024"></label>
+            <p class="hint">A previous year paper is shown in the trade's <b>Previous Year Papers</b> list with its year; a mock test in <b>Mock Tests</b>.</p>
+          </fieldset>
           <label>Year / Semester <span class="hint">Puts the test in the trade page's 1st Year / 2nd Year tab</span><select name="level"><?= level_options($edit['level'] ?? '', $edit['id'] ? '— None —' : '— Take from the test / none —') ?></select></label>
           <div class="grid2 tight">
             <label>Questions <input type="number" min="0" name="questions" value="<?= (int)$edit['questions'] ?>"></label>
@@ -236,11 +255,17 @@ admin_header('CBT Tests', 'cbt');
           <label>Start page <select name="entry"><?php foreach ($files as $fl): ?><option<?= $fl === $edit['entry'] ? ' selected' : '' ?>><?= e($fl) ?></option><?php endforeach; ?></select></label>
 <?php endif; ?>
           <label>Short description (optional) <textarea name="description" rows="2" maxlength="500"><?= e($edit['description']) ?></textarea></label>
-          <label class="check"><input type="checkbox" name="add_to_trade"<?= $inTrade ? ' checked' : '' ?>> Show in the trade's “Mock Tests” list</label>
+          <label class="check"><input type="checkbox" name="add_to_trade"<?= $inTrade ? ' checked' : '' ?>> Show in the trade's list (Mock Tests / Previous Year Papers)</label>
           <label>Status <select name="status"><option value="published"<?= $edit['status'] === 'published' ? ' selected' : '' ?>>Published</option><option value="draft"<?= $edit['status'] === 'draft' ? ' selected' : '' ?>>Draft (hidden)</option></select></label>
           <div class="bar"><?php if ($edit['id']): ?><a class="btn alt" href="/admin/cbt.php">Cancel</a><?php endif; ?><button class="btn"><?= $edit['id'] ? 'Save test' : '⬆ Upload test' ?></button></div>
         </form>
 <?php $cbtNew = !$edit['id']; require __DIR__ . '/inc/cbt-upload-js.php'; ?>
+        <script>
+          // Year box only for a previous year paper
+          document.querySelectorAll('#form input[name=kind]').forEach(function (r) {
+            r.addEventListener('change', function () { document.querySelector('#form .paper-only').hidden = r.value !== 'paper' || !r.checked; });
+          });
+        </script>
 
 <?php
 // Upload check: the hosting settings a test upload needs, each with its fix

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '21';
+const SCHEMA_VERSION = '22';
 
 function db(): PDO
 {
@@ -129,6 +129,9 @@ function db_migrate(PDO $pdo): void
         created_at VARCHAR(20) NOT NULL, updated_at VARCHAR(20) NOT NULL)$engine");
     // v12 (after the table exists, so a brand-new install works too)
     add_column($pdo, 'cbt_tests', 'level', "VARCHAR(20) NOT NULL DEFAULT ''");
+    // v22: a test can be a previous year paper (shown in the trade's Previous Year Papers, with its year)
+    add_column($pdo, 'cbt_tests', 'kind', "VARCHAR(10) NOT NULL DEFAULT 'mock'");
+    add_column($pdo, 'cbt_tests', 'paper_year', "VARCHAR(10) NOT NULL DEFAULT ''");
     foreach (['trade_items', 'cbt_tests'] as $tb) {
         foreach ($pdo->query("SELECT id, title FROM $tb WHERE level = ''")->fetchAll() as $r) {
             if (preg_match('/^\s*(1st Year|2nd Year|Sem [1-4])\s*[–:-]\s*(.+)$/u', $r['title'], $m))

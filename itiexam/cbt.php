@@ -67,6 +67,8 @@ if (isset($_GET['p'])) {
 /* ---------- the test page ---------- */
 if ($lv = shown_level($test['level'] ?? '', (string)$test['tdur'])) $test['title'] = $lv . ' – ' . $test['title'];   // "1st Year – Module 3" on the test page
 $name = $test['tname'] ?: 'ITI';
+$isPaper = ($test['kind'] ?? '') === 'paper';                                 // previous year paper instead of a mock test
+$pyear = (string)($test['paper_year'] ?? '');
 $path = cbt_url($test);
 $more = [];
 if ($test['trade_id']) {
@@ -80,11 +82,11 @@ $tpath = $test['tslug'] ? trade_url(['slug' => $test['tslug'], 'kind' => $test['
 if ($test['tslug']) { if ($test['tkind'] !== 'subject') $crumbs[] = ['Trades', '/trades/']; $crumbs[] = [$name, $tpath]; }
 $crumbs[] = [$test['title'], $path];
 $meta = [
-    'title' => ($test['tname'] ? "ITI $name " : '') . $test['title'] . ' – Free Online CBT Mock Test | ITI Exam',
+    'title' => ($test['tname'] ? "ITI $name " : '') . $test['title'] . ($isPaper ? ' – Previous Year Question Paper' . ($pyear ? " $pyear" : '') . ' (Online CBT)' : ' – Free Online CBT Mock Test') . ' | ITI Exam',
     'description' => $desc,
     'keywords' => "ITI $name mock test, ITI $name online test, {$test['title']}, ITI CBT mock test, NCVT online test",
     'path' => $path,
-    'rv' => ['t' => ($test['tname'] ? $test['tname'] . ' – ' : '') . $test['title'], 's' => 'Mock Test' . ($test['questions'] ? ' · ' . $test['questions'] . ' Questions' : ''), 'i' => '📝'],
+    'rv' => ['t' => ($test['tname'] ? $test['tname'] . ' – ' : '') . $test['title'], 's' => ($isPaper ? 'Previous Year Paper' : 'Mock Test') . ($test['questions'] ? ' · ' . $test['questions'] . ' Questions' : ''), 'i' => '📝'],
     'jsonld' => [
         ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => array_map(fn($c, $i) =>
             ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $c[0], 'item' => SITE_URL . $c[1]], $crumbs, array_keys($crumbs))],
@@ -122,7 +124,7 @@ require __DIR__ . '/includes/header.php';
         <div>
           <h1><?= $test['tname'] ? '<span class="cbt-trade">' . e($name) . '</span> ' : '' ?><?= e($test['title']) ?></h1>
           <p class="cbt-meta">
-            <span><?= icon('clip') ?> Online CBT Mock Test</span>
+            <span><?= icon($isPaper ? 'doc' : 'clip') ?> <?= $isPaper ? 'Previous Year Paper' . ($pyear ? ' ' . e($pyear) : '') : 'Online CBT Mock Test' ?></span>
             <?php if ($test['questions']): ?><span><?= icon('doc') ?> <?= (int)$test['questions'] ?> Questions</span><?php endif; ?>
             <?php if ($test['minutes']): ?><span><?= icon('clock') ?> <?= (int)$test['minutes'] ?> Minutes</span><?php endif; ?>
             <span class="free"><?= icon('star') ?> Free</span>
@@ -146,7 +148,7 @@ require __DIR__ . '/includes/header.php';
 <?php if ($locked): ?>
           <div class="cbt-gate">
             <div class="cbt-gate-i">🔒</div>
-            <h2>Login to start this mock test</h2>
+            <h2>Login to start this <?= $isPaper ? 'paper' : 'mock test' ?></h2>
             <p>Sign in with your Google account – it takes 5 seconds and is free. Your score, history and progress are saved to your own dashboard.</p>
             <p class="cbt-gate-mr">टेस्ट देण्यासाठी आधी Google ने लॉगिन करा – फक्त 5 सेकंद, पूर्णपणे मोफत.</p>
             <a class="cbt-gate-btn" href="<?= e(login_url($path)) ?>" rel="nofollow"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.6 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.8-4.5l-7.9-6.2C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.2 1.5-5 2.3-8.2 2.3-6.2 0-11.5-4.1-13.4-9.8l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg> Login with Google &amp; Start</a>
@@ -196,7 +198,7 @@ require __DIR__ . '/includes/header.php';
             </ol>
           </div>
 <?php if ($test['tslug']): ?>
-          <a class="cs-all" href="<?= e($tpath) ?>#mock-tests"><?= icon('list') ?> All <?= e($name) ?> Mock Tests <?= icon('arrow') ?></a>
+          <a class="cs-all" href="<?= e($tpath) ?>#<?= $isPaper ? 'previous-papers' : 'mock-tests' ?>"><?= icon('list') ?> All <?= e($name) ?> <?= $isPaper ? 'Previous Papers' : 'Mock Tests' ?> <?= icon('arrow') ?></a>
 <?php endif; ?>
         </aside>
       </div>
@@ -208,8 +210,8 @@ require __DIR__ . '/includes/header.php';
 <?php if ($test['description']): ?>      <p class="cbt-desc"><?= e($test['description']) ?></p>
 <?php endif; ?>
       <div class="seo-text card">
-        <h2>About this <?= $test['tname'] ? 'ITI ' . e($name) . ' ' : '' ?>mock test</h2>
-        <p><strong><?= e(($test['tname'] ? 'ITI ' . $name . ' – ' : '') . $test['title']) ?></strong> is a free online <strong>CBT mock test</strong> in the NCVT exam pattern<?= $test['questions'] ? ' with <strong>' . (int)$test['questions'] . ' multiple choice questions</strong>' : '' ?><?= $test['minutes'] ? ' and a <strong>' . (int)$test['minutes'] . '-minute</strong> timer' : '' ?>. Choose English, Hindi, Marathi or another language, answer each question, and submit to see your score, the correct answers and whether you passed (33%).</p>
+        <h2>About this <?= $test['tname'] ? 'ITI ' . e($name) . ' ' : '' ?><?= $isPaper ? 'previous year paper' : 'mock test' ?></h2>
+        <p><strong><?= e(($test['tname'] ? 'ITI ' . $name . ' – ' : '') . $test['title']) ?></strong> is <?= $isPaper ? 'the <strong>ITI ' . e($name) . ' previous year question paper' . ($pyear ? ' ' . e($pyear) : '') . '</strong> as a free online CBT test,' : 'a free online <strong>CBT mock test</strong>' ?> in the NCVT exam pattern<?= $test['questions'] ? ' with <strong>' . (int)$test['questions'] . ' multiple choice questions</strong>' : '' ?><?= $test['minutes'] ? ' and a <strong>' . (int)$test['minutes'] . '-minute</strong> timer' : '' ?>. Choose English, Hindi, Marathi or another language, answer each question, and submit to see your score, the correct answers and whether you passed (33%).</p>
         <p>Your result is saved to your <a href="/student/">dashboard</a>, so you can see how you improve test by test.<?php if ($tpath): ?> For more practice open the <a href="<?= e($tpath) ?>"><?= e($name) ?> page</a> – it has every <?= e($name) ?> mock test, module-wise notes, the syllabus and previous year papers.<?php endif; ?> Practise <a href="/employability-skills/">Employability Skills</a> too: it is part of every ITI trade's CBT exam.</p>
       </div>
       <?= ad('trade_middle') ?>

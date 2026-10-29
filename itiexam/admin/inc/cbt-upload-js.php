@@ -7,7 +7,7 @@ $cbtExts = array_keys(CBT_TYPES);
   .up-mode { border: 1px solid #e3e8f4; border-radius: 12px; padding: 12px 14px; margin: 4px 0 12px; }
   .up-mode legend { font-weight: 600; padding: 0 6px; }
   .up-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-  .up-tabs label { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1px solid #d6deef; border-radius: 10px; cursor: pointer; margin: 0; font-weight: 600; }
+  .up-tabs label { display: flex; flex: 1 1 auto; justify-content: flex-start; align-items: center; gap: 6px; padding: 8px 12px; border: 1px solid #d6deef; border-radius: 10px; cursor: pointer; margin: 0; font-weight: 600; white-space: nowrap; }
   .up-tabs label:has(input:checked) { border-color: #1f4fd6; background: #eef3ff; color: #1f4fd6; }
   .up-tabs small { font-weight: 500; color: #16a34a; }
   .up-pane[hidden] { display: none; }

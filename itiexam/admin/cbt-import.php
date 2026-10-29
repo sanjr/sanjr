@@ -58,10 +58,11 @@ if (is_post() || $autoScan) {
         $rows = json_decode(file_get_contents($jobDir . '/rows.json'), true);
         $use = $_POST['use'] ?? []; $tsel = $_POST['trade'] ?? []; $titles = $_POST['title'] ?? []; $mins = $_POST['minutes'] ?? []; $lvls = $_POST['level'] ?? [];
         $toList = isset($_POST['to_list']); $starter = isset($_POST['starter']);
+        $asPaper = post('as') === 'paper';                                // previous year papers instead of mock tests
         $newIds = []; $done = 0; $made = []; $failed = [];
         if (!is_dir(CBT_DIR)) @mkdir(CBT_DIR, 0755, true);               // a new server has no data/tests folder yet
-        $ins = $pdo->prepare('INSERT INTO cbt_tests (folder, title, level, trade_id, entry, questions, minutes, description, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-        $item = $pdo->prepare("INSERT INTO trade_items (trade_id, section, title, level, url, icon, questions, minutes, is_new, sort_order) VALUES (?, 'mock_tests', ?, ?, ?, 'clip', ?, ?, ?, ?)");
+        $ins = $pdo->prepare('INSERT INTO cbt_tests (folder, title, level, trade_id, entry, questions, minutes, description, status, kind, paper_year, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $item = $pdo->prepare('INSERT INTO trade_items (trade_id, section, title, level, url, icon, questions, minutes, label, subtitle, is_new, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         foreach ($rows as $i => $r) {
             if (empty($use[$i])) continue;
             $sel = (string)($tsel[$i] ?? '0');
@@ -83,10 +84,13 @@ if (is_post() || $autoScan) {
             }
             $minutes = max(0, (int)($mins[$i] ?? $r['minutes']));
             $level = in_array($lv = (string)($lvls[$i] ?? $r['level']), LEVELS, true) ? $lv : '';
-            $ins->execute([$folder, $title, $level, $tid, $r['entry'], (int)$r['questions'], $minutes, '', 'published', now(), now()]);
+            $year = $asPaper ? paper_year('', $title) : '';
+            $ins->execute([$folder, $title, $level, $tid, $r['entry'], (int)$r['questions'], $minutes, '', 'published', $asPaper ? 'paper' : 'mock', $year, now(), now()]);
             if ($toList && $tid) {
-                $next = (int)$pdo->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM trade_items WHERE trade_id = ' . $tid . " AND section = 'mock_tests'")->fetchColumn();
-                $item->execute([$tid, $title, $level, '/cbt/' . $folder . '/', (int)$r['questions'], $minutes, 0, $next]);
+                $sec = $asPaper ? 'previous_papers' : 'mock_tests';
+                $next = (int)$pdo->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM trade_items WHERE trade_id = ' . $tid . " AND section = '$sec'")->fetchColumn();
+                $sub = $asPaper ? 'Online CBT paper' . ((int)$r['questions'] ? ' · ' . (int)$r['questions'] . ' Questions' : '') . ($minutes ? ' · ' . $minutes . ' min' : '') : '';
+                $item->execute([$tid, $sec, $title, $level, '/cbt/' . $folder . '/', $asPaper ? 'doc' : 'clip', (int)$r['questions'], $minutes, $year, $sub, 0, $next]);
                 $pdo->prepare('UPDATE trades SET updated_at = ? WHERE id = ?')->execute([now(), $tid]);
             }
             $done++;
@@ -157,7 +161,8 @@ admin_header('Bulk import CBT tests', 'cbt');
       <p class="muted">Check the trade and name of each test, untick anything you don't want, then press <b>Import</b>. <?= $newNames ? 'Trades marked <b>＋ New</b> will be created.' : '' ?></p>
       <?= csrf_field() ?><input type="hidden" name="action" value="import"><input type="hidden" name="job" value="<?= e($job) ?>">
       <div class="bar" style="justify-content:flex-start;gap:14px;flex-wrap:wrap">
-        <label class="check"><input type="checkbox" name="to_list" checked> Show in each trade's “Mock Tests” list</label>
+        <label>Add these as <select name="as"><option value="mock">📝 Mock tests (trade's “Mock Tests”)</option><option value="paper">📄 Previous year papers (trade's “Previous Year Papers”, year taken from each name)</option></select></label>
+        <label class="check"><input type="checkbox" name="to_list" checked> Show in each trade's list</label>
         <label class="check"><input type="checkbox" name="starter" checked> New trades: add standard sections + menu link</label>
         <label class="check"><input type="checkbox" id="all" checked> Select all</label>
       </div>

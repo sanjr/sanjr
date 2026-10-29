@@ -196,6 +196,16 @@ function cbt_check_saved(string $dir, string $folder, string $entry): array
     return [$folder, $entry];
 }
 
+/** Trade page list a CBT test belongs to: its Mock Tests, or its Previous Year Papers. */
+function cbt_section(array $t): string { return ($t['kind'] ?? 'mock') === 'paper' ? 'previous_papers' : 'mock_tests'; }
+
+/** Year of a previous paper: the one typed in, else a year found in the name ("NCVT CBT Exam 2024"). */
+function paper_year(string $typed, string $title): string
+{
+    if (preg_match('/^(19|20)\d{2}$/', trim($typed))) return trim($typed);
+    return preg_match('/\b(20[0-4]\d|19[89]\d)\b/', $title, $m) ? $m[1] : '';
+}
+
 /** Copies a folder with everything in it; false if any file could not be written. */
 function rcopy(string $from, string $to): bool
 {
