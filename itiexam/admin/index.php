@@ -22,6 +22,7 @@ $stats = [
     ['Pages & articles', $c('SELECT COUNT(*) FROM pages'), '/admin/pages.php', 'doc', 'c-purple'],
     ['Students', $c('SELECT COUNT(*) FROM students'), '/admin/students.php', 'users', 'c-blue'],
     ['Exams taken', $c('SELECT COUNT(*) FROM attempts'), '/admin/students.php', 'clip', 'c-green'],
+    ['Tests solved today', $c("SELECT COUNT(*) FROM attempts WHERE created_at >= '" . date('Y-m-d') . "'"), '/admin/students.php', 'clip', 'c-orange'],
 ];
 $recent = $pdo->query('SELECT id, name, slug, updated_at FROM trades ORDER BY updated_at DESC LIMIT 5')->fetchAll();
 $sampleIds = array_filter(array_map('intval', explode(',', setting('sample_job_ids'))));

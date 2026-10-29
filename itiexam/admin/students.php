@@ -78,6 +78,8 @@ if ($view === 'list') {
     $st->execute($args);
     $rows = $st->fetchAll();
     if ($sf !== '') $rows = array_values(array_filter($rows, fn($r) => strcasecmp(loc_parts($r['location'])[1], $sf) === 0));
+    $noTestOnly = !empty($_GET['notest']);
+    if ($noTestOnly) $rows = array_values(array_filter($rows, fn($r) => !(int)$r['tests']));
 
     if (($_GET['export'] ?? '') === 'csv') {
         header('Content-Type: text/csv; charset=utf-8');
@@ -97,6 +99,8 @@ if ($view === 'list') {
     <div class="bar">
       <form class="inline-filter" method="get"><input type="hidden" name="view" value="list">
         <input name="q" value="<?= e($q) ?>" placeholder="Search name, email or city…">
+<?php if ($noTestOnly): ?>        <input type="hidden" name="notest" value="1"><a class="pill" href="?view=list" title="Show all students">Only students without a test ✕</a>
+<?php endif; ?>
         <select name="trade"><option value="">All trades</option><?php foreach ($trades as $t): ?><option value="<?= $t['id'] ?>"<?= $tf === (int)$t['id'] ? ' selected' : '' ?>><?= e($t['name']) ?></option><?php endforeach; ?></select>
         <select name="state"><option value="">All states</option><?php foreach (array_keys($states) as $x): ?><option<?= $sf === $x ? ' selected' : '' ?>><?= e($x) ?></option><?php endforeach; ?></select>
         <button class="btn alt">Filter</button>
@@ -135,6 +139,22 @@ $one = function (string $sql, array $a = []) use ($pdo) { $s = $pdo->prepare($sq
 [$students] = $one('SELECT COUNT(*) FROM students');
 [$newS] = $one('SELECT COUNT(*) FROM students WHERE created_at >= ?', [$since]);
 [$exams, $passed, $active, $avg] = $one('SELECT COUNT(*), COALESCE(SUM(passed), 0), COUNT(DISTINCT student_id), COALESCE(ROUND(AVG(pct)), 0) FROM attempts WHERE created_at >= ?', [$since]);
+
+// Today, students who logged in but never took a test, and how many different tests were solved
+$today = date('Y-m-d');
+[$loginsToday] = $one('SELECT COUNT(*) FROM students WHERE last_login >= ?', [$today]);
+[$newToday] = $one('SELECT COUNT(*) FROM students WHERE created_at >= ?', [$today]);
+[$examsToday, $testersToday, $passedToday] = $one('SELECT COUNT(*), COUNT(DISTINCT student_id), COALESCE(SUM(passed), 0) FROM attempts WHERE created_at >= ?', [$today]);
+[$noTest] = $one('SELECT COUNT(*) FROM students WHERE id NOT IN (SELECT DISTINCT student_id FROM attempts)');
+[$testsSolved] = $one('SELECT COUNT(DISTINCT test_id) FROM attempts WHERE test_id > 0 AND created_at >= ?', [$since]);
+[$testsTotal] = $one("SELECT COUNT(*) FROM cbt_tests WHERE status = 'published'");
+$latest = $pdo->query('SELECT a.*, s.name AS sname, t.name AS tname FROM attempts a LEFT JOIN students s ON s.id = a.student_id LEFT JOIN trades t ON t.id = a.trade_id ORDER BY a.id DESC LIMIT 15')->fetchAll();
+$untaken = $pdo->query("SELECT c.id, c.title, c.kind, t.name AS tname FROM cbt_tests c LEFT JOIN trades t ON t.id = c.trade_id
+    WHERE c.status = 'published' AND c.id NOT IN (SELECT DISTINCT test_id FROM attempts) ORDER BY t.name, c.title LIMIT 40")->fetchAll();
+$ago = function (string $at): string {
+    $s = max(0, time() - strtotime($at));
+    return $s < 60 ? 'just now' : ($s < 3600 ? intdiv($s, 60) . ' min ago' : ($s < 86400 ? intdiv($s, 3600) . ' h ago' : date('d M, h:i A', strtotime($at))));
+};
 
 $byTrade = $pdo->prepare("SELECT COALESCE(t.name, 'Other') AS name, COUNT(*) AS exams, COUNT(DISTINCT a.student_id) AS students, SUM(a.passed) AS passed, ROUND(AVG(a.pct)) AS avg
     FROM attempts a LEFT JOIN trades t ON t.id = a.trade_id WHERE a.created_at >= ? GROUP BY a.trade_id, t.name ORDER BY exams DESC");
@@ -175,6 +195,12 @@ $max = max(1, max($daily));
 
 admin_header('Students & Results', 'students');
 ?>
+    <style>
+      .st-today ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+      .st-today li { padding: 12px 14px; border-radius: 12px; background: linear-gradient(135deg, #eef3ff, #f8faff); border: 1px solid #e3e9f6; }
+      .st-today b { display: block; font: 700 26px/1.1 "Poppins", sans-serif; color: var(--ink); }
+      .st-today span { color: #64748b; font-size: 13px; }
+    </style>
     <div class="bar">
       <div class="seg">
 <?php foreach ([0 => 'All time', 90 => '90 days', 30 => '30 days', 7 => '7 days'] as $k => $l): ?>
@@ -186,12 +212,40 @@ admin_header('Students & Results', 'students');
 <?php if (!google_login_ready()): ?>
     <div class="flash err">Google login is <b>off</b>, so students cannot sign in yet. Turn it on in <a href="/admin/settings.php#google-login">Settings</a>.</div>
 <?php endif; ?>
-    <div class="stats">
-      <a class="stat" href="?view=list"><span class="chip c-blue"><?= icon('users') ?></span><b><?= (int)$students ?></b><small>Students (<?= (int)$newS ?> new, <?= e($period) ?>)</small></a>
-      <div class="stat"><span class="chip c-purple"><?= icon('target') ?></span><b><?= (int)$active ?></b><small>Students who took tests</small></div>
-      <div class="stat"><span class="chip c-orange"><?= icon('clip') ?></span><b><?= (int)$exams ?></b><small>Exams taken</small></div>
+    <section class="box st-today">
+      <h2>Today <small class="muted"><?= e(date('l, d M Y')) ?></small></h2>
+      <ul>
+        <li><b><?= (int)$loginsToday ?></b><span>Students logged in</span></li>
+        <li><b><?= (int)$newToday ?></b><span>New students</span></li>
+        <li><b><?= (int)$testersToday ?></b><span>Students who took a test</span></li>
+        <li><b><?= (int)$examsToday ?></b><span>Tests solved (<?= (int)$passedToday ?> passed)</span></li>
+      </ul>
+    </section>
+    <div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+      <a class="stat" href="?view=list"><span class="chip c-blue"><?= icon('users') ?></span><b><?= (int)$students ?></b><small>Students logged in with Google (<?= (int)$newS ?> new, <?= e($period) ?>)</small></a>
+      <div class="stat"><span class="chip c-purple"><?= icon('target') ?></span><b><?= (int)$active ?></b><small>Students who took tests (<?= e($period) ?>)</small></div>
+      <a class="stat" href="?view=list&amp;notest=1"><span class="chip c-orange"><?= icon('alert') ?></span><b><?= (int)$noTest ?></b><small>Logged in but no test yet – see who</small></a>
+      <div class="stat"><span class="chip c-orange"><?= icon('clip') ?></span><b><?= (int)$exams ?></b><small>Tests solved in all (<?= e($period) ?>)</small></div>
+      <div class="stat"><span class="chip c-blue"><?= icon('list') ?></span><b><?= (int)$testsSolved ?> <small style="display:inline;font-size:14px">of <?= (int)$testsTotal ?></small></b><small>Different tests solved · <?= count($untaken) ?><?= count($untaken) >= 40 ? '+' : '' ?> not taken yet</small></div>
       <div class="stat"><span class="chip c-green"><?= icon('star') ?></span><b><?= (int)$passed ?></b><small>Passed · <?= $pct($passed, $exams) ?>% pass rate · avg <?= (int)$avg ?>%</small></div>
     </div>
+
+    <section class="box tablebox">
+      <h2>Latest results <small class="muted">who solved which test</small></h2>
+      <table>
+        <thead><tr><th>Student</th><th>Test</th><th>Score</th><th>Result</th><th>Place</th><th>When</th></tr></thead>
+        <tbody>
+<?php foreach ($latest as $r): ?>
+          <tr><td><a href="?view=student&amp;id=<?= (int)$r['student_id'] ?>"><b><?= e($r['sname'] ?: 'Deleted student') ?></b></a></td>
+            <td><?= e($r['title']) ?><?= $r['tname'] ? '<br><small class="muted">' . e($r['tname']) . '</small>' : '' ?></td>
+            <td><?= $r['total'] ? (int)$r['score'] . ' / ' . (int)$r['total'] : '' ?> <small class="muted">(<?= (int)$r['pct'] ?>%)</small></td>
+            <td><span class="pill <?= $r['passed'] ? 'ok' : 'off' ?>"><?= $r['passed'] ? 'Pass' : 'Fail' ?></span></td>
+            <td class="muted"><?= e($r['location'] ?: '–') ?></td><td class="muted" style="white-space:nowrap"><?= e($ago($r['created_at'])) ?></td></tr>
+<?php endforeach; ?>
+<?php if (!$latest): ?><tr><td colspan="6" class="muted">No test results yet. Results appear here as soon as a logged-in student finishes a test.</td></tr><?php endif; ?>
+        </tbody>
+      </table>
+    </section>
 
     <section class="box">
       <h2>Exams per day <small class="muted">last 14 days</small></h2>
@@ -255,5 +309,15 @@ admin_header('Students & Results', 'students');
         </tbody>
       </table>
     </section>
+<?php if ($untaken): ?>
+    <details class="box">
+      <summary><b>Tests nobody has taken yet (<?= count($untaken) ?><?= count($untaken) >= 40 ? '+' : '' ?>)</b> <span class="muted">– share these links with students</span></summary>
+      <ul class="linklist" style="margin-top:10px">
+<?php foreach ($untaken as $u): ?>
+        <li><?= ($u['kind'] ?? '') === 'paper' ? '📄' : '📝' ?> <?= e($u['title']) ?> <span class="muted">– <?= e($u['tname'] ?: 'no trade') ?></span> · <a href="/admin/cbt.php?id=<?= (int)$u['id'] ?>">Edit</a></li>
+<?php endforeach; ?>
+      </ul>
+    </details>
+<?php endif; ?>
     <p class="muted">Location comes from the test itself (the student's internet address or phone GPS), so it is approximate. Results are saved only for students who are logged in.</p>
 <?php admin_footer();
