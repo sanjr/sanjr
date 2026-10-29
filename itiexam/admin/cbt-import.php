@@ -27,7 +27,7 @@ if (is_post() || $autoScan) {
             $src = '';
             $f = $_FILES['zip'] ?? null;
             if ($f && $f['error'] !== UPLOAD_ERR_NO_FILE) {
-                if ($f['error'] !== UPLOAD_ERR_OK) throw new RuntimeException('Upload failed (error ' . $f['error'] . '). The file may be bigger than your hosting allows – upload it to data/import/ with File Manager instead.');
+                if ($f['error'] !== UPLOAD_ERR_OK) throw new RuntimeException(upload_error_text((int)$f['error']) . ' A very big ZIP can also be put in data/import/ with File Manager and picked below.');
                 if (strtolower(pathinfo($f['name'], PATHINFO_EXTENSION)) !== 'zip') throw new RuntimeException('Choose a .zip file.');
                 $src = $f['tmp_name'];
             } elseif (($pick = basename((string)post('server_zip'))) && is_file(IMPORT_DIR . '/' . $pick) && str_ends_with(strtolower($pick), '.zip')) {
@@ -58,7 +58,8 @@ if (is_post() || $autoScan) {
         $rows = json_decode(file_get_contents($jobDir . '/rows.json'), true);
         $use = $_POST['use'] ?? []; $tsel = $_POST['trade'] ?? []; $titles = $_POST['title'] ?? []; $mins = $_POST['minutes'] ?? []; $lvls = $_POST['level'] ?? [];
         $toList = isset($_POST['to_list']); $starter = isset($_POST['starter']);
-        $newIds = []; $done = 0; $made = [];
+        $newIds = []; $done = 0; $made = []; $failed = [];
+        if (!is_dir(CBT_DIR)) @mkdir(CBT_DIR, 0755, true);               // a new server has no data/tests folder yet
         $ins = $pdo->prepare('INSERT INTO cbt_tests (folder, title, level, trade_id, entry, questions, minutes, description, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $item = $pdo->prepare("INSERT INTO trade_items (trade_id, section, title, level, url, icon, questions, minutes, is_new, sort_order) VALUES (?, 'mock_tests', ?, ?, ?, 'clip', ?, ?, ?, ?)");
         foreach ($rows as $i => $r) {
@@ -73,7 +74,13 @@ if (is_post() || $autoScan) {
             $title = trim(mb_substr((string)($titles[$i] ?? $r['title']), 0, 250)) ?: $r['title'];
             $folder = date('ymd') . '-' . bin2hex(random_bytes(4));
             $from = $jobDir . '/files' . ($r['dir'] !== '' ? '/' . $r['dir'] : '');
-            if (!is_dir($from) || !@rename($from, CBT_DIR . '/' . $folder)) continue;
+            // Move the test into data/tests (copy if the hosting does not allow moving), then make sure its page is really there
+            $to = CBT_DIR . '/' . $folder;
+            if (!is_dir($from) || (!@rename($from, $to) && !rcopy($from, $to)) || !is_file($to . '/' . $r['entry'])) {
+                if (is_dir($to)) rrmdir($to);
+                $failed[] = $title;
+                continue;
+            }
             $minutes = max(0, (int)($mins[$i] ?? $r['minutes']));
             $level = in_array($lv = (string)($lvls[$i] ?? $r['level']), LEVELS, true) ? $lv : '';
             $ins->execute([$folder, $title, $level, $tid, $r['entry'], (int)$r['questions'], $minutes, '', 'published', now(), now()]);
@@ -86,6 +93,8 @@ if (is_post() || $autoScan) {
         }
         rrmdir($jobDir);
         flash("Imported $done tests." . ($made ? ' New trades added: ' . implode(', ', array_keys($made)) . '.' : ''));
+        if ($failed) flash('Not imported (' . count($failed) . '): ' . implode(', ', array_slice($failed, 0, 8)) . (count($failed) > 8 ? ' …' : '')
+            . '. The server could not save them in data/tests – check that data and data/tests have permission 755, the disk is not full, and that hPanel → Security → Malware Scanner did not remove them.', 'err');
         redirect('/admin/cbt.php');
     }
     if ($action === 'cancel' && $jobDir) { rrmdir($jobDir); redirect('/admin/cbt-import.php'); }

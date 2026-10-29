@@ -107,9 +107,22 @@ function delete_upload(string $name): void
  * Stores an uploaded HTML test (.html/.htm, or a .zip with the HTML plus its css/js/images) in data/tests/{folder}/.
  * Only safe file types are kept; PHP and other server scripts are never written. Returns [folder, entry file].
  */
+/** What a PHP upload error code means, and how to fix it on the hosting. */
+function upload_error_text(int $code): string
+{
+    return match ($code) {
+        UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'The file is bigger than this hosting allows (upload_max_filesize = ' . ini_get('upload_max_filesize')
+            . '). In hPanel → Advanced → PHP Configuration set upload_max_filesize and post_max_size to 64M.',
+        UPLOAD_ERR_PARTIAL => 'The upload was cut off half way. Check your internet and try again.',
+        UPLOAD_ERR_NO_TMP_DIR, UPLOAD_ERR_CANT_WRITE => 'The hosting could not store the uploaded file (no temporary folder or disk full). Check the disk space in hPanel.',
+        UPLOAD_ERR_EXTENSION => 'A PHP extension on the hosting stopped the upload. Ask Hostinger support.',
+        default => 'Upload failed (error ' . $code . '). Try again.',
+    };
+}
+
 function save_cbt_upload(array $f, string $folder = ''): array
 {
-    if ($f['error'] !== UPLOAD_ERR_OK) throw new RuntimeException('Upload failed (error ' . $f['error'] . '). Try a smaller file.');
+    if ($f['error'] !== UPLOAD_ERR_OK) throw new RuntimeException(upload_error_text((int)$f['error']));
     if ($f['size'] > MAX_CBT_BYTES) throw new RuntimeException('File is larger than ' . (MAX_CBT_BYTES >> 20) . ' MB.');
     $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
     if (!in_array($ext, ['html', 'htm', 'zip'], true)) throw new RuntimeException('Upload an .html file, or a .zip that contains your HTML test and its files.');
@@ -117,7 +130,14 @@ function save_cbt_upload(array $f, string $folder = ''): array
     $folder = $folder ?: date('ymd') . '-' . bin2hex(random_bytes(4));
     $dir = CBT_DIR . '/' . $folder;
     if (is_dir($dir)) rrmdir($dir);
-    if (!mkdir($dir, 0775, true)) throw new RuntimeException('Could not create the test folder. Check that the data folder is writable.');
+    if (!@mkdir($dir, 0755, true)) throw new RuntimeException('Could not create the test folder data/tests/' . $folder . '. In File Manager give the data and data/tests folders permission 755.');
+    // Writes one file of the test; a refused write means a full disk, a permission problem, or the hosting's security scanner
+    $put = function (string $path, string $data) use ($dir) {
+        if (@file_put_contents($path, $data) === false) {
+            rrmdir($dir);
+            throw new RuntimeException('Could not save ' . basename($path) . ' on the server (disk full, folder permission, or the hosting\'s security scanner blocked it). Check hPanel → Files → disk usage and Security → Malware scanner.');
+        }
+    };
 
     if ($ext !== 'zip') {
         $html = file_get_contents($f['tmp_name']);
@@ -131,8 +151,8 @@ function save_cbt_upload(array $f, string $folder = ''): array
             throw new RuntimeException('This HTML page needs its other files too (' . implode(', ', array_slice($local, 0, 4)) . (count($local) > 4 ? ', …' : '')
                 . '). Use “Whole folder” and choose the test folder, or upload a .zip of the folder.');
         }
-        file_put_contents($dir . '/index.html', $html);
-        return [$folder, 'index.html'];
+        $put($dir . '/index.html', $html);
+        return cbt_check_saved($dir, $folder, 'index.html');
     }
 
     if (!class_exists('ZipArchive')) { rrmdir($dir); throw new RuntimeException('Your hosting cannot open ZIP files. Upload a single .html file instead.'); }
@@ -151,15 +171,41 @@ function save_cbt_upload(array $f, string $folder = ''): array
         if ($total > 120 * 1024 * 1024 || ++$kept > 2000) { $zip->close(); rrmdir($dir); throw new RuntimeException('The ZIP is too big when unpacked (max 120 MB, 2000 files).'); }
         $rel = implode('/', $parts);
         @mkdir(dirname($dir . '/' . $rel), 0775, true);
-        file_put_contents($dir . '/' . $rel, $zip->getFromIndex($i));
+        $put($dir . '/' . $rel, (string)$zip->getFromIndex($i));
         if ($fe === 'html' || $fe === 'htm') $htmls[] = $rel;
     }
     $zip->close();
     if (!$htmls) { rrmdir($dir); throw new RuntimeException('No .html file found inside the ZIP.'); }
     // Main page: index.html (closest to the top), otherwise the first HTML file
     usort($htmls, fn($a, $b) => substr_count($a, '/') <=> substr_count($b, '/') ?: strcmp($a, $b));
-    foreach ($htmls as $h) if (in_array(strtolower(basename($h)), ['index.html', 'index.htm'], true)) return [$folder, $h];
-    return [$folder, $htmls[0]];
+    foreach ($htmls as $h) if (in_array(strtolower(basename($h)), ['index.html', 'index.htm'], true)) return cbt_check_saved($dir, $folder, $h);
+    return cbt_check_saved($dir, $folder, $htmls[0]);
+}
+
+/** Makes sure the test's start page is really on the disk a moment after saving: some hosting security scanners delete
+    HTML files with scrambled (obfuscated) JavaScript right away, and the test would then open empty. */
+function cbt_check_saved(string $dir, string $folder, string $entry): array
+{
+    clearstatcache();
+    usleep(300000);
+    if (!is_file($dir . '/' . $entry) || !filesize($dir . '/' . $entry)) {
+        rrmdir($dir);
+        throw new RuntimeException('The test was saved but its page ' . $entry . ' disappeared right away – the hosting\'s security scanner removed it. '
+            . 'In hPanel → Security → Malware Scanner, restore the file / mark it as safe, or ask Hostinger support to allow HTML tests in public_html/data/tests.');
+    }
+    return [$folder, $entry];
+}
+
+/** Copies a folder with everything in it; false if any file could not be written. */
+function rcopy(string $from, string $to): bool
+{
+    if (!@mkdir($to, 0755, true) && !is_dir($to)) return false;
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($from, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::SELF_FIRST) as $f) {
+        $dest = $to . '/' . substr($f->getPathname(), strlen($from) + 1);
+        if ($f->isDir()) { if (!is_dir($dest) && !@mkdir($dest, 0755, true)) return false; }
+        elseif (!@copy($f->getPathname(), $dest)) return false;
+    }
+    return true;
 }
 
 /** Deletes a folder and everything in it. */

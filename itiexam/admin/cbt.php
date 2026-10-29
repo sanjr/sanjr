@@ -231,6 +231,7 @@ admin_header('CBT Tests', 'cbt');
               <p class="hint">A <b>.zip</b> of the test folder, or one <b>.html</b> file that has everything inside it.</p>
             </div>
           </fieldset>
+          <p class="up-info bad up-msg" role="alert" hidden></p>
 <?php if ($edit['id'] && count($files = cbt_html_files($edit['folder'])) > 1): ?>
           <label>Start page <select name="entry"><?php foreach ($files as $fl): ?><option<?= $fl === $edit['entry'] ? ' selected' : '' ?>><?= e($fl) ?></option><?php endforeach; ?></select></label>
 <?php endif; ?>
@@ -240,6 +241,31 @@ admin_header('CBT Tests', 'cbt');
           <div class="bar"><?php if ($edit['id']): ?><a class="btn alt" href="/admin/cbt.php">Cancel</a><?php endif; ?><button class="btn"><?= $edit['id'] ? 'Save test' : '⬆ Upload test' ?></button></div>
         </form>
 <?php $cbtNew = !$edit['id']; require __DIR__ . '/inc/cbt-upload-js.php'; ?>
+
+<?php
+// Upload check: the hosting settings a test upload needs, each with its fix
+$lim = min(array_filter([ini_bytes((string)ini_get('upload_max_filesize')), ini_bytes((string)ini_get('post_max_size'))]) ?: [0]);
+if (!is_dir(CBT_DIR)) @mkdir(CBT_DIR, 0755, true);
+$probe = CBT_DIR . '/.write-test-' . bin2hex(random_bytes(3));
+$writable = @file_put_contents($probe, 'ok') === 2; @unlink($probe);
+$free = @disk_free_space(CBT_DIR);
+$upChecks = [
+    [filter_var(ini_get('file_uploads'), FILTER_VALIDATE_BOOLEAN), 'File uploads are switched on', 'Turn on file_uploads in hPanel → Advanced → PHP Configuration.'],
+    [$lim >= 20 << 20, 'Upload size limit: ' . ($lim ? round($lim / 1048576, 1) . ' MB' : 'unknown'), 'Too small for tests with images. In hPanel → Advanced → PHP Configuration set upload_max_filesize and post_max_size to 64M.'],
+    [class_exists('ZipArchive'), 'ZIP files can be opened', 'Turn on the PHP “zip” extension in hPanel → Advanced → PHP Configuration → PHP extensions.'],
+    [$writable, 'The test folder data/tests can be written', 'In File Manager give the folders data and data/tests permission 755.'],
+    [$free === false ? null : $free > 200 << 20, 'Free disk space: ' . ($free === false ? 'unknown' : round($free / 1073741824, 1) . ' GB'), 'The disk is almost full. Delete old backups or files in hPanel → Files.'],
+];
+?>
+        <section class="box" id="upload-check">
+          <h2>Upload check</h2>
+          <ul class="secl">
+<?php foreach ($upChecks as [$ok, $label, $fix]): ?>
+            <li class="<?= $ok === null ? 'warn' : ($ok ? 'ok' : 'bad') ?>"><b><?= $ok === null ? '?' : ($ok ? '✓' : '✕') ?></b><span><?= e($label) ?><?php if ($ok !== true): ?><small><?= e($fix) ?></small><?php endif; ?></span></li>
+<?php endforeach; ?>
+          </ul>
+          <p class="muted">If everything is ✓ and an upload is still refused, the message under the upload button says why (for example the hosting firewall).</p>
+        </section>
 
         <section class="box">
           <h2>How to prepare your test</h2>

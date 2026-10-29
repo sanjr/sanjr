@@ -14,6 +14,11 @@ ErrorDocument 404 /404.php
 </IfModule>
 <IfModule LiteSpeed>
   php_flag session.upload_progress.enabled off
+  # Room for test uploads (Hostinger runs LiteSpeed; .user.ini does the same on other servers)
+  php_value upload_max_filesize 64M
+  php_value post_max_size 64M
+  php_value max_execution_time 300
+  php_value memory_limit 256M
 </IfModule>
 
 <IfModule mod_rewrite.c>

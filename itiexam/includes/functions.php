@@ -89,8 +89,21 @@ function csrf_token(): string
     return $_SESSION['csrf'];
 }
 function csrf_field(): string { return '<input type="hidden" name="csrf" value="' . csrf_token() . '">'; }
+/** A php.ini size such as "64M" in bytes. */
+function ini_bytes(string $v): int
+{
+    $n = (int)$v;
+    return match (strtolower(substr(trim($v), -1))) { 'g' => $n << 30, 'm' => $n << 20, 'k' => $n << 10, default => $n };
+}
+
 function csrf_check(): void
 {
+    // A file bigger than the hosting's post_max_size arrives as an empty form: say so, instead of "form expired"
+    if (!$_POST && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > ini_bytes((string)ini_get('post_max_size'))) {
+        http_response_code(413);
+        exit('The file is too big for this hosting (' . round((int)$_SERVER['CONTENT_LENGTH'] / 1048576, 1) . ' MB sent, the hosting allows ' . ini_get('post_max_size')
+            . '). In hPanel → Advanced → PHP Configuration set upload_max_filesize and post_max_size to 64M, then try again.');
+    }
     if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '')) {
         http_response_code(400);
         exit('Form expired. Go back, refresh the page and try again.');
