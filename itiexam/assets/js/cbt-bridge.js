@@ -46,5 +46,11 @@
     var i = document.getElementById("candidateName");
     if (i && !i.value) { i.value = e.data.name; i.dispatchEvent(new Event("input", { bubbles: true })); }
   });
+  // 4) Template fix: Hindi's language code is "hi", but older tests list "hin" as having written translations,
+  //    so their own Hindi was never shown (machine translation instead). Add "hi" to that list.
+  function hindi() { try { if (typeof MANUAL_LANGS !== "undefined" && MANUAL_LANGS.has && !MANUAL_LANGS.has("hi")) MANUAL_LANGS.add("hi"); } catch (e) {} }
+  hindi();
+  document.addEventListener("DOMContentLoaded", hindi);
+  window.addEventListener("load", hindi);
   try { window.parent.postMessage({ itx: "ready" }, "*"); } catch (e) {}
 })();

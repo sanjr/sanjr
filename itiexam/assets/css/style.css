@@ -2225,3 +2225,4 @@ body.vm-open { overflow: hidden; }
 .cs-me .mtd-ring b { color: var(--ink); font-size: 14px; }
 .cbt-gate p.cbt-gate-mr { margin-top: -10px; font-size: 14px; color: var(--muted); }
 .seo-text a:not(.btn-sm) { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; }
+.cbt-save b { color: var(--ink); }
