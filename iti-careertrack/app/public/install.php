@@ -200,6 +200,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $count++;
                 }
             }
+            require_once $root . "/src/Core/Migrator.php";
+            \App\Core\Migrator::setVersion($pdo, \App\Core\Migrator::latest());   // fresh install = latest database version
             if ($noTriggers) {
                 foreach ($pdo->query('SELECT trigger_name FROM information_schema.triggers WHERE trigger_schema = DATABASE()')->fetchAll(PDO::FETCH_COLUMN) as $t) {
                     $pdo->exec('DROP TRIGGER `' . $t . '`');

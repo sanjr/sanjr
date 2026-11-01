@@ -26,6 +26,9 @@ if (!is_file(__DIR__ . '/../config/config.php')) {
 
 require __DIR__ . '/../src/bootstrap.php';
 
+// New version uploaded over the old one? Bring the database up to date (once; keeps all data).
+\App\Core\Migrator::runIfNeeded();
+
 use App\Controllers as C;
 use App\Core\Auth;
 use App\Core\HttpException;

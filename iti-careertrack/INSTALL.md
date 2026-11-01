@@ -50,11 +50,16 @@ Installer हे ITI आपोआप भरतो (`database/data/*_itis.csv`):
 (किमान NCVT MIS ITI Code, Institute Name, District; ITI Type, Taluka, Region असल्यास तेही — नसल्यास नावातून ओळखले जातात). ITI, Principal, DVTO व RO logins आपोआप बनतात.
 आधीच install केलेल्या website वर Pune ची यादी हवी असेल तर हीच Excel तिथे upload करा.
 
+## नवीन version update करणे (database नाव / password पुन्हा लागत नाही)
+1. नवीन ZIP server वर upload करा आणि **जुन्या folder वरच extract करा** (Hostinger File Manager → Extract → files overwrite / replace).
+2. **`app/config/config.php` delete करू नका** — त्यात database नाव व password आहे, आणि ते ZIP मध्ये नसल्याने तसेच राहते.
+3. Website उघडा. पहिल्याच page ला database आपोआप update होतो (नवीन trades, indexes इ.). सर्व data (ITI, users, विद्यार्थी) तसाच राहतो.
+4. Installer पुन्हा लागत नाही. **"Delete existing tables" फक्त पूर्ण नवीन (कोरी) सुरुवात करायची असेल तेव्हाच** वापरा.
+
 ## Trades (ट्रेड)
 - अधिकृत NCVT यादीतील **167 trades** आधीच भरलेले आहेत. कोणालाही नवीन trade नाव type करता येत नाही.
 - **Principal → Trades & Batches → "Add a trade to your ITI"**: dropdown मधून trade निवडा, units व seats भरा → मग त्याचा batch (unit & shift) बनवा.
 - State Admin → Master Data → Trades: प्रत्येक trade चा कालावधी (duration) तपासा / बदला, trade बंद-चालू करा, modules जोडा.
-- आधीच install केलेल्या database साठी: phpMyAdmin → Import → `database/mysql/08_trade_master.sql`.
 
 ## प्रवेश (Admission)
 विद्यार्थ्याचा **फोटो अनिवार्य** आहे (JPG/PNG, 5 MB पर्यंत) — फोटोशिवाय प्रवेश जतन होत नाही.
