@@ -15,7 +15,11 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 
 | Folder | Contents |
 |---|---|
-| `app/` | The PHP website (`public/` is the web root) |
+| **`html-demo/`** | **Plain HTML + CSS + JavaScript version of all 90 pages. Double-click `html-demo/index.html` — no server needed** (view only, saving is disabled) |
+| `app/` | The real working website (PHP + MySQL). `public/` is the web root |
+| `app/views/` | **HTML** of every page (`.php` files = HTML with small PHP parts that fill in data) |
+| `app/public/assets/css/app.css` | **CSS** (all styling) |
+| `app/public/assets/js/app.js` | **JavaScript** (charts, admission wizard, menus) |
 | `app/src/Core/` | Security core: login and sessions, CSRF protection, **access control (`Access.php`)**, audit log, router |
 | `app/src/Services/` | Business rules: admission + PCID, duplicate matching, transfers, career records, statistics |
 | `app/src/Controllers/`, `app/views/` | Pages for each role |

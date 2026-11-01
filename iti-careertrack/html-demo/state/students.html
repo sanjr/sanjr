@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Students · ITI CareerTrack</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div class="demo-ribbon">STATIC HTML PREVIEW (no saving) · <a href="../index.html">all pages</a> · DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="../state/dashboard.html">
+      <img src="../img/logo.svg" alt="" width="34" height="34">
+      <span>CareerTrack</span>
+    </a>
+    <nav>
+              <a href="../state/dashboard.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
+              <a href="../state/itis.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg><span>ITIs Management</span></a>
+              <a href="../state/students.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg><span>Students (State)</span></a>
+              <a href="../state/reports.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Reports &amp; Analytics</span></a>
+              <a href="../state/users.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span>User &amp; Role Mgmt</span></a>
+              <a href="../state/audit.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 11h6M9 15h4"/></svg><span>Audit Logs</span></a>
+              <a href="../state/settings.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></a>
+          </nav>
+    <div class="sidebar-foot">ITI Student Lifecycle &amp; Career Tracking System — Maharashtra</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-toggle" type="button" data-toggle-sidebar aria-label="Menu"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+      <div class="topbar-scope"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg> Maharashtra (Statewide)</div>
+      <div class="topbar-right">
+        <a class="bell" href="#" title="Pending tasks">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>        </a>
+        <details class="usermenu">
+          <summary>
+            <span class="avatar">SD</span>
+            <span class="who"><strong>State Admin</strong><small>State Admin (DVET)</small></span>
+            <svg class="ic ic-sm rot90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>          </summary>
+          <div class="menu">
+                        <a href="../state/settings.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg> Settings &amp; password</a>
+            <form method="post" action="#"><button type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg> Log out</button></form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <main class="content">
+            <div class="page-head">
+  <div><h1>Students</h1>
+    <p>Only students within your scope are listed</p></div>
+  <div class="actions">
+          </div>
+</div>
+
+<form class="card filters" method="get" action="#">
+  <div class="field" style="flex:1;min-width:220px"><label>Search name or PCID</label><input type="search" name="q" value="" placeholder="e.g. Patil or ITIC-MH-2026"></div>
+  <div class="field"><label>ITI</label><select name="iti"><option value="">All ITIs</option><option value="12">Government ITI, Ahilyanagar</option><option value="27">Government ITI, Akola</option><option value="26">Government ITI, Amravati</option><option value="20">Government ITI, Beed</option><option value="33">Government ITI, Bhandara</option><option value="29">Government ITI, Buldhana</option><option value="35">Government ITI, Chandrapur</option><option value="18">Government ITI, Chhatrapati Sambhajinagar</option><option value="21">Government ITI, Dharashiv</option><option value="13">Government ITI, Dhule</option><option value="36">Government ITI, Gadchiroli</option><option value="34">Government ITI, Gondia</option><option value="25">Government ITI, Hingoli</option><option value="14">Government ITI, Jalgaon</option><option value="19">Government ITI, Jalna</option><option value="4">Government ITI, Kolhapur</option><option value="22">Government ITI, Latur</option><option value="5">Government ITI, Mumbai City</option><option value="6">Government ITI, Mumbai Suburban</option><option value="31">Government ITI, Nagpur</option><option value="23">Government ITI, Nanded</option><option value="15">Government ITI, Nandurbar</option><option value="2">Government ITI, Nashik</option><option value="8">Government ITI, Palghar</option><option value="24">Government ITI, Parbhani</option><option value="1">Government ITI, Pune</option><option value="9">Government ITI, Raigad</option><option value="10">Government ITI, Ratnagiri</option><option value="16">Government ITI, Sangli</option><option value="3">Government ITI, Satara</option><option value="11">Government ITI, Sindhudurg</option><option value="17">Government ITI, Solapur</option><option value="7">Government ITI, Thane</option><option value="32">Government ITI, Wardha</option><option value="28">Government ITI, Washim</option><option value="30">Government ITI, Yavatmal</option><option value="45">Shri Sai Private ITI, Amravati</option><option value="41">Shri Sai Private ITI, Chhatrapati Sambhajinagar</option><option value="46">Shri Sai Private ITI, Jalgaon</option><option value="43">Shri Sai Private ITI, Kolhapur</option><option value="39">Shri Sai Private ITI, Nagpur</option><option value="40">Shri Sai Private ITI, Nashik</option><option value="37">Shri Sai Private ITI, Pune</option><option value="44">Shri Sai Private ITI, Sangli</option><option value="42">Shri Sai Private ITI, Solapur</option><option value="38">Shri Sai Private ITI, Thane</option></select></div>  <div class="field"><label>Trade</label><select name="trade"><option value="">All trades</option><option value="4">COPA</option><option value="2">Electrician</option><option value="7">Electronics Mechanic</option><option value="1">Fitter</option><option value="5">Mechanic Motor Vehicle</option><option value="8">Plumber</option><option value="6">Turner</option><option value="3">Welder</option></select></div>
+  <div class="field"><label>Intake year</label><select name="year"><option value="">All years</option><option value="6">2026-27</option><option value="5">2025-26</option><option value="4">2024-25</option><option value="3">2023-24</option><option value="2">2022-23</option><option value="1">2021-22</option></select></div>
+  <div class="field"><label>Enrolment</label><select name="enrolment"><option value="">All</option><option value="current">Current</option><option value="alumni">Alumni</option></select></div>
+  <div class="field"><label>Career status</label><select name="status"><option value="">Any</option><option value="IN_TRAINING">In Training</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_UPDATED">Not Updated</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+  <button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Filter</button>
+</form>
+
+<div class="card card-tight">
+  <div class="table-wrap"><table class="table">
+    <tr><th>Student</th><th>PCID</th><th>Trade</th><th>ITI</th><th>Intake</th><th>Batch</th><th>Admission</th><th>Career status</th><th></th></tr>
+          <tr>
+        <td><b>Svogjqf Sanjay Pfpuqoh</b><br><small>Male · 26 Sep 2009</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001082-0</span></td>
+        <td>Fitter</td><td>Government ITI, Pune</td><td>2026-27</td><td>—</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Kdxiaxw Sanjay Pfpuqoh</b><br><small>Male · 26 Sep 2009</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001081-2</span></td>
+        <td>Fitter</td><td>Government ITI, Nashik</td><td>2026-27</td><td>—</td>
+        <td><span class="badge badge-green">Completed</span></td><td><span class="badge badge-grey">Not Updated</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Pooja Suresh Kale</b><br><small>Female · 15 Apr 2010</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001080-4</span></td>
+        <td>Electrician</td><td>Government ITI, Nashik</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Ajay Ramesh Patil</b><br><small>Male · 23 Aug 2009</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001079-6</span></td>
+        <td>Fitter</td><td>Government ITI, Nashik</td><td>2026-27</td><td>FIT-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Sagar Shivaji Bhosale</b><br><small>Male · 25 Nov 2008</small></td>
+        <td><span class="pcid">ITIC-MH-2025-001135-8</span></td>
+        <td>Welder</td><td>Government ITI, Pune</td><td>2025-26</td><td>WEL-25-U1</td>
+        <td><span class="badge badge-green">Completed</span></td><td><span class="badge badge-grey">Seeking Employment</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Rohit Sanjay Deshmukh</b><br><small>Male · 14 Jun 2006</small></td>
+        <td><span class="pcid">ITIC-MH-2022-001077-9</span></td>
+        <td>Electrician</td><td>Government ITI, Pune</td><td>2022-23</td><td>ELE-22-U1</td>
+        <td><span class="badge badge-green">Completed</span></td><td><span class="badge badge-green">Employed</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Mahesh Anil Sawant</b><br><small>Male · 07 Oct 2011</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001078-8</span></td>
+        <td>Electronics Mechanic</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELM-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Sachin Ashok Thorat</b><br><small>Male · 17 Dec 2008</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001077-0</span></td>
+        <td>Electronics Mechanic</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELM-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Prathamesh Vilas Jadhav</b><br><small>Male · 27 May 2009</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001076-2</span></td>
+        <td>Electronics Mechanic</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELM-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Shubham Balasaheb Chavan</b><br><small>Male · 22 Mar 2011</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001075-4</span></td>
+        <td>Electronics Mechanic</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELM-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Aditya Balasaheb Patil</b><br><small>Male · 08 Nov 2008</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001074-7</span></td>
+        <td>Electronics Mechanic</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELM-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Prathamesh Vijay Wagh</b><br><small>Male · 07 Mar 2011</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001073-9</span></td>
+        <td>Electronics Mechanic</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELM-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Pratik Vijay Kulkarni</b><br><small>Male · 01 Jan 2008</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001072-1</span></td>
+        <td>Electronics Mechanic</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELM-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Sandesh Vijay Salunkhe</b><br><small>Male · 22 Mar 2008</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001071-3</span></td>
+        <td>Electrician</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Yash Shivaji Mane</b><br><small>Male · 27 Jul 2011</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001070-5</span></td>
+        <td>Electrician</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Pallavi Anil Shinde</b><br><small>Female · 04 Aug 2010</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001069-7</span></td>
+        <td>Electrician</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Vaibhav Ramesh Pawar</b><br><small>Male · 15 Jul 2008</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001068-9</span></td>
+        <td>Electrician</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Aditya Ramesh More</b><br><small>Male · 08 Mar 2008</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001067-1</span></td>
+        <td>Electrician</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Rahul Suresh Kale</b><br><small>Male · 24 Mar 2011</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001066-3</span></td>
+        <td>Electrician</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Komal Sanjay Jadhav</b><br><small>Female · 19 Jul 2009</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001065-5</span></td>
+        <td>Electrician</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Sagar Anil Kulkarni</b><br><small>Male · 06 Jun 2009</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001064-8</span></td>
+        <td>Electrician</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Sanket Vilas Deshmukh</b><br><small>Male · 17 Dec 2011</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001063-0</span></td>
+        <td>Electrician</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>ELE-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Vaishnavi Sanjay Jadhav</b><br><small>Female · 18 Jan 2011</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001062-2</span></td>
+        <td>Plumber</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>PLU-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Akash Prakash Chavan</b><br><small>Male · 04 Apr 2011</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001061-4</span></td>
+        <td>Plumber</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>PLU-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          <tr>
+        <td><b>Snehal Prakash Pawar</b><br><small>Female · 03 May 2009</small></td>
+        <td><span class="pcid">ITIC-MH-2026-001060-6</span></td>
+        <td>Plumber</td><td>Shri Sai Private ITI, Jalgaon</td><td>2026-27</td><td>PLU-26-U1</td>
+        <td><span class="badge badge-green">Active</span></td><td><span class="badge badge-amber">In Training</span></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="#">Open</a></td>
+      </tr>
+          </table></div>
+  <div class="pager"><span class="muted">6,617 records · page 1 of 265</span><a class="btn btn-light btn-sm" href="../state/students.html">Next ›</a></div></div>
+    </main>
+  </div>
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/static-demo.js"></script>
+</body>
+</html>

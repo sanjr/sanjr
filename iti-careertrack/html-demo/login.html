@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login · ITI CareerTrack</title>
+<link rel="icon" href="img/logo.svg">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="auth-body">
+<div class="demo-ribbon">STATIC HTML PREVIEW (no saving) · <a href="index.html">all pages</a> · DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
+<div class="auth-hero">
+  <div class="auth-hero-inner">
+    <img src="img/logo.svg" alt="" width="64" height="64">
+    <div>
+      <h1>ITI CareerTrack</h1>
+      <p>ITI Student Lifecycle &amp; Career Tracking System — Maharashtra</p>
+      <p class="tagline">One Student. One Permanent Career ID. One Complete Career Journey.</p>
+    </div>
+  </div>
+</div>
+<main class="auth-main">
+    <div class="auth-grid">
+  <div class="card">
+    <h2>Sign in</h2>
+    <p class="muted">Use the account given by your ITI or the State office.</p>
+    <form method="get" action="index.html" data-static-nav="1" autocomplete="on">
+            <div class="field"><label for="email">E-mail</label>
+        <input type="email" id="email" data-x="email" value="" autofocus></div>
+      <div class="field mt"><label for="password">Password</label>
+        <input type="password" id="password" data-x="password" autocomplete="current-password"></div>
+      <button class="btn btn-block mt" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c.9-4 4.1-6.5 8-6.5s7.1 2.5 8 6.5"/></svg> Sign in</button>
+    </form>
+    <p class="muted mt" style="font-size:12px">Accounts lock for 15 minutes after 5 wrong passwords.</p>
+  </div>
+
+    <div class="card card-tight">
+    <h2>Demo accounts <span class="badge badge-amber">password: Demo@1234</span></h2>
+    <div class="table-wrap">
+    <table class="table demo-accounts">
+      <tr><th>Role</th><th>E-mail</th><th>What to try</th></tr>
+      <tr><td>State Admin</td><td class="code">state@demo.local</td><td>Statewide dashboard, reports, ITIs, audit</td></tr>
+      <tr><td>District Admin</td><td class="code">district.pune@demo.local</td><td>Pune district only</td></tr>
+      <tr><td>Principal</td><td class="code">principal.pune@demo.local</td><td>Admission wizard, inbound transfer, teachers</td></tr>
+      <tr><td>Principal (other ITI)</td><td class="code">principal.nashik@demo.local</td><td>Cannot see Pune students</td></tr>
+      <tr><td>Teacher</td><td class="code">teacher.pune@demo.local</td><td>Only assigned Fitter students, attendance</td></tr>
+      <tr><td>Placement Officer</td><td class="code">placement.pune@demo.local</td><td>Companies, vacancies, placements</td></tr>
+      <tr><td>ITI Staff</td><td class="code">staff.pune@demo.local</td><td>Follow-up calls only</td></tr>
+      <tr><td>Employer / HR</td><td class="code">hr.sahyadri@demo.local</td><td>Vacancies, applicants, confirmations</td></tr>
+      <tr><td>Student / Alumni</td><td class="code">rohit.deshmukh@demo.local</td><td>Career Passport, jobs, update status</td></tr>
+    </table>
+    </div>
+  </div>
+  </div>
+</main>
+<script src="js/static-demo.js"></script>
+</body>
+</html>

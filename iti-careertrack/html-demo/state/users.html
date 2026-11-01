@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>User &amp; Role Management · ITI CareerTrack</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div class="demo-ribbon">STATIC HTML PREVIEW (no saving) · <a href="../index.html">all pages</a> · DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="../state/dashboard.html">
+      <img src="../img/logo.svg" alt="" width="34" height="34">
+      <span>CareerTrack</span>
+    </a>
+    <nav>
+              <a href="../state/dashboard.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
+              <a href="../state/itis.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg><span>ITIs Management</span></a>
+              <a href="../state/students.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg><span>Students (State)</span></a>
+              <a href="../state/reports.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Reports &amp; Analytics</span></a>
+              <a href="../state/users.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span>User &amp; Role Mgmt</span></a>
+              <a href="../state/audit.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 11h6M9 15h4"/></svg><span>Audit Logs</span></a>
+              <a href="../state/settings.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></a>
+          </nav>
+    <div class="sidebar-foot">ITI Student Lifecycle &amp; Career Tracking System — Maharashtra</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-toggle" type="button" data-toggle-sidebar aria-label="Menu"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+      <div class="topbar-scope"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg> Maharashtra (Statewide)</div>
+      <div class="topbar-right">
+        <a class="bell" href="#" title="Pending tasks">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>        </a>
+        <details class="usermenu">
+          <summary>
+            <span class="avatar">SD</span>
+            <span class="who"><strong>State Admin</strong><small>State Admin (DVET)</small></span>
+            <svg class="ic ic-sm rot90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>          </summary>
+          <div class="menu">
+                        <a href="../state/settings.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg> Settings &amp; password</a>
+            <form method="post" action="#"><button type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg> Log out</button></form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <main class="content">
+            <div class="page-head"><div><h1>User &amp; Role Management</h1>
+  <p>Every role is tied to a scope (State, District, ITI or Company) and a validity period.</p></div></div>
+
+<form class="card filters" method="get" action="#">
+  <div class="field" style="flex:1"><label>Search</label><input type="search" name="q" value="" placeholder="Name or e-mail"></div>
+  <div class="field"><label>Role</label><select name="role"><option value="">All roles</option><option value="STATE_ADMIN">State Admin</option><option value="DISTRICT_ADMIN">District Admin</option><option value="PRINCIPAL">Principal</option><option value="TEACHER">Teacher</option><option value="PLACEMENT_OFFICER">Placement Officer</option><option value="ITI_STAFF">ITI Staff</option><option value="EMPLOYER">Employer / HR</option></select></div>
+  <button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Filter</button>
+</form>
+
+<div class="card card-tight">
+  <div class="table-wrap"><table class="table">
+    <tr><th>Name</th><th>E-mail</th><th>Role</th><th>Scope</th><th>Valid</th><th>Status</th><th>Last login</th><th></th></tr>
+          <tr><td><b>State Admin (DVET)</b></td><td>state@demo.local</td><td>State Admin</td><td>Statewide</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 10:22</small></td>
+        <td class="right"></td></tr>
+          <tr><td><b>District Admin Pune</b></td><td>district.pune@demo.local</td><td>District Admin</td><td>Pune</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 10:22</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Ahilyanagar</b></td><td>principal.ahmednagar@demo.local</td><td>Principal</td><td>Government ITI, Ahilyanagar</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Akola</b></td><td>principal.akola@demo.local</td><td>Principal</td><td>Government ITI, Akola</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Amravati</b></td><td>principal.amravati@demo.local</td><td>Principal</td><td>Government ITI, Amravati</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Amravati (Pvt)</b></td><td>principal.amravati-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Amravati</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Beed</b></td><td>principal.beed@demo.local</td><td>Principal</td><td>Government ITI, Beed</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Bhandara</b></td><td>principal.bhandara@demo.local</td><td>Principal</td><td>Government ITI, Bhandara</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Buldhana</b></td><td>principal.buldhana@demo.local</td><td>Principal</td><td>Government ITI, Buldhana</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Chandrapur</b></td><td>principal.chandrapur@demo.local</td><td>Principal</td><td>Government ITI, Chandrapur</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Chhatrapati Sambhajinagar</b></td><td>principal.csn@demo.local</td><td>Principal</td><td>Government ITI, Chhatrapati Sambhajinagar</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Chhatrapati Sambhajinagar (Pvt)</b></td><td>principal.csn-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Chhatrapati Sambhajinagar</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Dharashiv</b></td><td>principal.dharashiv@demo.local</td><td>Principal</td><td>Government ITI, Dharashiv</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Dhule</b></td><td>principal.dhule@demo.local</td><td>Principal</td><td>Government ITI, Dhule</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Gadchiroli</b></td><td>principal.gadchiroli@demo.local</td><td>Principal</td><td>Government ITI, Gadchiroli</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Gondia</b></td><td>principal.gondia@demo.local</td><td>Principal</td><td>Government ITI, Gondia</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Hingoli</b></td><td>principal.hingoli@demo.local</td><td>Principal</td><td>Government ITI, Hingoli</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Jalgaon</b></td><td>principal.jalgaon@demo.local</td><td>Principal</td><td>Government ITI, Jalgaon</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Jalgaon (Pvt)</b></td><td>principal.jalgaon-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Jalgaon</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Jalna</b></td><td>principal.jalna@demo.local</td><td>Principal</td><td>Government ITI, Jalna</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Kolhapur</b></td><td>principal.kolhapur@demo.local</td><td>Principal</td><td>Government ITI, Kolhapur</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Kolhapur (Pvt)</b></td><td>principal.kolhapur-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Kolhapur</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Latur</b></td><td>principal.latur@demo.local</td><td>Principal</td><td>Government ITI, Latur</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Mumbai City</b></td><td>principal.mumbai@demo.local</td><td>Principal</td><td>Government ITI, Mumbai City</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Mumbai Suburban</b></td><td>principal.mumsub@demo.local</td><td>Principal</td><td>Government ITI, Mumbai Suburban</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Nagpur</b></td><td>principal.nagpur@demo.local</td><td>Principal</td><td>Government ITI, Nagpur</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Nagpur (Pvt)</b></td><td>principal.nagpur-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Nagpur</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Nanded</b></td><td>principal.nanded@demo.local</td><td>Principal</td><td>Government ITI, Nanded</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Nandurbar</b></td><td>principal.nandurbar@demo.local</td><td>Principal</td><td>Government ITI, Nandurbar</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Principal Nashik</b></td><td>principal.nashik@demo.local</td><td>Principal</td><td>Government ITI, Nashik</td>
+        <td><small>01 Jan 2020 – open</small></td>
+        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 10:13</small></td>
+        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+      </table></div>
+  <div class="pager"><span class="muted">104 records · page 1 of 4</span><a class="btn btn-light btn-sm" href="../state/users.html">Next ›</a></div></div>
+
+<div class="card">
+  <h2>Add user / grant role</h2>
+  <form method="post" action="#" class="form-grid" autocomplete="off">    <div class="field"><label>Full name <span class="req">*</span></label><input type="text" name="full_name" required maxlength="150" value=""></div>
+    <div class="field"><label>E-mail (login) <span class="req">*</span></label><input type="email" name="email" required value="">      <div class="hint">If the user exists, only the new role is added.</div></div>
+    <div class="field"><label>Temporary password <span class="req">*</span></label><input type="password" name="password" required minlength="10" autocomplete="new-password"></div>
+    <div class="field"><label>Role <span class="req">*</span></label><select name="role_id" required><option value="">Select</option><option value="1">State Admin</option><option value="2">District Admin</option><option value="3">Principal</option><option value="4">Teacher</option><option value="5">Placement Officer</option><option value="6">ITI Staff</option><option value="7">Employer / HR</option></select></div>
+          <div class="field"><label>ITI (for ITI roles)</label><select name="iti_id"><option value="">Select</option><option value="12">Government ITI, Ahilyanagar</option><option value="27">Government ITI, Akola</option><option value="26">Government ITI, Amravati</option><option value="20">Government ITI, Beed</option><option value="33">Government ITI, Bhandara</option><option value="29">Government ITI, Buldhana</option><option value="35">Government ITI, Chandrapur</option><option value="18">Government ITI, Chhatrapati Sambhajinagar</option><option value="21">Government ITI, Dharashiv</option><option value="13">Government ITI, Dhule</option><option value="36">Government ITI, Gadchiroli</option><option value="34">Government ITI, Gondia</option><option value="25">Government ITI, Hingoli</option><option value="14">Government ITI, Jalgaon</option><option value="19">Government ITI, Jalna</option><option value="4">Government ITI, Kolhapur</option><option value="22">Government ITI, Latur</option><option value="5">Government ITI, Mumbai City</option><option value="6">Government ITI, Mumbai Suburban</option><option value="31">Government ITI, Nagpur</option><option value="23">Government ITI, Nanded</option><option value="15">Government ITI, Nandurbar</option><option value="2">Government ITI, Nashik</option><option value="8">Government ITI, Palghar</option><option value="24">Government ITI, Parbhani</option><option value="1">Government ITI, Pune</option><option value="9">Government ITI, Raigad</option><option value="10">Government ITI, Ratnagiri</option><option value="16">Government ITI, Sangli</option><option value="3">Government ITI, Satara</option><option value="11">Government ITI, Sindhudurg</option><option value="17">Government ITI, Solapur</option><option value="7">Government ITI, Thane</option><option value="32">Government ITI, Wardha</option><option value="28">Government ITI, Washim</option><option value="30">Government ITI, Yavatmal</option><option value="45">Shri Sai Private ITI, Amravati</option><option value="41">Shri Sai Private ITI, Chhatrapati Sambhajinagar</option><option value="46">Shri Sai Private ITI, Jalgaon</option><option value="43">Shri Sai Private ITI, Kolhapur</option><option value="39">Shri Sai Private ITI, Nagpur</option><option value="40">Shri Sai Private ITI, Nashik</option><option value="37">Shri Sai Private ITI, Pune</option><option value="44">Shri Sai Private ITI, Sangli</option><option value="42">Shri Sai Private ITI, Solapur</option><option value="38">Shri Sai Private ITI, Thane</option></select></div>
+      <div class="field"><label>District (for District Admin)</label><select name="district_id"><option value="">Select</option><option value="10">Ahilyanagar</option><option value="27">Akola</option><option value="26">Amravati</option><option value="20">Beed</option><option value="33">Bhandara</option><option value="29">Buldhana</option><option value="35">Chandrapur</option><option value="18">Chhatrapati Sambhajinagar</option><option value="21">Dharashiv</option><option value="11">Dhule</option><option value="36">Gadchiroli</option><option value="34">Gondia</option><option value="25">Hingoli</option><option value="12">Jalgaon</option><option value="19">Jalna</option><option value="16">Kolhapur</option><option value="22">Latur</option><option value="2">Mumbai City</option><option value="3">Mumbai Suburban</option><option value="31">Nagpur</option><option value="23">Nanded</option><option value="13">Nandurbar</option><option value="9">Nashik</option><option value="5">Palghar</option><option value="24">Parbhani</option><option value="1">Pune</option><option value="6">Raigad</option><option value="7">Ratnagiri</option><option value="15">Sangli</option><option value="14">Satara</option><option value="8">Sindhudurg</option><option value="17">Solapur</option><option value="4">Thane</option><option value="32">Wardha</option><option value="28">Washim</option><option value="30">Yavatmal</option></select></div>
+      <div class="field"><label>Company (for Employer)</label><select name="company_id"><option value="">Select</option><option value="14">Bhima Automotive Services</option><option value="2">Deccan Engineering Works</option><option value="4">Godavari Steel Fabricators</option><option value="7">Indrayani Tools Ltd</option><option value="3">Konkan Power Systems Ltd</option><option value="8">Krishna Valley Plastics</option><option value="12">Mula-Mutha Technologies</option><option value="11">Nashik Agro Equipments</option><option value="10">Pune Precision Machining</option><option value="1">Sahyadri Auto Components Pvt Ltd</option><option value="6">Shivneri Motors</option><option value="15">Sinhagad Digital Services</option><option value="13">Tapi Textile Machinery</option><option value="9">Vidarbha Infra Projects</option><option value="5">Western Ghats Electricals</option></select></div>
+        <div class="field" style="align-self:end"><button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Save</button></div>
+  </form>
+</div>
+    </main>
+  </div>
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/static-demo.js"></script>
+</body>
+</html>

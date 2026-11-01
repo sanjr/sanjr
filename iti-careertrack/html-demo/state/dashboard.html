@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>State Admin Dashboard · ITI CareerTrack</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div class="demo-ribbon">STATIC HTML PREVIEW (no saving) · <a href="../index.html">all pages</a> · DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="../state/dashboard.html">
+      <img src="../img/logo.svg" alt="" width="34" height="34">
+      <span>CareerTrack</span>
+    </a>
+    <nav>
+              <a href="../state/dashboard.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
+              <a href="../state/itis.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg><span>ITIs Management</span></a>
+              <a href="../state/students.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg><span>Students (State)</span></a>
+              <a href="../state/reports.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Reports &amp; Analytics</span></a>
+              <a href="../state/users.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span>User &amp; Role Mgmt</span></a>
+              <a href="../state/audit.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 11h6M9 15h4"/></svg><span>Audit Logs</span></a>
+              <a href="../state/settings.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></a>
+          </nav>
+    <div class="sidebar-foot">ITI Student Lifecycle &amp; Career Tracking System — Maharashtra</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-toggle" type="button" data-toggle-sidebar aria-label="Menu"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+      <div class="topbar-scope"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg> Maharashtra (Statewide)</div>
+      <div class="topbar-right">
+        <a class="bell" href="#" title="Pending tasks">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>        </a>
+        <details class="usermenu">
+          <summary>
+            <span class="avatar">SD</span>
+            <span class="who"><strong>State Admin</strong><small>State Admin (DVET)</small></span>
+            <svg class="ic ic-sm rot90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>          </summary>
+          <div class="menu">
+                        <a href="../state/settings.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg> Settings &amp; password</a>
+            <form method="post" action="#"><button type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg> Log out</button></form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <main class="content">
+            <div class="page-head">
+  <div>
+    <h1>State Admin Dashboard</h1>
+    <p>Maharashtra – Statewide Overview</p>
+  </div>
+  <div class="actions">
+    <a class="btn btn-light" href="../state/reports.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg> Reports</a>
+    <a class="btn" href="../state/itis.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg> ITIs</a>  </div>
+</div>
+
+<div class="grid g4">
+  <div class="kpi tone-blue"><div class="kpi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg></div><div><div class="kpi-label">Total ITIs</div><div class="kpi-value">46</div></div></div>  <div class="kpi tone-purple"><div class="kpi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg></div><div><div class="kpi-label">Total Students</div><div class="kpi-value">6,617</div><div class="kpi-sub">1,761 currently in training</div></div></div>  <div class="kpi tone-green"><div class="kpi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg></div><div><div class="kpi-label">Placed Students</div><div class="kpi-value">3,431</div><div class="kpi-sub">Employed + apprentice + self-employed</div></div></div>  <div class="kpi tone-orange"><div class="kpi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div><div><div class="kpi-label">Placement Rate</div><div class="kpi-value">73.6%</div><div class="kpi-sub">of 4,662 alumni</div></div></div></div>
+
+<div class="grid g-1-2 mt">
+  <div class="card">
+    <h2>Student Career Outcomes</h2>
+    <div class="donut-wrap">
+      <div class="chart" data-chart="{&quot;type&quot;:&quot;donut&quot;,&quot;labels&quot;:[&quot;Employed&quot;,&quot;Apprenticeship&quot;,&quot;Higher Education&quot;,&quot;Business&quot;,&quot;Seeking employment&quot;,&quot;Not updated&quot;,&quot;Not contactable&quot;,&quot;Other&quot;],&quot;values&quot;:[2412,740,405,279,458,247,121,0],&quot;colors&quot;:[&quot;#17944a&quot;,&quot;#1d64d8&quot;,&quot;#7c3aed&quot;,&quot;#ea7a0a&quot;,&quot;#d33a2c&quot;,&quot;#c2c9d6&quot;,&quot;#a1a1aa&quot;,&quot;#64748b&quot;],&quot;center&quot;:&quot;73.6%&quot;,&quot;centerLabel&quot;:&quot;Placed&quot;}"></div>      <div class="legend">
+                  <div><span class="sw" style="background:#17944a"></span>Employed <b>(51.7%)</b> <span class="muted">2,412</span></div>
+                  <div><span class="sw" style="background:#1d64d8"></span>Apprenticeship <b>(15.9%)</b> <span class="muted">740</span></div>
+                  <div><span class="sw" style="background:#7c3aed"></span>Higher Education <b>(8.7%)</b> <span class="muted">405</span></div>
+                  <div><span class="sw" style="background:#ea7a0a"></span>Business <b>(6.0%)</b> <span class="muted">279</span></div>
+                  <div><span class="sw" style="background:#d33a2c"></span>Seeking employment <b>(9.8%)</b> <span class="muted">458</span></div>
+                  <div><span class="sw" style="background:#c2c9d6"></span>Not updated <b>(5.3%)</b> <span class="muted">247</span></div>
+                  <div><span class="sw" style="background:#a1a1aa"></span>Not contactable <b>(2.6%)</b> <span class="muted">121</span></div>
+                  <div><span class="sw" style="background:#64748b"></span>Other <b>(0.0%)</b> <span class="muted">0</span></div>
+              </div>
+    </div>
+    <p class="note mt">Denominator: 4,662 alumni (completed course). “Not updated” and “Not contactable” are shown separately and are <b>never</b> counted as unemployed.</p>
+  </div>
+
+    <div class="card">
+    <h2>District-wise placement rate <small class="muted">36 districts</small></h2>
+    <div class="district-tiles">
+              <div class="tile" style="background:#2f7cf6" title="Ahilyanagar: 72 of 101 alumni placed">
+          Ahilyanagar<b>71%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Akola: 63 of 82 alumni placed">
+          Akola<b>77%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Amravati: 115 of 150 alumni placed">
+          Amravati<b>77%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Beed: 67 of 90 alumni placed">
+          Beed<b>74%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Bhandara: 67 of 91 alumni placed">
+          Bhandara<b>74%</b>
+        </div>
+              <div class="tile" style="background:#7aa7f2" title="Buldhana: 48 of 73 alumni placed">
+          Buldhana<b>66%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Chandrapur: 64 of 90 alumni placed">
+          Chandrapur<b>71%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Chhatrapati Sambhajinagar: 125 of 171 alumni placed">
+          Chhatrapati Sambhajinagar<b>73%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Dharashiv: 72 of 98 alumni placed">
+          Dharashiv<b>73%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Dhule: 62 of 87 alumni placed">
+          Dhule<b>71%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Gadchiroli: 66 of 83 alumni placed">
+          Gadchiroli<b>80%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Gondia: 60 of 79 alumni placed">
+          Gondia<b>76%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Hingoli: 68 of 88 alumni placed">
+          Hingoli<b>77%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Jalgaon: 122 of 173 alumni placed">
+          Jalgaon<b>71%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Jalna: 62 of 86 alumni placed">
+          Jalna<b>72%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Kolhapur: 174 of 226 alumni placed">
+          Kolhapur<b>77%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Latur: 64 of 85 alumni placed">
+          Latur<b>75%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Mumbai City: 57 of 81 alumni placed">
+          Mumbai City<b>70%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Mumbai Suburban: 65 of 83 alumni placed">
+          Mumbai Suburban<b>78%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Nagpur: 121 of 163 alumni placed">
+          Nagpur<b>74%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Nanded: 57 of 77 alumni placed">
+          Nanded<b>74%</b>
+        </div>
+              <div class="tile" style="background:#7aa7f2" title="Nandurbar: 47 of 82 alumni placed">
+          Nandurbar<b>57%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Nashik: 184 of 244 alumni placed">
+          Nashik<b>75%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Palghar: 63 of 87 alumni placed">
+          Palghar<b>72%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Parbhani: 63 of 88 alumni placed">
+          Parbhani<b>72%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Pune: 560 of 773 alumni placed">
+          Pune<b>72%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Raigad: 58 of 81 alumni placed">
+          Raigad<b>72%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Ratnagiri: 64 of 86 alumni placed">
+          Ratnagiri<b>74%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Sangli: 105 of 145 alumni placed">
+          Sangli<b>72%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Satara: 99 of 138 alumni placed">
+          Satara<b>72%</b>
+        </div>
+              <div class="tile" style="background:#2f7cf6" title="Sindhudurg: 59 of 80 alumni placed">
+          Sindhudurg<b>74%</b>
+        </div>
+              <div class="tile" style="background:#0b2f6b" title="Solapur: 137 of 169 alumni placed">
+          Solapur<b>81%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Thane: 139 of 179 alumni placed">
+          Thane<b>78%</b>
+        </div>
+              <div class="tile" style="background:#1550b5" title="Wardha: 75 of 98 alumni placed">
+          Wardha<b>77%</b>
+        </div>
+              <div class="tile" style="background:#7aa7f2" title="Washim: 55 of 79 alumni placed">
+          Washim<b>70%</b>
+        </div>
+              <div class="tile" style="background:#7aa7f2" title="Yavatmal: 52 of 76 alumni placed">
+          Yavatmal<b>68%</b>
+        </div>
+          </div>
+    <p class="muted mt" style="font-size:12px">Darker = higher placement rate. Hover a district for numbers.</p>
+  </div>
+  </div>
+
+<div class="grid g3 mt">
+  <div class="kpi tone-amber"><div class="kpi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div><div><div class="kpi-label">Pending job verifications</div><div class="kpi-value">1,110</div><div class="kpi-sub">Employment records awaiting proof</div></div></div>  <div class="kpi tone-red"><div class="kpi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></div><div><div class="kpi-label">Not updated (alumni)</div><div class="kpi-value">368</div><div class="kpi-sub">Need staff follow-up</div></div></div>  <div class="kpi tone-purple"><div class="kpi-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></div><div><div class="kpi-label">Higher education</div><div class="kpi-value">405</div><div class="kpi-sub">Alumni studying further</div></div></div></div>
+    </main>
+  </div>
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/static-demo.js"></script>
+</body>
+</html>

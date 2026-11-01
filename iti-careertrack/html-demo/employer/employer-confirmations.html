@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Confirmations · ITI CareerTrack</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div class="demo-ribbon">STATIC HTML PREVIEW (no saving) · <a href="../index.html">all pages</a> · DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="../employer/dashboard.html">
+      <img src="../img/logo.svg" alt="" width="34" height="34">
+      <span>CareerTrack</span>
+    </a>
+    <nav>
+              <a href="../employer/dashboard.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
+              <a href="../employer/employer-company.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg><span>Company Profile</span></a>
+              <a href="../employer/vacancies-new.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Post Vacancy</span></a>
+              <a href="../employer/employer-applications.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg><span>Applications</span></a>
+              <a href="../employer/employer-applications-status-SHORTLISTED.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg><span>Shortlisted</span></a>
+              <a href="../employer/employer-hired.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg><span>Hired Students</span></a>
+              <a href="../employer/employer-apprentices.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5L22 14l-8 8-2.3-2.3a4 4 0 0 0-5-5L2 10l8-8z"/></svg><span>Apprenticeship</span></a>
+              <a href="../employer/employer-confirmations.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span>Confirmations</span></a>
+              <a href="../employer/employer-reports.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Reports</span></a>
+              <a href="../employer/settings.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></a>
+          </nav>
+    <div class="sidebar-foot">ITI Student Lifecycle &amp; Career Tracking System — Maharashtra</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-toggle" type="button" data-toggle-sidebar aria-label="Menu"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+      <div class="topbar-scope"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg> Sahyadri Auto Components Pvt Ltd</div>
+      <div class="topbar-right">
+        <a class="bell" href="../employer/dashboard.html" title="Pending tasks">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot">11</span>        </a>
+        <details class="usermenu">
+          <summary>
+            <span class="avatar">NH</span>
+            <span class="who"><strong>Employer / HR</strong><small>Neha Joshi (HR)</small></span>
+            <svg class="ic ic-sm rot90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>          </summary>
+          <div class="menu">
+                        <a href="../employer/settings.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg> Settings &amp; password</a>
+            <form method="post" action="#"><button type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg> Log out</button></form>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <main class="content">
+            <div class="page-head"><div><h1>Confirmations</h1>
+  <p>Please confirm whether these ITI students are / were working or training with you. Your name, the time and the evidence reference are stored.</p></div></div>
+<div class="card card-tight">
+  <div class="table-wrap"><table class="table">
+    <tr><th>Name</th><th>PCID</th><th>Engagement</th><th>Since</th><th>Status</th><th style="min-width:360px">Confirm</th></tr>
+          <tr><td>Aditya More</td><td><span class="pcid">ITIC-MH-2024-000763-1</span></td><td>Maintenance Technician</td><td>01 Nov 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1894">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Omkar Chavan</td><td><span class="pcid">ITIC-MH-2024-000997-5</span></td><td>Apprentice – Naps</td><td>01 Nov 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1205">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Neha Kamble</td><td><span class="pcid">ITIC-MH-2024-000993-4</span></td><td>Junior Technician</td><td>29 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2517">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rohit Shelke</td><td><span class="pcid">ITIC-MH-2025-000128-4</span></td><td>Apprentice – Apprentices Act</td><td>26 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="197">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sayali Chavan</td><td><span class="pcid">ITIC-MH-2023-000909-2</span></td><td>Assistant Electrician</td><td>25 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2291">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Yash Kadam</td><td><span class="pcid">ITIC-MH-2024-000006-5</span></td><td>Apprentice – Apprentices Act</td><td>24 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="135">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Shubham Pathak</td><td><span class="pcid">ITIC-MH-2025-000611-9</span></td><td>Apprentice – Apprentices Act</td><td>21 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="753">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Dipali Kulkarni</td><td><span class="pcid">ITIC-MH-2024-000595-7</span></td><td>Junior Technician</td><td>14 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1541">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Swapnil Deshmukh</td><td><span class="pcid">ITIC-MH-2025-000617-6</span></td><td>Apprentice – Naps</td><td>13 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="756">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sanket Sawant</td><td><span class="pcid">ITIC-MH-2024-000567-6</span></td><td>Assistant Electrician</td><td>11 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1441">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Akash Mohite</td><td><span class="pcid">ITIC-MH-2025-000317-3</span></td><td>Apprentice – Apprentices Act</td><td>11 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="388">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Ankita Kamble</td><td><span class="pcid">ITIC-MH-2025-000117-7</span></td><td>Apprentice – Naps</td><td>05 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="192">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sandesh Mane</td><td><span class="pcid">ITIC-MH-2025-000619-2</span></td><td>Apprentice – Apprentices Act</td><td>05 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="757">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sayali Kamble</td><td><span class="pcid">ITIC-MH-2024-000860-5</span></td><td>Maintenance Technician</td><td>03 Oct 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2197">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sandesh Bhosale</td><td><span class="pcid">ITIC-MH-2023-001080-1</span></td><td>Junior Technician</td><td>30 Sep 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2714">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Pratik Bhagat</td><td><span class="pcid">ITIC-MH-2024-000949-6</span></td><td>Technician</td><td>26 Sep 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2410">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Vishal Deshmukh</td><td><span class="pcid">ITIC-MH-2024-000680-7</span></td><td>Junior Technician</td><td>24 Sep 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1751">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Mahesh Bhagat</td><td><span class="pcid">ITIC-MH-2024-000681-5</span></td><td>Apprentice – Apprentices Act</td><td>24 Sep 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="823">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Tejaswini Kale</td><td><span class="pcid">ITIC-MH-2025-000112-8</span></td><td>Apprentice – Apprentices Act</td><td>21 Sep 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="190">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Mahesh More</td><td><span class="pcid">ITIC-MH-2024-000159-2</span></td><td>Assistant Electrician</td><td>19 Sep 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="412">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Vishal Salunkhe</td><td><span class="pcid">ITIC-MH-2024-000312-7</span></td><td>Technician</td><td>18 Sep 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="873">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Kdxiaxw Pfpuqoh</td><td><span class="pcid">ITIC-MH-2026-001081-2</span></td><td>Technician L2</td><td>03 Sep 2026</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2846">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Shubham Nikam</td><td><span class="pcid">ITIC-MH-2024-001091-6</span></td><td>Junior Technician</td><td>25 Jul 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2834">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Kdxiaxw Pfpuqoh</td><td><span class="pcid">ITIC-MH-2026-001081-2</span></td><td>Apprentice – Apprentices Act</td><td>14 Jun 2026</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1325">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Vishal Chavan</td><td><span class="pcid">ITIC-MH-2023-000221-2</span></td><td>Junior Technician</td><td>27 Mar 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="591">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Shubham Mohite</td><td><span class="pcid">ITIC-MH-2023-000580-1</span></td><td>Apprentice – Apprentices Act</td><td>25 Mar 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="641">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Pratik Salunkhe</td><td><span class="pcid">ITIC-MH-2023-000910-0</span></td><td>Junior Technician</td><td>24 Mar 2026</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2292">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Ankita Wagh</td><td><span class="pcid">ITIC-MH-2022-000857-5</span></td><td>Operator</td><td>12 Nov 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2229">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sayali Mane</td><td><span class="pcid">ITIC-MH-2023-000277-4</span></td><td>Maintenance Technician</td><td>09 Nov 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="704">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rushikesh Salunkhe</td><td><span class="pcid">ITIC-MH-2023-000918-3</span></td><td>Maintenance Technician</td><td>30 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2298">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Pallavi Thorat</td><td><span class="pcid">ITIC-MH-2023-000655-1</span></td><td>Technician</td><td>29 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1595">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sagar Mane</td><td><span class="pcid">ITIC-MH-2022-000783-3</span></td><td>Maintenance Technician</td><td>23 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2005">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sanket Pathak</td><td><span class="pcid">ITIC-MH-2023-001081-9</span></td><td>Operator</td><td>23 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2715">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Swapnil Kulkarni</td><td><span class="pcid">ITIC-MH-2022-000370-9</span></td><td>Assistant Electrician</td><td>17 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="999">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rutuja Kadam</td><td><span class="pcid">ITIC-MH-2023-000818-5</span></td><td>Operator</td><td>17 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2018">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sayali Chavan</td><td><span class="pcid">ITIC-MH-2023-000909-2</span></td><td>Apprentice – Apprentices Act</td><td>17 Oct 2025</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1089">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Ganesh Patil</td><td><span class="pcid">ITIC-MH-2023-001009-0</span></td><td>Operator</td><td>14 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2551">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Vaibhav Shinde</td><td><span class="pcid">ITIC-MH-2023-001037-1</span></td><td>Apprentice – Apprentices Act</td><td>09 Oct 2025</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1224">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rohit Chavan</td><td><span class="pcid">ITIC-MH-2023-000959-7</span></td><td>Junior Technician</td><td>08 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2396">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Shubham Kadam</td><td><span class="pcid">ITIC-MH-2024-001026-2</span></td><td>Fitter</td><td>08 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2623">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rushikesh Mohite</td><td><span class="pcid">ITIC-MH-2023-000919-1</span></td><td>Technician</td><td>07 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2299">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Ankita Shinde</td><td><span class="pcid">ITIC-MH-2024-000824-1</span></td><td>Apprentice – Apprentices Act</td><td>05 Oct 2025</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="999">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Ganesh Gaikwad</td><td><span class="pcid">ITIC-MH-2024-000269-9</span></td><td>Junior Technician</td><td>01 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="715">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Ganesh Gaikwad</td><td><span class="pcid">ITIC-MH-2023-001039-7</span></td><td>Junior Technician</td><td>01 Oct 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2605">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Tushar Mane</td><td><span class="pcid">ITIC-MH-2023-000037-2</span></td><td>Fitter</td><td>30 Sep 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="253">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Aniket Pawar</td><td><span class="pcid">ITIC-MH-2022-000200-8</span></td><td>Maintenance Technician</td><td>30 Sep 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="492">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Aishwarya Joshi</td><td><span class="pcid">ITIC-MH-2024-000662-5</span></td><td>Junior Technician</td><td>30 Sep 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1688">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Prathamesh Deshmukh</td><td><span class="pcid">ITIC-MH-2023-000089-3</span></td><td>Assistant Electrician</td><td>26 Sep 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="282">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Mahesh Shinde</td><td><span class="pcid">ITIC-MH-2023-001100-7</span></td><td>Assistant Electrician</td><td>19 Sep 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2763">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Yash Sawant</td><td><span class="pcid">ITIC-MH-2023-000977-9</span></td><td>Technician</td><td>18 Sep 2025</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2448">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sandesh Kulkarni</td><td><span class="pcid">ITIC-MH-2023-000591-8</span></td><td>Maintenance Technician</td><td>17 Sep 2025</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1426">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Kunal Nikam</td><td><span class="pcid">ITIC-MH-2024-000105-5</span></td><td>Operator</td><td>15 Sep 2025</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="384">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Swapnil Nikam</td><td><span class="pcid">ITIC-MH-2023-001008-2</span></td><td>Apprentice – Apprentices Act</td><td>13 Sep 2025</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1200">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Komal Jadhav</td><td><span class="pcid">ITIC-MH-2023-000346-7</span></td><td>Junior Technician</td><td>12 Sep 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="869">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rahul Sawant</td><td><span class="pcid">ITIC-MH-2022-000843-5</span></td><td>Junior Technician</td><td>26 Aug 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2185">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rutuja Salunkhe</td><td><span class="pcid">ITIC-MH-2022-000679-3</span></td><td>Junior Technician</td><td>13 Aug 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1775">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sachin Pathak</td><td><span class="pcid">ITIC-MH-2023-000470-5</span></td><td>Operator</td><td>30 Jun 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1156">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Swapnil Bhagat</td><td><span class="pcid">ITIC-MH-2021-000749-6</span></td><td>Junior Technician</td><td>07 May 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1899">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sanket Nikam</td><td><span class="pcid">ITIC-MH-2022-000661-1</span></td><td>Technician</td><td>29 Apr 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1726">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sagar Sawant</td><td><span class="pcid">ITIC-MH-2021-000006-1</span></td><td>Assistant Electrician</td><td>18 Apr 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="8">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Shubham Patil</td><td><span class="pcid">ITIC-MH-2022-000820-3</span></td><td>Operator</td><td>11 Apr 2025</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2116">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Tushar Gaikwad</td><td><span class="pcid">ITIC-MH-2021-000010-3</span></td><td>Fitter</td><td>03 Dec 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="10">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Vaibhav Bhagat</td><td><span class="pcid">ITIC-MH-2021-000498-0</span></td><td>Assistant Electrician</td><td>30 Nov 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1259">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Aditya Thorat</td><td><span class="pcid">ITIC-MH-2022-000560-5</span></td><td>Junior Technician</td><td>21 Nov 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1473">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Pratik Chavan</td><td><span class="pcid">ITIC-MH-2023-000072-9</span></td><td>Maintenance Technician</td><td>29 Oct 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="275">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Prathamesh Mane</td><td><span class="pcid">ITIC-MH-2021-000569-8</span></td><td>Operator</td><td>28 Oct 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1443">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Tejaswini Jadhav</td><td><span class="pcid">ITIC-MH-2022-000351-9</span></td><td>Apprentice – Naps</td><td>19 Oct 2024</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="429">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rahul Salunkhe</td><td><span class="pcid">ITIC-MH-2021-000634-0</span></td><td>Assistant Electrician</td><td>17 Oct 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1565">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Shubham More</td><td><span class="pcid">ITIC-MH-2023-000321-0</span></td><td>Apprentice – Naps</td><td>17 Oct 2024</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="360">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Omkar Bhagat</td><td><span class="pcid">ITIC-MH-2023-000406-9</span></td><td>Fitter</td><td>11 Oct 2024</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1013">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Dipali Bhosale</td><td><span class="pcid">ITIC-MH-2023-000078-6</span></td><td>Operator</td><td>09 Oct 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="277">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sachin Kadam</td><td><span class="pcid">ITIC-MH-2023-000198-2</span></td><td>Technician</td><td>28 Sep 2024</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="507">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rohit Chavan</td><td><span class="pcid">ITIC-MH-2023-000959-7</span></td><td>Apprentice – Naps</td><td>28 Sep 2024</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1137">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Omkar Sawant</td><td><span class="pcid">ITIC-MH-2023-001047-0</span></td><td>Junior Technician</td><td>25 Sep 2024</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2612">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rohit Mane</td><td><span class="pcid">ITIC-MH-2022-000753-6</span></td><td>Maintenance Technician</td><td>21 Sep 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1947">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Neha Bhosale</td><td><span class="pcid">ITIC-MH-2022-000928-4</span></td><td>Junior Technician</td><td>20 Sep 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2439">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Prathamesh Kale</td><td><span class="pcid">ITIC-MH-2022-000260-2</span></td><td>Junior Technician</td><td>18 Sep 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="675">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Swapnil Bhosale</td><td><span class="pcid">ITIC-MH-2022-000196-8</span></td><td>Apprentice – Naps</td><td>12 Sep 2024</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="214">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Pooja Kamble</td><td><span class="pcid">ITIC-MH-2022-000758-5</span></td><td>Assistant Electrician</td><td>03 Sep 2024</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1954">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Kunal Bhosale</td><td><span class="pcid">ITIC-MH-2021-000859-3</span></td><td>Apprentice – Apprentices Act</td><td>04 May 2024</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1036">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Nikhil Bhosale</td><td><span class="pcid">ITIC-MH-2022-000918-5</span></td><td>Apprentice – Apprentices Act</td><td>04 Apr 2024</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1128">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Shubham Patil</td><td><span class="pcid">ITIC-MH-2022-000820-3</span></td><td>Apprentice – Naps</td><td>02 Apr 2024</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1023">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Ganesh Kamble</td><td><span class="pcid">ITIC-MH-2022-000233-9</span></td><td>Assistant Electrician</td><td>01 Nov 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="587">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Akash More</td><td><span class="pcid">ITIC-MH-2021-000840-3</span></td><td>Operator</td><td>31 Oct 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2094">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sagar Salunkhe</td><td><span class="pcid">ITIC-MH-2021-000549-0</span></td><td>Apprentice – Naps</td><td>30 Oct 2023</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="651">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rushikesh Patil</td><td><span class="pcid">ITIC-MH-2021-000568-0</span></td><td>Maintenance Technician</td><td>29 Oct 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1409">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Swapnil More</td><td><span class="pcid">ITIC-MH-2021-001090-4</span></td><td>Operator</td><td>29 Oct 2023</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2793">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Vaibhav Kadam</td><td><span class="pcid">ITIC-MH-2022-000434-3</span></td><td>Apprentice – Naps</td><td>26 Oct 2023</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="521">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Amit Wagh</td><td><span class="pcid">ITIC-MH-2022-000850-0</span></td><td>Operator</td><td>25 Oct 2023</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2226">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Omkar Pawar</td><td><span class="pcid">ITIC-MH-2022-000293-3</span></td><td>Apprentice – Naps</td><td>23 Oct 2023</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="350">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rushikesh Joshi</td><td><span class="pcid">ITIC-MH-2021-000446-9</span></td><td>Operator</td><td>21 Oct 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1137">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Pooja Gaikwad</td><td><span class="pcid">ITIC-MH-2021-000424-6</span></td><td>Apprentice – Naps</td><td>19 Oct 2023</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="492">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Aditya Chavan</td><td><span class="pcid">ITIC-MH-2021-001061-5</span></td><td>Fitter</td><td>18 Oct 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2732">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Snehal Kadam</td><td><span class="pcid">ITIC-MH-2022-000188-5</span></td><td>Maintenance Technician</td><td>15 Oct 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="480">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Prathamesh Mane</td><td><span class="pcid">ITIC-MH-2021-000569-8</span></td><td>Apprentice – Naps</td><td>08 Oct 2023</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="678">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Aniket Gaikwad</td><td><span class="pcid">ITIC-MH-2021-000158-0</span></td><td>Apprentice – Apprentices Act</td><td>06 Oct 2023</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="42">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sanket Jadhav</td><td><span class="pcid">ITIC-MH-2021-000218-2</span></td><td>Maintenance Technician</td><td>02 Oct 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="554">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rahul Deshmukh</td><td><span class="pcid">ITIC-MH-2022-000411-1</span></td><td>Fitter</td><td>30 Sep 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1104">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Pallavi Pathak</td><td><span class="pcid">ITIC-MH-2022-000638-9</span></td><td>Apprentice – Apprentices Act</td><td>29 Sep 2023</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="786">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Pratik Patil</td><td><span class="pcid">ITIC-MH-2022-000074-7</span></td><td>Maintenance Technician</td><td>23 Sep 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="172">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Akash Shinde</td><td><span class="pcid">ITIC-MH-2021-000384-2</span></td><td>Junior Technician</td><td>19 Sep 2023</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="985">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Aniket Thorat</td><td><span class="pcid">ITIC-MH-2021-000910-4</span></td><td>Fitter</td><td>19 Sep 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2317">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Shubham Deshmukh</td><td><span class="pcid">ITIC-MH-2022-000996-1</span></td><td>Fitter</td><td>14 Sep 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2591">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Prathamesh Gaikwad</td><td><span class="pcid">ITIC-MH-2021-000993-0</span></td><td>Technician</td><td>12 Sep 2023</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2526">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Prathamesh Kale</td><td><span class="pcid">ITIC-MH-2021-001056-5</span></td><td>Technician</td><td>07 Sep 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2693">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Vaibhav Joshi</td><td><span class="pcid">ITIC-MH-2021-000584-7</span></td><td>Technician</td><td>20 Mar 2023</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1456">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Aditya Kadam</td><td><span class="pcid">ITIC-MH-2021-000931-0</span></td><td>Maintenance Technician</td><td>24 Oct 2022</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="2362">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sandesh Kale</td><td><span class="pcid">ITIC-MH-2021-000318-0</span></td><td>Assistant Electrician</td><td>19 Oct 2022</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="837">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Vishal Kamble</td><td><span class="pcid">ITIC-MH-2021-001021-9</span></td><td>Apprentice – Apprentices Act</td><td>16 Oct 2022</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1216">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Aditya Chavan</td><td><span class="pcid">ITIC-MH-2021-001061-5</span></td><td>Apprentice – Naps</td><td>10 Oct 2022</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="1283">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Mahesh Deshmukh</td><td><span class="pcid">ITIC-MH-2021-000110-1</span></td><td>Apprentice – Apprentices Act</td><td>16 Sep 2022</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="24">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Yash Kale</td><td><span class="pcid">ITIC-MH-2021-000582-1</span></td><td>Fitter</td><td>15 Sep 2022</td><td><span class="badge badge-green">Active</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1454">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Rushikesh Joshi</td><td><span class="pcid">ITIC-MH-2021-000446-9</span></td><td>Apprentice – Naps</td><td>14 Sep 2022</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="515">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Amit Gaikwad</td><td><span class="pcid">ITIC-MH-2021-000537-5</span></td><td>Maintenance Technician</td><td>13 Sep 2022</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="1346">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Kunal Nikam</td><td><span class="pcid">ITIC-MH-2021-000297-6</span></td><td>Maintenance Technician</td><td>10 Sep 2022</td><td><span class="badge badge-grey">Ended</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="employment"><input type="hidden" name="record_id" value="781">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          <tr><td>Sanket Jadhav</td><td><span class="pcid">ITIC-MH-2021-000218-2</span></td><td>Apprentice – Naps</td><td>09 Sep 2022</td><td><span class="badge badge-green">Completed</span></td>
+        <td><form method="post" action="#" class="flex wrap">          <input type="hidden" name="kind" value="apprenticeship"><input type="hidden" name="record_id" value="251">
+          <input type="text" name="evidence" required maxlength="255" placeholder="Employee code / HR letter no." style="width:190px">
+          <button class="btn btn-green btn-sm" name="decision" value="VERIFIED">Confirm</button>
+          <button class="btn btn-red btn-sm" name="decision" value="REJECTED">Not ours</button></form></td></tr>
+          </table></div>
+</div>
+    </main>
+  </div>
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/static-demo.js"></script>
+</body>
+</html>
