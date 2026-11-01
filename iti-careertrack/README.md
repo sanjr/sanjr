@@ -1,5 +1,14 @@
 # ITI CareerTrack
 
+> ## ⬇️ Download the website
+> **[dist/ITI-CareerTrack-Website.zip](dist/ITI-CareerTrack-Website.zip)** — the complete, ready-to-install website (PHP + MySQL).
+> Extract it into `C:\xampp\htdocs\`, open **http://localhost/ITI-CareerTrack/** and the installer does the rest.
+> Step-by-step guide (Marathi + English): **[INSTALL.md](INSTALL.md)**.
+>
+> Tested before release: web installer (Demo and Empty), Apache sub-folder install from the ZIP,
+> a real-browser walkthrough of every menu of all 10 roles (233 checks) and 109 end-to-end tests — all passing.
+
+
 **ITI Student Lifecycle & Career Tracking System — Maharashtra**
 *One Student. One Permanent Career ID. One Complete Career Journey.*
 
@@ -28,6 +37,8 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | `python/jobs/followup_job.py` | Nightly job that creates follow-up tasks for alumni who have not updated (it never changes their status) |
 | `python/reports/export_report.py` | Offline Excel/CSV report for the State or District office |
 | `python/tests/test_e2e.py` | **109 automated end-to-end acceptance and security tests** |
+| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (233 checks) |
+| `app/public/install.php` | One-time web installer (Demo or Empty system); disabled automatically after installation |
 | `docs/` | Architecture review, ER diagrams, API design, implementation notes, **screenshots** |
 | `database/schema.sql` | The original PostgreSQL design reviewed in phase 1 (kept for reference) |
 

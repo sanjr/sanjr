@@ -1,0 +1,40 @@
+# ITI CareerTrack — Installation / स्थापना
+
+## मराठीत (XAMPP, Windows)
+1. **XAMPP** install करा (PHP 8.1 किंवा नवीन). Database साठी **MySQL 8.0.16+** वापरा.
+2. ही ZIP extract करा आणि `ITI-CareerTrack` फोल्डर `C:\xampp\htdocs\` मध्ये ठेवा.
+3. XAMPP Control Panel मधून **Apache** आणि **MySQL** Start करा.
+4. Browser मध्ये उघडा: **http://localhost/ITI-CareerTrack/**
+5. Installer page उघडेल. MySQL ची माहिती भरा (XAMPP मध्ये साधारणपणे: host `127.0.0.1`, port `3306`, user `root`, password रिकामा).
+6. निवडा:
+   - **Demo system** — सराव / सादरीकरणासाठी नमुना डेटा. Login: `DVET-ADMIN` / `Demo@1234` (login page वर कोणताही role click केला की demo account भरले जाते).
+   - **Empty system** — खऱ्या वापरासाठी. फक्त State Admin चा login (तुम्ही निवडलेला User ID व password), 36 जिल्हे व 6 विभागीय कार्यालये तयार असतात.
+7. **Install** दाबा. एक मिनिटात website तयार. Installer त्यानंतर आपोआप बंद होतो.
+
+### Empty system नंतर State Admin ने करायचे
+1. **Master Data** → Trades (modules सह) व Academic Year.
+2. **ITIs Management** → प्रत्येक ITI त्याच्या **NCVT MIS Code** सह.
+3. **User & Role Mgmt** → *Create ITI logins* (User ID = NCVT MIS Code, password `Test@12345`), तसेच RO Admin, DVTO, Apprentice Advisor, Instructor, Placement Officer, Employer चे users.
+4. प्रत्येक user पहिल्या login ला आपला password बदलतो.
+
+## English (Linux / any server)
+1. Copy the `ITI-CareerTrack` folder to the web server. Point Apache/Nginx to `ITI-CareerTrack/app/public` (recommended) — or keep the whole folder in the web root (the included `.htaccess` files block access to private folders).
+2. Open the site in a browser → the installer opens → enter MySQL details → choose Demo or Empty → Install.
+3. For production: use HTTPS, a MySQL user without DELETE rights (see `database/mysql/04_app_user.sql`), and regular backups of the database and `app/storage/documents`.
+
+## Who does what (logins)
+| Login | Work |
+|---|---|
+| State Admin (DVET) | Whole Maharashtra; creates all user IDs, ITIs, trades, years; transfers, verification, reports, audit |
+| RO Admin (6 regions) | All ITIs of the region: students, results, apprenticeship, placement, verification, reports |
+| DVTO Admin | All ITIs of the district: same as RO, for one district |
+| Apprentice Advisor | Assigned ITIs: apprenticeship, companies (approve), verification, reports |
+| Principal (User ID = NCVT MIS code) | Own ITI: admission + PCID, batches, staff passwords, attendance, exams, transfers, placement, follow-ups, reports |
+| Instructor | All students of own trade(s): attendance, module progress, assessments, results, career view |
+| Placement Officer | Companies, vacancies, applications, jobs/apprenticeships, follow-ups, verification |
+| ITI Staff | Follow-up calls assigned to them |
+| Employer / HR | Own company, vacancies, applicants; full history (view only) of own employees/apprentices; adds new records only for own company |
+| Student / Alumni | Own Career Passport + PCID card, job search, adds new job/company/course |
+
+## Requirements
+PHP 8.1+ with `pdo_mysql`, `mbstring`, `fileinfo`, `openssl`; MySQL 8.0.16+; Apache with `mod_rewrite` (XAMPP has it).

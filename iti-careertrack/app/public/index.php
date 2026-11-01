@@ -12,6 +12,16 @@ if (PHP_SAPI === 'cli-server') {
     if ($f !== __DIR__ . '/' && is_file($f) && !str_ends_with($f, '.php')) {
         return false;
     }
+    if (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) === '/install.php') {
+        require __DIR__ . '/install.php';
+        return true;
+    }
+}
+
+// Not installed yet? Send every request to the one-time web installer.
+if (!is_file(__DIR__ . '/../config/config.php')) {
+    header('Location: ' . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/') . '/install.php', true, 302);
+    exit;
 }
 
 require __DIR__ . '/../src/bootstrap.php';
@@ -86,6 +96,12 @@ $r->post('/users/{id}/reset-password', [C\AdminController::class, 'resetPassword
 $r->post('/students/{id}/account', [C\StudentController::class, 'account']);
 $r->post('/role-assignments/{id}/revoke', [C\AdminController::class, 'revokeRole']);
 $r->get('/audit', [C\AdminController::class, 'audit']);
+$r->get('/masters', [C\MasterController::class, 'index']);
+$r->post('/masters/trades', [C\MasterController::class, 'storeTrade']);
+$r->post('/masters/years', [C\MasterController::class, 'storeYear']);
+$r->post('/masters/years/{id}/status', [C\MasterController::class, 'yearStatus']);
+$r->post('/masters/iti-trades', [C\MasterController::class, 'storeItiTrade']);
+$r->get('/verifications', [C\MasterController::class, 'verifications']);
 $r->get('/settings', [C\AdminController::class, 'settings']);
 $r->post('/settings/password', [C\AdminController::class, 'changePassword']);
 // --- principal

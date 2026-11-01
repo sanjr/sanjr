@@ -170,6 +170,10 @@ final class CareerController extends Controller
         CareerService::verify($id, (string) input('field'), (int) input('record_id'), $decision, $method,
             mb_substr((string) input('evidence', ''), 0, 255) ?: null, mb_substr((string) input('remarks', ''), 0, 500) ?: null);
         flash('success', 'Verification recorded with your name, time and evidence.');
+        if (input('back') === 'queue') {
+            $map = ['employment_id' => 'employment', 'apprenticeship_id' => 'apprenticeship', 'business_record_id' => 'business', 'higher_education_record_id' => 'higher'];
+            redirect('/verifications', ['kind' => $map[(string) input('field')] ?? 'employment']);
+        }
         redirect('/students/' . $id, ['tab' => (string) input('field') === 'exam_result_id' ? 'results' : (input('field') === 'student_document_id' ? 'documents' : 'employment')]);
     }
 }
