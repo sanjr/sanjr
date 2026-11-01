@@ -73,11 +73,23 @@ function ct_routine_kind(string $stmt): ?string
     return null;
 }
 
+/** MariaDB (used by many web hosts) differs from MySQL 8 in a few statements. */
+function ct_compat(string $stmt, bool $maria): string
+{
+    if (!$maria) {
+        return $stmt;
+    }
+    $stmt = preg_replace('/\bDROP\s+CHECK\s+/i', 'DROP CONSTRAINT ', $stmt);
+    // mysqldump writes "x REGEXP 'p'" as regexp_like(`x`,_utf8mb4'p'), which MariaDB does not know
+    return preg_replace('/\bregexp_like\((`?\w+`?),\s*((?:_utf8mb4)?\'(?:[^\'\\\\]|\\\\.)*\')\)/i', '($1 REGEXP $2)', $stmt);
+}
+
 $errors = [];
 $done = null;
 $in = [
     'host' => $_POST['host'] ?? '127.0.0.1', 'port' => $_POST['port'] ?? '3306', 'name' => $_POST['name'] ?? 'careertrack',
     'user' => $_POST['user'] ?? 'root', 'pass' => $_POST['pass'] ?? '', 'mode' => $_POST['mode'] ?? 'demo',
+    'reset' => !empty($_POST['reset']),
     'admin_user' => strtoupper(trim((string) ($_POST['admin_user'] ?? 'DVET-ADMIN'))), 'admin_name' => $_POST['admin_name'] ?? 'State Admin (DVET)',
 ];
 
@@ -109,8 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo = new PDO(sprintf('mysql:host=%s;port=%d;charset=utf8mb4', $in['host'], (int) $in['port']), $in['user'], $in['pass'],
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
             $ver = (string) $pdo->query('SELECT VERSION()')->fetchColumn();
-            if (stripos($ver, 'mariadb') === false && version_compare($ver, '8.0.16', '<')) {
+            $maria = stripos($ver, 'mariadb') !== false;
+            if (!$maria && version_compare($ver, '8.0.16', '<')) {
                 throw new RuntimeException("MySQL 8.0.16 or newer is required (server is $ver).");
+            }
+            if ($maria && version_compare($ver, '10.5.0', '<')) {
+                throw new RuntimeException("MariaDB 10.5 or newer is required (server is $ver).");
             }
             // Shared hosting (cPanel / Plesk): the database is created in the control panel and the
             // user may not be allowed to create databases. Then just use the existing one.
@@ -125,8 +141,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     . 'On web hosting: cPanel → MySQL Databases → create the database and a user, then "Add User To Database" with ALL PRIVILEGES. '
                     . 'Enter the full names shown by cPanel (for example cpuser_careertrack).');
             }
+            try {   // a database created in the hosting panel may default to latin1: Marathi text needs utf8mb4
+                $pdo->exec('ALTER DATABASE `' . $in['name'] . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+            } catch (PDOException $ignored) {
+            }
+            if ($in['reset']) {   // clean up an earlier, unfinished installation
+                $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
+                foreach ($pdo->query("SELECT table_name, table_type FROM information_schema.tables WHERE table_schema = DATABASE() ORDER BY table_type = 'VIEW' DESC")
+                             ->fetchAll(PDO::FETCH_NUM) as [$t, $type]) {
+                    $pdo->exec(($type === 'VIEW' ? 'DROP VIEW IF EXISTS `' : 'DROP TABLE IF EXISTS `') . str_replace('`', '', $t) . '`');
+                }
+                foreach ($pdo->query('SELECT routine_name, routine_type FROM information_schema.routines WHERE routine_schema = DATABASE()')->fetchAll(PDO::FETCH_NUM) as [$r, $type]) {
+                    $pdo->exec('DROP ' . ($type === 'FUNCTION' ? 'FUNCTION' : 'PROCEDURE') . ' IF EXISTS `' . str_replace('`', '', $r) . '`');
+                }
+                $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
+            }
             if ((int) $pdo->query('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()')->fetchColumn() > 0) {
-                throw new RuntimeException('Database "' . $in['name'] . '" is not empty. Choose a new database name.');
+                throw new RuntimeException('Database "' . $in['name'] . '" is not empty (perhaps from an earlier attempt). '
+                    . 'Tick "Delete existing tables in this database" below and press Install again, or use a new, empty database.');
             }
             // Demo: the full dump, but its procedures/triggers are skipped and created from
             // 02_routines.sql afterwards, so that hosting without the SUPER privilege also works.
@@ -141,6 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new RuntimeException("Missing file database/mysql/$f");
                 }
                 foreach (ct_statements($path) as $stmt) {
+                    $stmt = ct_compat($stmt, $maria);
                     $kind = ct_routine_kind($stmt);
                     if ($f === 'demo_data.sql.gz' && $kind !== null) {
                         continue;
@@ -267,6 +300,8 @@ $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '
       <div class="field"><label>State Admin password (empty system)</label><input type="password" name="admin_pass" autocomplete="new-password">
         <div class="hint">At least 10 characters with letters and numbers.</div></div>
     </div>
+    <label class="mt" style="display:block"><input type="checkbox" name="reset" value="1" <?= $in['reset'] ? 'checked' : '' ?>>
+      Delete existing tables in this database first (use this after an unfinished installation; all data in this database is removed)</label>
     <button class="btn btn-block mt" type="submit" style="padding:12px">Install ITI CareerTrack</button>
   </form>
 <?php endif; ?>

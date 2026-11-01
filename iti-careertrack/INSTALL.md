@@ -27,7 +27,8 @@ Hosting वर `root` user आणि रिकामा password **चालत 
 6. Demo किंवा Empty निवडा → **Install**.
    - Hosting MySQL triggers ला परवानगी देत नसेल (SUPER privilege नाही), तर installer तसे सांगतो आणि तेच नियम PHP मधून चालवतो — website पूर्ण चालते.
 7. शक्य असल्यास subdomain चा **Document Root** `ITI-CareerTrack/app/public` ठेवा (cPanel → Domains). URL मग `https://app.example.com/` असा येतो.
-8. Install अर्धवट झाले तर: phpMyAdmin मध्ये त्या database मधील सर्व tables Drop करा (किंवा नवीन database बनवा) आणि पुन्हा installer उघडा.
+8. Install अर्धवट झाले तर: installer मध्ये **"Delete existing tables in this database first"** वर tick करा आणि पुन्हा Install दाबा.
+9. Hostinger व अनेक hosting वर **MariaDB** असते — ते चालते (MariaDB 10.5+ तपासले: 10.11).
 
 ## English (Linux / any server)
 1. Copy the `ITI-CareerTrack` folder to the web server. Point Apache/Nginx to `ITI-CareerTrack/app/public` (recommended) — or keep the whole folder in the web root (the included `.htaccess` files block access to private folders).
@@ -52,4 +53,4 @@ Hosting वर `root` user आणि रिकामा password **चालत 
 | Student / Alumni | Own Career Passport + PCID card, job search, adds new job/company/course |
 
 ## Requirements
-PHP 8.1+ with `pdo_mysql`, `zlib`, `mbstring`, `fileinfo`, `openssl`; MySQL 8.0.16+; Apache with `mod_rewrite` (XAMPP has it).
+MySQL 8.0.16+ **or MariaDB 10.5+** (tested on MariaDB 10.11). PHP 8.1+ with `pdo_mysql`, `zlib`, `mbstring`, `fileinfo`, `openssl`; MySQL 8.0.16+; Apache with `mod_rewrite` (XAMPP has it).

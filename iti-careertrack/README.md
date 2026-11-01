@@ -3,7 +3,7 @@
 > ## ⬇️ Download the website
 > **[dist/ITI-CareerTrack-Website.zip](dist/ITI-CareerTrack-Website.zip)** — the complete, ready-to-install website (PHP + MySQL).
 > Extract it into `C:\xampp\htdocs\`, open **http://localhost/ITI-CareerTrack/** and the installer does the rest.
-> Step-by-step guide (Marathi + English): **[INSTALL.md](INSTALL.md)**.
+> Step-by-step guide (Marathi + English): **[INSTALL.md](INSTALL.md)** — XAMPP and web hosting (cPanel / Hostinger, MySQL 8 or MariaDB).
 >
 > Tested before release: web installer (Demo and Empty), Apache sub-folder install from the ZIP,
 > a real-browser walkthrough of every menu of all 10 roles (233 checks) and 109 end-to-end tests — all passing.
