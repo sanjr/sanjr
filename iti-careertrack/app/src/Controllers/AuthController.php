@@ -18,7 +18,8 @@ final class AuthController extends Controller
         if (Auth::check() && Auth::role()) {
             redirect('/dashboard');
         }
-        View::render('auth/login', ['title' => 'Login'], 'auth');
+        $as = (string) input('as', '');
+        View::render('auth/login', ['title' => 'Login', 'as' => array_key_exists($as, Auth::ROLE_LABELS) ? $as : ''], 'public');
     }
 
     public function login(): void
@@ -29,12 +30,36 @@ final class AuthController extends Controller
             flash('error', 'Enter your e-mail and password.');
             redirect('/login');
         }
-        $result = Auth::attempt($email, $password);
+        $role = (string) input('role', '');
+        $role = array_key_exists($role, Auth::ROLE_LABELS) ? $role : null;
+        $result = Auth::attempt($email, $password, $role);
         if ($result === true) {
             redirect(isset($_SESSION['ra_id']) ? '/dashboard' : '/choose-role');
         }
-        flash('error', is_string($result) ? $result : 'Incorrect e-mail or password.');
+        flash('error', is_string($result) ? $result : 'Incorrect e-mail / mobile or password.');
         $_SESSION['old'] = ['email' => $email];
+        redirect('/login', $role ? ['as' => $role] : []);
+    }
+
+    public function forgotForm(): void
+    {
+        View::render('auth/forgot', ['title' => 'Forgot password'], 'public');
+    }
+
+    /** No e-mail/SMS provider is connected yet, so the request goes to the administrators (same reply whether or not the account exists). */
+    public function forgot(): void
+    {
+        $login = trim((string) input('login', ''));
+        if ($login !== '') {
+            $mobile = preg_replace('/\D/', '', $login) ?? '';
+            $uid = str_contains($login, '@')
+                ? \App\Core\Database::value('SELECT id FROM users WHERE email = ?', [mb_strtolower($login)])
+                : \App\Core\Database::value('SELECT id FROM users WHERE mobile = ?', [$mobile]);
+            if ($uid) {
+                \App\Core\Audit::log('PASSWORD_RESET_REQUEST', 'users', (int) $uid, actorId: (int) $uid);
+            }
+        }
+        flash('success', 'If this account exists, your administrator has been notified to reset the password. Please contact your ITI office.');
         redirect('/login');
     }
 

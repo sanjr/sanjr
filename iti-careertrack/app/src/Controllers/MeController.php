@@ -38,6 +38,11 @@ final class MeController extends Controller
     public function highereducation(): void { $this->passport('employment'); }
     public function business(): void { $this->passport('employment'); }
 
+    public function card(): void
+    {
+        (new StudentController())->card($this->sid());
+    }
+
     public function updateForm(): void
     {
         $sid = $this->sid();

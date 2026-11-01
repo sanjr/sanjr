@@ -254,3 +254,11 @@ function chart(array $spec, string $class = 'chart'): string
 {
     return '<div class="' . e($class) . '" data-chart="' . e(json_encode($spec, JSON_UNESCAPED_UNICODE)) . '"></div>';
 }
+
+/** Absolute URL (used inside the QR code on the PCID card). */
+function absolute_url(string $path, array $query = []): string
+{
+    $https = ($_SERVER['HTTPS'] ?? '') === 'on' || (bool) config('app.force_https_cookies');
+    $host = preg_replace('/[^A-Za-z0-9.:\-\[\]]/', '', (string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
+    return ($https ? 'https://' : 'http://') . $host . url($path, $query);
+}

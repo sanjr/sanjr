@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Follow-up Tasks · ITI CareerTrack</title>
+<title>Follow-up &amp; Task Management · ITI CareerTrack</title>
 <link rel="icon" href="../img/logo.svg">
 <link rel="stylesheet" href="../css/app.css">
 </head>
-<body>
+<body class="">
 <div class="demo-ribbon">STATIC HTML PREVIEW (no saving) · <a href="../index.html">all pages</a> · DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
 <div class="shell">
   <aside class="sidebar" id="sidebar">
@@ -17,7 +17,7 @@
       <span>CareerTrack</span>
     </a>
     <nav>
-              <a href="#" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
+                    <a href="#" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
               <a href="../staff/follow-ups.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><span>Follow-up Tasks</span></a>
               <a href="../staff/settings.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></a>
           </nav>
@@ -45,167 +45,341 @@
     </header>
 
     <main class="content">
-            <div class="page-head"><div><h1>Follow-up Tasks</h1>
-  <p>Call or message students who have not updated their status. “Not reachable” is recorded as <b>Not contactable</b> — never as unemployed.</p></div></div>
+            <div class="page-head"><div><h1>Follow-up &amp; Task Management</h1>
+  <p>Call or message students who have not updated their status. “Not reachable” is recorded as <b>Not contactable</b> — never as unemployed.</p></div>
+  </div>
+
+<div class="status-tabs">
+      <a class="active" href="../staff/follow-ups.html">Pending (15)</a>
+      <a class="" href="../staff/follow-ups.html">In Progress (0)</a>
+      <a class="" href="../staff/follow-ups.html">Completed (0)</a>
+      <a class="" href="../staff/follow-ups.html">Cancelled (0)</a>
+  </div>
 
 <form class="card filters" method="get" action="#">
-  <div class="field"><label>Show</label><select name="status" data-autosubmit>
-          <option value="open" selected>Open tasks</option>      <option value="COMPLETED" >Completed</option>      <option value="CANCELLED" >Cancelled</option>      <option value="all" >All</option></select></div>
-  </form>
+  <input type="hidden" name="status" value="PENDING">
+  <div class="field" style="flex:1"><label>Search student / PCID</label><input type="search" name="q" value=""></div>
+    <button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Filter</button>
+</form>
 
 <div class="card card-tight">
   <div class="table-wrap"><table class="table">
-    <tr><th>Student</th><th>Mobile</th><th>Reason</th><th>Due</th><th>Assigned to</th><th>Current status</th><th>Task</th><th style="min-width:330px">Record outcome</th></tr>
-          <tr><td><b>Omkar Bhosale</b><br><span class="pcid">ITIC-MH-2021-000011-1</span></td>
-        <td class="nowrap">9500000011</td>        <td>No Recent Update<br><small>Phone</small></td>
+    <tr><th>#</th><th>Student (PCID)</th><th>Trade</th><th>Reason</th><th>Last contact</th><th>Next follow-up</th><th>Assigned to</th><th>Current status</th><th>Action</th></tr>
+          <tr>
+        <td>1</td>
+        <td><b>Omkar Bhosale</b><br><small class="code">(…000011-1)</small></td>
+        <td>Fitter</td>
+        <td>No Recent Update<br><small class="muted">Phone</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap"><span class="badge badge-red">30 Oct 2026</span></td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-red">Not Contactable</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Akash Thorat</b><br><span class="pcid">ITIC-MH-2021-000058-2</span></td>
-        <td class="nowrap">9500000058</td>        <td>No Recent Update<br><small>Sms</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-red">Not Contactable</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9500000011"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9500000011</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>2</td>
+        <td><b>Akash Thorat</b><br><small class="code">(…000058-2)</small></td>
+        <td>Electrician</td>
+        <td>No Recent Update<br><small class="muted">Sms</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap"><span class="badge badge-red">30 Oct 2026</span></td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Seeking Employment</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Sanket Shinde</b><br><span class="pcid">ITIC-MH-2021-000112-7</span></td>
-        <td class="nowrap">9300000112</td>        <td>No Recent Update<br><small>Phone</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Seeking Employment</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9500000058"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9500000058</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>3</td>
+        <td><b>Sanket Shinde</b><br><small class="code">(…000112-7)</small></td>
+        <td>COPA</td>
+        <td>No Recent Update<br><small class="muted">Phone</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap"><span class="badge badge-red">30 Oct 2026</span></td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Not Updated</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Shruti Mane</b><br><span class="pcid">ITIC-MH-2021-000017-8</span></td>
-        <td class="nowrap">9800000017</td>        <td>No Recent Update<br><small>Whatsapp</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Not Updated</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9300000112"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9300000112</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>4</td>
+        <td><b>Shruti Mane</b><br><small class="code">(…000017-8)</small></td>
+        <td>Fitter</td>
+        <td>No Recent Update<br><small class="muted">Whatsapp</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">01 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-red">Not Contactable</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Swapnil Shelke</b><br><span class="pcid">ITIC-MH-2021-000064-0</span></td>
-        <td class="nowrap">9900000064</td>        <td>No Recent Update<br><small>Whatsapp</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-red">Not Contactable</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9800000017"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9800000017</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>5</td>
+        <td><b>Swapnil Shelke</b><br><small class="code">(…000064-0)</small></td>
+        <td>Electrician</td>
+        <td>No Recent Update<br><small class="muted">Whatsapp</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">01 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Seeking Employment</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Mahesh Bhagat</b><br><span class="pcid">ITIC-MH-2021-000116-8</span></td>
-        <td class="nowrap">9600000116</td>        <td>No Recent Update<br><small>Phone</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Seeking Employment</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9900000064"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9900000064</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>6</td>
+        <td><b>Mahesh Bhagat</b><br><small class="code">(…000116-8)</small></td>
+        <td>COPA</td>
+        <td>No Recent Update<br><small class="muted">Phone</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">01 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Seeking Employment</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Mahesh Bhagat</b><br><span class="pcid">ITIC-MH-2021-000036-8</span></td>
-        <td class="nowrap">9600000036</td>        <td>No Recent Update<br><small>Phone</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Seeking Employment</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9600000116"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9600000116</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>7</td>
+        <td><b>Mahesh Bhagat</b><br><small class="code">(…000036-8)</small></td>
+        <td>Electrician</td>
+        <td>No Recent Update<br><small class="muted">Phone</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">03 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-red">Not Contactable</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Kunal Mane</b><br><span class="pcid">ITIC-MH-2021-000078-0</span></td>
-        <td class="nowrap">9600000078</td>        <td>No Recent Update<br><small>Sms</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-red">Not Contactable</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9600000036"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9600000036</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>8</td>
+        <td><b>Kunal Mane</b><br><small class="code">(…000078-0)</small></td>
+        <td>Welder</td>
+        <td>No Recent Update<br><small class="muted">Sms</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">03 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Not Updated</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Rohit Nikam</b><br><span class="pcid">ITIC-MH-2021-000121-8</span></td>
-        <td class="nowrap">9200000121</td>        <td>No Recent Update<br><small>Sms</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Not Updated</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9600000078"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9600000078</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>9</td>
+        <td><b>Rohit Nikam</b><br><small class="code">(…000121-8)</small></td>
+        <td>COPA</td>
+        <td>No Recent Update<br><small class="muted">Sms</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">03 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Seeking Employment</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Ganesh Shelke</b><br><span class="pcid">ITIC-MH-2021-000041-8</span></td>
-        <td class="nowrap">9200000041</td>        <td>No Recent Update<br><small>Whatsapp</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Seeking Employment</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9200000121"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9200000121</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>10</td>
+        <td><b>Ganesh Shelke</b><br><small class="code">(…000041-8)</small></td>
+        <td>Electrician</td>
+        <td>No Recent Update<br><small class="muted">Whatsapp</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">05 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Seeking Employment</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Tejaswini Bhosale</b><br><span class="pcid">ITIC-MH-2021-000084-8</span></td>
-        <td class="nowrap">9500000084</td>        <td>No Recent Update<br><small>Whatsapp</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Seeking Employment</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9200000041"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9200000041</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>11</td>
+        <td><b>Tejaswini Bhosale</b><br><small class="code">(…000084-8)</small></td>
+        <td>Welder</td>
+        <td>No Recent Update<br><small class="muted">Whatsapp</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">05 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Not Updated</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Kunal Shelke</b><br><span class="pcid">ITIC-MH-2021-000135-8</span></td>
-        <td class="nowrap">9600000135</td>        <td>No Recent Update<br><small>Phone</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Not Updated</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9500000084"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9500000084</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>12</td>
+        <td><b>Kunal Shelke</b><br><small class="code">(…000135-8)</small></td>
+        <td>Mechanic Motor Vehicle</td>
+        <td>No Recent Update<br><small class="muted">Phone</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">05 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Seeking Employment</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Sneha Chavan</b><br><span class="pcid">ITIC-MH-2021-000047-5</span></td>
-        <td class="nowrap">9200000047</td>        <td>No Recent Update<br><small>Sms</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Seeking Employment</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9600000135"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9600000135</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>13</td>
+        <td><b>Sneha Chavan</b><br><small class="code">(…000047-5)</small></td>
+        <td>Electrician</td>
+        <td>No Recent Update<br><small class="muted">Sms</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">07 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-red">Not Contactable</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Yash Bhagat</b><br><span class="pcid">ITIC-MH-2021-000100-2</span></td>
-        <td class="nowrap">9300000100</td>        <td>No Recent Update<br><small>Whatsapp</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-red">Not Contactable</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9200000047"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9200000047</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>14</td>
+        <td><b>Yash Bhagat</b><br><small class="code">(…000100-2)</small></td>
+        <td>COPA</td>
+        <td>No Recent Update<br><small class="muted">Whatsapp</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">07 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Not Updated</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
-          <tr><td><b>Sagar Chavan</b><br><span class="pcid">ITIC-MH-2021-000149-9</span></td>
-        <td class="nowrap">9100000149</td>        <td>No Recent Update<br><small>Sms</small></td>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Not Updated</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9300000100"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9300000100</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
+          <tr>
+        <td>15</td>
+        <td><b>Sagar Chavan</b><br><small class="code">(…000149-9)</small></td>
+        <td>Mechanic Motor Vehicle</td>
+        <td>No Recent Update<br><small class="muted">Sms</small></td>
+        <td><span class="muted">never</span></td>
         <td class="nowrap">07 Nov 2026</td>
-        <td>Dinesh Shelke</td><td><span class="badge badge-grey">Seeking Employment</span></td><td><span class="badge badge-amber">Pending</span></td>
-        <td>          <form method="post" action="#" class="flex wrap">            <select name="outcome" required style="width:auto"><option value="">Outcome</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select>
-            <select name="new_status" style="width:auto"><option value="">New status (if updated)</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          </td></tr>
+        <td>Dinesh Shelke</td>
+        <td><span class="badge badge-grey">Seeking Employment</span></td>
+        <td class="nowrap">
+                      <a class="call-btn" href="#" title="Call 9100000149"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></a>                          <form method="post" action="#" class="inline-form"><button class="btn btn-light btn-sm">Start</button></form>
+                        <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="#" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal">                <p class="mt0"><svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> <b>9100000149</b></p>                <div class="field"><label>Outcome</label><select name="outcome" required><option value="">Choose</option><option value="UPDATED">Updated</option><option value="NO_CHANGE">No Change</option><option value="NOT_REACHABLE">Not Reachable</option><option value="WRONG_NUMBER">Wrong Number</option><option value="REFUSED">Refused</option></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><option value="">No change</option><option value="APPRENTICE">Apprentice</option><option value="EMPLOYED">Employed</option><option value="SELF_EMPLOYED">Business / Self-employed</option><option value="HIGHER_EDUCATION">Higher Education</option><option value="SEEKING_EMPLOYMENT">Seeking Employment</option><option value="NOT_SEEKING">Not Seeking</option><option value="NOT_CONTACTABLE">Not Contactable</option><option value="OTHER">Other</option></select></div>
+                <div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div>                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+                  </td>
+      </tr>
           </table></div>
   <div class="pager muted">15 records</div></div>
 

@@ -1,39 +1,64 @@
 <?php use App\Services\CareerService; ?>
 <div class="page-head"><div><h1><?= e($title) ?></h1>
-  <p>Call or message students who have not updated their status. “Not reachable” is recorded as <b>Not contactable</b> — never as unemployed.</p></div></div>
+  <p>Call or message students who have not updated their status. “Not reachable” is recorded as <b>Not contactable</b> — never as unemployed.</p></div>
+  <?php if (can('followup.manage') && $staff): ?><div class="actions"><a class="btn" href="#new-task"><?= icon('plus') ?> New task</a></div><?php endif; ?></div>
+
+<div class="status-tabs">
+  <?php foreach (['PENDING' => 'Pending', 'IN_PROGRESS' => 'In Progress', 'COMPLETED' => 'Completed', 'CANCELLED' => 'Cancelled'] as $k => $l): ?>
+    <a class="<?= $status === $k ? 'active' : '' ?>" href="<?= url('/follow-ups', ['status' => $k] + (input('mine') ? ['mine' => 1] : [])) ?>"><?= e($l) ?> (<?= num($counts[$k]) ?>)</a>
+  <?php endforeach; ?>
+</div>
 
 <form class="card filters" method="get" action="<?= url('/follow-ups') ?>">
-  <div class="field"><label>Show</label><select name="status" data-autosubmit>
-    <?php foreach (['open' => 'Open tasks', 'COMPLETED' => 'Completed', 'CANCELLED' => 'Cancelled', 'all' => 'All'] as $k => $v): ?>
-      <option value="<?= e($k) ?>" <?= $status === $k ? 'selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></div>
-  <?php if (can('followup.manage')): ?><div class="field"><label><input type="checkbox" name="mine" value="1" <?= input('mine') ? 'checked' : '' ?> data-autosubmit> Only mine</label></div><?php endif; ?>
+  <input type="hidden" name="status" value="<?= e($status) ?>">
+  <div class="field" style="flex:1"><label>Search student / PCID</label><input type="search" name="q" value="<?= e(input('q')) ?>"></div>
+  <?php if (can('followup.manage')): ?><div class="field"><label><input type="checkbox" name="mine" value="1" <?= input('mine') ? 'checked' : '' ?>> Only my tasks</label></div><?php endif; ?>
+  <button class="btn" type="submit"><?= icon('search') ?> Filter</button>
 </form>
 
 <div class="card card-tight">
   <div class="table-wrap"><table class="table">
-    <tr><th>Student</th><?php if ($showPhone): ?><th>Mobile</th><?php endif; ?><th>Reason</th><th>Due</th><th>Assigned to</th><th>Current status</th><th>Task</th><th style="min-width:330px">Record outcome</th></tr>
-    <?php foreach ($p['rows'] as $f): $overdue = $f['due_date'] < date('Y-m-d') && in_array($f['status'], ['PENDING', 'IN_PROGRESS'], true); ?>
-      <tr><td><b><?= e($f['name']) ?></b><br><span class="pcid"><?= e($f['pcid']) ?></span></td>
-        <?php if ($showPhone): ?><td class="nowrap"><?= e($f['mobile'] ?? '—') ?></td><?php endif; ?>
-        <td><?= e(label($f['reason'])) ?><br><small><?= e(label($f['channel'])) ?></small></td>
+    <tr><th>#</th><th>Student (PCID)</th><th>Trade</th><th>Reason</th><th>Last contact</th><th>Next follow-up</th><th>Assigned to</th><th>Current status</th><th>Action</th></tr>
+    <?php foreach ($p['rows'] as $i => $f):
+        $open = in_array($f['status'], ['PENDING', 'IN_PROGRESS'], true);
+        $overdue = $open && $f['due_date'] < date('Y-m-d'); ?>
+      <tr>
+        <td><?= ($p['page'] - 1) * 25 + $i + 1 ?></td>
+        <td><b><?= e($f['name']) ?></b><br><small class="code">(…<?= e(substr((string) $f['pcid'], -8)) ?>)</small></td>
+        <td><?= e($f['trade'] ?? '—') ?></td>
+        <td><?= e(label($f['reason'])) ?><br><small class="muted"><?= e(label($f['channel'])) ?></small></td>
+        <td><?= $f['last_contact'] ? fmt_date($f['last_contact']) : '<span class="muted">never</span>' ?></td>
         <td class="nowrap"><?= $overdue ? '<span class="badge badge-red">' . e(fmt_date($f['due_date'])) . '</span>' : fmt_date($f['due_date']) ?></td>
-        <td><?= e($f['assignee']) ?></td><td><?= badge($f['career_status'] ?? 'NOT_UPDATED') ?></td><td><?= badge($f['status']) ?><?= $f['outcome'] ? '<br><small>' . e(label($f['outcome'])) . '</small>' : '' ?></td>
-        <td><?php if (in_array($f['status'], ['PENDING', 'IN_PROGRESS'], true)): ?>
-          <form method="post" action="<?= url('/follow-ups/' . $f['id'] . '/outcome') ?>" class="flex wrap"><?= csrf_field() ?>
-            <select name="outcome" required style="width:auto"><?= enum_options(['UPDATED', 'NO_CHANGE', 'NOT_REACHABLE', 'WRONG_NUMBER', 'REFUSED'], null, 'Outcome') ?></select>
-            <select name="new_status" style="width:auto"><?= enum_options(array_values(array_diff(CareerService::STATUSES, ['IN_TRAINING', 'NOT_UPDATED'])), null, 'New status (if updated)') ?></select>
-            <label class="muted" style="font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> mark not contactable</label>
-            <input type="text" name="notes" placeholder="Notes" maxlength="500" style="width:150px">
-            <button class="btn btn-sm" type="submit">Save</button></form>
-          <?php else: ?><small class="muted"><?= e($f['outcome_notes'] ?? '') ?></small><?php endif; ?></td></tr>
+        <td><?= e($f['assignee']) ?></td>
+        <td><?= badge($f['career_status'] ?? 'NOT_UPDATED') ?></td>
+        <td class="nowrap">
+          <?php if ($open): ?>
+            <?php if ($showPhone && $f['mobile']): ?><a class="call-btn" href="tel:+91<?= e($f['mobile']) ?>" title="Call <?= e($f['mobile']) ?>"><?= icon('phone', 'ic ic-sm') ?></a><?php endif; ?>
+            <?php if ($f['status'] === 'PENDING'): ?>
+              <form method="post" action="<?= url('/follow-ups/' . $f['id'] . '/start') ?>" class="inline-form"><?= csrf_field() ?><button class="btn btn-light btn-sm">Start</button></form>
+            <?php endif; ?>
+            <details style="display:inline-block;vertical-align:top;position:relative"><summary class="btn btn-sm">Record outcome</summary>
+              <form method="post" action="<?= url('/follow-ups/' . $f['id'] . '/outcome') ?>" class="card" style="position:absolute;z-index:5;width:330px;right:0;top:38px;text-align:left;white-space:normal"><?= csrf_field() ?>
+                <?php if ($showPhone): ?><p class="mt0"><?= icon('phone', 'ic ic-sm') ?> <b><?= e($f['mobile'] ?? 'no mobile') ?></b></p><?php endif; ?>
+                <div class="field"><label>Outcome</label><select name="outcome" required><?= enum_options(['UPDATED', 'NO_CHANGE', 'NOT_REACHABLE', 'WRONG_NUMBER', 'REFUSED'], null, 'Choose') ?></select></div>
+                <div class="field mt"><label>New status (if the student told you)</label>
+                  <select name="new_status"><?= enum_options(array_values(array_diff(CareerService::STATUSES, ['IN_TRAINING', 'NOT_UPDATED'])), null, 'No change') ?></select></div>
+                <?php if ($showPhone): ?><div class="field mt"><label>New mobile (if changed)</label><input type="tel" name="new_mobile" pattern="[6-9][0-9]{9}" maxlength="10"></div><?php endif; ?>
+                <label class="muted mt" style="display:block;font-size:12px"><input type="checkbox" name="mark_not_contactable" value="1"> Mark “Not contactable” (if not reachable)</label>
+                <div class="field mt"><label>Notes</label><input type="text" name="notes" maxlength="500"></div>
+                <button class="btn btn-block mt" type="submit">Save outcome</button>
+              </form></details>
+          <?php else: ?><?= badge($f['outcome'] ?? $f['status']) ?><br><small class="muted"><?= e($f['outcome_notes'] ?? '') ?></small><?php endif; ?>
+        </td>
+      </tr>
     <?php endforeach; ?>
-    <?php if (!$p['rows']): ?><tr><td colspan="8" class="empty">No follow-up tasks.</td></tr><?php endif; ?>
+    <?php if (!$p['rows']): ?><tr><td colspan="9" class="empty">No tasks in this list.</td></tr><?php endif; ?>
   </table></div>
   <?= pager($p) ?>
 </div>
 
 <?php if (can('followup.manage') && $staff): ?>
-<div class="card">
+<div class="card" id="new-task">
   <h2>Create a follow-up task</h2>
   <form method="post" action="<?= url('/follow-ups') ?>" class="form-grid"><?= csrf_field() ?>
     <div class="field"><label>Student PCID <span class="req">*</span></label><input type="text" name="pcid" required placeholder="ITIC-MH-2024-000123-4"></div>

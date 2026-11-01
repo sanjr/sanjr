@@ -101,6 +101,26 @@
   var t = document.querySelector('[data-toggle-sidebar]');
   if (t) t.addEventListener('click', function () { document.getElementById('sidebar').classList.toggle('open'); });
 
+  // ---------------- login: show/hide password
+  document.querySelectorAll('[data-pw-toggle]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var i = document.getElementById(b.getAttribute('data-pw-toggle'));
+      i.type = i.type === 'password' ? 'text' : 'password';
+      b.setAttribute('aria-label', i.type === 'password' ? 'Show password' : 'Hide password');
+    });
+  });
+  // ---------------- login: choose role (and fill demo account in DEMO mode)
+  document.querySelectorAll('.role-pick [data-role]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.role-pick [data-role]').forEach(function (x) { x.classList.remove('sel'); x.setAttribute('aria-checked', 'false'); });
+      var hidden = document.getElementById('login-role'), lbl = document.getElementById('role-label');
+      b.classList.add('sel'); b.setAttribute('aria-checked', 'true'); hidden.value = b.getAttribute('data-role');
+      lbl.innerHTML = 'Signing in as <b></b>'; lbl.querySelector('b').textContent = b.getAttribute('data-label');
+      var demo = b.getAttribute('data-demo-email');
+      if (demo) { document.getElementById('email').value = demo; document.getElementById('password').value = 'Demo@1234'; }
+    });
+  });
+
   // ---------------- print buttons (no inline JS: CSP blocks it)
   document.querySelectorAll('[data-print]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
 

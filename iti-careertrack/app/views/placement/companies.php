@@ -1,4 +1,14 @@
-<div class="page-head"><div><h1><?= e($title) ?></h1><p>Employer master. One company can have many branches/locations.</p></div></div>
+<?php
+$tabs = ['companies' => ['Companies', 'building'], 'vacancies' => ['Vacancies', 'briefcase'], 'applications' => ['Applications', 'file'], 'hired' => ['Hired Students', 'check-circle']];
+?>
+<div class="page-head"><div><h1><?= e($title) ?></h1><p>Employers, their vacancies, and where your students applied and got hired.</p></div>
+  <div class="actions"><?php if (can('vacancy.manage')): ?><a class="btn" href="<?= url('/vacancies/new') ?>"><?= icon('plus') ?> Post New Vacancy</a><?php endif; ?></div></div>
+
+<nav class="tabs">
+  <?php foreach ($tabs as $k => [$l, $ic]): ?><a class="<?= $tab === $k ? 'active' : '' ?>" href="<?= url('/companies', ['tab' => $k]) ?>"><?= icon($ic, 'ic ic-sm') ?> <?= e($l) ?></a><?php endforeach; ?>
+</nav>
+
+<?php if ($tab === 'companies'): ?>
 <form class="card filters" method="get" action="<?= url('/companies') ?>">
   <div class="field" style="flex:1"><label>Search</label><input type="search" name="q" value="<?= e(input('q')) ?>" placeholder="Company name"></div>
   <button class="btn" type="submit"><?= icon('search') ?> Search</button>
@@ -28,3 +38,49 @@
     <div class="field" style="align-self:end"><button class="btn" type="submit"><?= icon('plus') ?> Add company</button></div>
   </form>
 </div>
+
+<?php elseif ($tab === 'vacancies'): ?>
+<div class="card card-tight">
+  <h2>Vacancy Management</h2>
+  <div class="table-wrap"><table class="table">
+    <tr><th>#</th><th>Job Title</th><th>Company</th><th>Trade</th><th>Location</th><th class="num">Positions</th><th>Pay</th><th>Closes</th><th class="num">Applications</th><th>Status</th></tr>
+    <?php foreach ($rows as $i => $v): ?>
+      <tr><td><?= $i + 1 ?></td><td><b><?= e($v['title']) ?></b><br><small><?= e(label($v['vacancy_type'])) ?></small></td><td><?= e($v['company']) ?></td><td><?= e($v['trade'] ?? 'Any') ?></td>
+        <td><?= e($v['location'] ?? '—') ?></td><td class="num"><?= (int) $v['openings'] ?></td><td><?= $v['salary_min'] ? money($v['salary_min']) . ' – ' . money($v['salary_max']) : '—' ?></td>
+        <td><?= fmt_date($v['closes_on']) ?></td><td class="num"><?= num($v['applications']) ?></td><td><?= badge($v['status']) ?></td></tr>
+    <?php endforeach; ?>
+    <?php if (!$rows): ?><tr><td colspan="10" class="empty">No vacancies.</td></tr><?php endif; ?>
+  </table></div>
+</div>
+
+<?php elseif ($tab === 'applications'): ?>
+<div class="card card-tight">
+  <h2>Applications by your students</h2>
+  <div class="table-wrap"><table class="table">
+    <tr><th>Student</th><th>PCID</th><th>Vacancy</th><th>Company</th><th>Applied</th><th>Consent</th><th>Status</th><th></th></tr>
+    <?php foreach ($p['rows'] as $a): ?>
+      <tr><td><?= e($a['name']) ?></td><td><span class="pcid"><?= e($a['pcid']) ?></span></td><td><?= e($a['title']) ?></td><td><?= e($a['company']) ?></td>
+        <td><?= fmt_date($a['applied_at']) ?></td><td><?= $a['consent_to_share_profile'] ? badge('ACCEPTED') : badge('PENDING') ?></td><td><?= badge($a['status']) ?></td>
+        <td class="right"><a class="btn btn-light btn-sm" href="<?= url('/students/' . $a['student_id'], ['tab' => 'employment']) ?>">Open</a></td></tr>
+    <?php endforeach; ?>
+    <?php if (!$p['rows']): ?><tr><td colspan="8" class="empty">No applications yet.</td></tr><?php endif; ?>
+  </table></div>
+  <?= pager($p) ?>
+</div>
+
+<?php else: ?>
+<div class="card card-tight">
+  <h2>Hired students</h2>
+  <div class="table-wrap"><table class="table">
+    <tr><th>Student</th><th>PCID</th><th>Company</th><th>Designation</th><th>Joined</th><th>Left</th><?php if (can('career.salary.view')): ?><th class="num">Salary</th><?php endif; ?><th>Status</th><th>Verification</th></tr>
+    <?php foreach ($p['rows'] as $e): ?>
+      <tr><td><a href="<?= url('/students/' . $e['student_id'], ['tab' => 'employment']) ?>"><?= e($e['name']) ?></a></td><td><span class="pcid"><?= e($e['pcid']) ?></span></td>
+        <td><?= e($e['company']) ?></td><td><?= e($e['designation']) ?></td><td><?= fmt_date($e['joining_date']) ?></td><td><?= fmt_date($e['leaving_date']) ?></td>
+        <?php if (can('career.salary.view')): ?><td class="num"><?= money($e['salary_amount'], $e['salary_period']) ?></td><?php endif; ?>
+        <td><?= badge($e['status']) ?></td><td><?= badge($e['verification_status']) ?></td></tr>
+    <?php endforeach; ?>
+    <?php if (!$p['rows']): ?><tr><td colspan="9" class="empty">No hires recorded.</td></tr><?php endif; ?>
+  </table></div>
+  <?= pager($p) ?>
+</div>
+<?php endif; ?>

@@ -73,7 +73,12 @@ final class AdminController extends Controller
                   FROM user_role_assignments ura JOIN users u ON u.id = ura.user_id JOIN roles r ON r.id = ura.role_id
                   LEFT JOIN itis i ON i.id = ura.iti_id LEFT JOIN districts d ON d.id = ura.district_id LEFT JOIN companies c ON c.id = ura.company_id
                  WHERE $w AND r.code <> 'STUDENT' ORDER BY ura.status = 'ACTIVE' DESC, r.id, u.full_name";
-        $this->render('admin/users', ['title' => Auth::is('PRINCIPAL') ? 'Staff & Teachers' : 'User & Role Management',
+        $requests = array_values(array_filter(DB::all("SELECT al.entity_id AS user_id, MAX(al.occurred_at) AS requested_at, u.full_name, u.email
+                                   FROM audit_logs al JOIN users u ON u.id = al.entity_id
+                                  WHERE al.action = 'PASSWORD_RESET_REQUEST' AND al.occurred_at > NOW() - INTERVAL 14 DAY
+                                    AND NOT EXISTS (SELECT 1 FROM audit_logs r WHERE r.action = 'PASSWORD_RESET' AND r.entity_id = al.entity_id AND r.occurred_at > al.occurred_at)
+                                  GROUP BY al.entity_id, u.full_name, u.email"), fn ($r) => $this->canManageUser((int) $r['user_id'])));
+        $this->render('admin/users', ['title' => Auth::is('PRINCIPAL') ? 'Staff & Teachers' : 'User & Role Management', 'requests' => $requests,
             'p' => $this->paginate($sql, $p, 30), 'roles' => $this->grantableRoles(),
             'itis' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, name FROM itis ORDER BY name') : [],
             'districts' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, name FROM districts ORDER BY name') : [],
@@ -121,6 +126,40 @@ final class AdminController extends Controller
             Audit::log('GRANT_ROLE', 'user_role_assignments', $ra, null, $scope['iti_id'], null, ['user_id' => $uid, 'role' => $role['code']] + $scope);
         });
         flash('success', 'User saved and role granted. Share the temporary password securely and ask them to change it.');
+        redirect('/users');
+    }
+
+    /** A user is "in my scope" if I am State Admin, or a Principal and the user holds a staff role at my ITI. */
+    private function canManageUser(int $userId): bool
+    {
+        if (Auth::is('STATE_ADMIN')) {
+            return true;
+        }
+        return Auth::is('PRINCIPAL') && (bool) DB::value("SELECT 1 FROM user_role_assignments ura JOIN roles r ON r.id = ura.role_id
+            WHERE ura.user_id = ? AND ura.iti_id = ? AND r.code IN ('TEACHER','PLACEMENT_OFFICER','ITI_STAFF') LIMIT 1", [$userId, Auth::itiId()]);
+    }
+
+    public static function tempPassword(): string
+    {
+        $alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+        $p = '';
+        for ($i = 0; $i < 10; $i++) {
+            $p .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        }
+        return $p . random_int(10, 99);
+    }
+
+    public function resetPassword(int $id): void
+    {
+        Auth::require('user.manage');
+        if ($id === Auth::id() || !$this->canManageUser($id)) {
+            throw new HttpException(404);
+        }
+        $temp = self::tempPassword();
+        DB::run('UPDATE users SET password_hash = ?, failed_login_count = 0, locked_until = NULL, updated_by = ? WHERE id = ?',
+            [password_hash($temp, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT), Auth::id(), $id]);
+        Audit::log('PASSWORD_RESET', 'users', $id);
+        flash('success', 'Temporary password for ' . DB::value('SELECT email FROM users WHERE id = ?', [$id]) . ': ' . $temp . ' — share it privately; it is shown only once.');
         redirect('/users');
     }
 

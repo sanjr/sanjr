@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Follow-up Tasks · ITI CareerTrack</title>
+<title>Follow-up &amp; Task Management · ITI CareerTrack</title>
 <link rel="icon" href="../img/logo.svg">
 <link rel="stylesheet" href="../css/app.css">
 </head>
-<body>
+<body class="">
 <div class="demo-ribbon">STATIC HTML PREVIEW (no saving) · <a href="../index.html">all pages</a> · DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
 <div class="shell">
   <aside class="sidebar" id="sidebar">
@@ -17,7 +17,7 @@
       <span>CareerTrack</span>
     </a>
     <nav>
-              <a href="../teacher/dashboard.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
+                    <a href="../teacher/dashboard.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
               <a href="../teacher/students.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg><span>My Students</span></a>
               <a href="../teacher/attendance.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Attendance</span></a>
               <a href="../teacher/training.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg><span>Training &amp; Modules</span></a>
@@ -51,18 +51,27 @@
     </header>
 
     <main class="content">
-            <div class="page-head"><div><h1>Follow-up Tasks</h1>
-  <p>Call or message students who have not updated their status. “Not reachable” is recorded as <b>Not contactable</b> — never as unemployed.</p></div></div>
+            <div class="page-head"><div><h1>Follow-up &amp; Task Management</h1>
+  <p>Call or message students who have not updated their status. “Not reachable” is recorded as <b>Not contactable</b> — never as unemployed.</p></div>
+  </div>
+
+<div class="status-tabs">
+      <a class="active" href="../teacher/follow-ups.html">Pending (0)</a>
+      <a class="" href="../teacher/follow-ups.html">In Progress (0)</a>
+      <a class="" href="../teacher/follow-ups.html">Completed (0)</a>
+      <a class="" href="../teacher/follow-ups.html">Cancelled (0)</a>
+  </div>
 
 <form class="card filters" method="get" action="#">
-  <div class="field"><label>Show</label><select name="status" data-autosubmit>
-          <option value="open" selected>Open tasks</option>      <option value="COMPLETED" >Completed</option>      <option value="CANCELLED" >Cancelled</option>      <option value="all" >All</option></select></div>
-  </form>
+  <input type="hidden" name="status" value="PENDING">
+  <div class="field" style="flex:1"><label>Search student / PCID</label><input type="search" name="q" value=""></div>
+    <button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Filter</button>
+</form>
 
 <div class="card card-tight">
   <div class="table-wrap"><table class="table">
-    <tr><th>Student</th><th>Reason</th><th>Due</th><th>Assigned to</th><th>Current status</th><th>Task</th><th style="min-width:330px">Record outcome</th></tr>
-        <tr><td colspan="8" class="empty">No follow-up tasks.</td></tr>  </table></div>
+    <tr><th>#</th><th>Student (PCID)</th><th>Trade</th><th>Reason</th><th>Last contact</th><th>Next follow-up</th><th>Assigned to</th><th>Current status</th><th>Action</th></tr>
+        <tr><td colspan="9" class="empty">No tasks in this list.</td></tr>  </table></div>
   <div class="pager muted">0 records</div></div>
 
     </main>

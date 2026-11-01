@@ -19,7 +19,7 @@ $bellCount = \App\Services\Stats::bellCount();
 <link rel="icon" href="<?= asset('img/logo.svg') ?>">
 <link rel="stylesheet" href="<?= asset('css/app.css') ?>">
 </head>
-<body>
+<body class="<?= e($bodyClass ?? '') ?>">
 <?php if (config('app.env') === 'demo'): ?>
 <div class="demo-ribbon">DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
 <?php endif; ?>
@@ -30,12 +30,22 @@ $bellCount = \App\Services\Stats::bellCount();
       <span>CareerTrack</span>
     </a>
     <nav>
-      <?php foreach ($menu as [$labelText, $href, $ic]):
-          $hrefPath = parse_url($href, PHP_URL_PATH);
-          $active = $path === $hrefPath || ($hrefPath !== '/dashboard' && str_starts_with($path, $hrefPath . '/'));
-          if (str_contains($href, '?')) { $active = $active && str_contains($_SERVER['REQUEST_URI'] ?? '', parse_url($href, PHP_URL_QUERY)); }
-          elseif ($hrefPath === '/employer/applications' && isset($_GET['status'])) { $active = false; } ?>
-        <a href="<?= url($href) ?>" class="<?= $active ? 'active' : '' ?>"><?= icon($ic) ?><span><?= e($labelText) ?></span></a>
+      <?php
+        // pick ONE active item: same path; prefer the item whose ?query matches the current URL
+        $curQ = []; parse_str((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY), $curQ);
+        $activeIdx = null; $bestScore = -1;
+        foreach ($menu as $i => [, $href]) {
+            $hp = parse_url($href, PHP_URL_PATH); $hq = []; parse_str((string) parse_url($href, PHP_URL_QUERY), $hq);
+            $pathOk = $path === $hp || ($hp !== '/dashboard' && str_starts_with($path, $hp . '/'));
+            if (!$pathOk) { continue; }
+            $qOk = !array_diff_assoc($hq, $curQ);
+            if (!$qOk) { continue; }
+            $score = count($hq) * 10 + ($path === $hp ? 1 : 0);
+            if ($score > $bestScore) { $bestScore = $score; $activeIdx = $i; }
+        }
+      ?>
+      <?php foreach ($menu as $i => [$labelText, $href, $ic]): ?>
+        <a href="<?= url($href) ?>" class="<?= $i === $activeIdx ? 'active' : '' ?>"><?= icon($ic) ?><span><?= e($labelText) ?></span></a>
       <?php endforeach; ?>
     </nav>
     <div class="sidebar-foot">ITI Student Lifecycle &amp; Career Tracking System — Maharashtra</div>
@@ -75,5 +85,6 @@ $bellCount = \App\Services\Stats::bellCount();
   </div>
 </div>
 <script src="<?= asset('js/app.js') ?>"></script>
+<?php foreach ($scripts ?? [] as $s): ?><script src="<?= asset('js/' . $s) ?>"></script><?php endforeach; ?>
 </body>
 </html>

@@ -15,7 +15,7 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 
 | Folder | Contents |
 |---|---|
-| **`html-demo/`** | **Plain HTML + CSS + JavaScript version of all 90 pages. Double-click `html-demo/index.html` — no server needed** (view only, saving is disabled) |
+| **`html-demo/`** | **Plain HTML + CSS + JavaScript version of all 114 pages. Double-click `html-demo/index.html` — no server needed** (view only, saving is disabled) |
 | `app/` | The real working website (PHP + MySQL). `public/` is the web root |
 | `app/views/` | **HTML** of every page (`.php` files = HTML with small PHP parts that fill in data) |
 | `app/public/assets/css/app.css` | **CSS** (all styling) |
@@ -27,7 +27,7 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | `python/seed_demo.py` | Creates DEMO data (36 districts, 46 ITIs, about 6,500 students with full career histories) |
 | `python/jobs/followup_job.py` | Nightly job that creates follow-up tasks for alumni who have not updated (it never changes their status) |
 | `python/reports/export_report.py` | Offline Excel/CSV report for the State or District office |
-| `python/tests/test_e2e.py` | **59 automated end-to-end acceptance and security tests** |
+| `python/tests/test_e2e.py` | **81 automated end-to-end acceptance and security tests** |
 | `docs/` | Architecture review, ER diagrams, API design, implementation notes, **screenshots** |
 | `database/schema.sql` | The original PostgreSQL design reviewed in phase 1 (kept for reference) |
 
@@ -35,16 +35,23 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 
 | # | Page | Who | Screenshot |
 |---|---|---|---|
-| 1 | State Admin Dashboard | State Admin / District Admin | [01](docs/screenshots/01-state-admin-dashboard.png) |
-| 2 | Principal Dashboard | Principal | [02](docs/screenshots/02-principal-dashboard.png) |
-| 3 | Teacher Dashboard | Teacher | [03](docs/screenshots/03-teacher-dashboard.png) |
-| 4 | Placement Officer Dashboard | Placement Officer | [04](docs/screenshots/04-placement-officer-dashboard.png) |
-| 5 | Student / Alumni Dashboard | Student | [05](docs/screenshots/05-student-alumni-dashboard.png) |
-| 6 | Employer / HR Dashboard | Employer | [06](docs/screenshots/06-employer-dashboard.png) |
-| 7 | Student Admission (5-step form) | Principal | [07](docs/screenshots/07-admission-form.png) |
-| 8 | Student Career Profile / Timeline | Staff in scope, the student themself | [08](docs/screenshots/08-student-career-profile.png) |
-| 9 | Student Transfer | Principals (origin requests, destination accepts) | [09](docs/screenshots/09-student-transfer.png) |
-| 10 | Reports & Analytics (+ CSV download) | State / District / ITI | [10](docs/screenshots/10-reports-analytics.png) |
+| 1 | Home page (public website) | Everyone | [view](docs/screenshots/01-home-public-website.png) |
+| 2 | Login / role selection | Everyone | [view](docs/screenshots/02-login-role-selection.png) |
+| 3 | State Admin Dashboard | State Admin | [view](docs/screenshots/03-state-admin-dashboard.png) |
+| 4 | District Admin Dashboard | District Admin | [view](docs/screenshots/04-district-admin-dashboard.png) |
+| 5 | Principal Dashboard | Principal | [view](docs/screenshots/05-principal-dashboard.png) |
+| 6 | Teacher Dashboard | Teacher | [view](docs/screenshots/06-teacher-dashboard.png) |
+| 7 | Placement Officer Dashboard | Placement Officer | [view](docs/screenshots/07-placement-officer-dashboard.png) |
+| 8 | Student / Alumni Dashboard | Student | [view](docs/screenshots/08-student-alumni-dashboard.png) |
+| 9 | Employer / HR Dashboard | Employer | [view](docs/screenshots/09-employer-dashboard.png) |
+| 10 | Student Admission (5-step form) | Principal | [view](docs/screenshots/10-student-admission-form.png) |
+| 11 | Student Career Profile & Timeline | Staff in scope, the student | [view](docs/screenshots/11-student-career-profile.png) |
+| 12 | Student Transfer | Principals | [view](docs/screenshots/12-student-transfer.png) |
+| 13 | Reports & Analytics (+ CSV) | State / District / ITI | [view](docs/screenshots/13-reports-analytics.png) |
+| 14 | Company & Vacancy Management | Placement Officer | [view](docs/screenshots/14-company-vacancy-management.png) |
+| 15 | Follow-up & Task Management | Principal / Placement / Staff | [view](docs/screenshots/15-follow-up-task-management.png) |
+| 16 | Permanent Career ID (PCID) card with QR | Student, staff | [view](docs/screenshots/16-pcid-card.png) |
+| 17 | Public PCID verification (QR target) | Everyone | [view](docs/screenshots/17-public-pcid-verification.png) |
 
 Every sidebar item for every role is a working page too: ITIs, users and roles, audit logs, trades and batches, attendance, module progress, assessments, results, companies, vacancies, apprenticeships, follow-ups, job search, update status, employer confirmations, and more.
 
@@ -101,6 +108,8 @@ For production, point Apache or Nginx to `app/public` (an `.htaccess` file is in
 
 ## Demo accounts (password `Demo@1234`)
 
+On the login page you can also just click a role on the right — in DEMO mode it fills that role's demo account. Users can log in with e-mail **or mobile number**.
+
 | Role | E-mail |
 |---|---|
 | State Admin | `state@demo.local` |
@@ -119,7 +128,7 @@ For production, point Apache or Nginx to `app/public` (an `.htaccess` file is in
 CT_DB_USER=root CT_DB_PASS=yourpass python3 python/tests/test_e2e.py --base http://127.0.0.1:8080
 ```
 
-Expected result: `59 passed, 0 failed`.
+Expected result: `81 passed, 0 failed`.
 
 ## Nightly follow-up job (cron)
 

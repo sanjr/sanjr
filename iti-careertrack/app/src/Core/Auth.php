@@ -43,7 +43,15 @@ final class Auth
         $_SESSION['last_seen'] = time();
     }
 
-    public static function attempt(string $email, string $password): bool|string
+    public const ROLE_LABELS = ['STATE_ADMIN' => 'State Admin', 'DISTRICT_ADMIN' => 'District Admin', 'PRINCIPAL' => 'Principal',
+        'TEACHER' => 'Teacher / Instructor', 'PLACEMENT_OFFICER' => 'Placement Officer', 'ITI_STAFF' => 'ITI Staff',
+        'STUDENT' => 'Student / Alumni', 'EMPLOYER' => 'Employer / HR'];
+
+    /**
+     * $login can be an e-mail address or a 10-digit mobile number.
+     * $roleCode (optional) = the role chosen on the login page; the account must really hold it.
+     */
+    public static function attempt(string $email, string $password, ?string $roleCode = null): bool|string
     {
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'cli';
         $recent = (int) Database::value(
@@ -52,7 +60,10 @@ final class Auth
             return 'Too many failed attempts from this network. Please wait 15 minutes.';
         }
 
-        $user = Database::one('SELECT * FROM users WHERE email = ?', [mb_strtolower($email)]);
+        $mobile = preg_replace('/\D/', '', $email) ?? '';
+        $user = preg_match('/^[6-9][0-9]{9}$/', $mobile) && !str_contains($email, '@')
+            ? Database::one('SELECT * FROM users WHERE mobile = ?', [$mobile])
+            : Database::one('SELECT * FROM users WHERE email = ?', [mb_strtolower(trim($email))]);
         $ok = $user && $user['password_hash'] && password_verify($password, $user['password_hash']);
 
         if ($user && $user['locked_until'] && strtotime($user['locked_until']) > time()) {
@@ -79,11 +90,23 @@ final class Auth
         }
         Database::run('UPDATE users SET failed_login_count = 0, locked_until = NULL, last_login_at = NOW() WHERE id = ?', [$user['id']]);
 
+        $roles = self::assignments((int) $user['id']);
+        $chosen = null;
+        if ($roleCode !== null && $roleCode !== '') {
+            $match = array_values(array_filter($roles, static fn ($r) => $r['role_code'] === $roleCode));
+            if (!$match) {
+                return 'This account is not registered as ' . (self::ROLE_LABELS[$roleCode] ?? 'that role')
+                    . '. Choose the correct role on the right, or leave it to sign in with your own role.';
+            }
+            $chosen = count($match) === 1 ? (int) $match[0]['id'] : null;
+        } elseif (count($roles) === 1) {
+            $chosen = (int) $roles[0]['id'];
+        }
+
         session_regenerate_id(true);                 // prevent session fixation
         $_SESSION = ['user_id' => (int) $user['id'], 'last_seen' => time()];
-        $roles = self::assignments((int) $user['id']);
-        if (count($roles) === 1) {
-            $_SESSION['ra_id'] = (int) $roles[0]['id'];
+        if ($chosen) {
+            $_SESSION['ra_id'] = $chosen;
         }
         Audit::log('LOGIN', 'users', (int) $user['id'], actorId: (int) $user['id']);
         return true;

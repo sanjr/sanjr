@@ -40,8 +40,8 @@ final class DashboardController extends Controller
                    LEFT JOIN v_student_current_status cs ON cs.student_id = ia.student_id
                   WHERE i.district_id = ? GROUP BY i.id, i.name, i.ownership_type ORDER BY i.name", array_merge(Stats::PLACED, [Auth::districtId()]));
         }
-        $this->render('dashboards/state', [
-            'title' => Auth::is('STATE_ADMIN') ? 'State Admin Dashboard' : 'District Overview',
+        $this->render(Auth::is('DISTRICT_ADMIN') ? 'dashboards/district' : 'dashboards/state', [
+            'title' => Auth::is('STATE_ADMIN') ? 'State Admin Dashboard' : 'District Dashboard – ' . Auth::role()['district_name'],
             'itis' => Stats::itiCount(), 'students' => Stats::totalStudents(), 'current' => Stats::currentStudents(),
             'alumni' => $alumni, 'placed' => $placed, 'outcomes' => $outcomes,
             'districts' => Auth::is('STATE_ADMIN') ? Stats::districtRates() : [], 'itiRows' => $itiRows,
@@ -70,6 +70,9 @@ final class DashboardController extends Controller
                                    LEFT JOIN pcid_registry p ON p.student_id = s.id AND p.status = 'ACTIVE'
                                   WHERE a.iti_id = ? ORDER BY a.id DESC LIMIT 6", [$itiId]),
             'followups' => Stats::pendingFollowUps(),
+            'presentToday' => (int) DB::value("SELECT COUNT(DISTINCT student_id) FROM attendance_records WHERE iti_id = ? AND attendance_date = CURDATE() AND status IN ('PRESENT','LATE')", [$itiId]),
+            'markedToday' => (int) DB::value('SELECT COUNT(DISTINCT student_id) FROM attendance_records WHERE iti_id = ? AND attendance_date = CURDATE()', [$itiId]),
+            'completed' => (int) DB::value("SELECT COUNT(DISTINCT student_id) FROM training_records WHERE iti_id = ? AND completion_status = 'COMPLETED'", [$itiId]),
         ]);
     }
 

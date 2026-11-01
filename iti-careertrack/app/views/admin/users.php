@@ -2,6 +2,14 @@
 <div class="page-head"><div><h1><?= e($title) ?></h1>
   <p><?= Auth::is('PRINCIPAL') ? 'Teachers, placement officers and staff of your ITI. You can only grant these roles, and only for your ITI.' : 'Every role is tied to a scope (State, District, ITI or Company) and a validity period.' ?></p></div></div>
 
+<?php if ($requests): ?>
+<div class="card card-tight"><h2><?= icon('alert') ?> Password reset requests</h2>
+  <div class="table-wrap"><table class="table"><tr><th>User</th><th>E-mail</th><th>Requested</th><th></th></tr>
+  <?php foreach ($requests as $q): ?><tr><td><?= e($q['full_name']) ?></td><td><?= e($q['email']) ?></td><td><?= fmt_date($q['requested_at'], 'd M Y H:i') ?></td>
+    <td class="right"><form method="post" action="<?= url('/users/' . $q['user_id'] . '/reset-password') ?>" data-confirm="Create a new temporary password?"><?= csrf_field() ?>
+      <button class="btn btn-sm">Reset password</button></form></td></tr><?php endforeach; ?></table></div></div>
+<?php endif; ?>
+
 <form class="card filters" method="get" action="<?= url('/users') ?>">
   <div class="field" style="flex:1"><label>Search</label><input type="search" name="q" value="<?= e(input('q')) ?>" placeholder="Name or e-mail"></div>
   <div class="field"><label>Role</label><select name="role"><?= options($roles, 'code', 'name', input('role'), 'All roles') ?></select></div>
@@ -15,8 +23,11 @@
       <tr><td><b><?= e($u['full_name']) ?></b></td><td><?= e($u['email']) ?></td><td><?= e($u['role_name']) ?></td><td><?= e($u['scope']) ?></td>
         <td><small><?= fmt_date($u['valid_from']) ?> – <?= $u['valid_to'] ? fmt_date($u['valid_to']) : 'open' ?></small></td>
         <td><?= badge($u['ra_status']) ?></td><td><small><?= $u['last_login_at'] ? fmt_date($u['last_login_at'], 'd M Y H:i') : 'never' ?></small></td>
-        <td class="right"><?php if ($u['ra_status'] === 'ACTIVE' && (int) $u['id'] !== Auth::id()): ?>
-          <form method="post" action="<?= url('/role-assignments/' . $u['ra_id'] . '/revoke') ?>" data-confirm="Revoke this role now?"><?= csrf_field() ?>
+        <td class="right nowrap"><?php if ((int) $u['id'] !== Auth::id()): ?>
+          <form method="post" action="<?= url('/users/' . $u['id'] . '/reset-password') ?>" class="inline-form" data-confirm="Create a new temporary password for this user?"><?= csrf_field() ?>
+            <button class="btn btn-light btn-sm">Reset password</button></form><?php endif; ?>
+          <?php if ($u['ra_status'] === 'ACTIVE' && (int) $u['id'] !== Auth::id()): ?>
+          <form method="post" action="<?= url('/role-assignments/' . $u['ra_id'] . '/revoke') ?>" class="inline-form" data-confirm="Revoke this role now?"><?= csrf_field() ?>
             <button class="btn btn-light btn-sm">Revoke</button></form><?php endif; ?></td></tr>
     <?php endforeach; ?>
   </table></div>

@@ -30,7 +30,15 @@ header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
 
 $r = new Router();
 // --- auth
-$r->get('/', [C\AuthController::class, 'home'], true);
+$r->get('/', [C\PublicController::class, 'home'], true);
+$r->get('/about', [C\PublicController::class, 'about'], true);
+$r->get('/courses', [C\PublicController::class, 'trades'], true);
+$r->get('/careers', [C\PublicController::class, 'careers'], true);
+$r->get('/public-reports', [C\PublicController::class, 'reports'], true);
+$r->get('/contact', [C\PublicController::class, 'contact'], true);
+$r->get('/verify', [C\PublicController::class, 'verify'], true);
+$r->get('/forgot-password', [C\AuthController::class, 'forgotForm'], true);
+$r->post('/forgot-password', [C\AuthController::class, 'forgot'], true);
 $r->get('/login', [C\AuthController::class, 'loginForm'], true);
 $r->post('/login', [C\AuthController::class, 'login'], true);
 $r->post('/logout', [C\AuthController::class, 'logout']);
@@ -40,6 +48,7 @@ $r->get('/dashboard', [C\DashboardController::class, 'index']);
 // --- students & career passport
 $r->get('/students', [C\StudentController::class, 'index']);
 $r->get('/students/{id}', [C\StudentController::class, 'show']);
+$r->get('/students/{id}/card', [C\StudentController::class, 'card']);
 $r->post('/students/{id}/contacts', [C\StudentController::class, 'updateContacts']);
 $r->post('/students/{id}/teachers', [C\StudentController::class, 'assignTeacher']);
 $r->post('/teacher-assignments/{id}/end', [C\StudentController::class, 'endAssignment']);
@@ -72,6 +81,8 @@ $r->get('/itis', [C\AdminController::class, 'itis']);
 $r->post('/itis', [C\AdminController::class, 'storeIti']);
 $r->get('/users', [C\AdminController::class, 'users']);
 $r->post('/users', [C\AdminController::class, 'storeUser']);
+$r->post('/users/{id}/reset-password', [C\AdminController::class, 'resetPassword']);
+$r->post('/students/{id}/account', [C\StudentController::class, 'account']);
 $r->post('/role-assignments/{id}/revoke', [C\AdminController::class, 'revokeRole']);
 $r->get('/audit', [C\AdminController::class, 'audit']);
 $r->get('/settings', [C\AdminController::class, 'settings']);
@@ -99,6 +110,7 @@ $r->get('/apprenticeships', [C\PlacementController::class, 'apprenticeships']);
 // --- follow-ups
 $r->get('/follow-ups', [C\FollowUpController::class, 'index']);
 $r->post('/follow-ups', [C\FollowUpController::class, 'store']);
+$r->post('/follow-ups/{id}/start', [C\FollowUpController::class, 'start']);
 $r->post('/follow-ups/{id}/outcome', [C\FollowUpController::class, 'outcome']);
 // --- employer
 $r->get('/employer/company', [C\EmployerController::class, 'company']);
@@ -115,6 +127,7 @@ $r->get('/employer/reports', [C\EmployerController::class, 'reports']);
 foreach (['profile', 'training', 'results', 'apprenticeship', 'employment', 'higher-education', 'business'] as $tab) {
     $r->get('/me/' . $tab, [C\MeController::class, str_replace('-', '', $tab)]);
 }
+$r->get('/me/card', [C\MeController::class, 'card']);
 $r->get('/me/update', [C\MeController::class, 'updateForm']);
 $r->post('/me/update', [C\MeController::class, 'update']);
 $r->get('/jobs', [C\MeController::class, 'jobs']);

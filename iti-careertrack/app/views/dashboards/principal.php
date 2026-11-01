@@ -25,10 +25,10 @@
 <?php endif; ?>
 
 <div class="grid g4">
-  <?= kpi('Total Students', num($current), 'users', 'blue', 'Currently enrolled') ?>
-  <?= kpi('Ongoing Training', num($ongoing), 'clock', 'purple') ?>
-  <?= kpi('Placed / Employed', num($placed), 'briefcase', 'green', 'of ' . num($alumni) . ' alumni') ?>
-  <?= kpi('Placement Rate', $alumni ? pct($placed, $alumni) : '—', 'target', 'orange', 'Not updated: ' . num($outcomes['NOT_UPDATED'] + $outcomes['NOT_CONTACTABLE'])) ?>
+  <?= kpi('Total Students', num($current), 'users', 'blue', num($ongoing) . ' in ongoing training') ?>
+  <?= kpi('Present Today', num($presentToday), 'check-circle', 'purple', $markedToday ? 'of ' . num($markedToday) . ' marked' : 'Attendance not marked yet') ?>
+  <?= kpi('Training Completed', num($completed), 'award', 'green', 'All years') ?>
+  <?= kpi('Placed / Employed', num($placed), 'briefcase', 'orange', ($alumni ? pct($placed, $alumni) : '—') . ' of ' . num($alumni) . ' alumni · not updated ' . num($outcomes['NOT_UPDATED'] + $outcomes['NOT_CONTACTABLE'])) ?>
 </div>
 
 <div class="grid g-2-1 mt">
@@ -43,6 +43,8 @@
     <div class="quick-actions">
       <a class="btn" href="<?= url('/admissions/new') ?>"><?= icon('plus') ?> New Admission</a>
       <a class="btn btn-light" href="<?= url('/transfers') ?>"><?= icon('transfer') ?> Student Transfer</a>
+      <a class="btn btn-light" href="<?= url('/placements', ['status' => 'SEEKING_EMPLOYMENT']) ?>"><?= icon('tool') ?> Add Apprentice</a>
+      <a class="btn btn-light" href="<?= url('/placements') ?>"><?= icon('briefcase') ?> Add Placement</a>
       <a class="btn btn-light" href="<?= url('/reports') ?>"><?= icon('chart') ?> View Reports</a>
       <a class="btn btn-light" href="<?= url('/follow-ups') ?>"><?= icon('phone') ?> Follow-ups (<?= num($followups) ?> pending)</a>
       <a class="btn btn-light" href="<?= url('/users') ?>"><?= icon('users') ?> Staff &amp; Teachers</a>

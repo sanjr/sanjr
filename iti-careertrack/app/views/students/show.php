@@ -25,6 +25,7 @@ $verifyForm = static function (string $field, int $recId, string $status) use ($
     <?php if ($level === 'summary'): ?><p>Summary view only. You can see the identity and records created by your own ITI.</p><?php endif; ?></div>
   <div class="actions">
     <?php if ($level === 'full' && can('career.record')): ?><a class="btn" href="<?= url('/students/' . $sid . '/career') ?>"><?= icon('plus') ?> Add career record</a><?php endif; ?>
+    <a class="btn btn-light" href="<?= url(Auth::is('STUDENT') ? '/me/card' : '/students/' . $sid . '/card') ?>"><?= icon('id') ?> PCID Card</a>
     <button class="btn btn-light" type="button" data-print><?= icon('download') ?> Print</button>
   </div>
 </div>
@@ -60,6 +61,8 @@ $verifyForm = static function (string $field, int $recId, string $status) use ($
         <button class="btn btn-light btn-block mt" type="submit">Update</button>
       </form>
       <a class="btn btn-light btn-block mt" href="<?= url('/transfers', ['pcid' => $me['pcid']]) ?>"><?= icon('transfer') ?> Transfer to another ITI</a>
+      <form method="post" action="<?= url('/students/' . $sid . '/account') ?>" data-confirm="Create / reset the student's login and show a temporary password?"><?= csrf_field() ?>
+        <button class="btn btn-light btn-block mt" type="submit"><?= icon('user') ?> Student login (create / reset)</button></form>
     </div>
     <?php endif; ?>
   </div>

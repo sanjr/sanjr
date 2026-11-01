@@ -23,27 +23,33 @@ from ctconfig import connect  # noqa: E402
 from test_e2e import Client  # noqa: E402
 
 ROLES = {
-    "state": ("state@demo.local", "State Admin", ["/dashboard", "/itis", "/students", "/reports", "/reports?type=outcome", "/users", "/audit", "/settings"]),
-    "district": ("district.pune@demo.local", "District Admin (Pune)", ["/dashboard", "/itis", "/students", "/reports", "/audit", "/settings"]),
+    "state": ("state@demo.local", "State Admin", ["/dashboard", "/itis", "/students", "/reports", "/reports?type=outcome", "/users", "/audit", "/settings", "/students/{ROHIT}/card"]),
+    "district": ("district.pune@demo.local", "District Admin (Pune)", ["/dashboard", "/itis", "/students", "/reports", "/reports?type=result",
+                 "/reports?type=placement", "/reports?type=outcome", "/audit", "/settings"]),
     "principal": ("principal.pune@demo.local", "Principal (Govt ITI Pune)", ["/dashboard", "/students", "/admissions/new", "/trades", "/users",
-                  "/transfers", "/transfers?pcid={PCID}", "/placements", "/follow-ups", "/reports", "/audit", "/settings",
+                  "/transfers", "/transfers?pcid={PCID}", "/placements", "/follow-ups", "/follow-ups?status=IN_PROGRESS", "/follow-ups?status=COMPLETED",
+                  "/follow-ups?status=CANCELLED", "/attendance", "/results", "/apprenticeships", "/reports", "/audit", "/settings", "/students/{ROHIT}/card",
                   "/students/{ROHIT}", "/students/{ROHIT}?tab=training", "/students/{ROHIT}?tab=results", "/students/{ROHIT}?tab=employment",
                   "/students/{ROHIT}?tab=documents", "/students/{ROHIT}?tab=admissions", "/students/{ROHIT}?tab=contacts",
                   "/students/{ROHIT}?tab=status", "/students/{ROHIT}/career"]),
     "teacher": ("teacher.pune@demo.local", "Teacher (Fitter, Pune)", ["/dashboard", "/students", "/students?tab=previous", "/attendance", "/training",
                 "/assessments", "/results", "/career-tracking", "/follow-ups", "/settings"]),
-    "placement": ("placement.pune@demo.local", "Placement Officer (Pune)", ["/dashboard", "/companies", "/vacancies", "/vacancies/new", "/placements",
+    "placement": ("placement.pune@demo.local", "Placement Officer (Pune)", ["/dashboard", "/companies", "/companies?tab=vacancies",
+                  "/companies?tab=applications", "/companies?tab=hired", "/vacancies", "/vacancies/new", "/placements",
                   "/apprenticeships", "/follow-ups", "/reports", "/settings"]),
     "staff": ("staff.pune@demo.local", "ITI Staff (Pune)", ["/follow-ups", "/settings"]),
     "employer": ("hr.sahyadri@demo.local", "Employer / HR", ["/dashboard", "/employer/company", "/vacancies/new", "/employer/applications",
                  "/employer/applications?status=SHORTLISTED", "/employer/hired", "/employer/apprentices", "/employer/confirmations",
                  "/employer/reports", "/settings", "/employer/candidates/{ROHIT}"]),
-    "student": ("rohit.deshmukh@demo.local", "Student / Alumni", ["/dashboard", "/me/profile", "/me/profile?tab=training", "/me/profile?tab=results",
+    "student": ("rohit.deshmukh@demo.local", "Student / Alumni", ["/dashboard", "/me/card", "/me/profile", "/me/profile?tab=training", "/me/profile?tab=results",
                 "/me/profile?tab=employment", "/me/profile?tab=documents", "/me/profile?tab=admissions", "/me/profile?tab=contacts",
                 "/me/profile?tab=status", "/me/training", "/me/results", "/me/apprenticeship", "/me/employment", "/me/higher-education",
                 "/me/business", "/jobs", "/me/update", "/me/update?type=apprenticeship", "/me/update?type=business", "/me/update?type=higher",
                 "/me/update?type=status", "/settings"]),
 }
+
+PUBLIC = ["/", "/about", "/courses", "/careers", "/public-reports", "/contact", "/verify", "/verify?pcid={PCID}", "/forgot-password"]
+GLOBAL: dict = {}
 
 DEMO_JS = """/* Static preview: pages are plain HTML. Saving data needs the real PHP + MySQL website. */
 (function () {
@@ -82,14 +88,27 @@ def main() -> int:
         shutil.rmtree(out)
     for d in ("css", "js", "img"):
         os.makedirs(os.path.join(out, d), exist_ok=True)
-    shutil.copy(os.path.join(app_public, "css", "app.css"), os.path.join(out, "css", "app.css"))
-    shutil.copy(os.path.join(app_public, "js", "app.js"), os.path.join(out, "js", "app.js"))
-    shutil.copy(os.path.join(app_public, "img", "logo.svg"), os.path.join(out, "img", "logo.svg"))
+    for d in ("css", "js", "img"):
+        for f in os.listdir(os.path.join(app_public, d)):
+            shutil.copy(os.path.join(app_public, d, f), os.path.join(out, d, f))
     with open(os.path.join(out, "js", "static-demo.js"), "w", encoding="utf-8") as f:
         f.write(DEMO_JS)
 
+    pub_map = {t.replace("{PCID}", pcid): "public/" + ("home.html" if t == "/" else fname(t.replace("{PCID}", "sample"))) for t in PUBLIC}
+    GLOBAL.update(pub_map)
+    GLOBAL["/login"] = "login.html"
     total = 0
     saved: dict[str, list] = {}
+    os.makedirs(os.path.join(out, "public"), exist_ok=True)
+    pc = Client(args.base)
+    for p, f in pub_map.items():
+        status, body, _, _ = pc.get(p)
+        if status == 200:
+            with open(os.path.join(out, f), "w", encoding="utf-8") as fh:
+                fh.write(rewrite(body, {}, "public"))
+            total += 1
+            saved.setdefault("public", []).append((p.replace(pcid, "PCID"), f))
+    print(f"  public: {len(pub_map)} pages")
     for role, (email, label, paths) in ROLES.items():
         mapping = {t.replace("{ROHIT}", str(rohit)).replace("{PCID}", pcid): f"{role}/{fname(t.replace('{ROHIT}', 'rohit').replace('{PCID}', 'search'))}"
                    for t in paths}
@@ -132,7 +151,7 @@ def rewrite(body: str, mapping: dict, role: str) -> str:
         url = m.group(2).replace("&amp;", "&")
         if url.startswith(("http", "#", "mailto:")) or url.startswith(tuple(up + x for x in ("css/", "js/", "img/"))):
             return m.group(0)
-        target = mapping.get(url) or mapping.get(url.split("?")[0])
+        target = mapping.get(url) or mapping.get(url.split("?")[0]) or GLOBAL.get(url) or GLOBAL.get(url.split("?")[0])
         if url.startswith("/documents/"):
             target = None
         return f'{m.group(1)}="{up}{target}"' if target else f'{m.group(1)}="#"'
@@ -149,7 +168,8 @@ def write_index(out: str, saved: dict) -> None:
     rows = []
     for role, pages in saved.items():
         links = ' · '.join(f'<a href="{f}">{p}</a>' for p, f in pages)
-        rows.append(f"<tr><td><b>{ROLES[role][1]}</b><br><small class='code'>{ROLES[role][0]}</small></td><td>{links}</td></tr>")
+        who = ROLES[role] if role in ROLES else ("no login needed", "Public website")
+        rows.append(f"<tr><td><b>{who[1]}</b><br><small class='code'>{who[0]}</small></td><td>{links}</td></tr>")
     html = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ITI CareerTrack — HTML preview</title><link rel="stylesheet" href="css/app.css"></head>
 <body class="auth-body"><div class="auth-hero"><div class="auth-hero-inner"><img src="img/logo.svg" width="64" height="64" alt="">

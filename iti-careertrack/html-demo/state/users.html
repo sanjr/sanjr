@@ -8,7 +8,7 @@
 <link rel="icon" href="../img/logo.svg">
 <link rel="stylesheet" href="../css/app.css">
 </head>
-<body>
+<body class="">
 <div class="demo-ribbon">STATIC HTML PREVIEW (no saving) · <a href="../index.html">all pages</a> · DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
 <div class="shell">
   <aside class="sidebar" id="sidebar">
@@ -17,7 +17,7 @@
       <span>CareerTrack</span>
     </a>
     <nav>
-              <a href="../state/dashboard.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
+                    <a href="../state/dashboard.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
               <a href="../state/itis.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg><span>ITIs Management</span></a>
               <a href="../state/students.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg><span>Students (State)</span></a>
               <a href="../state/reports.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Reports &amp; Analytics</span></a>
@@ -52,6 +52,7 @@
             <div class="page-head"><div><h1>User &amp; Role Management</h1>
   <p>Every role is tied to a scope (State, District, ITI or Company) and a validity period.</p></div></div>
 
+
 <form class="card filters" method="get" action="#">
   <div class="field" style="flex:1"><label>Search</label><input type="search" name="q" value="" placeholder="Name or e-mail"></div>
   <div class="field"><label>Role</label><select name="role"><option value="">All roles</option><option value="STATE_ADMIN">State Admin</option><option value="DISTRICT_ADMIN">District Admin</option><option value="PRINCIPAL">Principal</option><option value="TEACHER">Teacher</option><option value="PLACEMENT_OFFICER">Placement Officer</option><option value="ITI_STAFF">ITI Staff</option><option value="EMPLOYER">Employer / HR</option></select></div>
@@ -63,124 +64,124 @@
     <tr><th>Name</th><th>E-mail</th><th>Role</th><th>Scope</th><th>Valid</th><th>Status</th><th>Last login</th><th></th></tr>
           <tr><td><b>State Admin (DVET)</b></td><td>state@demo.local</td><td>State Admin</td><td>Statewide</td>
         <td><small>01 Jan 2020 – open</small></td>
-        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 10:22</small></td>
-        <td class="right"></td></tr>
+        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 10:58</small></td>
+        <td class="right nowrap">          </td></tr>
           <tr><td><b>District Admin Pune</b></td><td>district.pune@demo.local</td><td>District Admin</td><td>Pune</td>
         <td><small>01 Jan 2020 – open</small></td>
-        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 10:22</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Ahilyanagar</b></td><td>principal.ahmednagar@demo.local</td><td>Principal</td><td>Government ITI, Ahilyanagar</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Akola</b></td><td>principal.akola@demo.local</td><td>Principal</td><td>Government ITI, Akola</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Amravati</b></td><td>principal.amravati@demo.local</td><td>Principal</td><td>Government ITI, Amravati</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Amravati (Pvt)</b></td><td>principal.amravati-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Amravati</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Beed</b></td><td>principal.beed@demo.local</td><td>Principal</td><td>Government ITI, Beed</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Bhandara</b></td><td>principal.bhandara@demo.local</td><td>Principal</td><td>Government ITI, Bhandara</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Buldhana</b></td><td>principal.buldhana@demo.local</td><td>Principal</td><td>Government ITI, Buldhana</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Chandrapur</b></td><td>principal.chandrapur@demo.local</td><td>Principal</td><td>Government ITI, Chandrapur</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Chhatrapati Sambhajinagar</b></td><td>principal.csn@demo.local</td><td>Principal</td><td>Government ITI, Chhatrapati Sambhajinagar</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Chhatrapati Sambhajinagar (Pvt)</b></td><td>principal.csn-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Chhatrapati Sambhajinagar</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Dharashiv</b></td><td>principal.dharashiv@demo.local</td><td>Principal</td><td>Government ITI, Dharashiv</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Dhule</b></td><td>principal.dhule@demo.local</td><td>Principal</td><td>Government ITI, Dhule</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Gadchiroli</b></td><td>principal.gadchiroli@demo.local</td><td>Principal</td><td>Government ITI, Gadchiroli</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Gondia</b></td><td>principal.gondia@demo.local</td><td>Principal</td><td>Government ITI, Gondia</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Hingoli</b></td><td>principal.hingoli@demo.local</td><td>Principal</td><td>Government ITI, Hingoli</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Jalgaon</b></td><td>principal.jalgaon@demo.local</td><td>Principal</td><td>Government ITI, Jalgaon</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Jalgaon (Pvt)</b></td><td>principal.jalgaon-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Jalgaon</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Jalna</b></td><td>principal.jalna@demo.local</td><td>Principal</td><td>Government ITI, Jalna</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Kolhapur</b></td><td>principal.kolhapur@demo.local</td><td>Principal</td><td>Government ITI, Kolhapur</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Kolhapur (Pvt)</b></td><td>principal.kolhapur-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Kolhapur</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Latur</b></td><td>principal.latur@demo.local</td><td>Principal</td><td>Government ITI, Latur</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Mumbai City</b></td><td>principal.mumbai@demo.local</td><td>Principal</td><td>Government ITI, Mumbai City</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Mumbai Suburban</b></td><td>principal.mumsub@demo.local</td><td>Principal</td><td>Government ITI, Mumbai Suburban</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Nagpur</b></td><td>principal.nagpur@demo.local</td><td>Principal</td><td>Government ITI, Nagpur</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Nagpur (Pvt)</b></td><td>principal.nagpur-pvt@demo.local</td><td>Principal</td><td>Shri Sai Private ITI, Nagpur</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Nanded</b></td><td>principal.nanded@demo.local</td><td>Principal</td><td>Government ITI, Nanded</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Nandurbar</b></td><td>principal.nandurbar@demo.local</td><td>Principal</td><td>Government ITI, Nandurbar</td>
         <td><small>01 Jan 2020 – open</small></td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
           <tr><td><b>Principal Nashik</b></td><td>principal.nashik@demo.local</td><td>Principal</td><td>Government ITI, Nashik</td>
         <td><small>01 Jan 2020 – open</small></td>
-        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 10:13</small></td>
-        <td class="right">          <form method="post" action="#" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
       </table></div>
   <div class="pager"><span class="muted">104 records · page 1 of 4</span><a class="btn btn-light btn-sm" href="../state/users.html">Next ›</a></div></div>
 

@@ -121,7 +121,7 @@ def as_user(base: str, email: str) -> Client:
 
 
 def flash(body: str) -> str:
-    m = re.search(r'<div class="alert alert-(\w+)">(.*?)</div>', body, re.S)
+    m = re.search(r'<div class="alert alert-(\w+)"[^>]*>(.*?)</div>', body, re.S)
     return html.unescape(m.group(2)).strip() if m else ""
 
 
@@ -321,7 +321,7 @@ def main() -> int:
     po_id = val("SELECT id FROM users WHERE email = 'placement.nashik@demo.local'")
     pn.post("/follow-ups", {"pcid": pcid, "assigned_to_user_id": str(po_id), "reason": "NO_RECENT_UPDATE", "channel": "PHONE", "due_date": d(-3)})
     _, body, _, _ = po.get("/follow-ups")
-    ok(pcid in body, "Staff created a follow-up and the assignee sees it")
+    ok(pcid[-8:] in body, "Staff created a follow-up and the assignee sees it")
 
     print("\n[11] Employer confirmation & employer isolation")
     hr = as_user(base, "hr.sahyadri@demo.local")
@@ -376,6 +376,60 @@ def main() -> int:
     _, body, _, _ = lock.login("staff.pune@demo.local")
     ok("locked" in flash(body).lower(), "Account locks after 5 wrong passwords (even the right password is refused)")
     cur.execute("UPDATE users SET failed_login_count = 0, locked_until = NULL WHERE email = 'staff.pune@demo.local'")
+
+    print("\n[14] Public website, login by role / mobile, PCID card, verification")
+    pub = Client(base)
+    for path in ["/", "/about", "/courses", "/careers", "/public-reports", "/contact", "/verify", "/login", "/forgot-password"]:
+        status, body, _, _ = pub.get(path)
+        ok(status == 200 and "ITI CareerTrack" in body, f"Public page {path} loads without login")
+    _, body, _, _ = pub.get("/public-reports")
+    ok("@demo.local" not in body and "ITIC-MH" not in body, "Public reports show no personal data")
+    rohit_pcid = val("SELECT pcid FROM v_student_identity WHERE student_id = (SELECT student_id FROM users WHERE email = 'rohit.deshmukh@demo.local')")
+    rohit_dob = str(val("SELECT date_of_birth FROM students WHERE id = (SELECT student_id FROM users WHERE email = 'rohit.deshmukh@demo.local')"))
+    _, body, _, _ = pub.get("/verify?pcid=" + rohit_pcid)
+    ok("Genuine PCID" in body and "Deshmukh" not in body and rohit_dob not in body, "Verify page: genuine, name masked, no date of birth")
+    bad = rohit_pcid[:-1] + str((int(rohit_pcid[-1]) + 1) % 10)
+    _, body, _, _ = pub.get("/verify?pcid=" + bad)
+    ok("Not a valid PCID" in body, "Mistyped PCID is rejected by the check digit")
+    c = Client(base)
+    c.get("/login")
+    _, body, url, _ = c.post("/login", {"email": "principal.pune@demo.local", "password": PASSWORD, "role": "STATE_ADMIN"})
+    ok("/login" in url and "not registered as State Admin" in flash(body), "Login with a role the account does not hold is refused")
+    c = Client(base)
+    c.get("/login")
+    _, _, url, _ = c.post("/login", {"email": "principal.pune@demo.local", "password": PASSWORD, "role": "PRINCIPAL"})
+    ok(url.endswith("/dashboard"), "Login with the correct role works")
+    pn.get(f"/students/{sid}")
+    _, body, _, _ = pn.post(f"/students/{sid}/account", {})
+    m = re.search(r"Student login: (\S+)\s+·\s+temporary password: (\S+)", flash(body))
+    ok(bool(m), "Principal created the student's own login with a temporary password")
+    if m:
+        st = Client(base)
+        st.get("/login")
+        _, body, url, _ = st.post("/login", {"email": m.group(1), "password": m.group(2)})
+        ok(url.endswith("/dashboard") and pcid in body, "Student logs in with mobile number + temporary password and sees own PCID")
+        status, body, _, _ = st.get("/me/card")
+        ok(status == 200 and "data-qr=" in body and "/verify?pcid=" + pcid in html.unescape(body), "Student PCID card has a QR code that links to verification")
+    status, _, _, _ = tp.get(f"/students/{sid}/card")
+    ok(status == 404, "Previous teacher cannot open the student's PCID card")
+    tid = val("SELECT id FROM users WHERE email = 'teacher.pune@demo.local'")
+    pp.get("/users")
+    _, body, _, _ = pp.post(f"/users/{tid}/reset-password", {})
+    m = re.search(r"Temporary password for \S+: (\S+)", flash(body))
+    ok(bool(m), "Principal reset a teacher's password")
+    if m:
+        t2 = Client(base)
+        t2.get("/login")
+        _, _, url, _ = t2.post("/login", {"email": "teacher.pune@demo.local", "password": m.group(1)})
+        ok(url.endswith("/dashboard"), "Teacher logs in with the new temporary password")
+        cur.execute("UPDATE users SET password_hash = (SELECT h FROM (SELECT password_hash AS h FROM users WHERE email = 'teacher.nashik@demo.local') x) WHERE id = %s", (tid,))
+    state_id = val("SELECT id FROM users WHERE email = 'state@demo.local'")
+    status, _, _, _ = pp.post(f"/users/{state_id}/reset-password", {})
+    ok(status == 404, "Principal cannot reset the State Admin's password")
+    fu = val("SELECT id FROM follow_ups WHERE student_id = %s AND status = 'PENDING' LIMIT 1", sid)
+    po.get("/follow-ups")
+    po.post(f"/follow-ups/{fu}/start", {})
+    ok(val("SELECT status FROM follow_ups WHERE id = %s", fu) == "IN_PROGRESS", "Follow-up task moved to In Progress")
 
     print(f"\n==== {RESULTS['pass']} passed, {RESULTS['fail']} failed ====")
     return 1 if RESULTS["fail"] else 0

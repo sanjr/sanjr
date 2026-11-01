@@ -22,8 +22,27 @@ final class PlacementController extends Controller
                        (SELECT COUNT(DISTINCT e.student_id) FROM employments e WHERE e.company_id = c.id AND e.voided_at IS NULL) AS employees,
                        (SELECT COUNT(DISTINCT a.student_id) FROM apprenticeships a WHERE a.company_id = c.id AND a.voided_at IS NULL) AS apprentices
                   FROM companies c WHERE $w ORDER BY c.legal_name";
-        $this->render('placement/companies', ['title' => 'Companies', 'p' => $this->paginate($sql, $p, 30),
-            'districts' => DB::all('SELECT id, name FROM districts ORDER BY name')]);
+        $tab = in_array(input('tab'), ['companies', 'vacancies', 'applications', 'hired'], true) ? (string) input('tab') : 'companies';
+        $data = ['title' => 'Company & Vacancy Management', 'tab' => $tab, 'districts' => DB::all('SELECT id, name FROM districts ORDER BY name')];
+        [$scope, $sp] = Access::studentScope('s.id');
+        if ($tab === 'companies') {
+            $data['p'] = $this->paginate($sql, $p, 30);
+        } elseif ($tab === 'vacancies') {
+            $data['rows'] = DB::all("SELECT v.*, c.legal_name AS company, t.name AS trade, (SELECT COUNT(*) FROM job_applications ja WHERE ja.vacancy_id = v.id) AS applications
+                                       FROM vacancies v JOIN companies c ON c.id = v.company_id LEFT JOIN trades t ON t.id = v.trade_id
+                                      ORDER BY v.status = 'OPEN' DESC, v.opens_on DESC LIMIT 200");
+        } elseif ($tab === 'applications') {
+            $data['p'] = $this->paginate("SELECT ja.*, v.title, c.legal_name AS company, CONCAT_WS(' ', s.first_name, s.last_name) AS name, pr.pcid
+                                            FROM job_applications ja JOIN vacancies v ON v.id = ja.vacancy_id JOIN companies c ON c.id = v.company_id
+                                            JOIN students s ON s.id = ja.student_id LEFT JOIN pcid_registry pr ON pr.student_id = s.id AND pr.status = 'ACTIVE'
+                                           WHERE $scope ORDER BY ja.applied_at DESC", $sp, 30);
+        } else {
+            $data['p'] = $this->paginate("SELECT e.*, c.legal_name AS company, CONCAT_WS(' ', s.first_name, s.last_name) AS name, pr.pcid
+                                            FROM employments e JOIN companies c ON c.id = e.company_id JOIN students s ON s.id = e.student_id
+                                            LEFT JOIN pcid_registry pr ON pr.student_id = s.id AND pr.status = 'ACTIVE'
+                                           WHERE e.voided_at IS NULL AND $scope ORDER BY e.joining_date DESC", $sp, 30);
+        }
+        $this->render('placement/companies', $data);
     }
 
     public function storeCompany(): void

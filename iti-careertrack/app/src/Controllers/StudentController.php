@@ -110,6 +110,66 @@ final class StudentController extends Controller
         $this->render('students/show', $data);
     }
 
+    /** Printable Permanent Career ID card with a QR code that links to the public verification page. */
+    public function card(int $id): void
+    {
+        if (!(can('student.view') || Auth::studentId() === $id)) {
+            throw new HttpException(403);
+        }
+        Access::requireStudent($id);
+        $me = StudentData::identity($id);
+        if (!$me || !$me['pcid']) {
+            throw new HttpException(404);
+        }
+        $adm = StudentData::latestAdmission($id);
+        $first = DB::one('SELECT a.admission_date, ay.label FROM admissions a JOIN academic_years ay ON ay.id = a.academic_year_id
+                           WHERE a.student_id = ? ORDER BY a.admission_date LIMIT 1', [$id]);
+        Audit::log('VIEW_CARD', 'students', $id, $id);
+        $this->render('students/card', ['title' => 'Permanent Career ID Card', 'me' => $me, 'adm' => $adm, 'first' => $first,
+            'issuedOn' => DB::value("SELECT issued_at FROM pcid_registry WHERE student_id = ? AND status = 'ACTIVE'", [$id]),
+            'verifyUrl' => absolute_url('/verify', ['pcid' => $me['pcid']]), 'scripts' => ['qr.js'], 'bodyClass' => 'print-card']);
+    }
+
+    /** Create (or reset) the student's own login. Login = primary mobile number; a temporary password is shown once. */
+    public function account(int $id): void
+    {
+        Auth::require('student.update');
+        Access::requireStudent($id);
+        if (!Auth::is('PRINCIPAL', 'STATE_ADMIN')) {
+            throw new HttpException(403);
+        }
+        $me = StudentData::identity($id);
+        $mobile = DB::value("SELECT value_normalized FROM student_contacts WHERE student_id = ? AND contact_type = 'MOBILE' AND valid_to IS NULL ORDER BY is_primary DESC LIMIT 1", [$id]);
+        $email = DB::value("SELECT value FROM student_contacts WHERE student_id = ? AND contact_type = 'EMAIL' AND valid_to IS NULL LIMIT 1", [$id]);
+        $temp = AdminController::tempPassword();
+        $hash = password_hash($temp, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT);
+        $login = DB::tx(function () use ($id, $me, $mobile, $email, $hash) {
+            $uid = DB::value('SELECT id FROM users WHERE student_id = ?', [$id]);
+            if ($uid) {
+                DB::run('UPDATE users SET password_hash = ?, failed_login_count = 0, locked_until = NULL, status = \'ACTIVE\' WHERE id = ?', [$hash, $uid]);
+                Audit::log('PASSWORD_RESET', 'users', (int) $uid, $id);
+                return DB::value('SELECT COALESCE(mobile, email) FROM users WHERE id = ?', [$uid]);
+            }
+            if (!$mobile && !$email) {
+                throw new \DomainException('Add a mobile number or e-mail in Contacts first.');
+            }
+            if ($mobile && DB::value('SELECT 1 FROM users WHERE mobile = ?', [$mobile])) {
+                $mobile = null;   // family mobile already used by a sibling's login: use e-mail instead
+            }
+            if (!$mobile && (!$email || DB::value('SELECT 1 FROM users WHERE email = ?', [mb_strtolower((string) $email)]))) {
+                throw new \DomainException('This mobile number / e-mail is already used by another login. Add a personal mobile or e-mail in Contacts.');
+            }
+            $uid = DB::insert('users', ['full_name' => trim($me['first_name'] . ' ' . $me['last_name']), 'mobile' => $mobile,
+                'email' => $mobile ? null : mb_strtolower((string) $email), 'password_hash' => $hash, 'status' => 'ACTIVE', 'student_id' => $id, 'created_by' => Auth::id()]);
+            DB::insert('user_role_assignments', ['user_id' => $uid, 'role_id' => (int) DB::value("SELECT id FROM roles WHERE code = 'STUDENT'"),
+                'scope_type' => 'SELF', 'valid_from' => date('Y-m-d'), 'created_by' => Auth::id()]);
+            Audit::log('CREATE_STUDENT_LOGIN', 'users', $uid, $id);
+            return $mobile ?: $email;
+        });
+        flash('success', "Student login: $login  ·  temporary password: $temp  — give it to the student privately (shown only once).");
+        redirect('/students/' . $id);
+    }
+
     public function updateContacts(int $id): void
     {
         Auth::require('student.update');

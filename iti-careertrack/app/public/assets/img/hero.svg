@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 380" role="img" aria-label="ITI students: trainee, graduate and technician">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".18"/><stop offset="1" stop-color="#ffffff" stop-opacity=".04"/></linearGradient>
+    <linearGradient id="shirt1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d64d8"/><stop offset="1" stop-color="#0f3d8a"/></linearGradient>
+    <linearGradient id="shirt2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dbe7ff"/></linearGradient>
+    <linearGradient id="shirt3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ea7a0a"/><stop offset="1" stop-color="#c25e00"/></linearGradient>
+  </defs>
+  <circle cx="300" cy="190" r="170" fill="url(#sky)"/>
+  <circle cx="300" cy="190" r="118" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="2" stroke-dasharray="6 8"/>
+  <!-- gear -->
+  <g transform="translate(420 80)" fill="none" stroke="#ffd166" stroke-width="7" stroke-linecap="round" opacity=".9">
+    <circle r="26"/><circle r="9" fill="#ffd166" stroke="none"/>
+    <path d="M0-44v12M0 32v12M-44 0h12M32 0h12M-31-31l8 8M23 23l8 8M-31 31l8-8M23-23l8-8"/>
+  </g>
+  <!-- rising chart -->
+  <g transform="translate(60 70)" opacity=".95">
+    <rect width="120" height="80" rx="10" fill="#ffffff" fill-opacity=".14" stroke="#ffffff" stroke-opacity=".35"/>
+    <polyline points="14,62 40,48 62,52 86,30 106,18" fill="none" stroke="#7cf3a0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="106" cy="18" r="5" fill="#7cf3a0"/>
+  </g>
+  <!-- ground -->
+  <ellipse cx="300" cy="352" rx="210" ry="16" fill="#000" opacity=".18"/>
+  <!-- person 1: trainee with hard hat -->
+  <g transform="translate(170 150)">
+    <path d="M-52 200c4-72 22-102 52-102s48 30 52 102z" fill="url(#shirt1)"/>
+    <path d="M-14 100l14 26 14-26" fill="#ffd166"/>
+    <circle cy="56" r="34" fill="#c98b5e"/>
+    <path d="M-38 48a38 34 0 0 1 76 0z" fill="#ffd166"/><rect x="-42" y="44" width="84" height="8" rx="4" fill="#f4b400"/>
+    <circle cx="-11" cy="62" r="3" fill="#2b1a10"/><circle cx="11" cy="62" r="3" fill="#2b1a10"/>
+    <path d="M-10 76q10 8 20 0" stroke="#2b1a10" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- spanner -->
+    <g transform="translate(46 150) rotate(-35)"><rect x="-4" y="-30" width="8" height="46" rx="3" fill="#94a3b8"/><path d="M-12-38a12 12 0 1 0 24 0l-6 4-6-6-6 6z" fill="#94a3b8"/></g>
+  </g>
+  <!-- person 2: graduate (center, front) -->
+  <g transform="translate(300 130)">
+    <path d="M-60 222c4-84 26-118 60-118s56 34 60 118z" fill="url(#shirt2)"/>
+    <path d="M-16 106l16 30 16-30" fill="#1d64d8"/>
+    <circle cy="60" r="38" fill="#b9764d"/>
+    <path d="M-40 52c2-30 18-42 40-42s38 12 40 42c-12-10-26-14-40-14s-28 4-40 14z" fill="#2b1a10"/>
+    <path d="M-52 14l52-22 52 22-52 22z" fill="#0b2f6b"/><rect x="-26" y="18" width="52" height="16" rx="4" fill="#0b2f6b"/>
+    <path d="M44 18v26" stroke="#ffd166" stroke-width="3"/><circle cx="44" cy="46" r="4" fill="#ffd166"/>
+    <circle cx="-13" cy="66" r="3.4" fill="#2b1a10"/><circle cx="13" cy="66" r="3.4" fill="#2b1a10"/>
+    <path d="M-11 82q11 9 22 0" stroke="#2b1a10" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- certificate -->
+    <g transform="translate(-58 150) rotate(-8)"><rect width="46" height="34" rx="3" fill="#fff" stroke="#c2c9d6"/><path d="M8 10h30M8 17h24M8 24h18" stroke="#94a3b8" stroke-width="2"/><circle cx="38" cy="27" r="5" fill="#d33a2c"/></g>
+  </g>
+  <!-- person 3: technician with laptop -->
+  <g transform="translate(430 160)">
+    <path d="M-50 192c4-68 22-96 50-96s46 28 50 96z" fill="url(#shirt3)"/>
+    <circle cy="54" r="32" fill="#d29a6c"/>
+    <path d="M-32 50c0-24 14-36 32-36s32 12 32 36c-8-12-20-18-32-18s-24 6-32 18z" fill="#3a2414"/>
+    <path d="M-30 60c-6 10-6 30 4 42M30 60c6 10 6 30-4 42" stroke="#3a2414" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <circle cx="-10" cy="58" r="3" fill="#2b1a10"/><circle cx="10" cy="58" r="3" fill="#2b1a10"/>
+    <path d="M-9 72q9 7 18 0" stroke="#2b1a10" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- laptop -->
+    <g transform="translate(-40 120)"><rect width="64" height="40" rx="4" fill="#e7ebf2" stroke="#94a3b8"/><rect x="5" y="5" width="54" height="30" rx="2" fill="#1d64d8"/>
+      <path d="M12 26l10-8 8 5 14-12" stroke="#7cf3a0" stroke-width="2.5" fill="none"/><rect x="-6" y="40" width="76" height="6" rx="3" fill="#94a3b8"/></g>
+  </g>
+</svg>

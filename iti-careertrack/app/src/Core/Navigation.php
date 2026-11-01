@@ -15,13 +15,15 @@ final class Navigation
                 ['User & Role Mgmt', '/users', 'shield'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'DISTRICT_ADMIN' => [
-                ['District Overview', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Student Outcomes', '/students', 'users'],
-                ['Reports', '/reports', 'chart'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['ITIs in District', '/itis', 'building'], ['Students', '/students', 'users'],
+                ['Training & Results', '/reports?type=result', 'book'], ['Placement', '/reports?type=placement', 'briefcase'],
+                ['Reports', '/reports?type=outcome', 'chart'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'PRINCIPAL' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['Students', '/students', 'users'], ['Admission', '/admissions/new', 'user'],
-                ['Trades & Batches', '/trades', 'layers'], ['Staff & Teachers', '/users', 'users'], ['Student Transfer', '/transfers', 'transfer'],
-                ['Placement & Alumni', '/placements', 'briefcase'], ['Follow-ups', '/follow-ups', 'phone'], ['Reports', '/reports', 'chart'],
+                ['Trades & Batches', '/trades', 'layers'], ['Staff Mgmt', '/users', 'users'], ['Training & Attendance', '/attendance', 'calendar'],
+                ['Examination', '/results', 'award'], ['Apprenticeship', '/apprenticeships', 'tool'], ['Placement', '/placements', 'briefcase'],
+                ['Transfer', '/transfers', 'transfer'], ['Follow-ups', '/follow-ups', 'phone'], ['Reports', '/reports', 'chart'],
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'TEACHER' => [
@@ -30,7 +32,8 @@ final class Navigation
                 ['Career Tracking', '/career-tracking', 'trending'], ['Follow-up Tasks', '/follow-ups', 'phone'], ['Settings', '/settings', 'settings'],
             ],
             'PLACEMENT_OFFICER' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['Companies', '/companies', 'building'], ['Vacancies', '/vacancies', 'briefcase'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['Companies', '/companies', 'building'], ['Vacancies', '/companies?tab=vacancies', 'briefcase'],
+                ['Applications', '/companies?tab=applications', 'file'], ['Hired Students', '/companies?tab=hired', 'check-circle'],
                 ['Student Placement', '/placements', 'users'], ['Apprenticeship', '/apprenticeships', 'tool'], ['Follow-up', '/follow-ups', 'phone'],
                 ['Reports', '/reports', 'chart'], ['Settings', '/settings', 'settings'],
             ],
@@ -44,7 +47,7 @@ final class Navigation
                 ['Confirmations', '/employer/confirmations', 'shield'], ['Reports', '/employer/reports', 'chart'], ['Settings', '/settings', 'settings'],
             ],
             'STUDENT' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['My Profile', '/me/profile', 'user'], ['My Training', '/me/training', 'book'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['My Profile', '/me/profile', 'user'], ['My PCID Card', '/me/card', 'id'], ['My Training', '/me/training', 'book'],
                 ['Exams & Results', '/me/results', 'award'], ['Apprenticeship', '/me/apprenticeship', 'tool'], ['Employment', '/me/employment', 'briefcase'],
                 ['Higher Education', '/me/higher-education', 'graduation'], ['Business', '/me/business', 'store'], ['Job Search', '/jobs', 'search'],
                 ['Update Status', '/me/update', 'edit'], ['Settings', '/settings', 'settings'],
