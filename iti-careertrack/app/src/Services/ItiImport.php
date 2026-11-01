@@ -35,7 +35,7 @@ final class ItiImport
         $out = [];
         foreach ($rows as $i => $r) {
             $norm = array_map(static fn ($v) => strtolower(preg_replace('/[^a-z]/i', '', (string) $v)), $r);
-            $codeCol = self::find($norm, ['ncvtmisiticode', 'ncvtmiscode', 'iticode', 'ncvtcode', 'misitcode']);
+            $codeCol = self::find($norm, ['ncvtmisiticode', 'ncvtmiscode', 'iticode', 'ncvtcode', 'misitcode', 'institutecode', 'code']);
             $nameCol = self::find($norm, ['institutename', 'itiname', 'nameofinstitute', 'name']);
             if ($codeCol !== null && $nameCol !== null) {
                 $map = ['code' => $codeCol, 'name' => $nameCol, 'type' => self::find($norm, ['ititype', 'type', 'ownership']),
@@ -83,7 +83,8 @@ final class ItiImport
 
     private static function title(string $s): string
     {
-        return ucwords(strtolower(trim($s)), " \t(-/.");
+        $t = ucwords(strtolower(trim($s)), " \t(-/.");
+        return preg_replace_callback('/\((\w{2,3})\)/', static fn ($m) => '(' . strtoupper($m[1]) . ')', $t);   // (SCP)
     }
 
     private static function find(array $norm, array $names): ?int
