@@ -9,6 +9,7 @@ $tabs = ['companies' => ['Companies', 'building'], 'vacancies' => ['Vacancies', 
 </nav>
 
 <?php if ($tab === 'companies'): ?>
+<?php if ($pendingCompanies): ?><div class="alert alert-info"><?= icon('alert') ?> <b><?= num($pendingCompanies) ?></b> company(ies) added by students are waiting for approval — shown at the top.</div><?php endif; ?>
 <form class="card filters" method="get" action="<?= url('/companies') ?>">
   <div class="field" style="flex:1"><label>Search</label><input type="search" name="q" value="<?= e(input('q')) ?>" placeholder="Company name"></div>
   <button class="btn" type="submit"><?= icon('search') ?> Search</button>
@@ -19,7 +20,9 @@ $tabs = ['companies' => ['Companies', 'building'], 'vacancies' => ['Vacancies', 
     <?php foreach ($p['rows'] as $c): ?>
       <tr><td><b><?= e($c['legal_name']) ?></b><?= $c['gstin'] ? '<br><small class="code">' . e($c['gstin']) . '</small>' : '' ?></td><td><?= e($c['industry_sector'] ?? '—') ?></td>
         <td><?= e(label($c['company_size'])) ?></td><td><?= e($c['hq_city'] ?? '—') ?></td><td class="num"><?= num($c['branches']) ?></td><td class="num"><?= num($c['open_vacancies']) ?></td>
-        <td class="num"><?= num($c['employees']) ?></td><td class="num"><?= num($c['apprentices']) ?></td><td><?= badge($c['status']) ?></td></tr>
+        <td class="num"><?= num($c['employees']) ?></td><td class="num"><?= num($c['apprentices']) ?></td><td><?= badge($c['status']) ?>
+          <?php if ($c['status'] === 'PENDING_APPROVAL'): ?><form method="post" action="<?= url('/companies/' . $c['id'] . '/approve') ?>" class="inline-form" data-confirm="Approve this company?"><?= csrf_field() ?>
+            <button class="btn btn-green btn-sm">Approve</button></form><?php endif; ?></td></tr>
     <?php endforeach; ?>
   </table></div>
   <?= pager($p) ?>

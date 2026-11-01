@@ -13,7 +13,7 @@ final class DashboardController extends Controller
     public function index(): void
     {
         match (Auth::roleCode()) {
-            'STATE_ADMIN', 'DISTRICT_ADMIN' => $this->state(),
+            'STATE_ADMIN', 'RO_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR' => $this->state(),
             'PRINCIPAL' => $this->principal(),
             'TEACHER' => $this->teacher(),
             'PLACEMENT_OFFICER' => $this->placement(),
@@ -30,7 +30,8 @@ final class DashboardController extends Controller
         $alumni = array_sum($outcomes);
         $placed = Stats::placedOf($outcomes);
         $itiRows = [];
-        if (Auth::is('DISTRICT_ADMIN')) {
+        if (Auth::is(...Auth::OVERSIGHT)) {
+            [$isc, $ip] = \App\Core\Access::itiScope('i.id');
             $ph = DB::in(Stats::PLACED);
             $itiRows = DB::all("SELECT i.id, i.name, i.ownership_type,
                         COUNT(DISTINCT CASE WHEN ia.status = 'ACTIVE' THEN ia.student_id END) AS current_students,
@@ -38,10 +39,11 @@ final class DashboardController extends Controller
                         COUNT(DISTINCT CASE WHEN ia.status = 'COMPLETED' AND cs.status IN ($ph) THEN ia.student_id END) AS placed
                    FROM itis i LEFT JOIN institute_affiliations ia ON ia.iti_id = i.id
                    LEFT JOIN v_student_current_status cs ON cs.student_id = ia.student_id
-                  WHERE i.district_id = ? GROUP BY i.id, i.name, i.ownership_type ORDER BY i.name", array_merge(Stats::PLACED, [Auth::districtId()]));
+                  WHERE $isc GROUP BY i.id, i.name, i.ownership_type ORDER BY i.name", array_merge(Stats::PLACED, $ip));
         }
-        $this->render(Auth::is('DISTRICT_ADMIN') ? 'dashboards/district' : 'dashboards/state', [
-            'title' => Auth::is('STATE_ADMIN') ? 'State Admin Dashboard' : 'District Dashboard – ' . Auth::role()['district_name'],
+        $this->render(Auth::is('STATE_ADMIN') ? 'dashboards/state' : 'dashboards/district', [
+            'title' => match (Auth::roleCode()) { 'STATE_ADMIN' => 'State Admin Dashboard (DVET)', 'RO_ADMIN' => 'RO Dashboard – ' . Auth::scopeName(),
+                'DVTO' => 'DVTO Dashboard – ' . Auth::scopeName(), default => 'Apprentice Advisor Dashboard – ' . Auth::scopeName() },
             'itis' => Stats::itiCount(), 'students' => Stats::totalStudents(), 'current' => Stats::currentStudents(),
             'alumni' => $alumni, 'placed' => $placed, 'outcomes' => $outcomes,
             'districts' => Auth::is('STATE_ADMIN') ? Stats::districtRates() : [], 'itiRows' => $itiRows,
@@ -80,9 +82,10 @@ final class DashboardController extends Controller
     {
         $uid = (int) Auth::id();
         $itiId = (int) Auth::itiId();
-        $mine = "SELECT ta.student_id FROM teacher_assignments ta WHERE ta.teacher_user_id = ? AND ta.iti_id = ?
-                 AND ta.start_date <= CURDATE() AND (ta.end_date IS NULL OR ta.end_date > CURDATE())";
-        $p = [$uid, $itiId];
+        // current students of the instructor's trade(s) at their ITI (plus anyone currently assigned to them)
+        [$sc, $sp] = \App\Core\Access::studentScope('ia.student_id');
+        $mine = "SELECT ia.student_id FROM institute_affiliations ia WHERE ia.status = 'ACTIVE' AND ia.iti_id = ? AND $sc";
+        $p = array_merge([$itiId], $sp);
         $count = (int) DB::value("SELECT COUNT(DISTINCT student_id) FROM ($mine) x", $p);
         $present = (int) DB::value("SELECT COUNT(DISTINCT ar.student_id) FROM attendance_records ar WHERE ar.attendance_date = CURDATE()
                                     AND ar.status IN ('PRESENT','LATE') AND ar.student_id IN ($mine)", $p);

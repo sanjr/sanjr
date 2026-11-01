@@ -91,6 +91,9 @@ SURNAMES = ["Patil", "Jadhav", "Shinde", "Pawar", "Deshmukh", "Kale", "More", "K
             "Bhosale", "Salunkhe", "Mane", "Kadam", "Thorat", "Sawant", "Pathak", "Wagh", "Shelke", "Kamble", "Mohite", "Nikam", "Bhagat"]
 FATHERS = ["Sanjay", "Ramesh", "Suresh", "Prakash", "Vijay", "Dilip", "Anil", "Ashok", "Balasaheb", "Dattatray", "Shivaji", "Vilas"]
 
+# DVET Regional Offices: revenue division -> region (Konkan districts are under the Mumbai RO)
+REGION_OF_DIVISION = {"Konkan": "MUM", "Pune": "PUN", "Nashik": "NSK", "Chh. Sambhajinagar": "CSN", "Amravati": "AMR", "Nagpur": "NGP"}
+
 # Which ITIs get created: (district code, slug, ownership, trade codes, students per batch, units)
 MAIN_ITIS = [
     ("PUNE", "pune", "GOVERNMENT", ["FIT", "ELE", "WEL", "COPA", "MMV"], 16, 2),
@@ -138,13 +141,19 @@ class Seeder:
         self.cur.execute(f"INSERT INTO `{table}` ({cols}) VALUES ({marks})", list(row.values()))
         return self.cur.lastrowid
 
-    def user(self, name: str, email: str, role: str, iti_id=None, district_id=None, company_id=None, student_id=None) -> int:
-        uid = self.ins("users", {"full_name": name, "email": email, "password_hash": self.pw, "status": "ACTIVE",
+    def user(self, name: str, email: str, role: str, iti_id=None, district_id=None, company_id=None, student_id=None,
+             region_id=None, username=None, trades=None, itis=None) -> int:
+        uid = self.ins("users", {"full_name": name, "username": username, "email": email, "password_hash": self.pw, "status": "ACTIVE",
                                  "student_id": student_id, "is_demo": 1})
-        scope = {"STATE_ADMIN": "STATE", "DISTRICT_ADMIN": "DISTRICT", "EMPLOYER": "COMPANY", "STUDENT": "SELF"}.get(role, "ITI")
-        self.ins("user_role_assignments", {"user_id": uid, "role_id": self.role_ids[role], "scope_type": scope,
-                                           "district_id": district_id, "iti_id": iti_id, "company_id": company_id,
-                                           "valid_from": "2020-01-01"})
+        scope = {"STATE_ADMIN": "STATE", "RO_ADMIN": "REGION", "DVTO": "DISTRICT", "APPRENTICE_ADVISOR": "ITI_GROUP",
+                 "EMPLOYER": "COMPANY", "STUDENT": "SELF"}.get(role, "ITI")
+        ra = self.ins("user_role_assignments", {"user_id": uid, "role_id": self.role_ids[role], "scope_type": scope, "region_id": region_id,
+                                                "district_id": district_id, "iti_id": iti_id, "company_id": company_id,
+                                                "valid_from": "2020-01-01"})
+        for t in trades or []:
+            self.ins("role_assignment_trades", {"role_assignment_id": ra, "trade_id": self.trade_ids[t]})
+        for i in itis or []:
+            self.ins("role_assignment_itis", {"role_assignment_id": ra, "iti_id": i})
         return uid
 
     def mobile(self) -> str:
@@ -155,8 +164,11 @@ class Seeder:
     def masters(self):
         self.cur.execute("SELECT id, code FROM roles")
         self.role_ids = {r["code"]: r["id"] for r in self.cur.fetchall()}
+        self.cur.execute("SELECT id, code FROM regions")
+        self.region_ids = {r["code"]: r["id"] for r in self.cur.fetchall()}
         for code, name, name_mr, division in DISTRICTS:
-            self.district_ids[code] = self.ins("districts", {"code": code, "name": name, "name_mr": name_mr, "division": division})
+            self.district_ids[code] = self.ins("districts", {"code": code, "name": name, "name_mr": name_mr, "division": division,
+                                                             "region_id": self.region_ids[REGION_OF_DIVISION[division]]})
         for code, name, name_mr, duration, modules in TRADES:
             tid = self.ins("trades", {"trade_code": code, "name": name, "name_mr": name_mr, "scheme": "NCVT",
                                       "duration_months": duration, "sector": "Engineering" if code != "COPA" else "IT"})
@@ -205,18 +217,18 @@ class Seeder:
             for t in trades:
                 self.ins("iti_trades", {"iti_id": iti_id, "trade_id": self.trade_ids[t], "sanctioned_units": units, "seats_per_unit": 24})
             principal = self.user(f"Principal {dname}{' (Pvt)' if owner == 'PRIVATE' else ''}", f"principal.{slug}@demo.local",
-                                  "PRINCIPAL", iti_id=iti_id)
+                                  "PRINCIPAL", iti_id=iti_id, username=f"DEMO{n - 1:04d}")
             teachers = {}
             if slug == "pune":
                 tnames = {"FIT": "Suresh Kulkarni", "ELE": "Anita Joshi", "WEL": "Mahesh Pawar", "COPA": "Kavita Deshpande", "MMV": "Rajesh Gore"}
                 for t in trades:
                     email = "teacher.pune@demo.local" if t == "FIT" else f"teacher.pune.{t.lower()}@demo.local"
-                    teachers[t] = self.user(tnames[t], email, "TEACHER", iti_id=iti_id)
+                    teachers[t] = self.user(tnames[t], email, "TEACHER", iti_id=iti_id, trades=[t])
                 placement = self.user("Meera Kale", "placement.pune@demo.local", "PLACEMENT_OFFICER", iti_id=iti_id)
                 staff = self.user("Dinesh Shelke", "staff.pune@demo.local", "ITI_STAFF", iti_id=iti_id)
             else:
                 teacher = self.user(f"Instructor {dname}{' (Pvt)' if owner == 'PRIVATE' else ''}", f"teacher.{slug}@demo.local",
-                                    "TEACHER", iti_id=iti_id)
+                                    "TEACHER", iti_id=iti_id, trades=trades)
                 teachers = {t: teacher for t in trades}
                 placement = self.user(f"Placement Officer {dname}{' (Pvt)' if owner == 'PRIVATE' else ''}",
                                       f"placement.{slug}@demo.local", "PLACEMENT_OFFICER", iti_id=iti_id) if slug in ("nashik", "satara", "kolhapur") else None
@@ -225,8 +237,13 @@ class Seeder:
                               "units": units, "principal": principal, "teachers": teachers, "placement": placement, "staff": staff,
                               "batches": {}})
         # state & district admins
-        self.user("State Admin (DVET)", "state@demo.local", "STATE_ADMIN")
-        self.user("District Admin Pune", "district.pune@demo.local", "DISTRICT_ADMIN", district_id=self.district_ids["PUNE"])
+        self.user("State Admin (DVET)", "state@demo.local", "STATE_ADMIN", username="DVET-ADMIN")
+        for code, rid in self.region_ids.items():
+            self.user(f"RO Admin {code}", f"ro.{code.lower()}@demo.local", "RO_ADMIN", region_id=rid, username=f"RO-{code}")
+        self.user("DVTO Pune", "dvto.pune@demo.local", "DVTO", district_id=self.district_ids["PUNE"], username="DVTO-PUNE")
+        self.user("DVTO Nashik", "dvto.nashik@demo.local", "DVTO", district_id=self.district_ids["NASHIK"], username="DVTO-NASHIK")
+        pune_region = [i["id"] for i in self.itis if REGION_OF_DIVISION[next(d[3] for d in DISTRICTS if d[0] == i["district"])] == "PUN"]
+        self.user("Apprentice Advisor Pune", "advisor.pune@demo.local", "APPRENTICE_ADVISOR", username="AA-PUNE", itis=pune_region)
 
     def batches(self):
         for iti in self.itis:

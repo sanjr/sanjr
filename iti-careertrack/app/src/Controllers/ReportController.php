@@ -33,7 +33,7 @@ final class ReportController extends Controller
         if (Auth::is('STATE_ADMIN')) {
             $f['district_id'] = int_input('district');
             $f['iti_id'] = int_input('iti');
-        } elseif (Auth::is('DISTRICT_ADMIN')) {
+        } elseif (Auth::is(...Auth::OVERSIGHT)) {
             $f['iti_id'] = int_input('iti');
         }
         if ($f['iti_id'] && !Access::isMyIti($f['iti_id'])) {
@@ -115,7 +115,7 @@ final class ReportController extends Controller
             'title' => 'Reports & Analytics', 'f' => $f, 'rows' => $rows, 'denominator' => $denominator, 'chart' => $chart,
             'years' => $this->academicYears(),
             'districts' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, name FROM districts ORDER BY name') : [],
-            'itis' => Auth::is('STATE_ADMIN', 'DISTRICT_ADMIN') ? DB::all("SELECT i.id, i.name FROM itis i WHERE $is" . ($f['district_id'] ? ' AND i.district_id = ' . (int) $f['district_id'] : '') . ' ORDER BY i.name', $ip) : [],
+            'itis' => Auth::is('STATE_ADMIN', ...Auth::OVERSIGHT) ? DB::all("SELECT i.id, i.name FROM itis i WHERE $is" . ($f['district_id'] ? ' AND i.district_id = ' . (int) $f['district_id'] : '') . ' ORDER BY i.name', $ip) : [],
             'scopeLabel' => self::scopeLabel($f),
         ]);
     }
@@ -129,7 +129,7 @@ final class ReportController extends Controller
             return DB::value('SELECT name FROM districts WHERE id = ?', [$f['district_id']]) . ' District';
         }
         return match (Auth::roleCode()) {
-            'DISTRICT_ADMIN' => Auth::role()['district_name'] . ' District',
+            'RO_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR' => Auth::scopeName(),
             'PRINCIPAL', 'PLACEMENT_OFFICER' => (string) Auth::role()['iti_name'],
             default => 'Maharashtra',
         };

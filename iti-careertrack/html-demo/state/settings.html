@@ -38,7 +38,7 @@
         <details class="usermenu">
           <summary>
             <span class="avatar">SD</span>
-            <span class="who"><strong>State Admin</strong><small>State Admin (DVET)</small></span>
+            <span class="who"><strong>State Admin (DVET)</strong><small>State Admin (DVET)</small></span>
             <svg class="ic ic-sm rot90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>          </summary>
           <div class="menu">
                         <a href="../state/settings.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg> Settings &amp; password</a>
@@ -53,14 +53,15 @@
 <div class="grid g2">
   <div class="card">
     <h2>My account</h2>
-    <dl class="kv"><dt>Name</dt><dd>State Admin (DVET)</dd><dt>E-mail</dt><dd>state@demo.local</dd>
-      <dt>Last login</dt><dd>01 Nov 2026 10:58</dd></dl>
+    <dl class="kv"><dt>Name</dt><dd>State Admin (DVET)</dd><dt>User ID</dt><dd class="code">DVET-ADMIN</dd>
+      <dt>E-mail</dt><dd>state@demo.local</dd><dt>Mobile</dt><dd>—</dd>
+      <dt>Last login</dt><dd>01 Nov 2026 11:28</dd></dl>
     <h3 class="mt">My roles</h3>
-    <ul><li>State Admin — Statewide</li></ul>
+    <ul><li>State Admin (DVET) — Maharashtra (Statewide)</li></ul>
   </div>
   <div class="card">
     <h2>Change password</h2>
-    <form method="post" action="#" autocomplete="off">      <div class="field"><label>Current password</label><input type="password" name="current_password" required autocomplete="current-password"></div>
+        <form method="post" action="#" autocomplete="off">      <div class="field"><label>Current password</label><input type="password" name="current_password" required autocomplete="current-password"></div>
       <div class="field mt"><label>New password</label><input type="password" name="new_password" required minlength="10" autocomplete="new-password">
         <div class="hint">At least 10 characters with letters and numbers.</div></div>
       <div class="field mt"><label>Confirm new password</label><input type="password" name="confirm_password" required minlength="10" autocomplete="new-password"></div>
@@ -71,7 +72,7 @@
 <div class="card card-tight">
   <h2>System settings <small class="muted">6,615 PCIDs issued</small></h2>
   <div class="table-wrap"><table class="table"><tr><th>Key</th><th>Value</th><th>Description</th></tr>
-    <tr><td class="code">consent_policy_version</td><td><b>v1.0</b></td><td>Current consent / privacy notice version</td></tr><tr><td class="code">pcid_prefix</td><td><b>ITIC</b></td><td>PCID prefix. Change ONLY before the first PCID is issued.</td></tr><tr><td class="code">pcid_state</td><td><b>MH</b></td><td>State code inside the PCID</td></tr><tr><td class="code">stale_update_months</td><td><b>6</b></td><td>Alumni with no career update for this many months get a follow-up task</td></tr>  </table></div>
+    <tr><td class="code">consent_policy_version</td><td><b>v1.0</b></td><td>Current consent / privacy notice version</td></tr><tr><td class="code">default_password</td><td><b>Test@12345</b></td><td>Default password for new accounts created by the State Admin (must be changed at first login)</td></tr><tr><td class="code">pcid_prefix</td><td><b>ITIC</b></td><td>PCID prefix. Change ONLY before the first PCID is issued.</td></tr><tr><td class="code">pcid_state</td><td><b>MH</b></td><td>State code inside the PCID</td></tr><tr><td class="code">stale_update_months</td><td><b>6</b></td><td>Alumni with no career update for this many months get a follow-up task</td></tr>  </table></div>
   <p class="muted" style="padding:0 18px 14px">Settings are changed by the database administrator through a reviewed change, because changing the PCID format after issuance is not allowed.</p>
 </div>
     </main>

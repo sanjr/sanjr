@@ -22,10 +22,15 @@ $verifyForm = static function (string $field, int $recId, string $status) use ($
 ?>
 <div class="page-head">
   <div><h1><?= e($title) ?> – PCID: <span class="pcid"><?= e($me['pcid']) ?></span></h1>
-    <?php if ($level === 'summary'): ?><p>Summary view only. You can see the identity and records created by your own ITI.</p><?php endif; ?></div>
+    <?php if ($level === 'summary'): ?><p>Summary view only. You can see the identity and records created by your own ITI.</p><?php endif; ?>
+    <?php if (Auth::is('EMPLOYER')): ?><p>Full career history (view only). You can add new records only for your own company.</p><?php endif; ?></div>
   <div class="actions">
     <?php if ($level === 'full' && can('career.record')): ?><a class="btn" href="<?= url('/students/' . $sid . '/career') ?>"><?= icon('plus') ?> Add career record</a><?php endif; ?>
+    <?php if (Auth::is('EMPLOYER') && $level === 'full'): ?>
+      <a class="btn" href="<?= url('/employer/add', ['pcid' => $me['pcid']]) ?>"><?= icon('plus') ?> Add job / apprenticeship at my company</a>
+    <?php elseif (can('student.view') || Auth::is('STUDENT')): ?>
     <a class="btn btn-light" href="<?= url(Auth::is('STUDENT') ? '/me/card' : '/students/' . $sid . '/card') ?>"><?= icon('id') ?> PCID Card</a>
+    <?php endif; ?>
     <button class="btn btn-light" type="button" data-print><?= icon('download') ?> Print</button>
   </div>
 </div>

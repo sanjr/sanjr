@@ -15,7 +15,7 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 
 | Folder | Contents |
 |---|---|
-| **`html-demo/`** | **Plain HTML + CSS + JavaScript version of all 114 pages. Double-click `html-demo/index.html` — no server needed** (view only, saving is disabled) |
+| **`html-demo/`** | **Plain HTML + CSS + JavaScript version of all 137 pages. Double-click `html-demo/index.html` — no server needed** (view only, saving is disabled) |
 | `app/` | The real working website (PHP + MySQL). `public/` is the web root |
 | `app/views/` | **HTML** of every page (`.php` files = HTML with small PHP parts that fill in data) |
 | `app/public/assets/css/app.css` | **CSS** (all styling) |
@@ -27,7 +27,7 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | `python/seed_demo.py` | Creates DEMO data (36 districts, 46 ITIs, about 6,500 students with full career histories) |
 | `python/jobs/followup_job.py` | Nightly job that creates follow-up tasks for alumni who have not updated (it never changes their status) |
 | `python/reports/export_report.py` | Offline Excel/CSV report for the State or District office |
-| `python/tests/test_e2e.py` | **81 automated end-to-end acceptance and security tests** |
+| `python/tests/test_e2e.py` | **109 automated end-to-end acceptance and security tests** |
 | `docs/` | Architecture review, ER diagrams, API design, implementation notes, **screenshots** |
 | `database/schema.sql` | The original PostgreSQL design reviewed in phase 1 (kept for reference) |
 
@@ -38,7 +38,7 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | 1 | Home page (public website) | Everyone | [view](docs/screenshots/01-home-public-website.png) |
 | 2 | Login / role selection | Everyone | [view](docs/screenshots/02-login-role-selection.png) |
 | 3 | State Admin Dashboard | State Admin | [view](docs/screenshots/03-state-admin-dashboard.png) |
-| 4 | District Admin Dashboard | District Admin | [view](docs/screenshots/04-district-admin-dashboard.png) |
+| 4 | RO / DVTO / Apprentice Advisor Dashboards | RO, DVTO, Advisor | [RO](docs/screenshots/04a-ro-admin-dashboard.png) · [DVTO](docs/screenshots/04-dvto-dashboard.png) · [Advisor](docs/screenshots/04b-apprentice-advisor-dashboard.png) |
 | 5 | Principal Dashboard | Principal | [view](docs/screenshots/05-principal-dashboard.png) |
 | 6 | Teacher Dashboard | Teacher | [view](docs/screenshots/06-teacher-dashboard.png) |
 | 7 | Placement Officer Dashboard | Placement Officer | [view](docs/screenshots/07-placement-officer-dashboard.png) |
@@ -52,6 +52,9 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | 15 | Follow-up & Task Management | Principal / Placement / Staff | [view](docs/screenshots/15-follow-up-task-management.png) |
 | 16 | Permanent Career ID (PCID) card with QR | Student, staff | [view](docs/screenshots/16-pcid-card.png) |
 | 17 | Public PCID verification (QR target) | Everyone | [view](docs/screenshots/17-public-pcid-verification.png) |
+| 18 | User management (State Admin creates user IDs) | State Admin | [view](docs/screenshots/18-user-management-state-admin.png) |
+| 19 | Employer: student's full history (view only) | Employer | [view](docs/screenshots/19-employer-student-full-history.png) |
+| 20 | Instructor: all students of own trade | Instructor | [view](docs/screenshots/20-instructor-trade-students.png) |
 
 Every sidebar item for every role is a working page too: ITIs, users and roles, audit logs, trades and batches, attendance, module progress, assessments, results, companies, vacancies, apprenticeships, follow-ups, job search, update status, employer confirmations, and more.
 
@@ -106,21 +109,49 @@ php -S 127.0.0.1:8080 -t app/public app/public/index.php
 
 For production, point Apache or Nginx to `app/public` (an `.htaccess` file is included), use HTTPS, and set `CT_ENV=production`.
 
+## Roles (who sees what)
+
+| Role | Sees | Can change |
+|---|---|---|
+| **State Admin (DVET)** | All of Maharashtra | Creates all user IDs, ITIs, master data; resets passwords |
+| **RO Admin** (6 Regional Offices: Mumbai, Pune, Nashik, Chh. Sambhajinagar, Amravati, Nagpur) | Full data of all ITIs in the region | Verification decisions (view + reports) |
+| **DVTO Admin** | Full data of all ITIs in the district | Verification decisions (view + reports) |
+| **Apprentice Advisor** | Full data of the ITIs assigned to them | Verification, company approval |
+| **Principal** | Full data of own ITI | Admissions, transfers, results, career records, staff passwords |
+| **Instructor** | All students (current + alumni) of **their trade(s)** at their ITI | Attendance, module progress, assessments |
+| **Student / Alumni** | Own Career Passport | Adds new job / company / course (pending verification) |
+| **Employer / HR** | Full career history (view only) of students who work, train or applied with consent | Adds new job / apprenticeship records **only for own company** (needs PCID + date of birth); cannot edit or delete |
+| Placement Officer, ITI Staff | Own ITI / assigned follow-ups | Placements, vacancies, follow-ups |
+
+**User IDs:** only the State Admin creates them (Users page). A Principal's User ID is the ITI's **NCVT MIS code**;
+the *Create ITI logins* button creates one for every ITI at once. New accounts get the default password **`Test@12345`**
+and must change it at first login. Everyone can change their password under **Settings**. Login works with User ID, e-mail or mobile.
+
 ## Demo accounts (password `Demo@1234`)
 
-On the login page you can also just click a role on the right — in DEMO mode it fills that role's demo account. Users can log in with e-mail **or mobile number**.
+On the login page you can also just click a role on the right — in DEMO mode it fills that role's demo account.
 
-| Role | E-mail |
+| Role | User ID / e-mail |
 |---|---|
-| State Admin | `state@demo.local` |
-| District Admin (Pune) | `district.pune@demo.local` |
-| Principal — Govt ITI Pune | `principal.pune@demo.local` |
-| Principal — Govt ITI Nashik | `principal.nashik@demo.local` |
-| Teacher (Fitter, Pune) | `teacher.pune@demo.local` |
+| State Admin (DVET) | `DVET-ADMIN` |
+| RO Admin | `RO-PUN` (also `RO-MUM`, `RO-NSK`, `RO-CSN`, `RO-AMR`, `RO-NGP`) |
+| DVTO Admin | `DVTO-PUNE`, `DVTO-NASHIK` |
+| Apprentice Advisor | `AA-PUNE` (9 ITIs of the Pune region) |
+| Principal — Govt ITI Pune | `DEMO0001` (the ITI code; every ITI's Principal uses its code) |
+| Principal — Govt ITI Nashik | `DEMO0002` |
+| Instructor (Fitter, Pune) | `teacher.pune@demo.local` (Electrician: `teacher.pune.ele@demo.local`) |
 | Placement Officer (Pune) | `placement.pune@demo.local` |
 | ITI Staff (Pune) | `staff.pune@demo.local` |
 | Employer / HR | `hr.sahyadri@demo.local` |
 | Student / Alumni | `rohit.deshmukh@demo.local` |
+
+## Upgrading an existing database
+
+If you installed an earlier version, run the new migration once (it keeps all data):
+
+```bash
+mysql -uroot -p careertrack < database/mysql/05_regions_roles.sql
+```
 
 ## Run the tests
 
@@ -128,7 +159,7 @@ On the login page you can also just click a role on the right — in DEMO mode i
 CT_DB_USER=root CT_DB_PASS=yourpass python3 python/tests/test_e2e.py --base http://127.0.0.1:8080
 ```
 
-Expected result: `81 passed, 0 failed`.
+Expected result: `109 passed, 0 failed`.
 
 ## Nightly follow-up job (cron)
 

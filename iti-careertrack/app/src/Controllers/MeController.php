@@ -51,7 +51,7 @@ final class MeController extends Controller
             'title' => 'Update my career status', 'me' => StudentData::identity($sid), 'companies' => $companies, 'branches' => $branches,
             'colleges' => DB::all('SELECT id, name FROM colleges ORDER BY name'), 'trades' => DB::all('SELECT id, name FROM trades ORDER BY name'),
             'apprenticeships' => StudentData::apprenticeships($sid), 'type' => (string) input('type', 'employment'),
-            'action' => '/me/update', 'back' => '/dashboard',
+            'action' => '/me/update', 'back' => '/dashboard', 'districts' => DB::all('SELECT id, name FROM districts ORDER BY name'),
         ]);
     }
 
@@ -72,7 +72,7 @@ final class MeController extends Controller
         };
         $company = static function (): void {
             $cid = int_input('company_id');
-            if (!$cid || !DB::value("SELECT 1 FROM companies WHERE id = ? AND status = 'ACTIVE'", [$cid])) {
+            if (!$cid || !DB::value("SELECT 1 FROM companies WHERE id = ? AND (status = 'ACTIVE' OR (status = 'PENDING_APPROVAL' AND created_by = ?))", [$cid, Auth::id()])) {
                 throw new \DomainException('Choose your company. If it is not listed, contact your ITI placement cell.');
             }
             $bid = int_input('branch_id');
@@ -80,6 +80,29 @@ final class MeController extends Controller
                 throw new \DomainException('Branch does not belong to the company.');
             }
         };
+        // "My company is not in the list": the student adds it; the ITI placement cell approves it later
+        $newName = trim((string) input('new_company_name', ''));
+        if ($newName !== '' && in_array($kind, ['employment', 'apprenticeship'], true)) {
+            if (mb_strlen($newName) < 3) {
+                throw new \DomainException('Enter the full company name.');
+            }
+            DB::tx(function () use ($newName) {
+                $existing = DB::one('SELECT id FROM companies WHERE LOWER(legal_name) = LOWER(?)', [$newName]);
+                $cid = $existing ? (int) $existing['id'] : DB::insert('companies', ['legal_name' => mb_substr($newName, 0, 200), 'display_name' => mb_substr($newName, 0, 200),
+                    'industry_sector' => mb_substr((string) input('new_company_sector', ''), 0, 80) ?: null, 'hq_city' => mb_substr((string) input('new_company_city', ''), 0, 80) ?: null,
+                    'status' => 'PENDING_APPROVAL', 'created_by' => Auth::id()]);
+                $city = mb_substr(trim((string) input('new_company_city', '')), 0, 80);
+                $bid = DB::value('SELECT id FROM company_branches WHERE company_id = ? AND branch_name = ?', [$cid, $city ?: 'Main']);
+                $bid = $bid ?: DB::insert('company_branches', ['company_id' => $cid, 'branch_name' => $city ?: 'Main', 'city' => $city ?: null,
+                    'district_id' => int_input('new_company_district'), 'address_line' => mb_substr((string) input('new_company_address', ''), 0, 255) ?: null]);
+                if (!$existing) {
+                    Audit::log('STUDENT_ADDED_COMPANY', 'companies', $cid, Auth::studentId(), null, null, ['name' => $newName]);
+                    DB::run("UPDATE companies SET status = 'PENDING_APPROVAL' WHERE id = ? AND created_by = ?", [$cid, Auth::id()]);
+                }
+                $_POST['company_id'] = (string) $cid;
+                $_POST['branch_id'] = (string) $bid;
+            });
+        }
         match ($kind) {
             'employment' => (function () use ($sid, $dateOk, $company) {
                 $company();

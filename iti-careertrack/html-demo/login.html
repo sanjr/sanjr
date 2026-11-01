@@ -37,8 +37,8 @@
       <h3>Login to Your Account</h3>
       <form method="get" action="index.html" data-static-nav="1" autocomplete="on" id="login-form">
                 <input type="hidden" name="role" id="login-role" value="">
-        <div class="field"><label for="email">E-mail or mobile number</label>
-          <input type="text" id="email" data-x="email" value="" autofocus autocomplete="username" placeholder="Enter e-mail / mobile"></div>
+        <div class="field"><label for="email">User ID / E-mail / Mobile</label>
+          <input type="text" id="email" data-x="email" value="" autofocus autocomplete="username" placeholder="e.g. ITI NCVT MIS code"></div>
         <div class="field mt"><label for="password">Password</label>
           <div class="pw-wrap"><input type="password" id="password" data-x="password" autocomplete="current-password" placeholder="Enter password">
             <button type="button" class="pw-toggle" data-pw-toggle="password" aria-label="Show password"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
@@ -51,20 +51,23 @@
       <h4>Login As</h4>
       <div class="role-pick" role="radiogroup" aria-label="Login as">
                   <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="STATE_ADMIN" data-label="State Admin" data-demo-email="state@demo.local">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg> State Admin</button>
+                  data-role="STATE_ADMIN" data-label="State Admin (DVET)" data-demo-email="DVET-ADMIN">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg> State Admin (DVET)</button>
                   <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="DISTRICT_ADMIN" data-label="District Admin" data-demo-email="district.pune@demo.local">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4z"/><path d="M8 2v16M16 6v16"/></svg> District Admin</button>
+                  data-role="RO_ADMIN" data-label="RO Admin" data-demo-email="RO-PUN">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4z"/><path d="M8 2v16M16 6v16"/></svg> RO Admin</button>
                   <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="PRINCIPAL" data-label="Principal" data-demo-email="principal.pune@demo.local">
+                  data-role="DVTO" data-label="DVTO Admin" data-demo-email="DVTO-PUNE">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4z"/><path d="M8 2v16M16 6v16"/></svg> DVTO Admin</button>
+                  <button type="button" role="radio" aria-checked="false" class=""
+                  data-role="APPRENTICE_ADVISOR" data-label="Apprentice Advisor" data-demo-email="AA-PUNE">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5L22 14l-8 8-2.3-2.3a4 4 0 0 0-5-5L2 10l8-8z"/></svg> Apprentice Advisor</button>
+                  <button type="button" role="radio" aria-checked="false" class=""
+                  data-role="PRINCIPAL" data-label="Principal" data-demo-email="DEMO0001">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg> Principal</button>
                   <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="TEACHER" data-label="Teacher / Instructor" data-demo-email="teacher.pune@demo.local">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c.9-4 4.1-6.5 8-6.5s7.1 2.5 8 6.5"/></svg> Teacher / Instructor</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="PLACEMENT_OFFICER" data-label="Placement Officer" data-demo-email="placement.pune@demo.local">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg> Placement Officer</button>
+                  data-role="TEACHER" data-label="Instructor" data-demo-email="teacher.pune@demo.local">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c.9-4 4.1-6.5 8-6.5s7.1 2.5 8 6.5"/></svg> Instructor</button>
                   <button type="button" role="radio" aria-checked="false" class=""
                   data-role="STUDENT" data-label="Student / Alumni" data-demo-email="rohit.deshmukh@demo.local">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg> Student / Alumni</button>
@@ -74,8 +77,12 @@
                   <button type="button" role="radio" aria-checked="false" class=""
                   data-role="ITI_STAFF" data-label="ITI Staff" data-demo-email="staff.pune@demo.local">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> ITI Staff</button>
+                  <button type="button" role="radio" aria-checked="false" class=""
+                  data-role="PLACEMENT_OFFICER" data-label="Placement Officer" data-demo-email="placement.pune@demo.local">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg> Placement Officer</button>
               </div>
-              <p class="note mt">DEMO: click a role to fill its demo account (password <b>Demo@1234</b>), then press Login.</p>
+              <p class="note mt">DEMO: click a role to fill its demo account (password <b>Demo@1234</b>), then press Login.<br>
+          New accounts created by the State Admin use User ID + default password <b>Test@12345</b> (changed at first login).</p>
           </div>
   </div>
 </div>

@@ -38,7 +38,7 @@
         <details class="usermenu">
           <summary>
             <span class="avatar">SD</span>
-            <span class="who"><strong>State Admin</strong><small>State Admin (DVET)</small></span>
+            <span class="who"><strong>State Admin (DVET)</strong><small>State Admin (DVET)</small></span>
             <svg class="ic ic-sm rot90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>          </summary>
           <div class="menu">
                         <a href="../state/settings.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg> Settings &amp; password</a>
@@ -52,8 +52,8 @@
             <div class="page-head"><div><h1>Audit Logs</h1><p>Append-only: nobody — not even an administrator — can edit or delete these entries.</p></div></div>
 
 <form class="card filters" method="get" action="#">
-  <div class="field"><label>Action</label><select name="action"><option value="">All</option><option value="LOGIN">Login</option><option value="PUBLIC_VERIFY">Public Verify</option></select></div>
-  <div class="field"><label>Record type</label><select name="entity"><option value="">All</option><option value="pcid_registry">Pcid Registry</option><option value="users">Users</option></select></div>
+  <div class="field"><label>Action</label><select name="action"><option value="">All</option><option value="LOGIN">Login</option><option value="PUBLIC_VERIFY">Public Verify</option><option value="VIEW_CARD">View Card</option><option value="VIEW_PROFILE">View Profile</option></select></div>
+  <div class="field"><label>Record type</label><select name="entity"><option value="">All</option><option value="pcid_registry">Pcid Registry</option><option value="students">Students</option><option value="users">Users</option></select></div>
   <div class="field"><label>Student id</label><input type="number" name="student" value=""></div>
   <button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Filter</button>
 </form>
@@ -61,21 +61,249 @@
 <div class="card card-tight">
   <div class="table-wrap"><table class="table">
     <tr><th>When</th><th>Who</th><th>Action</th><th>Record</th><th>Student</th><th>Details</th></tr>
-          <tr><td class="nowrap"><small>01 Nov 2026 10:58:00</small></td>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:48</small></td>
         <td>State Admin (DVET)<br><small class="muted">127.0.0.1</small></td>
         <td><span class="badge badge-blue">LOGIN</span></td>
         <td class="code">users #102</td>
         <td>—</td>
         <td style="max-width:420px"></td></tr>
-          <tr><td class="nowrap"><small>01 Nov 2026 10:58:00</small></td>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:48</small></td>
         <td>system<br><small class="muted">127.0.0.1</small></td>
         <td><span class="badge badge-blue">PUBLIC_VERIFY</span></td>
         <td class="code">pcid_registry #</td>
         <td><a href="#">#667</a></td>
         <td style="max-width:420px">          <details><summary class="muted">view</summary>
                                     <b>After</b><pre class="json">{&quot;pcid&quot;: &quot;ITIC-MH-2025-000001-3&quot;, &quot;state&quot;: &quot;valid&quot;}</pre>          </details></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:21</small></td>
+        <td>Anita Joshi<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #3</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:21</small></td>
+        <td>Neha Joshi (HR)<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:21</small></td>
+        <td>Neha Joshi (HR)<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #113</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:20</small></td>
+        <td>State Admin (DVET)<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #102</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:20</small></td>
+        <td>Apprentice Advisor Pune<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #111</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:19</small></td>
+        <td>DVTO Pune<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #109</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:18</small></td>
+        <td>RO Admin PUN<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #108</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:05</small></td>
+        <td>Anita Joshi<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #3</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:04</small></td>
+        <td>Neha Joshi (HR)<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:04</small></td>
+        <td>Neha Joshi (HR)<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #113</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:03</small></td>
+        <td>State Admin (DVET)<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #102</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:03</small></td>
+        <td>Apprentice Advisor Pune<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #111</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:02</small></td>
+        <td>DVTO Pune<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #109</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:28:01</small></td>
+        <td>RO Admin PUN<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #108</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_CARD</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:50</small></td>
+        <td>Rohit Deshmukh<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #112</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:49</small></td>
+        <td>Neha Joshi (HR)<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:49</small></td>
+        <td>Neha Joshi (HR)<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:49</small></td>
+        <td>Neha Joshi (HR)<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #113</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:49</small></td>
+        <td>Dinesh Shelke<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #8</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:49</small></td>
+        <td>Meera Kale<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #7</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:48</small></td>
+        <td>Suresh Kulkarni<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">LOGIN</span></td>
+        <td class="code">users #2</td>
+        <td>—</td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:48</small></td>
+        <td>Principal Pune<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
+          <tr><td class="nowrap"><small>01 Nov 2026 11:27:48</small></td>
+        <td>Principal Pune<br><small class="muted">127.0.0.1</small></td>
+        <td><span class="badge badge-blue">VIEW_PROFILE</span></td>
+        <td class="code">students #6612</td>
+        <td><a href="#">#6612</a></td>
+        <td style="max-width:420px"></td></tr>
           </table></div>
-  <div class="pager muted">2 records</div></div>
+  <div class="pager"><span class="muted">54 records · page 1 of 2</span><a class="btn btn-light btn-sm" href="../state/audit.html">Next ›</a></div></div>
     </main>
   </div>
 </div>

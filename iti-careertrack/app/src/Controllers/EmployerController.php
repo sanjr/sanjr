@@ -90,17 +90,69 @@ final class EmployerController extends Controller
 
     public function candidate(int $id): void
     {
-        $cid = $this->cid();
+        $this->cid();
         if (!Access::employerCanSee($id)) {
             throw new HttpException(404);
         }
-        $me = StudentData::identity($id);
-        $results = array_map(static fn ($r) => array_intersect_key($r, array_flip(['session_name', 'attempt_no', 'result', 'certificate_number', 'trade_name', 'iti_name'])),
-            StudentData::results($id));
-        Audit::log('VIEW_CANDIDATE', 'students', $id, $id);
-        $this->render('employer/candidate', ['title' => 'Candidate', 'me' => $me, 'adm' => StudentData::latestAdmission($id), 'results' => $results,
-            'apps' => DB::all('SELECT ja.*, v.title FROM job_applications ja JOIN vacancies v ON v.id = ja.vacancy_id WHERE ja.student_id = ? AND v.company_id = ?', [$id, $cid]),
-            'ownEmployments' => StudentData::employments($id, $cid), 'ownApprenticeships' => StudentData::apprenticeships($id, $cid)]);
+        redirect('/students/' . $id);   // employers see the full (view-only) career history
+    }
+
+    /** Employer adds a NEW job / apprenticeship record — always for THEIR OWN company. PCID + date of birth must match. */
+    public function addForm(): void
+    {
+        $cid = $this->cid();
+        Auth::require('employer.record');
+        $this->render('employer/add', ['title' => 'Add Employee / Apprentice', 'pcid' => strtoupper(trim((string) input('pcid', ''))),
+            'branches' => DB::all('SELECT id, CONCAT(branch_name, IF(city IS NULL, \'\', CONCAT(\' (\', city, \')\'))) AS label FROM company_branches WHERE company_id = ? ORDER BY branch_name', [$cid]),
+            'trades' => DB::all('SELECT id, name FROM trades ORDER BY name'), 'kind' => input('kind') === 'apprenticeship' ? 'apprenticeship' : 'employment']);
+    }
+
+    public function storeEngagement(): void
+    {
+        $cid = $this->cid();
+        Auth::require('employer.record');
+        $pcid = strtoupper(trim((string) input('pcid', '')));
+        $dob = (string) input('date_of_birth', '');
+        if (!\App\Services\Pcid::isValid($pcid)) {
+            throw new \DomainException('Enter a valid PCID (check the last digit).');
+        }
+        $sid = (int) DB::value("SELECT p.student_id FROM pcid_registry p JOIN students s ON s.id = p.student_id
+                                 WHERE p.pcid = ? AND p.status = 'ACTIVE' AND s.date_of_birth = ?", [$pcid, $dob]);
+        if (!$sid) {
+            Audit::log('EMPLOYER_PCID_MISMATCH', 'pcid_registry', null, null, null, null, ['pcid' => $pcid]);
+            throw new \DomainException('PCID and date of birth do not match any student. Please check the Career ID card.');
+        }
+        $bid = int_input('branch_id');
+        if ($bid && !DB::value('SELECT 1 FROM company_branches WHERE id = ? AND company_id = ?', [$bid, $cid])) {
+            throw new \DomainException('Choose one of your own branches.');
+        }
+        $start = $this->date('start_date');
+        if ($start > date('Y-m-d')) {
+            throw new \DomainException('Start date cannot be in the future.');
+        }
+        $who = Auth::user()['full_name'];
+        DB::tx(function () use ($sid, $cid, $bid, $start, $who) {
+            if (input('kind') === 'apprenticeship') {
+                $id = \App\Services\CareerService::addApprenticeship($sid, ['company_id' => $cid, 'branch_id' => $bid, 'trade_id' => int_input('trade_id'),
+                    'scheme' => in_array(input('scheme'), ['APPRENTICES_ACT', 'NAPS', 'DUAL_SYSTEM', 'OTHER'], true) ? input('scheme') : 'APPRENTICES_ACT',
+                    'contract_number' => mb_substr((string) input('contract_number', ''), 0, 40), 'start_date' => $start,
+                    'planned_end_date' => input('planned_end_date') ? $this->date('planned_end_date') : null,
+                    'stipend_amount' => is_numeric(input('amount')) ? (string) input('amount') : '']);
+                CareerService::verify($sid, 'apprenticeship_id', $id, 'VERIFIED', 'EMPLOYER_CONFIRMATION', 'Recorded by employer HR: ' . $who, null);
+            } else {
+                $designation = mb_substr(trim((string) input('designation', '')), 0, 120);
+                if ($designation === '') {
+                    throw new \DomainException('Designation is required.');
+                }
+                $id = CareerService::addEmployment($sid, ['company_id' => $cid, 'branch_id' => $bid, 'designation' => $designation,
+                    'employment_type' => in_array(input('employment_type'), ['FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'GIG'], true) ? input('employment_type') : 'FULL_TIME',
+                    'employer_sector' => 'PRIVATE', 'work_location' => mb_substr((string) input('work_location', ''), 0, 150), 'joining_date' => $start,
+                    'salary_amount' => is_numeric(input('amount')) && (float) input('amount') >= 0 ? (string) input('amount') : '', 'salary_period' => 'MONTHLY']);
+                CareerService::verify($sid, 'employment_id', $id, 'VERIFIED', 'EMPLOYER_CONFIRMATION', 'Recorded by employer HR: ' . $who, null);
+            }
+        });
+        flash('success', 'Record added to the student\'s career history (verified by your company). Earlier records are unchanged.');
+        redirect('/students/' . $sid);
     }
 
     public function hired(): void

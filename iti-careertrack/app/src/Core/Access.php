@@ -7,19 +7,38 @@ namespace App\Core;
  * CENTRAL ACCESS CONTROL — the single place that decides which students a user
  * may see. Every student list, profile, report and update goes through here.
  *
- *  FULL access   (complete lifecycle)
- *    STATE_ADMIN        : all students
- *    DISTRICT_ADMIN     : students currently at / completed at ITIs in their district
+ *  FULL access (complete lifecycle)
+ *    STATE_ADMIN (DVET)  : all students in Maharashtra
+ *    RO_ADMIN            : students of all ITIs in their region (6 Regional Offices)
+ *    DVTO                : students of all ITIs in their district
+ *    APPRENTICE_ADVISOR  : students of the ITIs assigned to the advisor
  *    PRINCIPAL, PLACEMENT_OFFICER : current students + alumni of their ITI
- *    TEACHER            : only CURRENTLY assigned students at their ITI
- *    STUDENT            : only themself
- *  SUMMARY access (name + PCID only)
- *    origin ITI after a transfer, destination ITI reviewing a transfer request,
- *    previous teachers, ITI staff with an open follow-up, employers for their
- *    own applicants (with consent) / apprentices / employees.
+ *    TEACHER (Instructor): all students (current + alumni) of THEIR TRADE(S) at their ITI,
+ *                          plus any student currently assigned to them
+ *    STUDENT             : only themself
+ *    EMPLOYER            : students who work / train at the company, or applied with consent
+ *                          (VIEW only — employers can add records only for their own company)
+ *  "Students of an ITI" = students whose institute affiliation there is ACTIVE or COMPLETED.
+ *  SUMMARY access (name + PCID only): origin ITI after a transfer, destination ITI reviewing a
+ *  transfer request, previous instructors, ITI staff with an open follow-up.
  */
 final class Access
 {
+    private const LIVE = "ia.status IN ('ACTIVE','COMPLETED')";
+
+    /** SQL (on itis alias-free column $col) restricting ITIs to the user's administrative scope. */
+    public static function itiScope(string $col): array
+    {
+        return match (Auth::roleCode()) {
+            'STATE_ADMIN' => ['1=1', []],
+            'RO_ADMIN' => ["$col IN (SELECT ri.id FROM itis ri JOIN districts rd ON rd.id = ri.district_id WHERE rd.region_id = ?)", [Auth::regionId()]],
+            'DVTO' => ["$col IN (SELECT di.id FROM itis di WHERE di.district_id = ?)", [Auth::districtId()]],
+            'APPRENTICE_ADVISOR' => ["$col IN (SELECT rai.iti_id FROM role_assignment_itis rai WHERE rai.role_assignment_id = ?)", [Auth::raId()]],
+            'PRINCIPAL', 'PLACEMENT_OFFICER', 'TEACHER', 'ITI_STAFF' => ["$col = ?", [Auth::itiId()]],
+            default => ['1=0', []],
+        };
+    }
+
     /**
      * SQL condition restricting $col (a student id column) to FULL-access students.
      * @return array{0:string,1:array}
@@ -27,30 +46,24 @@ final class Access
     public static function studentScope(string $col): array
     {
         $role = Auth::roleCode();
+        if (in_array($role, ['RO_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR', 'PRINCIPAL', 'PLACEMENT_OFFICER'], true)) {
+            [$is, $ip] = self::itiScope('ia.iti_id');
+            return ["$col IN (SELECT ia.student_id FROM institute_affiliations ia WHERE " . self::LIVE . " AND $is)", $ip];
+        }
         return match ($role) {
             'STATE_ADMIN' => ['1=1', []],
-            'DISTRICT_ADMIN' => ["$col IN (SELECT ia.student_id FROM institute_affiliations ia JOIN itis i ON i.id = ia.iti_id
-                                  WHERE i.district_id = ? AND ia.status IN ('ACTIVE','COMPLETED'))", [Auth::districtId()]],
-            'PRINCIPAL', 'PLACEMENT_OFFICER' => ["$col IN (SELECT ia.student_id FROM institute_affiliations ia
-                                  WHERE ia.iti_id = ? AND ia.status IN ('ACTIVE','COMPLETED'))", [Auth::itiId()]],
-            'TEACHER' => ["$col IN (SELECT ta.student_id FROM teacher_assignments ta WHERE ta.teacher_user_id = ? AND ta.iti_id = ?
-                                  AND ta.start_date <= CURDATE() AND (ta.end_date IS NULL OR ta.end_date > CURDATE()))",
-                          [Auth::id(), Auth::itiId()]],
+            'TEACHER' => ["($col IN (SELECT ia.student_id FROM institute_affiliations ia JOIN admissions ta ON ta.id = ia.admission_id
+                                     WHERE ia.iti_id = ? AND " . self::LIVE . "
+                                       AND ta.trade_id IN (SELECT rat.trade_id FROM role_assignment_trades rat WHERE rat.role_assignment_id = ?))
+                           OR $col IN (SELECT tas.student_id FROM teacher_assignments tas WHERE tas.teacher_user_id = ? AND tas.iti_id = ?
+                                     AND tas.start_date <= CURDATE() AND (tas.end_date IS NULL OR tas.end_date > CURDATE())))",
+                          [Auth::itiId(), Auth::raId(), Auth::id(), Auth::itiId()]],
             'STUDENT' => ["$col = ?", [Auth::studentId() ?? 0]],
-            default => ['1=0', []],
-        };
-    }
-
-    /**
-     * SQL condition restricting an ITI id column to the ITIs the user administers.
-     * @return array{0:string,1:array}
-     */
-    public static function itiScope(string $col): array
-    {
-        return match (Auth::roleCode()) {
-            'STATE_ADMIN' => ['1=1', []],
-            'DISTRICT_ADMIN' => ["$col IN (SELECT id FROM itis WHERE district_id = ?)", [Auth::districtId()]],
-            'PRINCIPAL', 'PLACEMENT_OFFICER', 'TEACHER', 'ITI_STAFF' => ["$col = ?", [Auth::itiId()]],
+            'EMPLOYER' => ["$col IN (SELECT ja.student_id FROM job_applications ja JOIN vacancies jv ON jv.id = ja.vacancy_id
+                                      WHERE jv.company_id = ? AND ja.consent_to_share_profile = 1 AND ja.status <> 'WITHDRAWN'
+                                     UNION SELECT ee.student_id FROM employments ee WHERE ee.company_id = ? AND ee.voided_at IS NULL
+                                     UNION SELECT ea.student_id FROM apprenticeships ea WHERE ea.company_id = ? AND ea.voided_at IS NULL)",
+                           [Auth::companyId(), Auth::companyId(), Auth::companyId()]],
             default => ['1=0', []],
         };
     }
@@ -75,17 +88,21 @@ final class Access
         if (self::canViewStudent($sid)) {
             return true;
         }
-        $uid = Auth::id();
-        return match (Auth::roleCode()) {
-            'DISTRICT_ADMIN' => (bool) Database::value('SELECT 1 FROM institute_affiliations ia JOIN itis i ON i.id = ia.iti_id
-                                  WHERE ia.student_id = ? AND i.district_id = ? LIMIT 1', [$sid, Auth::districtId()]),
-            'PRINCIPAL', 'PLACEMENT_OFFICER' => (bool) Database::value(
-                "SELECT 1 FROM institute_affiliations WHERE student_id = ? AND iti_id = ?
-                 UNION SELECT 1 FROM transfer_requests WHERE student_id = ? AND to_iti_id = ? AND status = 'REQUESTED' LIMIT 1",
-                [$sid, Auth::itiId(), $sid, Auth::itiId()]),
-            'TEACHER' => (bool) Database::value('SELECT 1 FROM teacher_assignments WHERE student_id = ? AND teacher_user_id = ? LIMIT 1', [$sid, $uid]),
+        $role = Auth::roleCode();
+        if (in_array($role, ['RO_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR', 'PRINCIPAL', 'PLACEMENT_OFFICER'], true)) {
+            [$is, $ip] = self::itiScope('ia.iti_id');
+            if (Database::value("SELECT 1 FROM institute_affiliations ia WHERE ia.student_id = ? AND $is LIMIT 1", array_merge([$sid], $ip))) {
+                return true;   // history at an ITI in my scope (e.g. student transferred away)
+            }
+            return in_array($role, ['PRINCIPAL', 'PLACEMENT_OFFICER'], true) && (bool) Database::value(
+                "SELECT 1 FROM transfer_requests WHERE student_id = ? AND to_iti_id = ? AND status = 'REQUESTED' LIMIT 1", [$sid, Auth::itiId()]);
+        }
+        return match ($role) {
+            'TEACHER' => (bool) Database::value('SELECT 1 FROM teacher_assignments WHERE student_id = ? AND teacher_user_id = ?
+                              UNION SELECT 1 FROM institute_affiliations ia JOIN admissions a ON a.id = ia.admission_id
+                               WHERE ia.student_id = ? AND ia.iti_id = ? AND a.trade_id IN (SELECT trade_id FROM role_assignment_trades WHERE role_assignment_id = ?) LIMIT 1',
+                              [$sid, Auth::id(), $sid, Auth::itiId(), Auth::raId()]),
             'ITI_STAFF' => self::hasOpenFollowUp($sid),
-            'EMPLOYER' => self::employerCanSee($sid),
             default => false,
         };
     }
@@ -98,16 +115,7 @@ final class Access
 
     public static function employerCanSee(int $sid): bool
     {
-        $cid = Auth::companyId();
-        if (!$cid || Auth::roleCode() !== 'EMPLOYER') {
-            return false;
-        }
-        return (bool) Database::value(
-            "SELECT 1 FROM job_applications ja JOIN vacancies v ON v.id = ja.vacancy_id
-              WHERE ja.student_id = ? AND v.company_id = ? AND ja.consent_to_share_profile = 1 AND ja.status <> 'WITHDRAWN'
-             UNION SELECT 1 FROM employments WHERE student_id = ? AND company_id = ?
-             UNION SELECT 1 FROM apprenticeships WHERE student_id = ? AND company_id = ? LIMIT 1",
-            [$sid, $cid, $sid, $cid, $sid, $cid]);
+        return Auth::roleCode() === 'EMPLOYER' && self::canViewStudent($sid);
     }
 
     /** 404 (not 403) so we never reveal that a student exists at another ITI. */
@@ -125,7 +133,7 @@ final class Access
         }
     }
 
-    /** "Full" or "summary" (or null) — used by the profile page. */
+    /** "full" or "summary" (or null) — used by the profile page. */
     public static function level(int $sid): ?string
     {
         if (self::canViewStudent($sid)) {

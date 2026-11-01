@@ -14,10 +14,23 @@ final class Navigation
                 ['Students (State)', '/students', 'users'], ['Reports & Analytics', '/reports', 'chart'],
                 ['User & Role Mgmt', '/users', 'shield'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
-            'DISTRICT_ADMIN' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['ITIs in District', '/itis', 'building'], ['Students', '/students', 'users'],
-                ['Training & Results', '/reports?type=result', 'book'], ['Placement', '/reports?type=placement', 'briefcase'],
-                ['Reports', '/reports?type=outcome', 'chart'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
+            'RO_ADMIN' => [
+                ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
+                ['Training & Results', '/reports?type=result', 'book'], ['Apprenticeship', '/apprenticeships', 'tool'],
+                ['Placement', '/reports?type=placement', 'briefcase'], ['Reports', '/reports?type=outcome', 'chart'],
+                ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
+            ],
+            'DVTO' => [
+                ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
+                ['Training & Results', '/reports?type=result', 'book'], ['Apprenticeship', '/apprenticeships', 'tool'],
+                ['Placement', '/reports?type=placement', 'briefcase'], ['Reports', '/reports?type=outcome', 'chart'],
+                ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
+            ],
+            'APPRENTICE_ADVISOR' => [
+                ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
+                ['Training & Results', '/reports?type=result', 'book'], ['Apprenticeship', '/apprenticeships', 'tool'],
+                ['Placement', '/reports?type=placement', 'briefcase'], ['Reports', '/reports?type=outcome', 'chart'],
+                ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'PRINCIPAL' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['Students', '/students', 'users'], ['Admission', '/admissions/new', 'user'],
@@ -27,7 +40,7 @@ final class Navigation
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'TEACHER' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['My Students', '/students', 'users'], ['Attendance', '/attendance', 'calendar'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['My Trade Students', '/students', 'users'], ['Attendance', '/attendance', 'calendar'],
                 ['Training & Modules', '/training', 'book'], ['Assessments', '/assessments', 'clipboard'], ['Results', '/results', 'award'],
                 ['Career Tracking', '/career-tracking', 'trending'], ['Follow-up Tasks', '/follow-ups', 'phone'], ['Settings', '/settings', 'settings'],
             ],
@@ -43,7 +56,7 @@ final class Navigation
             'EMPLOYER' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['Company Profile', '/employer/company', 'building'], ['Post Vacancy', '/vacancies/new', 'plus'],
                 ['Applications', '/employer/applications', 'file'], ['Shortlisted', '/employer/applications?status=SHORTLISTED', 'check-circle'],
-                ['Hired Students', '/employer/hired', 'users'], ['Apprenticeship', '/employer/apprentices', 'tool'],
+                ['Add Employee / Apprentice', '/employer/add', 'plus'], ['Hired Students', '/employer/hired', 'users'], ['Apprenticeship', '/employer/apprentices', 'tool'],
                 ['Confirmations', '/employer/confirmations', 'shield'], ['Reports', '/employer/reports', 'chart'], ['Settings', '/settings', 'settings'],
             ],
             'STUDENT' => [

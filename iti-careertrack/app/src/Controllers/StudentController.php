@@ -63,7 +63,7 @@ final class StudentController extends Controller
                   LEFT JOIN v_student_current_status cs ON cs.student_id = s.id
                  WHERE " . implode(' AND ', $w) . ' ORDER BY s.id DESC';
         $itis = [];
-        if (Auth::is('STATE_ADMIN', 'DISTRICT_ADMIN')) {
+        if (Auth::is('STATE_ADMIN', ...Auth::OVERSIGHT)) {
             [$is, $ip] = Access::itiScope('id');
             $itis = DB::all("SELECT id, name FROM itis WHERE $is ORDER BY name", $ip);
         }
@@ -82,9 +82,6 @@ final class StudentController extends Controller
         $me = StudentData::identity($id);
         if (!$me) {
             throw new HttpException(404);
-        }
-        if (Auth::is('EMPLOYER')) {
-            redirect('/employer/candidates/' . $id);
         }
         $tab = (string) input('tab', 'timeline');
         $data = ['title' => 'Student Career Profile', 'me' => $me, 'level' => $level, 'tab' => $tab, 'adm' => StudentData::latestAdmission($id)];

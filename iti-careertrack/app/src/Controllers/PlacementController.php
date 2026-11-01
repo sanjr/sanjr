@@ -17,13 +17,15 @@ final class PlacementController extends Controller
         $w = '1=1';
         $p = [];
         if ($q = (string) input('q', '')) { $w = 'c.legal_name LIKE ?'; $p[] = "%$q%"; }
+        if (input('pending')) { $w .= " AND c.status = 'PENDING_APPROVAL'"; }
         $sql = "SELECT c.*, (SELECT COUNT(*) FROM company_branches b WHERE b.company_id = c.id) AS branches,
                        (SELECT COUNT(*) FROM vacancies v WHERE v.company_id = c.id AND v.status = 'OPEN') AS open_vacancies,
                        (SELECT COUNT(DISTINCT e.student_id) FROM employments e WHERE e.company_id = c.id AND e.voided_at IS NULL) AS employees,
                        (SELECT COUNT(DISTINCT a.student_id) FROM apprenticeships a WHERE a.company_id = c.id AND a.voided_at IS NULL) AS apprentices
-                  FROM companies c WHERE $w ORDER BY c.legal_name";
+                  FROM companies c WHERE $w ORDER BY c.status = 'PENDING_APPROVAL' DESC, c.legal_name";
         $tab = in_array(input('tab'), ['companies', 'vacancies', 'applications', 'hired'], true) ? (string) input('tab') : 'companies';
-        $data = ['title' => 'Company & Vacancy Management', 'tab' => $tab, 'districts' => DB::all('SELECT id, name FROM districts ORDER BY name')];
+        $data = ['title' => 'Company & Vacancy Management', 'tab' => $tab,
+                 'pendingCompanies' => (int) DB::value("SELECT COUNT(*) FROM companies WHERE status = 'PENDING_APPROVAL'"), 'districts' => DB::all('SELECT id, name FROM districts ORDER BY name')];
         [$scope, $sp] = Access::studentScope('s.id');
         if ($tab === 'companies') {
             $data['p'] = $this->paginate($sql, $p, 30);
@@ -69,6 +71,20 @@ final class PlacementController extends Controller
             Audit::log('INSERT', 'companies', $cid, null, null, null, ['legal_name' => $name]);
         });
         flash('success', 'Company added.');
+        redirect('/companies');
+    }
+
+    /** Companies added by students are PENDING_APPROVAL until the placement cell / State checks them. */
+    public function approveCompany(int $id): void
+    {
+        Auth::require('company.manage');
+        $c = DB::one("SELECT * FROM companies WHERE id = ? AND status = 'PENDING_APPROVAL'", [$id]);
+        if (!$c) {
+            throw new HttpException(404);
+        }
+        DB::run("UPDATE companies SET status = 'ACTIVE' WHERE id = ?", [$id]);
+        Audit::log('APPROVE_COMPANY', 'companies', $id, null, null, ['status' => 'PENDING_APPROVAL'], ['status' => 'ACTIVE']);
+        flash('success', 'Company approved: ' . $c['legal_name']);
         redirect('/companies');
     }
 
@@ -130,7 +146,7 @@ final class PlacementController extends Controller
 
     public function apprenticeships(): void
     {
-        Auth::require('career.record');
+        Auth::require('student.view');
         [$scope, $p] = Access::studentScope('ap.student_id');
         $w = $scope;
         if ($st = (string) input('status', '')) { $w .= ' AND ap.status = ?'; $p[] = $st; }

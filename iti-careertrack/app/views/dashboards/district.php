@@ -2,10 +2,10 @@
 $rate = $alumni ? $placed * 100 / $alumni : 0;
 $chartRows = array_values(array_filter($itiRows, static fn ($r) => (int) $r['alumni'] > 0));
 usort($chartRows, static fn ($a, $b) => ($b['placed'] / max(1, $b['alumni'])) <=> ($a['placed'] / max(1, $a['alumni'])));
-$short = static fn (string $n) => trim(str_replace(['Government ITI,', 'Shri Sai Private ITI,'], ['Govt', 'Pvt'], $n));
+$short = static fn (string $n) => trim(str_replace(['Government ITI,', 'Shri Sai Private ITI,'], ['', 'Pvt'], $n));
 ?>
 <div class="page-head">
-  <div><h1><?= e($title) ?></h1><p>All Government and Private ITIs in your district</p></div>
+  <div><h1><?= e($title) ?></h1><p>All Government and Private ITIs under you — <?= e(\App\Core\Auth::scopeName()) ?></p></div>
   <div class="actions"><a class="btn btn-light" href="<?= url('/itis') ?>"><?= icon('building') ?> ITIs</a>
     <a class="btn" href="<?= url('/reports') ?>"><?= icon('chart') ?> Reports</a></div>
 </div>
@@ -38,7 +38,7 @@ $short = static fn (string $n) => trim(str_replace(['Government ITI,', 'Shri Sai
 </div>
 
 <div class="card card-tight">
-  <h2>ITIs in the district</h2>
+  <h2>ITIs under you</h2>
   <div class="table-wrap"><table class="table">
     <tr><th>ITI</th><th>Type</th><th class="num">Current students</th><th class="num">Alumni</th><th class="num">Placed</th><th class="num">Rate</th><th></th></tr>
     <?php foreach ($itiRows as $r): ?>

@@ -57,63 +57,71 @@
 
     <main class="content">
             <div class="page-head"><div><h1>Staff &amp; Teachers</h1>
-  <p>Teachers, placement officers and staff of your ITI. You can only grant these roles, and only for your ITI.</p></div></div>
+  <p>Instructors, placement officers and staff of your ITI. New user IDs are created by the State Admin (DVET); you can reset passwords of your staff.</p></div>
+  </div>
+
 
 
 <form class="card filters" method="get" action="#">
-  <div class="field" style="flex:1"><label>Search</label><input type="search" name="q" value="" placeholder="Name or e-mail"></div>
-  <div class="field"><label>Role</label><select name="role"><option value="">All roles</option><option value="TEACHER">Teacher</option><option value="PLACEMENT_OFFICER">Placement Officer</option><option value="ITI_STAFF">ITI Staff</option></select></div>
+  <div class="field" style="flex:1"><label>Search</label><input type="search" name="q" value="" placeholder="Name, User ID or e-mail"></div>
+  <div class="field"><label>Role</label><select name="role"><option value="">All roles</option><option value="TEACHER">Instructor</option><option value="PLACEMENT_OFFICER">Placement Officer</option><option value="ITI_STAFF">ITI Staff</option></select></div>
   <button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Filter</button>
 </form>
 
 <div class="card card-tight">
   <div class="table-wrap"><table class="table">
-    <tr><th>Name</th><th>E-mail</th><th>Role</th><th>Scope</th><th>Valid</th><th>Status</th><th>Last login</th><th></th></tr>
-          <tr><td><b>Principal Pune</b></td><td>principal.pune@demo.local</td><td>Principal</td><td>Government ITI, Pune</td>
-        <td><small>01 Jan 2020 – open</small></td>
-        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 10:58</small></td>
+    <tr><th>Name</th><th>User ID / login</th><th>Role</th><th>Scope</th><th>Status</th><th>Last login</th><th></th></tr>
+          <tr><td><b>Principal Pune</b></td>
+        <td><span class="code">DEMO0001</span><br><small>principal.pune@demo.local</small>
+          </td>
+        <td>Principal</td><td>Government ITI, Pune</td>
+        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 11:28</small></td>
         <td class="right nowrap">          </td></tr>
-          <tr><td><b>Anita Joshi</b></td><td>teacher.pune.ele@demo.local</td><td>Teacher</td><td>Government ITI, Pune</td>
-        <td><small>01 Jan 2020 – open</small></td>
+          <tr><td><b>Anita Joshi</b><br><small class="muted">Trades: Electrician</small></td>
+        <td><span class="code"></span><small>teacher.pune.ele@demo.local</small>
+          </td>
+        <td>Instructor</td><td>Government ITI, Pune</td>
+        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 11:28</small></td>
+        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
+          <tr><td><b>Kavita Deshpande</b><br><small class="muted">Trades: COPA</small></td>
+        <td><span class="code"></span><small>teacher.pune.copa@demo.local</small>
+          </td>
+        <td>Instructor</td><td>Government ITI, Pune</td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
         <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
-          <tr><td><b>Kavita Deshpande</b></td><td>teacher.pune.copa@demo.local</td><td>Teacher</td><td>Government ITI, Pune</td>
-        <td><small>01 Jan 2020 – open</small></td>
+          <tr><td><b>Mahesh Pawar</b><br><small class="muted">Trades: Welder</small></td>
+        <td><span class="code"></span><small>teacher.pune.wel@demo.local</small>
+          </td>
+        <td>Instructor</td><td>Government ITI, Pune</td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
         <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
-          <tr><td><b>Mahesh Pawar</b></td><td>teacher.pune.wel@demo.local</td><td>Teacher</td><td>Government ITI, Pune</td>
-        <td><small>01 Jan 2020 – open</small></td>
+          <tr><td><b>Rajesh Gore</b><br><small class="muted">Trades: Mechanic Motor Vehicle</small></td>
+        <td><span class="code"></span><small>teacher.pune.mmv@demo.local</small>
+          </td>
+        <td>Instructor</td><td>Government ITI, Pune</td>
         <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
         <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
-          <tr><td><b>Rajesh Gore</b></td><td>teacher.pune.mmv@demo.local</td><td>Teacher</td><td>Government ITI, Pune</td>
-        <td><small>01 Jan 2020 – open</small></td>
-        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+          <tr><td><b>Suresh Kulkarni</b><br><small class="muted">Trades: Fitter</small></td>
+        <td><span class="code"></span><small>teacher.pune@demo.local</small>
+          </td>
+        <td>Instructor</td><td>Government ITI, Pune</td>
+        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 11:27</small></td>
         <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
-          <tr><td><b>Suresh Kulkarni</b></td><td>teacher.pune@demo.local</td><td>Teacher</td><td>Government ITI, Pune</td>
-        <td><small>01 Jan 2020 – open</small></td>
-        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+          <tr><td><b>Meera Kale</b></td>
+        <td><span class="code"></span><small>placement.pune@demo.local</small>
+          </td>
+        <td>Placement Officer</td><td>Government ITI, Pune</td>
+        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 11:27</small></td>
         <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
-          <tr><td><b>Meera Kale</b></td><td>placement.pune@demo.local</td><td>Placement Officer</td><td>Government ITI, Pune</td>
-        <td><small>01 Jan 2020 – open</small></td>
-        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
-        <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
-          <tr><td><b>Dinesh Shelke</b></td><td>staff.pune@demo.local</td><td>ITI Staff</td><td>Government ITI, Pune</td>
-        <td><small>01 Jan 2020 – open</small></td>
-        <td><span class="badge badge-green">Active</span></td><td><small>never</small></td>
+          <tr><td><b>Dinesh Shelke</b></td>
+        <td><span class="code"></span><small>staff.pune@demo.local</small>
+          </td>
+        <td>ITI Staff</td><td>Government ITI, Pune</td>
+        <td><span class="badge badge-green">Active</span></td><td><small>01 Nov 2026 11:27</small></td>
         <td class="right nowrap">          <form method="post" action="#" class="inline-form" data-confirm="Create a new temporary password for this user?">            <button class="btn btn-light btn-sm">Reset password</button></form>                    <form method="post" action="#" class="inline-form" data-confirm="Revoke this role now?">            <button class="btn btn-light btn-sm">Revoke</button></form></td></tr>
       </table></div>
   <div class="pager muted">8 records</div></div>
 
-<div class="card">
-  <h2>Add user / grant role</h2>
-  <form method="post" action="#" class="form-grid" autocomplete="off">    <div class="field"><label>Full name <span class="req">*</span></label><input type="text" name="full_name" required maxlength="150" value=""></div>
-    <div class="field"><label>E-mail (login) <span class="req">*</span></label><input type="email" name="email" required value="">      <div class="hint">If the user exists, only the new role is added.</div></div>
-    <div class="field"><label>Temporary password <span class="req">*</span></label><input type="password" name="password" required minlength="10" autocomplete="new-password"></div>
-    <div class="field"><label>Role <span class="req">*</span></label><select name="role_id" required><option value="">Select</option><option value="4">Teacher</option><option value="5">Placement Officer</option><option value="6">ITI Staff</option></select></div>
-          <div class="field"><label>ITI</label><input type="text" value="Government ITI, Pune" disabled></div>
-        <div class="field" style="align-self:end"><button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Save</button></div>
-  </form>
-</div>
     </main>
   </div>
 </div>

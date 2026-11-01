@@ -2,13 +2,15 @@
 <div class="grid g2">
   <div class="card">
     <h2>My account</h2>
-    <dl class="kv"><dt>Name</dt><dd><?= e($user['full_name']) ?></dd><dt>E-mail</dt><dd><?= e($user['email']) ?></dd>
+    <dl class="kv"><dt>Name</dt><dd><?= e($user['full_name']) ?></dd><dt>User ID</dt><dd class="code"><?= e($user['username'] ?? '—') ?></dd>
+      <dt>E-mail</dt><dd><?= e($user['email'] ?? '—') ?></dd><dt>Mobile</dt><dd><?= e($user['mobile'] ?? '—') ?></dd>
       <dt>Last login</dt><dd><?= $user['last_login_at'] ? fmt_date($user['last_login_at'], 'd M Y H:i') : '—' ?></dd></dl>
     <h3 class="mt">My roles</h3>
-    <ul><?php foreach ($roles as $r): ?><li><?= e($r['role_name']) ?> — <?= e($r['iti_name'] ?? $r['district_name'] ?? $r['company_name'] ?? 'Statewide') ?></li><?php endforeach; ?></ul>
+    <ul><?php foreach ($roles as $r): ?><li><?= e($r['role_name']) ?> — <?= e(\App\Core\Auth::scopeName($r)) ?></li><?php endforeach; ?></ul>
   </div>
   <div class="card">
     <h2>Change password</h2>
+    <?php if (!empty($user['must_change_password'])): ?><div class="alert alert-warning">You are using a default / temporary password. Set your own password to continue.</div><?php endif; ?>
     <form method="post" action="<?= url('/settings/password') ?>" autocomplete="off"><?= csrf_field() ?>
       <div class="field"><label>Current password</label><input type="password" name="current_password" required autocomplete="current-password"></div>
       <div class="field mt"><label>New password</label><input type="password" name="new_password" required minlength="10" autocomplete="new-password">

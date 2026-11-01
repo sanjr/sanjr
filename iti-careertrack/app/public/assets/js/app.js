@@ -42,7 +42,8 @@
       var v = d.values[i], bh = (h - padT - padB) * v / max, x = padL + slot * i + (slot - bw) / 2, y = h - padB - bh;
       svg.appendChild(el('rect', { x: x, y: y, width: bw, height: Math.max(bh, 1), rx: 4, fill: d.color || PALETTE[0] }));
       svg.appendChild(el('text', { x: x + bw / 2, y: y - 6, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700 }, fmt(v) + (d.suffix || '')));
-      svg.appendChild(el('text', { x: x + bw / 2, y: h - padB + 16, 'text-anchor': 'middle', 'font-size': 11 }, lab.length > 14 ? lab.slice(0, 13) + '…' : lab));
+      var maxC = Math.max(4, Math.floor(slot / 6.6));
+      svg.appendChild(el('text', { x: x + bw / 2, y: h - padB + 16, 'text-anchor': 'middle', 'font-size': 11 }, lab.length > maxC ? lab.slice(0, maxC - 1) + '…' : lab));
     });
     box.appendChild(svg);
   }
@@ -120,6 +121,20 @@
       if (demo) { document.getElementById('email').value = demo; document.getElementById('password').value = 'Demo@1234'; }
     });
   });
+
+  // ---------------- user form: show only the scope fields the chosen role needs
+  var rsel = document.querySelector('[data-role-select]');
+  if (rsel) {
+    var form = rsel.closest('form');
+    var sync = function () {
+      var opt = rsel.options[rsel.selectedIndex] || {}, scope = opt.getAttribute ? opt.getAttribute('data-scope') : '', code = opt.getAttribute ? opt.getAttribute('data-code') : '';
+      form.querySelectorAll('[data-for]').forEach(function (f) {
+        var want = f.getAttribute('data-for'), show = want === scope || (want === 'TEACHER' && code === 'TEACHER');
+        f.style.display = show ? '' : 'none';
+      });
+    };
+    rsel.addEventListener('change', sync); sync();
+  }
 
   // ---------------- print buttons (no inline JS: CSP blocks it)
   document.querySelectorAll('[data-print]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });

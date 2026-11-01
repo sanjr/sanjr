@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Candidate · ITI CareerTrack</title>
+<title>Add Employee / Apprentice · ITI CareerTrack</title>
 <link rel="icon" href="../img/logo.svg">
 <link rel="stylesheet" href="../css/app.css">
 </head>
@@ -22,6 +22,7 @@
               <a href="../employer/vacancies-new.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Post Vacancy</span></a>
               <a href="../employer/employer-applications.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg><span>Applications</span></a>
               <a href="../employer/employer-applications-status-SHORTLISTED.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg><span>Shortlisted</span></a>
+              <a href="../employer/employer-add.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Add Employee / Apprentice</span></a>
               <a href="../employer/employer-hired.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg><span>Hired Students</span></a>
               <a href="../employer/employer-apprentices.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5L22 14l-8 8-2.3-2.3a4 4 0 0 0-5-5L2 10l8-8z"/></svg><span>Apprenticeship</span></a>
               <a href="../employer/employer-confirmations.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span>Confirmations</span></a>
@@ -52,29 +53,36 @@
     </header>
 
     <main class="content">
-            <div class="page-head"><div><h1>Candidate: Rohit Deshmukh</h1>
-  <p>Shared with your company because the candidate applied with consent or works / trains with you.</p></div>
-  <div class="actions"><a class="btn btn-light" href="../employer/employer-applications.html">Back</a></div></div>
-<div class="grid g-1-2">
-  <div class="card profile-card">
-    <div class="photo">RD</div>
-    <h2>Rohit Deshmukh</h2>
-    <p><span class="pcid">ITIC-MH-2022-001077-9</span></p>
-    <dl class="kv"><dt>Trade</dt><dd>Electrician</dd><dt>ITI</dt><dd>Government ITI, Pune</dd>
-      <dt>Batch</dt><dd>2022-23</dd><dt>Training</dt><dd><span class="badge badge-green">Completed</span></dd></dl>
-    <p class="muted mt" style="font-size:12px">Contact details are shared by the ITI placement cell, not shown here.</p>
+            <div class="page-head"><div><h1>Add Employee / Apprentice</h1>
+  <p>Add a new job or apprenticeship of an ITI student at <b>your company</b>. Earlier records of the student stay as they are (view only).</p></div></div>
+
+<div class="grid g-2-1">
+  <form method="post" action="#" class="card form-grid">    <div class="field"><label>Record type</label><select name="kind" id="kind">
+      <option value="employment" selected>Job / Employment</option>
+      <option value="apprenticeship" >Apprenticeship</option></select></div>
+    <div class="field"><label>Student PCID <span class="req">*</span></label><input type="text" name="pcid" required value="" placeholder="ITIC-MH-2024-000123-4" style="text-transform:uppercase"></div>
+    <div class="field"><label>Student's date of birth <span class="req">*</span></label><input type="date" name="date_of_birth" required value="">
+      <div class="hint">From the student's documents — must match, for security.</div></div>
+    <div class="field"><label>Branch / location</label><select name="branch_id"><option value="">Select</option><option value="2">Chakan Unit (Chakan)</option><option value="1">Pune Plant (Pune)</option></select></div>
+    <div class="field"><label>Joining / start date <span class="req">*</span></label><input type="date" name="start_date" required max="2026-11-01" value=""></div>
+    <div class="field"><label>Monthly salary / stipend (₹)</label><input type="number" name="amount" min="0" value=""></div>
+    <div class="field"><label>Designation (job)</label><input type="text" name="designation" maxlength="120" value="" placeholder="e.g. Technician"></div>
+    <div class="field"><label>Employment type (job)</label><select name="employment_type"><option value="FULL_TIME" selected>Full Time</option><option value="PART_TIME">Part Time</option><option value="CONTRACT">Contract</option><option value="TEMPORARY">Temporary</option><option value="GIG">Gig</option></select></div>
+    <div class="field"><label>Work location (job)</label><input type="text" name="work_location" maxlength="150"></div>
+    <div class="field"><label>Trade (apprenticeship)</label><select name="trade_id"><option value="">Select</option><option value="4">COPA</option><option value="2">Electrician</option><option value="7">Electronics Mechanic</option><option value="1">Fitter</option><option value="5">Mechanic Motor Vehicle</option><option value="8">Plumber</option><option value="6">Turner</option><option value="3">Welder</option></select></div>
+    <div class="field"><label>Scheme (apprenticeship)</label><select name="scheme"><option value="APPRENTICES_ACT" selected>Apprentices Act</option><option value="NAPS">Naps</option><option value="DUAL_SYSTEM">Dual System</option><option value="OTHER">Other</option></select></div>
+    <div class="field"><label>Contract no. (apprenticeship)</label><input type="text" name="contract_number" maxlength="40"></div>
+    <div class="field span3"><button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add to career history</button></div>
+  </form>
+  <div class="card">
+    <h3>What happens</h3>
+    <ul style="padding-left:18px;margin:0">
+      <li>A <b>new</b> record is added for your company — earlier jobs/apprenticeships are never changed.</li>
+      <li>It is marked <b>verified by your company</b>, with your name and time in the audit log.</li>
+      <li>After that you can see the student's full career history (view only).</li>
+      <li>You cannot edit or delete any record.</li>
+    </ul>
   </div>
-  <div class="stack">
-    <div class="card card-tight"><h2>Examination results</h2>
-      <div class="table-wrap"><table class="table"><tr><th>Session</th><th>Attempt</th><th>Result</th><th>Certificate</th></tr>
-        <tr><td>AITT Main July 2024</td><td>#1</td><td><span class="badge badge-green">Pass</span></td><td>DEMO-NTC-ROHIT01</td></tr>        </table></div></div>
-    <div class="card card-tight"><h2>Applications to your company</h2>
-      <div class="table-wrap"><table class="table"><tr><th>Vacancy</th><th>Applied</th><th>Status</th></tr>
-                <tr><td colspan="3" class="empty">None.</td></tr></table></div></div>
-        <div class="card card-tight"><h2>With your company</h2>
-      <div class="table-wrap"><table class="table"><tr><th>Engagement</th><th>From</th><th>To</th><th>Status</th><th>Verification</th></tr>
-        <tr><td>Apprentice</td><td>02 Sep 2024</td><td>31 Aug 2025</td><td><span class="badge badge-green">Completed</span></td><td><span class="badge badge-green">Verified</span></td></tr>        <tr><td>Technician</td><td>15 Sep 2025</td><td>—</td><td><span class="badge badge-green">Active</span></td><td><span class="badge badge-green">Verified</span></td></tr>      </table></div></div>
-      </div>
 </div>
     </main>
   </div>

@@ -5,10 +5,11 @@ $sid = (int) $me['id'];
 $types = ['employment' => 'Job / Employment', 'apprenticeship' => 'Apprenticeship', 'business' => 'Business', 'higher' => 'Higher education', 'status' => 'Career status only'];
 $action = $action ?? null;   // student self-service passes its own form action
 $post = static fn (string $staffPath) => url($action ?? $staffPath);
-$companySelect = static function () use ($companies, $branches): string {
-    return '<div class="field"><label>Company <span class="req">*</span></label><select name="company_id" id="company_id" required data-iti-trades="'
+$selfService = $action !== null;
+$companySelect = static function () use ($companies, $branches, $selfService): string {
+    return '<div class="field"><label>Company' . ($selfService ? '' : ' <span class="req">*</span>') . '</label><select name="company_id" id="company_id"' . ($selfService ? '' : ' required') . ' data-iti-trades="'
         . e(json_encode($branches)) . '" data-target="branch_id">' . options($companies, 'id', 'legal_name', old('company_id')) . '</select>'
-        . '<div class="hint">Company not listed? Ask the placement officer to add it.</div></div>'
+        . '<div class="hint">' . ($selfService ? 'Not in the list? Fill “New company” below.' : 'Company not listed? Ask the placement officer to add it.') . '</div></div>'
         . '<div class="field"><label>Branch / location</label><select name="branch_id" id="branch_id"></select></div>';
 };
 ?>
@@ -29,6 +30,14 @@ $companySelect = static function () use ($companies, $branches): string {
   <form method="post" action="<?= $post('/students/' . $sid . '/employments') ?>" class="form-grid"><?= csrf_field() ?>
     <input type="hidden" name="kind" value="employment">
     <?= $companySelect() ?>
+    <?php if ($selfService): ?>
+    <div class="field span3"><div class="note"><b>My company is not in the list</b> — add it here (the ITI placement cell will approve it):</div></div>
+    <div class="field"><label>New company name</label><input type="text" name="new_company_name" maxlength="200"></div>
+    <div class="field"><label>City</label><input type="text" name="new_company_city" maxlength="80"></div>
+    <div class="field"><label>District (if in Maharashtra)</label><select name="new_company_district"><?= options($districts ?? [], 'id', 'name', null, 'Outside Maharashtra / not sure') ?></select></div>
+    <div class="field"><label>Industry / sector</label><input type="text" name="new_company_sector" maxlength="80"></div>
+    <div class="field span2"><label>Company address</label><input type="text" name="new_company_address" maxlength="255"></div>
+    <?php endif; ?>
     <div class="field"><label>Designation <span class="req">*</span></label><input type="text" name="designation" required maxlength="120" value="<?= e(old('designation')) ?>"></div>
     <div class="field"><label>Employment type <span class="req">*</span></label><select name="employment_type" required><?= enum_options(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'GIG'], old('employment_type', 'FULL_TIME'), '') ?></select></div>
     <div class="field"><label>Sector</label><select name="employer_sector"><?= enum_options(['PRIVATE', 'GOVERNMENT', 'PSU', 'NGO', 'OTHER'], 'PRIVATE', '') ?></select></div>
@@ -47,6 +56,14 @@ $companySelect = static function () use ($companies, $branches): string {
   <form method="post" action="<?= $post('/students/' . $sid . '/apprenticeships') ?>" class="form-grid"><?= csrf_field() ?>
     <input type="hidden" name="kind" value="apprenticeship">
     <?= $companySelect() ?>
+    <?php if ($selfService): ?>
+    <div class="field span3"><div class="note"><b>My company is not in the list</b> — add it here (the ITI placement cell will approve it):</div></div>
+    <div class="field"><label>New company name</label><input type="text" name="new_company_name" maxlength="200"></div>
+    <div class="field"><label>City</label><input type="text" name="new_company_city" maxlength="80"></div>
+    <div class="field"><label>District (if in Maharashtra)</label><select name="new_company_district"><?= options($districts ?? [], 'id', 'name', null, 'Outside Maharashtra / not sure') ?></select></div>
+    <div class="field"><label>Industry / sector</label><input type="text" name="new_company_sector" maxlength="80"></div>
+    <div class="field span2"><label>Company address</label><input type="text" name="new_company_address" maxlength="255"></div>
+    <?php endif; ?>
     <div class="field"><label>Trade</label><select name="trade_id"><?= options($trades, 'id', 'name') ?></select></div>
     <div class="field"><label>Scheme</label><select name="scheme"><?= enum_options(['APPRENTICES_ACT', 'NAPS', 'DUAL_SYSTEM', 'OTHER'], 'APPRENTICES_ACT', '') ?></select></div>
     <div class="field"><label>Contract number</label><input type="text" name="contract_number" maxlength="40"></div>

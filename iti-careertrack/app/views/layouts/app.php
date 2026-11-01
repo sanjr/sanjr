@@ -6,8 +6,7 @@ $role = Auth::role();
 $user = Auth::user();
 $path = current_path();
 $menu = Navigation::forRole($role['role_code'] ?? null);
-$scopeLabel = $role['iti_name'] ?? $role['district_name'] ?? $role['company_name'] ?? match ($role['role_code'] ?? '') {
-    'STATE_ADMIN' => 'Maharashtra (Statewide)', 'STUDENT' => 'My Career Passport', default => '' };
+$scopeLabel = Auth::scopeName();
 $bellCount = \App\Services\Stats::bellCount();
 ?><!doctype html>
 <html lang="en">

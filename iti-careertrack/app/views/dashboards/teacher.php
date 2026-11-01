@@ -2,7 +2,7 @@
   <div class="actions"><a class="btn" href="<?= url('/attendance') ?>"><?= icon('calendar') ?> Mark attendance</a></div></div>
 
 <div class="grid g4">
-  <?= kpi('My Students', num($count), 'users', 'blue', num($previous) . ' previously assigned') ?>
+  <?= kpi('My Trade Students', num($count), 'users', 'blue', 'Current students of my trade(s)') ?>
   <?= kpi('Present Today', num($present), 'check-circle', 'green', $marked ? 'of ' . num($marked) . ' marked' : 'Attendance not marked yet') ?>
   <?= kpi('Training Progress', number_format($progress, 0) . '%', 'target', 'purple', 'Average module completion') ?>
   <?= kpi('Follow-ups', num($followups), 'phone', 'red', 'Assigned to me') ?>
@@ -11,7 +11,7 @@
 <div class="grid g2 mt">
   <div class="card">
     <h2>My Trade &amp; Batches</h2>
-    <?php if (!$trades): ?><div class="empty">No students are currently assigned to you.</div><?php endif; ?>
+    <?php if (!$trades): ?><div class="empty">No current students in your trade(s).</div><?php endif; ?>
     <div class="list-rows">
       <?php foreach ($trades as $t): ?>
         <div class="row"><?= icon('user') ?><div class="grow"><b><?= e($t['trade']) ?></b><br><small>Batch: <?= e($t['batch_code'] ?? '—') ?> · <?= e(label($t['shift'] ?? '')) ?> shift</small></div>

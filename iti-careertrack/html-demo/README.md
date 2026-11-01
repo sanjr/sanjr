@@ -4,10 +4,10 @@
 
 | File / folder | What it is |
 |---|---|
-| `index.html` | List of all 114 pages (public website + every role) |
+| `index.html` | List of all 137 pages (public website + every role) |
 | `login.html` | Login page |
 | `public/` | Public website: home.html, about, trades, careers, reports, verify PCID, contact |
-| `state/`, `district/`, `principal/`, `teacher/`, `placement/`, `staff/`, `employer/`, `student/` | The pages each role sees (`dashboard.html`, `students.html`, `transfers.html`, …) |
+| `state/`, `ro/`, `dvto/`, `advisor/`, `principal/`, `teacher/`, `placement/`, `staff/`, `employer/`, `student/` | The pages each role sees (`dashboard.html`, `students.html`, `transfers.html`, …) |
 | `css/app.css` | All styling |
 | `js/app.js` | Charts, admission wizard, menus |
 | `js/static-demo.js` | Stops forms from submitting in this preview |

@@ -7,7 +7,7 @@
       <button type="submit" name="ra_id" value="<?= (int) $r['id'] ?>">
         <?= icon('shield', 'ic ic-lg') ?>
         <span><strong><?= e($r['role_name']) ?></strong><br>
-        <small><?= e($r['iti_name'] ?? $r['district_name'] ?? $r['company_name'] ?? 'Statewide') ?></small></span>
+        <small><?= e(\App\Core\Auth::scopeName($r)) ?></small></span>
       </button>
     <?php endforeach; ?>
   </form>

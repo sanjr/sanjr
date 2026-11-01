@@ -33,7 +33,11 @@ final class Router
                 if (!Auth::check()) {
                     redirect('/login');
                 }
-                if (!Auth::role() && !in_array($path, ['/choose-role', '/logout'], true)) {
+                if (Auth::mustChangePassword() && !in_array($path, ['/settings', '/settings/password', '/logout'], true)) {
+                    flash('warning', 'Please set your own password before continuing (the default password must be changed).');
+                    redirect('/settings');
+                }
+                if (!Auth::role() && !in_array($path, ['/choose-role', '/logout', '/settings', '/settings/password'], true)) {
                     redirect('/choose-role');
                 }
             }

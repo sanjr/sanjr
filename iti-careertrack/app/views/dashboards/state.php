@@ -12,7 +12,7 @@ $colors = ['#17944a', '#1d64d8', '#7c3aed', '#ea7a0a', '#d33a2c', '#c2c9d6', '#a
 <div class="page-head">
   <div>
     <h1><?= e($title) ?></h1>
-    <p><?= Auth::is('STATE_ADMIN') ? 'Maharashtra – Statewide Overview' : e(Auth::role()['district_name'] . ' District') ?></p>
+    <p><?= Auth::is('STATE_ADMIN') ? 'Maharashtra – Statewide Overview' : e(Auth::scopeName()) ?></p>
   </div>
   <div class="actions">
     <a class="btn btn-light" href="<?= url('/reports') ?>"><?= icon('chart') ?> Reports</a>

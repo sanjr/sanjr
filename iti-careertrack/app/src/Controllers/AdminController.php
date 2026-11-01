@@ -14,7 +14,7 @@ final class AdminController extends Controller
     // ------------------------------------------------------------------ ITIs
     public function itis(): void
     {
-        if (!Auth::is('STATE_ADMIN', 'DISTRICT_ADMIN')) {
+        if (!Auth::is('STATE_ADMIN', ...Auth::OVERSIGHT)) {
             throw new HttpException(403);
         }
         [$w, $p] = Access::itiScope('i.id');
@@ -53,7 +53,7 @@ final class AdminController extends Controller
     private function grantableRoles(): array
     {
         return Auth::is('STATE_ADMIN')
-            ? DB::all('SELECT * FROM roles WHERE code <> \'STUDENT\' ORDER BY id')
+            ? DB::all("SELECT * FROM roles WHERE code <> 'STUDENT' ORDER BY FIELD(code,'STATE_ADMIN','RO_ADMIN','DVTO','APPRENTICE_ADVISOR','PRINCIPAL','TEACHER','PLACEMENT_OFFICER','ITI_STAFF','EMPLOYER')")
             : DB::all("SELECT * FROM roles WHERE code IN ('TEACHER','PLACEMENT_OFFICER','ITI_STAFF') ORDER BY id");
     }
 
@@ -66,12 +66,17 @@ final class AdminController extends Controller
             $w = 'ura.iti_id = ?';
             $p[] = Auth::itiId();
         }
-        if ($q = (string) input('q', '')) { $w .= ' AND (u.full_name LIKE ? OR u.email LIKE ?)'; $p[] = "%$q%"; $p[] = "%$q%"; }
+        if ($q = (string) input('q', '')) { $w .= ' AND (u.full_name LIKE ? OR u.email LIKE ? OR u.username LIKE ?)'; $p[] = "%$q%"; $p[] = "%$q%"; $p[] = "%$q%"; }
         if ($r = (string) input('role', '')) { $w .= ' AND r.code = ?'; $p[] = $r; }
-        $sql = "SELECT ura.id AS ra_id, ura.status AS ra_status, ura.valid_from, ura.valid_to, u.id, u.full_name, u.email, u.status, u.last_login_at,
-                       r.code AS role_code, r.name AS role_name, COALESCE(i.name, d.name, c.legal_name, 'Statewide') AS scope
+        $sql = "SELECT ura.id AS ra_id, ura.status AS ra_status, ura.valid_from, ura.valid_to, u.id, u.full_name, u.email, u.username, u.mobile,
+                       u.status, u.last_login_at, u.must_change_password, r.code AS role_code, r.name AS role_name,
+                       COALESCE(i.name, CONCAT(d.name, ' District'), g.name, c.legal_name,
+                                CASE WHEN r.code = 'APPRENTICE_ADVISOR' THEN CONCAT((SELECT COUNT(*) FROM role_assignment_itis x WHERE x.role_assignment_id = ura.id), ' assigned ITIs') END,
+                                'Statewide') AS scope,
+                       (SELECT GROUP_CONCAT(t.name SEPARATOR ', ') FROM role_assignment_trades rt JOIN trades t ON t.id = rt.trade_id WHERE rt.role_assignment_id = ura.id) AS trades
                   FROM user_role_assignments ura JOIN users u ON u.id = ura.user_id JOIN roles r ON r.id = ura.role_id
-                  LEFT JOIN itis i ON i.id = ura.iti_id LEFT JOIN districts d ON d.id = ura.district_id LEFT JOIN companies c ON c.id = ura.company_id
+                  LEFT JOIN itis i ON i.id = ura.iti_id LEFT JOIN districts d ON d.id = ura.district_id LEFT JOIN regions g ON g.id = ura.region_id
+                  LEFT JOIN companies c ON c.id = ura.company_id
                  WHERE $w AND r.code <> 'STUDENT' ORDER BY ura.status = 'ACTIVE' DESC, r.id, u.full_name";
         $requests = array_values(array_filter(DB::all("SELECT al.entity_id AS user_id, MAX(al.occurred_at) AS requested_at, u.full_name, u.email
                                    FROM audit_logs al JOIN users u ON u.id = al.entity_id
@@ -80,52 +85,102 @@ final class AdminController extends Controller
                                   GROUP BY al.entity_id, u.full_name, u.email"), fn ($r) => $this->canManageUser((int) $r['user_id'])));
         $this->render('admin/users', ['title' => Auth::is('PRINCIPAL') ? 'Staff & Teachers' : 'User & Role Management', 'requests' => $requests,
             'p' => $this->paginate($sql, $p, 30), 'roles' => $this->grantableRoles(),
-            'itis' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, name FROM itis ORDER BY name') : [],
+            'itis' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, CONCAT(name, \' (\', iti_code, \')\') AS name FROM itis ORDER BY name') : [],
+            'regions' => DB::all('SELECT id, name FROM regions ORDER BY name'), 'trades' => DB::all('SELECT id, name FROM trades ORDER BY name'),
+            'defaultPassword' => (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'default_password'"),
+            'itisWithoutLogin' => Auth::is('STATE_ADMIN') ? (int) DB::value("SELECT COUNT(*) FROM itis i WHERE i.status = 'ACTIVE' AND NOT EXISTS
+                (SELECT 1 FROM users u WHERE u.username = UPPER(i.iti_code))") : 0,
             'districts' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, name FROM districts ORDER BY name') : [],
             'companies' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, legal_name FROM companies ORDER BY legal_name') : []]);
     }
 
+    /** Only the State Admin (DVET) creates user IDs. Default password = settings.default_password, must be changed at first login. */
     public function storeUser(): void
     {
-        Auth::require('user.manage');
-        $errors = $this->require(['full_name' => 'Full name', 'email' => 'E-mail', 'role_id' => 'Role', 'password' => 'Temporary password']);
-        $email = mb_strtolower((string) input('email'));
-        if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors['email'] = 'Invalid e-mail.'; }
-        $pw = (string) ($_POST['password'] ?? '');
-        if ($pw !== '' && (strlen($pw) < 10 || !preg_match('/[A-Za-z]/', $pw) || !preg_match('/\d/', $pw))) {
-            $errors['password'] = 'Use at least 10 characters with letters and numbers.';
-        }
+        Auth::requireRole('STATE_ADMIN');
         $role = DB::one('SELECT * FROM roles WHERE id = ?', [(int) input('role_id')]);
-        if (!$role || !in_array($role['id'], array_column($this->grantableRoles(), 'id'))) {
-            $errors['role_id'] = 'You cannot grant this role.';
+        if (!$role || $role['code'] === 'STUDENT') {
+            $this->backWithErrors('/users', ['role_id' => 'Choose a role.']);
         }
+        $username = strtoupper(trim((string) input('username', '')));
+        $email = mb_strtolower(trim((string) input('email', '')));
+        $mobile = preg_replace('/\D/', '', (string) input('mobile', '')) ?? '';
+        $errors = $this->require(['full_name' => 'Full name']);
+        $scope = ['region_id' => null, 'district_id' => null, 'iti_id' => null, 'company_id' => null];
+        $need = ['REGION' => ['region_id', 'Choose the region.'], 'DISTRICT' => ['district_id', 'Choose the district.'],
+                 'ITI' => ['iti_id', 'Choose the ITI.'], 'COMPANY' => ['company_id', 'Choose the company.']][$role['scope_type']] ?? null;
+        if ($need) {
+            $scope[$need[0]] = int_input($need[0]);
+            if (!$scope[$need[0]]) {
+                $errors[$need[0]] = $need[1];
+            }
+        }
+        if ($role['code'] === 'PRINCIPAL' && $username === '' && $scope['iti_id']) {
+            $username = strtoupper((string) DB::value('SELECT iti_code FROM itis WHERE id = ?', [$scope['iti_id']]));   // NCVT MIS code
+        }
+        $itis = array_values(array_unique(array_map('intval', (array) ($_POST['itis'] ?? []))));
+        $trades = array_values(array_unique(array_map('intval', (array) ($_POST['trades'] ?? []))));
+        if ($role['code'] === 'APPRENTICE_ADVISOR' && !$itis) { $errors['itis'] = 'Select the ITIs under this advisor.'; }
+        if ($role['code'] === 'TEACHER' && !$trades) { $errors['trades'] = 'Select the trade(s) this instructor teaches.'; }
+        if ($username !== '' && !preg_match('/^[A-Z0-9][A-Z0-9_.-]{2,49}$/', $username)) { $errors['username'] = 'User ID: 3–50 letters, digits, - _ . only.'; }
+        if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors['email'] = 'Invalid e-mail.'; }
+        if ($mobile !== '' && !preg_match('/^[6-9][0-9]{9}$/', $mobile)) { $errors['mobile'] = 'Invalid mobile number.'; }
+        if ($username === '' && $email === '' && $mobile === '') { $errors['username'] = 'Give at least a User ID, e-mail or mobile number.'; }
+        $pw = (string) ($_POST['password'] ?? '');
+        $default = (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'default_password'");
+        if ($pw === '') { $pw = $default; }
+        if (strlen($pw) < 8) { $errors['password'] = 'Password must have at least 8 characters.'; }
         if ($errors) {
             $this->backWithErrors('/users', $errors);
         }
-        // Scope: a Principal can only create staff for THEIR OWN ITI (never trusted from the form)
-        $scope = ['district_id' => null, 'iti_id' => null, 'company_id' => null];
-        if (Auth::is('PRINCIPAL')) {
-            $scope['iti_id'] = Auth::itiId();
-        } else {
-            match ($role['scope_type']) {
-                'ITI' => $scope['iti_id'] = int_input('iti_id') ?: throw new \DomainException('Choose the ITI for this role.'),
-                'DISTRICT' => $scope['district_id'] = int_input('district_id') ?: throw new \DomainException('Choose the district for this role.'),
-                'COMPANY' => $scope['company_id'] = int_input('company_id') ?: throw new \DomainException('Choose the company for this role.'),
-                default => null,
-            };
-        }
-        DB::tx(function () use ($email, $pw, $role, $scope) {
-            $uid = (int) DB::value('SELECT id FROM users WHERE email = ?', [$email]);
-            if (!$uid) {
-                $uid = DB::insert('users', ['full_name' => (string) input('full_name'), 'email' => $email,
+        DB::tx(function () use ($role, $scope, $username, $email, $mobile, $pw, $itis, $trades) {
+            $existing = DB::one('SELECT * FROM users WHERE (username = ? AND ? <> \'\') OR (email = ? AND ? <> \'\') OR (mobile = ? AND ? <> \'\') LIMIT 1',
+                [$username, $username, $email, $email, $mobile, $mobile]);
+            if ($existing) {
+                $uid = (int) $existing['id'];   // existing person: only the new role is added
+            } else {
+                $uid = DB::insert('users', ['full_name' => mb_substr((string) input('full_name'), 0, 150), 'username' => $username ?: null,
+                    'email' => $email ?: null, 'mobile' => $mobile ?: null,
                     'password_hash' => password_hash($pw, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT),
-                    'status' => 'ACTIVE', 'created_by' => Auth::id()]);
+                    'must_change_password' => 1, 'status' => 'ACTIVE', 'created_by' => Auth::id()]);
             }
             $ra = DB::insert('user_role_assignments', ['user_id' => $uid, 'role_id' => $role['id'], 'scope_type' => $role['scope_type'],
                 'valid_from' => date('Y-m-d'), 'created_by' => Auth::id()] + $scope);
-            Audit::log('GRANT_ROLE', 'user_role_assignments', $ra, null, $scope['iti_id'], null, ['user_id' => $uid, 'role' => $role['code']] + $scope);
+            foreach ($itis as $i) { DB::insert('role_assignment_itis', ['role_assignment_id' => $ra, 'iti_id' => $i]); }
+            foreach ($trades as $t) {
+                if (!DB::value('SELECT 1 FROM iti_trades WHERE iti_id = ? AND trade_id = ?', [$scope['iti_id'], $t])) {
+                    throw new \DomainException('That ITI does not offer one of the selected trades.');
+                }
+                DB::insert('role_assignment_trades', ['role_assignment_id' => $ra, 'trade_id' => $t]);
+            }
+            Audit::log('GRANT_ROLE', 'user_role_assignments', $ra, null, $scope['iti_id'], null,
+                ['user_id' => $uid, 'role' => $role['code'], 'itis' => $itis, 'trades' => $trades] + $scope);
         });
-        flash('success', 'User saved and role granted. Share the temporary password securely and ask them to change it.');
+        flash('success', 'User saved. Login: ' . ($username ?: ($email ?: $mobile)) . ' · password: ' . ($pw === $default ? $default . ' (default)' : 'as entered')
+            . ' — the user must change it at first login.');
+        redirect('/users');
+    }
+
+    /** One click: a Principal login for every ITI that has none. User ID = the ITI's NCVT MIS code, default password. */
+    public function bulkItiLogins(): void
+    {
+        Auth::requireRole('STATE_ADMIN');
+        $default = (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'default_password'");
+        $hash = password_hash($default, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT);
+        $roleId = (int) DB::value("SELECT id FROM roles WHERE code = 'PRINCIPAL'");
+        $n = DB::tx(function () use ($hash, $roleId) {
+            $n = 0;
+            foreach (DB::all("SELECT i.* FROM itis i WHERE i.status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM users u WHERE u.username = UPPER(i.iti_code))") as $iti) {
+                $uid = DB::insert('users', ['full_name' => 'Principal, ' . $iti['name'], 'username' => strtoupper($iti['iti_code']), 'password_hash' => $hash,
+                    'must_change_password' => 1, 'status' => 'ACTIVE', 'created_by' => Auth::id()]);
+                $ra = DB::insert('user_role_assignments', ['user_id' => $uid, 'role_id' => $roleId, 'scope_type' => 'ITI', 'iti_id' => $iti['id'],
+                    'valid_from' => date('Y-m-d'), 'created_by' => Auth::id()]);
+                Audit::log('GRANT_ROLE', 'user_role_assignments', $ra, null, (int) $iti['id'], null, ['user_id' => $uid, 'role' => 'PRINCIPAL', 'bulk' => true]);
+                $n++;
+            }
+            return $n;
+        });
+        flash('success', "$n Principal logins created. User ID = NCVT MIS code, password = $default (must be changed at first login).");
         redirect('/users');
     }
 
@@ -156,10 +211,10 @@ final class AdminController extends Controller
             throw new HttpException(404);
         }
         $temp = self::tempPassword();
-        DB::run('UPDATE users SET password_hash = ?, failed_login_count = 0, locked_until = NULL, updated_by = ? WHERE id = ?',
+        DB::run('UPDATE users SET password_hash = ?, must_change_password = 1, failed_login_count = 0, locked_until = NULL, updated_by = ? WHERE id = ?',
             [password_hash($temp, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT), Auth::id(), $id]);
         Audit::log('PASSWORD_RESET', 'users', $id);
-        flash('success', 'Temporary password for ' . DB::value('SELECT email FROM users WHERE id = ?', [$id]) . ': ' . $temp . ' — share it privately; it is shown only once.');
+        flash('success', 'Temporary password for ' . DB::value('SELECT COALESCE(username, email, mobile) FROM users WHERE id = ?', [$id]) . ': ' . $temp . ' — share it privately; it is shown only once.');
         redirect('/users');
     }
 
@@ -222,10 +277,13 @@ final class AdminController extends Controller
         if (strlen($new) < 10 || !preg_match('/[A-Za-z]/', $new) || !preg_match('/\d/', $new) || $new !== ($_POST['confirm_password'] ?? '')) {
             throw new \DomainException('New password must be at least 10 characters with letters and numbers, and both entries must match.');
         }
-        DB::run('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($new, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT), Auth::id()]);
+        if (hash_equals($current, $new) || $new === (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'default_password'")) {
+            throw new \DomainException('Choose a new password that is different from the old / default password.');
+        }
+        DB::run('UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?', [password_hash($new, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT), Auth::id()]);
         Audit::log('PASSWORD_CHANGE', 'users', Auth::id());
         session_regenerate_id(true);
         flash('success', 'Password changed.');
-        redirect('/settings');
+        redirect(Auth::role() ? '/dashboard' : '/choose-role');
     }
 }

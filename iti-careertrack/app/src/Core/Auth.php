@@ -43,9 +43,12 @@ final class Auth
         $_SESSION['last_seen'] = time();
     }
 
-    public const ROLE_LABELS = ['STATE_ADMIN' => 'State Admin', 'DISTRICT_ADMIN' => 'District Admin', 'PRINCIPAL' => 'Principal',
-        'TEACHER' => 'Teacher / Instructor', 'PLACEMENT_OFFICER' => 'Placement Officer', 'ITI_STAFF' => 'ITI Staff',
-        'STUDENT' => 'Student / Alumni', 'EMPLOYER' => 'Employer / HR'];
+    public const ROLE_LABELS = ['STATE_ADMIN' => 'State Admin (DVET)', 'RO_ADMIN' => 'RO Admin', 'DVTO' => 'DVTO Admin',
+        'APPRENTICE_ADVISOR' => 'Apprentice Advisor', 'PRINCIPAL' => 'Principal', 'TEACHER' => 'Instructor',
+        'PLACEMENT_OFFICER' => 'Placement Officer', 'STUDENT' => 'Student / Alumni', 'EMPLOYER' => 'Employer / HR', 'ITI_STAFF' => 'ITI Staff'];
+
+    /** Supervising offices: full VIEW of all ITIs in their region / district / assigned list. */
+    public const OVERSIGHT = ['RO_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR'];
 
     /**
      * $login can be an e-mail address or a 10-digit mobile number.
@@ -60,10 +63,15 @@ final class Auth
             return 'Too many failed attempts from this network. Please wait 15 minutes.';
         }
 
-        $mobile = preg_replace('/\D/', '', $email) ?? '';
-        $user = preg_match('/^[6-9][0-9]{9}$/', $mobile) && !str_contains($email, '@')
-            ? Database::one('SELECT * FROM users WHERE mobile = ?', [$mobile])
-            : Database::one('SELECT * FROM users WHERE email = ?', [mb_strtolower(trim($email))]);
+        // User ID (e.g. the ITI's NCVT MIS code), e-mail, or 10-digit mobile number
+        $login = trim($email);
+        if (str_contains($login, '@')) {
+            $user = Database::one('SELECT * FROM users WHERE email = ?', [mb_strtolower($login)]);
+        } elseif (preg_match('/^(\+?91)?[6-9][0-9]{9}$/', preg_replace('/[\s-]/', '', $login) ?? '')) {
+            $user = Database::one('SELECT * FROM users WHERE mobile = ?', [substr(preg_replace('/\D/', '', $login) ?? '', -10)]);
+        } else {
+            $user = Database::one('SELECT * FROM users WHERE username = ?', [strtoupper($login)]);
+        }
         $ok = $user && $user['password_hash'] && password_verify($password, $user['password_hash']);
 
         if ($user && $user['locked_until'] && strtotime($user['locked_until']) > time()) {
@@ -131,11 +139,13 @@ final class Auth
     public static function assignments(int $userId): array
     {
         return Database::all(
-            "SELECT ura.*, r.code AS role_code, r.name AS role_name, i.name AS iti_name, d.name AS district_name, c.legal_name AS company_name
+            "SELECT ura.*, r.code AS role_code, r.name AS role_name, i.name AS iti_name, d.name AS district_name, g.name AS region_name, c.legal_name AS company_name,
+                    (SELECT COUNT(*) FROM role_assignment_itis x WHERE x.role_assignment_id = ura.id) AS group_itis
                FROM user_role_assignments ura
                JOIN roles r ON r.id = ura.role_id
                LEFT JOIN itis i ON i.id = ura.iti_id
                LEFT JOIN districts d ON d.id = ura.district_id
+               LEFT JOIN regions g ON g.id = ura.region_id
                LEFT JOIN companies c ON c.id = ura.company_id
               WHERE ura.user_id = ? AND ura.status = 'ACTIVE' AND CURDATE() >= ura.valid_from
                 AND (ura.valid_to IS NULL OR CURDATE() <= ura.valid_to)
@@ -193,8 +203,28 @@ final class Auth
     public static function roleCode(): ?string { return self::$role['role_code'] ?? null; }
     public static function itiId(): ?int { return isset(self::$role['iti_id']) ? (int) self::$role['iti_id'] : null; }
     public static function districtId(): ?int { return isset(self::$role['district_id']) ? (int) self::$role['district_id'] : null; }
+    public static function regionId(): ?int { return isset(self::$role['region_id']) ? (int) self::$role['region_id'] : null; }
+    public static function raId(): int { return (int) (self::$role['id'] ?? 0); }
+
+    /** Human label of a role assignment's scope, e.g. "Pune Region" or "9 assigned ITIs". */
+    public static function scopeName(?array $ra = null): string
+    {
+        $ra ??= self::$role;
+        if (!$ra) {
+            return '';
+        }
+        return $ra['iti_name'] ?? ($ra['district_name'] ? $ra['district_name'] . ' District' : null) ?? $ra['region_name'] ?? $ra['company_name']
+            ?? match ($ra['role_code']) {
+                'STATE_ADMIN' => 'Maharashtra (Statewide)', 'STUDENT' => 'My Career Passport',
+                'APPRENTICE_ADVISOR' => (int) $ra['group_itis'] . ' assigned ITIs', default => '' };
+    }
     public static function companyId(): ?int { return isset(self::$role['company_id']) ? (int) self::$role['company_id'] : null; }
     public static function studentId(): ?int { return self::$user['student_id'] ?? null ? (int) self::$user['student_id'] : null; }
+
+    public static function mustChangePassword(): bool
+    {
+        return (bool) (self::$user['must_change_password'] ?? false);
+    }
 
     public static function can(string $permission): bool
     {
