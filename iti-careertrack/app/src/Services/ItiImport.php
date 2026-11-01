@@ -52,13 +52,38 @@ final class ItiImport
                 continue;   // blank line or a "2. Satara District" title row
             }
             $get = static fn (?int $c) => $c === null ? '' : trim((string) ($r[$c] ?? ''));
-            $out[] = ['code' => $code, 'name' => mb_substr($name, 0, 200), 'type' => $get($map['type']), 'taluka' => $get($map['taluka']),
+            $taluka = $get($map['taluka']);
+            // MSBSVET style: "GOVERNMENT INDUSTRIAL TRAINING INSTITUTE, DADAR, TALUKA: MUMBAI, DISTRICT: MUMBAI CITY"
+            if (preg_match('/,?\s*TALUKA\s*:?\s*([^,]+?)\s*(?:,\s*DISTRICT\b.*)?$/i', $name, $m)) {
+                $taluka = $taluka !== '' ? $taluka : self::title($m[1]);
+                $name = trim(substr($name, 0, -strlen($m[0])), " ,");
+            }
+            $name = self::cleanName($name);
+            $type = $get($map['type']);
+            if ($type === '') {   // no type column: GR/GU codes and "Government" names are Government ITIs
+                $type = preg_match('/^G[RU]\d/', $code) || stripos($name, 'govt') !== false || stripos($name, 'government') !== false ? 'Government' : 'Private';
+            }
+            $out[] = ['code' => $code, 'name' => mb_substr($name, 0, 200), 'type' => $type, 'taluka' => $taluka,
                       'district' => $get($map['district']), 'region' => $get($map['region']), 'row' => $i + 1];
         }
         if (!$out) {
             throw new \DomainException('No ITIs found. The sheet needs a header row with "NCVT MIS ITI Code", "Institute Name" and "District".');
         }
         return $out;
+    }
+
+    /** "GOVERNMENT INDUSTRIAL TRAINING INSTITUTE, (WOMAN), DADAR" -> "Govt. ITI (Woman), Dadar" */
+    private static function cleanName(string $name): string
+    {
+        if (preg_match('/^GOVERNMENT\s+INDUSTRIAL\s+TRAINING\s+INSTITUTE\s*,?\s*(.*)$/i', $name, $m)) {
+            return trim('Govt. ITI ' . self::title($m[1]));
+        }
+        return $name;
+    }
+
+    private static function title(string $s): string
+    {
+        return ucwords(strtolower(trim($s)), " \t(-/.");
     }
 
     private static function find(array $norm, array $names): ?int
@@ -164,7 +189,13 @@ final class ItiImport
 
         return DB::tx(function () use ($items, $hash, $mustChange, $actor, $roles, $districts, $res, $today) {
             $seenDistricts = [];
+            $seenCodes = [];
             foreach ($items as $it) {
+                if (isset($seenCodes[$it['code']])) {
+                    $res['warnings'][] = "Row {$it['row']}: {$it['code']} is repeated (first in row {$seenCodes[$it['code']]}) — ignored.";
+                    continue;
+                }
+                $seenCodes[$it['code']] = $it['row'];
                 $d = self::matchDistrict($districts, $it['district']);
                 if (!$d) {
                     $res['warnings'][] = "Row {$it['row']}: district \"{$it['district']}\" not found — {$it['code']} skipped.";
@@ -196,7 +227,7 @@ final class ItiImport
             }
             $seenRegions = [];
             foreach ($seenDistricts as $d) {
-                $u = 'DVTO-' . strtoupper($d['code']);
+                $u = 'DVTO-' . strtoupper(trim(preg_replace('/[^A-Za-z0-9]+/', '-', $d['name']), '-'));   // DVTO-MUMBAI-SUBURBAN
                 if (self::ensureUser($u, 'DVTO, ' . $d['name'], $hash, $mustChange, $actor, (int) $roles['DVTO'],
                         ['scope_type' => 'DISTRICT', 'district_id' => $d['id']], $today)) {
                     $res['dvto'][] = $u;

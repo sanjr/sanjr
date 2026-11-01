@@ -126,7 +126,7 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
   await p.context().close();
 
   // Pune region ITI list (database/data): each DVTO sees only the ITIs of own district; Principal logs in with NCVT MIS code
-  for (const [u, dist] of [['DVTO-SATARA', 'Satara'], ['DVTO-KOLHAPUR', 'Kolhapur']]) {
+  for (const [u, dist] of [['DVTO-SATARA', 'Satara'], ['DVTO-KOLHAPUR', 'Kolhapur'], ['DVTO-THANE', 'Thane'], ['DVTO-MUMBAI-CITY', 'Mumbai City']]) {
     p = await login(b, 'DVTO', u);
     await p.goto(BASE + '/itis');
     const ds = await p.$$eval('table.table tr td:nth-child(5)', t => t.map(x => x.textContent.trim()));
