@@ -73,8 +73,8 @@ final class DashboardController extends Controller
                                    LEFT JOIN pcid_registry p ON p.student_id = s.id AND p.status = 'ACTIVE'
                                   WHERE a.iti_id = ? ORDER BY a.id DESC LIMIT 6", [$itiId]),
             'followups' => Stats::pendingFollowUps(),
-            'presentToday' => (int) DB::value("SELECT COUNT(DISTINCT student_id) FROM attendance_records WHERE iti_id = ? AND attendance_date = CURDATE() AND status IN ('PRESENT','LATE')", [$itiId]),
-            'markedToday' => (int) DB::value('SELECT COUNT(DISTINCT student_id) FROM attendance_records WHERE iti_id = ? AND attendance_date = CURDATE()', [$itiId]),
+            'examAppeared' => (int) DB::value('SELECT COUNT(DISTINCT admission_id) FROM exam_results WHERE iti_id = ?', [$itiId]),
+            'examPassed' => (int) DB::value("SELECT COUNT(DISTINCT admission_id) FROM exam_results WHERE iti_id = ? AND result = 'PASS'", [$itiId]),
             'completed' => (int) DB::value("SELECT COUNT(DISTINCT student_id) FROM training_records WHERE iti_id = ? AND completion_status = 'COMPLETED'", [$itiId]),
         ]);
     }

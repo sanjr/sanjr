@@ -26,7 +26,7 @@
 
 <div class="grid g4">
   <?= kpi('Total Students', num($current), 'users', 'blue', num($ongoing) . ' in ongoing training') ?>
-  <?= kpi('Present Today', num($presentToday), 'check-circle', 'purple', $markedToday ? 'of ' . num($markedToday) . ' marked' : 'Attendance not marked yet') ?>
+  <?= kpi('Passed Exam', num($examPassed), 'award', 'purple', 'of ' . num($examAppeared) . ' who appeared · ' . num($examAppeared - $examPassed) . ' not passed') ?>
   <?= kpi('Training Completed', num($completed), 'award', 'green', 'All years') ?>
   <?= kpi('Placed / Employed', num($placed), 'briefcase', 'orange', ($alumni ? pct($placed, $alumni) : '—') . ' of ' . num($alumni) . ' alumni · not updated ' . num($outcomes['NOT_UPDATED'] + $outcomes['NOT_CONTACTABLE'])) ?>
 </div>

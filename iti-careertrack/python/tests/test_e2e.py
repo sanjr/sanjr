@@ -511,6 +511,23 @@ def main() -> int:
     c.post("/settings/password", {"current_password": "Test@12345", "new_password": "Instructor@2026", "confirm_password": "Instructor@2026"})
     ok(c.get(f"/students/{rohit_sid}")[0] == 200 and c.get(f"/students/{sid}")[0] == 404, "New Electrician instructor sees Electrician students only")
 
+    print("\n[16b] Student Outcomes (Principal): exam -> result -> job / apprenticeship / business, and where")
+    po = as_user(base, "principal.pune@demo.local")
+    rohit_pcid = val("SELECT pcid FROM pcid_registry WHERE student_id = %s AND status = 'ACTIVE'", rohit_sid)
+    status, body, _, _ = po.get("/outcomes?q=" + rohit_pcid)
+    ok(status == 200 and rohit_pcid in body and "Pass" in body and "Sahyadri Auto Components" in body and "Job: " in body,
+       "Outcome line shows exam result, apprenticeship company and the job after the apprenticeship")
+    status, body, _, _ = po.get("/outcomes?exam=FAIL")
+    failed_here = val("SELECT COUNT(DISTINCT a.id) FROM admissions a JOIN itis i ON i.id = a.iti_id WHERE i.iti_code = 'DEMO0001' AND a.status <> 'CANCELLED' "
+                      "AND EXISTS (SELECT 1 FROM exam_results e WHERE e.admission_id = a.id) AND NOT EXISTS (SELECT 1 FROM exam_results e WHERE e.admission_id = a.id AND e.result = 'PASS')")
+    ok(status == 200 and f"<b>{failed_here}</b>" in body and body.count('badge badge-red">Fail') == min(25, failed_here), f"Failed filter shows only failed students ({failed_here} at this ITI)")
+    nashik_student = val("SELECT p.pcid FROM pcid_registry p JOIN institute_affiliations ia ON ia.student_id = p.student_id JOIN itis i ON i.id = ia.iti_id "
+                         "WHERE i.iti_code = 'DEMO0002' AND p.status = 'ACTIVE' LIMIT 1")
+    ok("No students match." in po.get("/outcomes?q=" + nashik_student)[1], "Principal sees outcomes of own ITI only")
+    status, body, _, raw = po.get("/outcomes/export?exam=PASS")
+    ok(status == 200 and raw.startswith(b"\xef\xbb\xbfPCID,Student") and b"Pass".upper() in raw.upper(), "Outcomes CSV download")
+    ok(po.get("/attendance")[0] == 404, "Attendance is not part of the Principal login")
+
     print("\n[17] Employer: full history (view only) + add records for own company")
     sid_new = val("SELECT ia.student_id FROM institute_affiliations ia JOIN itis i ON i.id = ia.iti_id WHERE i.iti_code = 'DEMO0001' AND ia.status = 'COMPLETED' "
                   "AND ia.student_id NOT IN (SELECT student_id FROM employments WHERE company_id = %s) "

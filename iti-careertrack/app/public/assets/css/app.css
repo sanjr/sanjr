@@ -694,3 +694,15 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 }
 @media (max-width: 360px) { .lg .role-pick button { font-size: 9px; } }
 .hx-art img { -webkit-mask-image: radial-gradient(78% 100% at 55% 100%, #000 64%, transparent 99%); mask-image: radial-gradient(78% 100% at 55% 100%, #000 64%, transparent 99%); }
+/* Student Outcomes */
+.oc-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+.oc-chip { display: flex; flex-direction: column; min-width: 120px; padding: 10px 14px; border-radius: 14px; background: #fff; border: 1.5px solid #e3e8f2;
+  box-shadow: var(--shadow); color: var(--grey-700); transition: transform .15s var(--ease), border-color .15s; }
+.oc-chip:hover { transform: translateY(-2px); text-decoration: none; }
+.oc-chip b { font-size: 1.35rem; color: #12203a; } .oc-chip span { font-size: 12px; font-weight: 600; }
+.oc-chip.on { border-color: currentColor; box-shadow: 0 0 0 3px rgba(23,71,214,.12); }
+.oc-blue { color: #1d4ed8; } .oc-green { color: #15803d; } .oc-red { color: #c2410c; } .oc-purple { color: #7c3aed; } .oc-amber { color: #b45309; } .oc-grey, .oc-all { color: #475569; }
+.oc-chip b { color: inherit; }
+.oc-table td { vertical-align: top; } .oc-table small { line-height: 1.35; }
+@media (max-width: 600px) { .oc-chip { min-width: calc(50% - 5px); flex: 1; } }
+.oc-table .code { white-space: nowrap; } .oc-table td:first-child { min-width: 175px; } .oc-table td:nth-child(6) { min-width: 170px; }

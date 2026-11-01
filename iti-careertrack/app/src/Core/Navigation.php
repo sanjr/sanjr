@@ -11,19 +11,19 @@ final class Navigation
         return match ($role) {
             'STATE_ADMIN' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['ITIs Management', '/itis', 'building'], ['Students (State)', '/students', 'users'],
-                ['Transfers', '/transfers', 'transfer'], ['Companies', '/companies', 'briefcase'], ['Verification Queue', '/verifications', 'shield'],
+                ['Transfers', '/transfers', 'transfer'], ['Student Outcomes', '/outcomes', 'target'], ['Companies', '/companies', 'briefcase'], ['Verification Queue', '/verifications', 'shield'],
                 ['Reports & Analytics', '/reports', 'chart'], ['User & Role Mgmt', '/users', 'users'], ['Master Data', '/masters', 'layers'],
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'RO_ADMIN' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
-                ['Training & Results', '/reports?type=result', 'book'], ['Apprenticeship', '/apprenticeships', 'tool'],
+                ['Training & Results', '/reports?type=result', 'book'], ['Student Outcomes', '/outcomes', 'target'], ['Apprenticeship', '/apprenticeships', 'tool'],
                 ['Placement', '/reports?type=placement', 'briefcase'], ['Verification Queue', '/verifications', 'shield'],
                 ['Reports', '/reports?type=outcome', 'chart'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'DVTO' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
-                ['Training & Results', '/reports?type=result', 'book'], ['Apprenticeship', '/apprenticeships', 'tool'],
+                ['Training & Results', '/reports?type=result', 'book'], ['Student Outcomes', '/outcomes', 'target'], ['Apprenticeship', '/apprenticeships', 'tool'],
                 ['Placement', '/reports?type=placement', 'briefcase'], ['Verification Queue', '/verifications', 'shield'],
                 ['Reports', '/reports?type=outcome', 'chart'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
@@ -35,7 +35,7 @@ final class Navigation
             ],
             'PRINCIPAL' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['Students', '/students', 'users'], ['Admission', '/admissions/new', 'user'],
-                ['Trades & Batches', '/trades', 'layers'], ['Staff Mgmt', '/users', 'users'], ['Training & Attendance', '/attendance', 'calendar'],
+                ['Trades & Batches', '/trades', 'layers'], ['Staff Mgmt', '/users', 'users'], ['Student Outcomes', '/outcomes', 'target'],
                 ['Examination', '/results', 'award'], ['Apprenticeship', '/apprenticeships', 'tool'], ['Placement', '/placements', 'briefcase'],
                 ['Transfer', '/transfers', 'transfer'], ['Follow-ups', '/follow-ups', 'phone'], ['Verification Queue', '/verifications', 'shield'], ['Reports', '/reports', 'chart'],
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
@@ -48,7 +48,7 @@ final class Navigation
             'PLACEMENT_OFFICER' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['Companies', '/companies', 'building'], ['Vacancies', '/companies?tab=vacancies', 'briefcase'],
                 ['Applications', '/companies?tab=applications', 'file'], ['Hired Students', '/companies?tab=hired', 'check-circle'],
-                ['Student Placement', '/placements', 'users'], ['Apprenticeship', '/apprenticeships', 'tool'], ['Follow-up', '/follow-ups', 'phone'],
+                ['Student Placement', '/placements', 'users'], ['Student Outcomes', '/outcomes', 'target'], ['Apprenticeship', '/apprenticeships', 'tool'], ['Follow-up', '/follow-ups', 'phone'],
                 ['Verification Queue', '/verifications', 'shield'],
                 ['Reports', '/reports', 'chart'], ['Settings', '/settings', 'settings'],
             ],

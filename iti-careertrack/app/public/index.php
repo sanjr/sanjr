@@ -88,6 +88,8 @@ $r->post('/transfers/{id}/reject', [C\TransferController::class, 'reject']);
 $r->post('/transfers/{id}/cancel', [C\TransferController::class, 'cancel']);
 // --- reports
 $r->get('/reports', [C\ReportController::class, 'index']);
+$r->get('/outcomes', [C\OutcomeController::class, 'index']);
+$r->get('/outcomes/export', [C\OutcomeController::class, 'export']);
 $r->get('/reports/export', [C\ReportController::class, 'export']);
 // --- administration
 $r->get('/itis', [C\AdminController::class, 'itis']);

@@ -7,6 +7,7 @@ use App\Core\Access;
 use App\Core\Audit;
 use App\Core\Auth;
 use App\Core\Database as DB;
+use App\Core\HttpException;
 
 /**
  * Teacher pages. Every list starts from Access::studentScope(), so a teacher only
@@ -43,6 +44,9 @@ final class TeacherController extends Controller
     // ------------------------------------------------------------------ attendance
     public function attendance(): void
     {
+        if (Auth::is('PRINCIPAL')) {
+            throw new HttpException(404);   // attendance is not part of the Principal's work
+        }
         Auth::require('attendance.mark');
         $batches = $this->myBatches();
         $batchId = int_input('batch') ?? ($batches[0]['id'] ?? null);
@@ -66,6 +70,9 @@ final class TeacherController extends Controller
 
     public function saveAttendance(): void
     {
+        if (Auth::is('PRINCIPAL')) {
+            throw new HttpException(404);   // attendance is not part of the Principal's work
+        }
         Auth::require('attendance.mark');
         $date = $this->date('date');
         if ($date > date('Y-m-d') || $date < date('Y-m-d', strtotime('-' . self::EDIT_DAYS . ' days'))) {
