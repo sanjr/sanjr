@@ -84,6 +84,11 @@ def main() -> int:
                        JOIN itis i ON i.id = ia.iti_id WHERE i.iti_code = 'DEMO0001' AND ia.status = 'ACTIVE' LIMIT 1""")
         pcid = cur.fetchone()["pcid"]
 
+    keep = None
+    readme = os.path.join(out, "README.md")
+    if os.path.isfile(readme):
+        with open(readme, encoding="utf-8") as fh:
+            keep = fh.read()
     if os.path.isdir(out):
         shutil.rmtree(out)
     for d in ("css", "js", "img"):
@@ -91,6 +96,9 @@ def main() -> int:
     for d in ("css", "js", "img"):
         for f in os.listdir(os.path.join(app_public, d)):
             shutil.copy(os.path.join(app_public, d, f), os.path.join(out, d, f))
+    if keep is not None:
+        with open(readme, "w", encoding="utf-8") as fh:
+            fh.write(keep)
     with open(os.path.join(out, "js", "static-demo.js"), "w", encoding="utf-8") as f:
         f.write(DEMO_JS)
 
