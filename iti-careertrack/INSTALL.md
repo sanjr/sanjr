@@ -17,10 +17,25 @@
 3. **User & Role Mgmt** → *Create ITI logins* (User ID = NCVT MIS Code, password `Test@12345`), तसेच RO Admin, DVTO, Apprentice Advisor, Instructor, Placement Officer, Employer चे users.
 4. प्रत्येक user पहिल्या login ला आपला password बदलतो.
 
+## मराठीत — Online hosting (cPanel / Hostinger / इतर)
+Hosting वर `root` user आणि रिकामा password **चालत नाही** (म्हणून `Access denied for user 'root'` error येतो). आधी cPanel मध्ये database बनवा:
+1. cPanel → **MySQL® Databases** (किंवा *MySQL Database Wizard*).
+2. **Create New Database**: उदा. `careertrack` → cPanel त्याचे पूर्ण नाव दाखवते, उदा. `cpuser_careertrack`.
+3. **Add New User**: उदा. `ctuser` + मजबूत password → पूर्ण नाव उदा. `cpuser_ctuser`.
+4. **Add User To Database**: तो user त्या database ला जोडा → **ALL PRIVILEGES** ✔ → Make Changes.
+5. आता installer मध्ये भरा: Host **`localhost`**, Port `3306`, Database name = `cpuser_careertrack`, MySQL user = `cpuser_ctuser`, password = तुम्ही ठेवलेला.
+6. Demo किंवा Empty निवडा → **Install**.
+   - Hosting MySQL triggers ला परवानगी देत नसेल (SUPER privilege नाही), तर installer तसे सांगतो आणि तेच नियम PHP मधून चालवतो — website पूर्ण चालते.
+7. शक्य असल्यास subdomain चा **Document Root** `ITI-CareerTrack/app/public` ठेवा (cPanel → Domains). URL मग `https://app.example.com/` असा येतो.
+8. Install अर्धवट झाले तर: phpMyAdmin मध्ये त्या database मधील सर्व tables Drop करा (किंवा नवीन database बनवा) आणि पुन्हा installer उघडा.
+
 ## English (Linux / any server)
 1. Copy the `ITI-CareerTrack` folder to the web server. Point Apache/Nginx to `ITI-CareerTrack/app/public` (recommended) — or keep the whole folder in the web root (the included `.htaccess` files block access to private folders).
 2. Open the site in a browser → the installer opens → enter MySQL details → choose Demo or Empty → Install.
-3. For production: use HTTPS, a MySQL user without DELETE rights (see `database/mysql/04_app_user.sql`), and regular backups of the database and `app/storage/documents`.
+3. Shared hosting (cPanel): create the database and a MySQL user in *MySQL Databases*, add the user to the database with ALL PRIVILEGES,
+   and enter host `localhost` with the full prefixed names. If the host does not allow triggers (binary logging without SUPER), the installer
+   says so and the website applies the same rules in PHP.
+4. For production: use HTTPS, a MySQL user without DELETE rights (see `database/mysql/04_app_user.sql`), and regular backups of the database and `app/storage/documents`.
 
 ## Who does what (logins)
 | Login | Work |
@@ -37,4 +52,4 @@
 | Student / Alumni | Own Career Passport + PCID card, job search, adds new job/company/course |
 
 ## Requirements
-PHP 8.1+ with `pdo_mysql`, `mbstring`, `fileinfo`, `openssl`; MySQL 8.0.16+; Apache with `mod_rewrite` (XAMPP has it).
+PHP 8.1+ with `pdo_mysql`, `zlib`, `mbstring`, `fileinfo`, `openssl`; MySQL 8.0.16+; Apache with `mod_rewrite` (XAMPP has it).

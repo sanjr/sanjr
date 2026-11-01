@@ -143,6 +143,7 @@ final class AdmissionService
                 'admission_date' => $d['admission_date'], 'duration_months' => (int) $trade['duration_months'],
                 'external_admission_ref' => $d['external_admission_ref'] ?: null, 'status' => 'ACTIVE', 'created_by' => Auth::id(),
             ]);   // <- trigger issues PCID + creates institute affiliation
+            DbRules::admissionOpened($aid);   // same in PHP where the host does not allow triggers
             DB::insert('training_records', ['student_id' => $sid, 'admission_id' => $aid, 'iti_id' => $itiId, 'start_date' => $d['admission_date'],
                 'expected_end_date' => date('Y-m-d', strtotime($d['admission_date'] . ' +' . (int) $trade['duration_months'] . ' months -1 day'))]);
             CareerService::setStatus($sid, 'IN_TRAINING', $d['admission_date'], [], 'Admitted', 'SYSTEM');

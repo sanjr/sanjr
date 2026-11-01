@@ -63,6 +63,16 @@ function ct_statements(string $file): Generator
     $gz ? gzclose($fh) : fclose($fh);
 }
 
+/** 'TRIGGER' | 'FUNCTION' | 'PROCEDURE' for CREATE/DROP of stored programs (also mysqldump's versioned-comment form), else null. */
+function ct_routine_kind(string $stmt): ?string
+{
+    $head = preg_replace('~/\*!\d+\s*|\*/~', ' ', substr($stmt, 0, 300));
+    if (preg_match('/^\s*(CREATE|DROP)\b[^(;]*?\b(TRIGGER|FUNCTION|PROCEDURE)\b/i', $head, $m)) {
+        return strtoupper($m[2]);
+    }
+    return null;
+}
+
 $errors = [];
 $done = null;
 $in = [
@@ -102,24 +112,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (stripos($ver, 'mariadb') === false && version_compare($ver, '8.0.16', '<')) {
                 throw new RuntimeException("MySQL 8.0.16 or newer is required (server is $ver).");
             }
-            $pdo->exec('CREATE DATABASE IF NOT EXISTS `' . $in['name'] . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
-            $pdo->exec('USE `' . $in['name'] . '`');
+            // Shared hosting (cPanel / Plesk): the database is created in the control panel and the
+            // user may not be allowed to create databases. Then just use the existing one.
+            try {
+                $pdo->exec('CREATE DATABASE IF NOT EXISTS `' . $in['name'] . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+            } catch (PDOException $ignored) {
+            }
+            try {
+                $pdo->exec('USE `' . $in['name'] . '`');
+            } catch (PDOException $e) {
+                throw new RuntimeException('Database "' . $in['name'] . '" was not found, or this MySQL user has no rights on it. '
+                    . 'On web hosting: cPanel → MySQL Databases → create the database and a user, then "Add User To Database" with ALL PRIVILEGES. '
+                    . 'Enter the full names shown by cPanel (for example cpuser_careertrack).');
+            }
             if ((int) $pdo->query('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()')->fetchColumn() > 0) {
                 throw new RuntimeException('Database "' . $in['name'] . '" is not empty. Choose a new database name.');
             }
+            // Demo: the full dump, but its procedures/triggers are skipped and created from
+            // 02_routines.sql afterwards, so that hosting without the SUPER privilege also works.
             $files = $in['mode'] === 'demo'
-                ? ['demo_data.sql.gz']
+                ? ['demo_data.sql.gz', '02_routines.sql']
                 : ['01_schema.sql', '02_routines.sql', '03_reference_data.sql', '05_regions_roles.sql', '06_districts.sql'];
             $count = 0;
+            $noTriggers = false;
             foreach ($files as $f) {
                 $path = $dbDir . '/' . $f;
                 if (!is_file($path)) {
                     throw new RuntimeException("Missing file database/mysql/$f");
                 }
                 foreach (ct_statements($path) as $stmt) {
+                    $kind = ct_routine_kind($stmt);
+                    if ($f === 'demo_data.sql.gz' && $kind !== null) {
+                        continue;
+                    }
+                    if ($in['mode'] === 'demo' && $f === '02_routines.sql' && $kind === null) {
+                        continue;   // views etc. are already in the dump
+                    }
+                    if ($kind === 'TRIGGER') {
+                        if ($noTriggers) {
+                            continue;
+                        }
+                        try {
+                            $pdo->exec($stmt);
+                        } catch (PDOException $e) {
+                            if (!preg_match('/\[(1419|1227|1142|1044|1370)\]|SUPER/', $e->getMessage())) {
+                                throw $e;
+                            }
+                            $noTriggers = true;   // the website enforces these rules in PHP instead
+                        }
+                        $count++;
+                        continue;
+                    }
                     $pdo->exec($stmt);
                     $count++;
                 }
+            }
+            if ($noTriggers) {
+                foreach ($pdo->query('SELECT trigger_name FROM information_schema.triggers WHERE trigger_schema = DATABASE()')->fetchAll(PDO::FETCH_COLUMN) as $t) {
+                    $pdo->exec('DROP TRIGGER `' . $t . '`');
+                }
+                $pdo->exec("REPLACE INTO settings (setting_key, setting_value, description)
+                            VALUES ('db_triggers', '0', 'MySQL triggers not allowed by the host; rules run in PHP (DbRules service)')");
             }
             if ($in['mode'] === 'empty') {
                 $y = (int) date('n') >= 8 ? (int) date('Y') : (int) date('Y') - 1;
@@ -138,10 +191,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                        'storage' => ['documents' => $root . '/storage/documents', 'max_upload_bytes' => 5 * 1024 * 1024]];
             $php = "<?php\n// Written by the ITI CareerTrack installer on " . date('Y-m-d H:i') . ". Keep this file private.\nreturn " . var_export($config, true) . ";\n";
             $written = @file_put_contents($configFile, $php) !== false;
-            $done = ['statements' => $count, 'written' => $written, 'php' => $php, 'mode' => $in['mode']];
+            $done = ['statements' => $count, 'written' => $written, 'php' => $php, 'mode' => $in['mode'], 'no_triggers' => $noTriggers];
             session_destroy();
         } catch (Throwable $e) {
-            $errors[] = $e->getMessage();
+            $msg = $e->getMessage();
+            if (str_contains($msg, '[1045]') || str_contains($msg, '[1698]')) {
+                $msg = 'MySQL refused the user name / password (' . $in['user'] . '@' . $in['host'] . '). '
+                    . 'On web hosting the user "root" with an empty password does not work: in cPanel → MySQL Databases create a database and a user '
+                    . '(with a password), add the user to the database with ALL PRIVILEGES, and enter those full names here. Host is usually "localhost".';
+            } elseif (str_contains($msg, '[2002]')) {
+                $msg = 'Cannot reach the MySQL server at ' . $in['host'] . ':' . $in['port'] . '. On web hosting try host "localhost". (' . $msg . ')';
+            } elseif (str_contains($msg, '[1044]') || str_contains($msg, '[1142]') || str_contains($msg, '[1227]') || str_contains($msg, '[1419]')) {
+                $msg .= ' — the MySQL user needs ALL PRIVILEGES on this database (cPanel → MySQL Databases → Add User To Database → All Privileges). '
+                    . 'Delete all tables in the database, then run the installer again.';
+            }
+            $errors[] = $msg;
         }
     }
 }
@@ -157,6 +221,11 @@ $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '
   <div class="card">
     <h2 style="color:var(--green)">Installation complete</h2>
     <p><?= (int) $done['statements'] ?> database steps completed.</p>
+    <?php if ($done['no_triggers']): ?>
+      <div class="alert alert-info">This MySQL server does not allow triggers for your user (binary logging without the SUPER privilege — normal on web hosting).
+        That is fine: the website applies the same rules in PHP. The extra database-level protection (for example the append-only audit log)
+        is active only if the host enables <code>log_bin_trust_function_creators</code> and you install again.</div>
+    <?php endif; ?>
     <?php if (!$done['written']): ?>
       <div class="alert alert-warning">The installer could not write <b>app/config/config.php</b>. Create that file yourself with this content, then open the website:</div>
       <pre class="json" style="max-height:300px"><?= $h($done['php']) ?></pre>
@@ -174,7 +243,10 @@ $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '
   <?php foreach ($errors as $e): ?><div class="alert alert-error"><?= $h($e) ?></div><?php endforeach; ?>
   <form method="post" class="card"><input type="hidden" name="csrf" value="<?= $h($_SESSION['csrf']) ?>">
     <h2>1. MySQL database</h2>
-    <p class="muted">On XAMPP the defaults are usually: host 127.0.0.1, port 3306, user root, empty password. MySQL 8.0.16+ is required.</p>
+    <p class="muted"><b>XAMPP (own computer):</b> host 127.0.0.1, port 3306, user root, empty password.<br>
+      <b>Web hosting (cPanel):</b> first create the database and a MySQL user in cPanel → <i>MySQL Databases</i>, add the user to the database with
+      <i>ALL PRIVILEGES</i>, then enter host <b>localhost</b> and the full names shown by cPanel (e.g. <code>cpuser_careertrack</code>, <code>cpuser_ctuser</code>).
+      MySQL 8.0.16+ is required.</p>
     <div class="form-grid">
       <div class="field"><label>Host</label><input type="text" name="host" value="<?= $h($in['host']) ?>" required></div>
       <div class="field"><label>Port</label><input type="number" name="port" value="<?= $h($in['port']) ?>" required></div>

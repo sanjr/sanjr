@@ -164,6 +164,7 @@ final class CareerService
             'verifier_company_id' => Auth::roleCode() === 'EMPLOYER' ? Auth::companyId() : null,
             'method' => $method, 'decision' => $decision, 'evidence_reference' => $evidence, 'remarks' => $remarks,
         ]);
+        DbRules::verificationAdded($id);
         Audit::log('VERIFY', str_replace('_id', 's', $field), $recordId, $sid, null, null, ['decision' => $decision, 'method' => $method, 'evidence' => $evidence]);
         return $id;
     }

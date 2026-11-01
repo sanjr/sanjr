@@ -9,6 +9,7 @@ use App\Core\Auth;
 use App\Core\Database as DB;
 use App\Core\HttpException;
 use App\Services\AdmissionService;
+use App\Services\DbRules;
 use App\Services\Documents;
 use App\Services\StudentData;
 
@@ -197,6 +198,7 @@ final class StudentController extends Controller
             throw new \DomainException('The student has no active admission at your ITI.');
         }
         $role = (string) input('assignment_role', 'TRADE_INSTRUCTOR');
+        DbRules::checkTeacher((int) input('teacher_user_id'), (int) Auth::itiId());
         $tid = DB::insert('teacher_assignments', ['student_id' => $id, 'teacher_user_id' => (int) input('teacher_user_id'), 'iti_id' => Auth::itiId(),
             'admission_id' => $adm['id'], 'assignment_role' => $role, 'start_date' => date('Y-m-d'), 'created_by' => Auth::id()]);   // trigger checks the teacher
         Audit::log('INSERT', 'teacher_assignments', $tid, $id);
@@ -254,6 +256,7 @@ final class StudentController extends Controller
         DB::tx(function () use ($adm, $status, $end, $id) {
             DB::run('UPDATE admissions SET status = ?, end_date = ?, end_reason = ?, updated_by = ? WHERE id = ?',
                 [$status, $end, (string) input('reason', '') ?: label($status), Auth::id(), $adm['id']]);
+            DbRules::admissionClosed((int) $adm['id']);
             DB::run("UPDATE training_records SET completion_status = ?, actual_end_date = GREATEST(start_date, ?) WHERE admission_id = ? AND completion_status = 'IN_PROGRESS'",
                 [$status, $end, $adm['id']]);
             DB::run('UPDATE teacher_assignments SET end_date = GREATEST(start_date, ?), end_reason = ? WHERE admission_id = ? AND end_date IS NULL',

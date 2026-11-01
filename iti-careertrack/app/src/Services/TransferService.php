@@ -70,6 +70,7 @@ final class TransferService
             // 1. close origin episode (trigger closes the affiliation)
             DB::run("UPDATE admissions SET status = 'TRANSFERRED_OUT', end_date = ?, end_reason = ?, updated_by = ? WHERE id = ?",
                 [$eff, 'Transfer #' . $t['id'], Auth::id(), $old['id']]);
+            DbRules::admissionClosed((int) $old['id']);
             $oldTr = DB::one("SELECT * FROM training_records WHERE admission_id = ? AND completion_status = 'IN_PROGRESS'", [$old['id']]);
             DB::run("UPDATE training_records SET completion_status = 'TRANSFERRED_OUT', actual_end_date = ? WHERE admission_id = ? AND completion_status = 'IN_PROGRESS'",
                 [$eff, $old['id']]);
@@ -84,6 +85,7 @@ final class TransferService
                 'academic_year_id' => $t['to_academic_year_id'], 'batch_id' => $batchId, 'admission_type' => 'TRANSFER_IN',
                 'previous_admission_id' => $old['id'], 'admission_date' => $eff, 'duration_months' => $old['duration_months'],
                 'status' => 'ACTIVE', 'created_by' => Auth::id()]);
+            DbRules::admissionOpened($newId);
             DB::insert('training_records', ['student_id' => $t['student_id'], 'admission_id' => $newId, 'iti_id' => $t['to_iti_id'],
                 'start_date' => $eff, 'expected_end_date' => $oldTr['expected_end_date'] ?? null]);
 

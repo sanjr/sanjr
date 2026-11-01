@@ -9,27 +9,9 @@ DELIMITER $$
 -- -----------------------------------------------------------------------------
 -- PCID helpers
 -- -----------------------------------------------------------------------------
--- Luhn check digit (same algorithm as bank cards) — catches typing mistakes
-CREATE FUNCTION fn_luhn_check_digit(p_digits VARCHAR(20)) RETURNS CHAR(1)
-DETERMINISTIC NO SQL
-BEGIN
-    DECLARE v_sum INT DEFAULT 0;
-    DECLARE v_i INT;
-    DECLARE v_d INT;
-    DECLARE v_double BOOLEAN DEFAULT TRUE;
-    SET v_i = CHAR_LENGTH(p_digits);
-    WHILE v_i > 0 DO
-        SET v_d = CAST(SUBSTRING(p_digits, v_i, 1) AS UNSIGNED);
-        IF v_double THEN
-            SET v_d = v_d * 2;
-            IF v_d > 9 THEN SET v_d = v_d - 9; END IF;
-        END IF;
-        SET v_sum = v_sum + v_d;
-        SET v_double = NOT v_double;
-        SET v_i = v_i - 1;
-    END WHILE;
-    RETURN CAST((10 - (v_sum MOD 10)) MOD 10 AS CHAR);
-END$$
+-- The Luhn check digit (same algorithm as bank cards, catches typing mistakes) is
+-- computed inside sp_issue_pcid. A stored FUNCTION is deliberately not used: on web
+-- hosting with binary logging, creating functions needs the SUPER privilege.
 
 -- Issues the permanent PCID. Idempotent: a student who already has one keeps it.
 -- Collision-free: the per-year counter row is locked until the transaction ends,
@@ -43,6 +25,11 @@ BEGIN
     DECLARE v_prefix VARCHAR(10);
     DECLARE v_state VARCHAR(4);
     DECLARE v_status VARCHAR(10);
+    DECLARE v_digits VARCHAR(20);
+    DECLARE v_sum INT DEFAULT 0;
+    DECLARE v_i INT;
+    DECLARE v_d INT;
+    DECLARE v_double BOOLEAN DEFAULT TRUE;
 
     SET v_status = (SELECT profile_status FROM students WHERE id = p_student_id);
     IF v_status IS NULL OR v_status <> 'ACTIVE' THEN
@@ -62,9 +49,23 @@ BEGIN
             ON DUPLICATE KEY UPDATE last_serial = last_serial + 1;
         SET v_serial = (SELECT last_serial FROM pcid_year_counters WHERE issue_year = v_year);
 
+        -- Luhn check digit over year + serial
+        SET v_digits = CONCAT(v_year, LPAD(v_serial, 6, '0'));
+        SET v_i = CHAR_LENGTH(v_digits);
+        WHILE v_i > 0 DO
+            SET v_d = CAST(SUBSTRING(v_digits, v_i, 1) AS UNSIGNED);
+            IF v_double THEN
+                SET v_d = v_d * 2;
+                IF v_d > 9 THEN SET v_d = v_d - 9; END IF;
+            END IF;
+            SET v_sum = v_sum + v_d;
+            SET v_double = NOT v_double;
+            SET v_i = v_i - 1;
+        END WHILE;
+
         INSERT INTO pcid_registry (pcid, student_id, issue_year, serial, issued_for_admission_id, issued_by)
         VALUES (CONCAT(v_prefix, '-', v_state, '-', v_year, '-', LPAD(v_serial, 6, '0'), '-',
-                       fn_luhn_check_digit(CONCAT(v_year, LPAD(v_serial, 6, '0')))),
+                       CAST((10 - (v_sum MOD 10)) MOD 10 AS CHAR)),
                 p_student_id, v_year, v_serial, p_admission_id, p_actor);
     END IF;
 END$$
