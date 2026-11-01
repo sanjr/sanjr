@@ -64,6 +64,11 @@ Installer हे ITI आपोआप भरतो (`database/data/*_itis.csv`):
 ## प्रवेश (Admission)
 विद्यार्थ्याचा **फोटो अनिवार्य** आहे (JPG/PNG, 5 MB पर्यंत) — फोटोशिवाय प्रवेश जतन होत नाही.
 
+## महाराष्ट्र शासन लोगो (Government of Maharashtra)
+Home page व login page वर "महाराष्ट्र शासन / Government of Maharashtra" लोगोसाठी जागा तयार आहे. राज्य मुद्रा (State Emblem) वापरण्यासाठी
+अधिकृत परवानगी लागते, म्हणून लोगो ZIP मध्ये दिलेला नाही. परवानगी मिळाल्यावर अधिकृत लोगो **`app/public/assets/img/gov-logo.png`** या नावाने
+upload करा — तो header, login page वर आपोआप दिसेल.
+
 ## Login ID (login page वर role निवडल्यावर नाव बदलते)
 | Role | Login ID |
 |---|---|

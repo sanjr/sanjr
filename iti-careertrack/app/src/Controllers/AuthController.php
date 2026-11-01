@@ -26,7 +26,7 @@ final class AuthController extends Controller
             ? array_column(\App\Core\Database::all("SELECT email, username FROM users WHERE email LIKE '%@demo.local' AND username IS NOT NULL"), 'username', 'email')
             : [];
         View::render('auth/login', ['title' => 'Login', 'as' => array_key_exists($as, Auth::ROLE_LABELS) ? $as : '', 'stats' => $stats,
-            'wide' => true, 'demoIds' => $demoIds], 'public');
+            'wide' => true, 'bare' => true, 'demoIds' => $demoIds], 'public');
     }
 
     public function login(): void

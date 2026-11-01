@@ -1,55 +1,63 @@
 <?php
 $rate = $s['alumni'] ? round($s['placed'] * 100 / $s['alumni'], 1) : 0;
-$features = [['users', 'Student Lifecycle'], ['tool', 'Apprenticeship'], ['briefcase', 'Employment'], ['graduation', 'Higher Education'], ['store', 'Self-Employment']];
+$features = [['graduation', 'Student<br>Lifecycle', 'g'], ['users', 'Apprentice&shy;ship', 'p'], ['briefcase', 'Employment', 'o'], ['book', 'Higher<br>Education', 'b'], ['store', 'Self-<br>Employment', 'r']];
+$steps = [['check', 'Admission', 'Accepted at an ITI', 'g'], ['id', 'Permanent PCID', 'Issued automatically', 'b'], ['layers', 'Training', 'Attendance, modules, assessments', 'p'],
+          ['clipboard', 'Examination', 'Every attempt recorded', 'o'], ['briefcase', 'Career', 'Apprenticeship, job, business, studies', 't'], ['infinity', 'Lifetime Tracking', 'Follow-up & verified outcomes', 'r']];
+$roles = [['student', 'Students & Alumni', 'Your Career Passport and PCID card, exam results, job search and status updates.', 'b', '/login?as=STUDENT'],
+          ['principal', 'Principals & Teachers', 'Admissions, batches, attendance, training progress, results, transfers and follow-ups.', 'p', '/login?as=PRINCIPAL'],
+          ['employer', 'Employers & HR', 'Post vacancies, review applications, confirm apprentices and employees.', 'o', '/login?as=EMPLOYER'],
+          ['state', 'District & State', 'Verified outcome reports with clear denominators — “not updated” is never counted as unemployed.', 'g', '/public-reports']];
 ?>
-<section class="hero">
-  <div class="inner">
-    <div>
-      <h1>Track<span class="dot">•</span>Train<span class="dot">•</span>Place<span class="dot">•</span>Grow</h1>
-      <p class="lead">A unified platform for ITI students of Maharashtra — one permanent Career ID from admission to lifelong career.</p>
-      <div class="feature-row">
-        <?php foreach ($features as [$ic, $t]): ?>
-          <div class="f"><div class="circle"><?= icon($ic) ?></div><?= e($t) ?></div>
+<section class="hx">
+  <div class="hx-inner">
+    <div class="hx-text">
+      <div class="hx-brand">ITI Career<span>Track</span></div>
+      <div class="hx-region"><i></i> Maharashtra</div>
+      <h1>One Platform. Every Student.<br>Every <span>Career Milestone.</span></h1>
+      <div class="hx-tag">From ITI Admission to Lifelong Career Tracking – Maharashtra.</div>
+      <div class="hx-feats">
+        <?php foreach ($features as [$ic, $t, $c]): ?>
+          <div class="hx-f"><span class="tile t-<?= $c ?>"><?= icon($ic) ?></span><small><?= $t ?></small></div>
         <?php endforeach; ?>
       </div>
-      <div class="cta">
-        <a class="btn btn-white" href="<?= url('/login', ['as' => 'STUDENT']) ?>"><?= icon('user') ?> Student Login</a>
-        <a class="btn btn-outline-white" href="<?= url('/login', ['as' => 'PRINCIPAL']) ?>"><?= icon('building') ?> Institute Login</a>
-        <a class="btn btn-outline-white" href="<?= url('/verify') ?>"><?= icon('shield') ?> Verify PCID</a>
-      </div>
     </div>
-    <img class="hero-art" src="<?= asset('img/hero.svg') ?>" alt="Illustration of ITI students: a trainee, a graduate and a technician">
+    <div class="hx-art"><img src="<?= asset('img/home-hero.jpg') ?>" alt="ITI trainees of Maharashtra with a tablet and safety helmet" width="587" height="363"></div>
   </div>
 </section>
 
-<div class="pub-main" style="padding-top:0">
-  <div class="stat-strip">
-    <div class="s"><b><?= num($s['itis']) ?></b><span>Government &amp; Private ITIs</span></div>
-    <div class="s"><b><?= num($s['pcids']) ?></b><span>Students with a permanent PCID</span></div>
-    <div class="s"><b><?= number_format($rate, 1) ?>%</b><span>Alumni placed (job, apprenticeship or business)</span></div>
-    <div class="s"><b><?= num($s['employers']) ?></b><span>Employers · <?= num($s['vacancies']) ?> open vacancies</span></div>
+<div class="hx-wrap">
+  <div class="hx-stats">
+    <div class="st"><span class="si c-p"><?= icon('building') ?></span><div><b><?= num($s['itis']) ?></b><small>Government &amp; Private ITIs</small></div></div>
+    <div class="st"><span class="si c-b"><?= icon('users') ?></span><div><b><?= num($s['pcids']) ?>+</b><small>ITI Students (Maharashtra)</small></div></div>
+    <div class="st"><span class="si c-g"><?= icon('trending') ?></span><div><b><?= number_format($rate, 1) ?>%</b><small>Placement / Employment Rate</small></div></div>
+    <div class="st"><span class="si c-v"><?= icon('briefcase') ?></span><div><b><?= num($s['employers']) ?>+</b><small>Active Employer Partners</small></div></div>
   </div>
 
-  <h2 class="section-title">One student. One Career ID. One complete journey.</h2>
-  <p class="section-sub">Every step is recorded once and stays with the student for life — even after a transfer to another ITI.</p>
-  <div class="steps-flow">
-    <?php foreach ([['check', 'Admission', 'Accepted at an ITI'], ['id', 'Permanent PCID', 'Issued automatically'], ['book', 'Training', 'Attendance, modules, assessments'],
-                    ['award', 'Examination', 'Every attempt recorded'], ['briefcase', 'Career', 'Apprenticeship, job, business, studies'], ['trending', 'Lifetime tracking', 'Follow-up & verified outcomes']] as $i => [$ic, $t, $d]): ?>
-      <div class="st"><div class="n" style="background:<?= ['#17944a', '#1d64d8', '#7c3aed', '#ea7a0a', '#0ea5a4', '#0b2f6b'][$i] ?>"><?= icon($ic) ?></div><b><?= e($t) ?></b><small class="muted"><?= e($d) ?></small></div>
+  <h2 class="hx-title">One Student. One Permanent <mark>Career ID.</mark> One Complete Career Journey.</h2>
+  <div class="hx-dash"><i></i><i></i></div>
+  <div class="hx-flow">
+    <?php foreach ($steps as $i => [$ic, $t, $d, $c]): ?>
+      <div class="fl"><span class="fc t-<?= $c ?>"><?= icon($ic) ?></span><div class="fb"><b><?= e($t) ?></b><small><?= e($d) ?></small></div></div>
+      <?php if ($i < count($steps) - 1): ?><span class="fa" aria-hidden="true"><?= icon('arrow-right') ?></span><?php endif; ?>
     <?php endforeach; ?>
   </div>
 
-  <h2 class="section-title">Built for everyone in the ITI ecosystem</h2>
-  <p class="section-sub">Each person sees only what their role allows.</p>
-  <div class="role-cards">
-    <div class="rc"><?= icon('user') ?><h3>Students &amp; Alumni</h3><p>Your Career Passport and PCID card, exam results, job search and status updates.</p></div>
-    <div class="rc"><?= icon('building') ?><h3>Principals &amp; Teachers</h3><p>Admissions, batches, attendance, training progress, results, transfers and follow-ups.</p></div>
-    <div class="rc"><?= icon('briefcase') ?><h3>Employers &amp; HR</h3><p>Post vacancies, review consenting applicants, confirm apprentices and employees.</p></div>
-    <div class="rc"><?= icon('chart') ?><h3>District &amp; State</h3><p>Verified outcome reports with clear denominators — “not updated” is never counted as unemployed.</p></div>
+  <h2 class="hx-title sm"><span class="dd" aria-hidden="true"></span> Built for everyone in the ITI ecosystem <span class="dd" aria-hidden="true"></span></h2>
+  <p class="hx-sub">Each person sees only what their role allows.</p>
+  <div class="hx-roles">
+    <?php foreach ($roles as [$img, $t, $d, $c, $href]): ?>
+      <a class="rc rc-<?= $c ?>" href="<?= url($href) ?>">
+        <img src="<?= asset('img/role-' . $img . '.jpg') ?>" alt="" width="88" height="131" loading="lazy">
+        <div><h3><?= e($t) ?></h3><p><?= e($d) ?></p></div>
+        <span class="go"><?= icon('arrow-right') ?></span>
+      </a>
+    <?php endforeach; ?>
   </div>
 
-  <div class="card mt flex between wrap" style="margin-top:30px">
-    <div><h2 class="mb0">Looking for a job or apprenticeship?</h2><p class="muted mb0"><?= num($s['vacancies']) ?> open vacancies from employers across Maharashtra.</p></div>
-    <div class="actions"><a class="btn" href="<?= url('/careers') ?>"><?= icon('search') ?> View openings</a><a class="btn btn-light" href="<?= url('/courses') ?>">Explore trades</a></div>
+  <div class="hx-cta">
+    <span class="q"><?= icon('search') ?></span>
+    <div class="qt"><h3>Looking for a job or apprenticeship?</h3><p><?= num($s['vacancies']) ?> open vacancies from employers across Maharashtra.</p></div>
+    <div class="qa"><a class="btn" href="<?= url('/careers') ?>"><?= icon('briefcase') ?> View Openings</a>
+      <a class="btn btn-ghost" href="<?= url('/courses') ?>"><?= icon('grid') ?> Explore Trades</a></div>
   </div>
 </div>

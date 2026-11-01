@@ -129,7 +129,8 @@
       document.querySelectorAll('.role-pick [data-role]').forEach(function (x) { x.classList.remove('sel'); x.setAttribute('aria-checked', 'false'); });
       var hidden = document.getElementById('login-role'), lbl = document.getElementById('role-label');
       b.classList.add('sel'); b.setAttribute('aria-checked', 'true'); hidden.value = b.getAttribute('data-role');
-      lbl.innerHTML = 'Signing in as <b></b>'; lbl.querySelector('b').textContent = b.getAttribute('data-label');
+      var tgt = lbl.querySelector('span') || lbl;
+      tgt.innerHTML = 'Signing in as <b></b>'; tgt.querySelector('b').textContent = b.getAttribute('data-label');
       var idl = b.getAttribute('data-id-label') || 'User ID', lab = document.getElementById('id-label'), box = document.getElementById('email');
       if (lab) lab.textContent = idl;
       if (box) box.placeholder = 'Enter ' + idl;
@@ -137,6 +138,18 @@
       if (demo) { document.getElementById('email').value = demo; document.getElementById('password').value = 'Demo@1234'; }
     });
   });
+
+  // ---------------- login: "Remember me" keeps only the User ID on this device (never the password)
+  var rem = document.getElementById('remember-id'), lf = document.getElementById('login-form');
+  if (rem && lf) {
+    try {
+      var saved = localStorage.getItem('ct_login_id');
+      if (saved && !document.getElementById('email').value) { document.getElementById('email').value = saved; rem.checked = true; }
+      lf.addEventListener('submit', function () {
+        if (rem.checked) localStorage.setItem('ct_login_id', document.getElementById('email').value); else localStorage.removeItem('ct_login_id');
+      });
+    } catch (e) { /* private mode: ignore */ }
+  }
 
   // ---------------- user form: show only the scope fields the chosen role needs
   var rsel = document.querySelector('[data-role-select]');
