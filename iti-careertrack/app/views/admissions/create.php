@@ -96,7 +96,8 @@ $start = $dup ? 4 : $errStep;
     <h2>Documents</h2>
     <p class="muted">Files are stored privately (not on a public link). PDF/JPG/PNG, max 5 MB.</p>
     <div class="form-grid">
-      <div class="field"><label>Student photo (JPG/PNG)</label><input type="file" name="photo" accept=".jpg,.jpeg,.png" data-review-label="Photo"></div>
+      <div class="field<?= has_error('photo') ?>"><label>Student photo (JPG/PNG) <span class="req">*</span></label><input type="file" name="photo" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required data-review-label="Photo">
+        <div class="hint">Compulsory. Clear passport-size face photo, up to 5 MB. It is printed on the PCID card.</div><?= field_error('photo') ?></div>
       <div class="field"><label>SSC marksheet</label><input type="file" name="marksheet" accept=".pdf,.jpg,.jpeg,.png" data-review-label="Marksheet"></div>
     </div>
   </section>

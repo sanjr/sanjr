@@ -3,24 +3,26 @@
 <nav class="tabs"><?php foreach ($tabs as $k => $l): ?><a class="<?= $tab === $k ? 'active' : '' ?>" href="<?= url('/masters', ['tab' => $k]) ?>"><?= e($l) ?></a><?php endforeach; ?></nav>
 
 <?php if ($tab === 'trades'): ?>
+<div class="alert alert-info">Official NCVT trade list (<?= count(array_filter($trades, static fn ($t) => $t['status'] === 'ACTIVE')) ?> active trades). Trades cannot be typed in —
+  ITIs choose from this list. Check each trade's <b>duration</b> and correct it here if needed.</div>
+<form class="card filters" method="get" action="<?= url('/masters') ?>"><input type="hidden" name="tab" value="trades">
+  <div class="field" style="flex:1"><label>Search trade</label><input type="search" name="q" value="<?= e(input('q')) ?>" placeholder="e.g. Welder"></div>
+  <button class="btn" type="submit"><?= icon('search') ?> Search</button></form>
 <div class="card card-tight">
   <div class="table-wrap"><table class="table">
-    <tr><th>Code</th><th>Trade</th><th>Scheme</th><th class="num">Duration</th><th class="num">Modules</th><th class="num">Offered at ITIs</th><th>Status</th></tr>
-    <?php foreach ($trades as $t): ?><tr><td class="code"><?= e($t['trade_code']) ?></td><td><b><?= e($t['name']) ?></b> <small class="muted"><?= e($t['name_mr']) ?></small></td>
-      <td><?= e($t['scheme']) ?></td><td class="num"><?= (int) $t['duration_months'] ?> months</td><td class="num"><?= (int) $t['modules'] ?></td><td class="num"><?= num($t['itis']) ?></td><td><?= badge($t['status']) ?></td></tr><?php endforeach; ?>
+    <tr><th>Code</th><th>Trade</th><th class="num">Modules</th><th class="num">Offered at ITIs</th><th>Duration · Status · add modules</th></tr>
+    <?php foreach ($trades as $t): ?><tr>
+      <td class="code"><?= e($t['trade_code']) ?></td><td><b><?= e($t['name']) ?></b> <?= $t['status'] !== 'ACTIVE' ? badge($t['status']) : '' ?></td>
+      <td class="num"><?= (int) $t['modules'] ?></td><td class="num"><?= num($t['itis']) ?></td>
+      <td><form method="post" action="<?= url('/masters/trades/' . $t['id']) ?>" class="flex wrap" style="gap:6px"><?= csrf_field() ?>
+        <input type="hidden" name="q" value="<?= e(input('q')) ?>">
+        <select name="duration_months" style="width:auto" aria-label="Duration"><?php foreach ([6, 12, 24, 36] as $m): ?><option value="<?= $m ?>" <?= (int) $t['duration_months'] === $m ? 'selected' : '' ?>><?= $m ?> months</option><?php endforeach; ?></select>
+        <select name="status" style="width:auto" aria-label="Status"><?= enum_options(['ACTIVE', 'INACTIVE'], $t['status'], '') ?></select>
+        <input type="text" name="modules" placeholder="New module (optional)" style="width:180px" maxlength="150">
+        <button class="btn btn-light btn-sm" type="submit">Save</button></form></td></tr><?php endforeach; ?>
+    <?php if (!$trades): ?><tr><td colspan="5" class="empty">No trade matches.</td></tr><?php endif; ?>
   </table></div>
 </div>
-<div class="card"><h2>Add trade</h2>
-  <form method="post" action="<?= url('/masters/trades') ?>" class="form-grid"><?= csrf_field() ?>
-    <div class="field"><label>Trade code <span class="req">*</span></label><input type="text" name="trade_code" required maxlength="20" placeholder="e.g. DMC" style="text-transform:uppercase"></div>
-    <div class="field"><label>Name <span class="req">*</span></label><input type="text" name="name" required maxlength="120" placeholder="e.g. Draughtsman Civil"></div>
-    <div class="field"><label>Name in Marathi</label><input type="text" name="name_mr" maxlength="120"></div>
-    <div class="field"><label>Scheme</label><select name="scheme"><option>NCVT</option><option>SCVT</option></select></div>
-    <div class="field"><label>Duration <span class="req">*</span></label><select name="duration_months"><option value="6">6 months</option><option value="12">12 months</option><option value="24" selected>24 months</option><option value="36">36 months</option></select></div>
-    <div class="field"><label>Sector</label><input type="text" name="sector" maxlength="80"></div>
-    <div class="field span3"><label>Modules (one per line)</label><textarea name="modules" rows="5" placeholder="Safety&#10;Basic drawing&#10;..."></textarea></div>
-    <div class="field"><button class="btn" type="submit"><?= icon('plus') ?> Add trade</button></div>
-  </form></div>
 
 <?php elseif ($tab === 'years'): ?>
 <div class="card card-tight">
@@ -44,7 +46,7 @@
 <div class="card"><h2>Add / update a trade at an ITI</h2>
   <form method="post" action="<?= url('/masters/iti-trades') ?>" class="form-grid"><?= csrf_field() ?>
     <div class="field span2"><label>ITI</label><select name="iti_id" required><?= options($itis, 'id', 'name', input('iti')) ?></select></div>
-    <div class="field"><label>Trade</label><select name="trade_id" required><?= options($trades, 'id', 'name') ?></select></div>
+    <div class="field"><label>Trade</label><select name="trade_id" required><?= options($activeTrades, 'id', 'name') ?></select></div>
     <div class="field"><label>Sanctioned units</label><input type="number" name="sanctioned_units" min="1" max="20" value="1"></div>
     <div class="field"><label>Seats per unit</label><input type="number" name="seats_per_unit" min="1" max="60" value="24"></div>
     <div class="field" style="align-self:end"><button class="btn" type="submit">Save</button></div>

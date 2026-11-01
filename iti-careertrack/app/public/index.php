@@ -98,7 +98,7 @@ $r->post('/students/{id}/account', [C\StudentController::class, 'account']);
 $r->post('/role-assignments/{id}/revoke', [C\AdminController::class, 'revokeRole']);
 $r->get('/audit', [C\AdminController::class, 'audit']);
 $r->get('/masters', [C\MasterController::class, 'index']);
-$r->post('/masters/trades', [C\MasterController::class, 'storeTrade']);
+$r->post('/masters/trades/{id}', [C\MasterController::class, 'updateTrade']);
 $r->post('/masters/years', [C\MasterController::class, 'storeYear']);
 $r->post('/masters/years/{id}/status', [C\MasterController::class, 'yearStatus']);
 $r->post('/masters/iti-trades', [C\MasterController::class, 'storeItiTrade']);
@@ -108,6 +108,7 @@ $r->post('/settings/password', [C\AdminController::class, 'changePassword']);
 // --- principal
 $r->get('/trades', [C\PrincipalController::class, 'trades']);
 $r->post('/batches', [C\PrincipalController::class, 'storeBatch']);
+$r->post('/trades/add', [C\PrincipalController::class, 'addTrade']);
 $r->get('/placements', [C\PrincipalController::class, 'placements']);
 // --- teacher
 $r->get('/attendance', [C\TeacherController::class, 'attendance']);

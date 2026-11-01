@@ -55,8 +55,8 @@
     <div class="field"><label>District <span class="req">*</span></label><select name="district_id" required><?= options($districts, 'id', 'name', old('district_id')) ?></select></div>
     <div class="field"><label>Pincode</label><input type="text" name="pincode" pattern="[1-9][0-9]{5}" maxlength="6"></div>
     <div class="field span3"><label>Address</label><input type="text" name="address_line" maxlength="255"></div>
-    <div class="field span3"><label>Trades offered</label><div class="flex wrap">
-      <?php foreach ($trades as $t): ?><label class="badge badge-grey"><input type="checkbox" name="trades[]" value="<?= (int) $t['id'] ?>"> <?= e($t['name']) ?></label><?php endforeach; ?></div></div>
+    <div class="field span3"><label>Trades offered</label><div class="trade-pick">
+      <?php foreach ($trades as $t): ?><label><input type="checkbox" name="trades[]" value="<?= (int) $t['id'] ?>"> <?= e($t['name']) ?></label><?php endforeach; ?></div></div>
     <div class="field"><button class="btn" type="submit"><?= icon('plus') ?> Add ITI</button></div>
   </form>
 </div>

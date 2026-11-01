@@ -24,7 +24,41 @@ final class PrincipalController extends Controller
             'batches' => DB::all("SELECT b.*, t.name AS trade, (SELECT COUNT(*) FROM admissions a WHERE a.batch_id = b.id AND a.status IN ('ACCEPTED','ACTIVE')) AS enrolled,
                                          (SELECT GROUP_CONCAT(DISTINCT u.full_name SEPARATOR ', ') FROM timetable_slots ts JOIN users u ON u.id = ts.teacher_user_id WHERE ts.batch_id = b.id) AS teachers
                                     FROM batches b JOIN trades t ON t.id = b.trade_id WHERE b.iti_id = ? AND b.academic_year_id = ? ORDER BY t.name, b.unit_no", [$itiId, $yearId]),
+            // official NCVT trades this ITI does not offer yet (only these can be added — no free text)
+            'available' => DB::all("SELECT t.id, CONCAT(t.name, ' — ', t.duration_months, ' months') AS name FROM trades t
+                                     WHERE t.status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM iti_trades it WHERE it.iti_id = ? AND it.trade_id = t.id AND it.status = 'ACTIVE')
+                                     ORDER BY t.name", [$itiId]),
         ]);
+    }
+
+    /** Principal adds a trade to the own ITI — chosen from the official trade list only. */
+    public function addTrade(): void
+    {
+        Auth::require('admission.manage');
+        $itiId = (int) Auth::itiId();
+        $tradeId = (int) input('trade_id');
+        $units = (int) input('sanctioned_units', 1);
+        $seats = (int) input('seats_per_unit', 24);
+        $trade = DB::one("SELECT * FROM trades WHERE id = ? AND status = 'ACTIVE'", [$tradeId]);
+        if (!$itiId || !$trade) {
+            throw new \DomainException('Choose a trade from the official list.');
+        }
+        if ($units < 1 || $units > 20 || $seats < 1 || $seats > 60) {
+            throw new \DomainException('Units: 1 to 20. Seats per unit: 1 to 60.');
+        }
+        $existing = DB::one('SELECT * FROM iti_trades WHERE iti_id = ? AND trade_id = ?', [$itiId, $tradeId]);
+        if ($existing && $existing['status'] === 'ACTIVE') {
+            throw new \DomainException($trade['name'] . ' is already offered by your ITI.');
+        }
+        if ($existing) {
+            DB::run("UPDATE iti_trades SET sanctioned_units = ?, seats_per_unit = ?, status = 'ACTIVE' WHERE id = ?", [$units, $seats, $existing['id']]);
+            $id = (int) $existing['id'];
+        } else {
+            $id = DB::insert('iti_trades', ['iti_id' => $itiId, 'trade_id' => $tradeId, 'sanctioned_units' => $units, 'seats_per_unit' => $seats]);
+        }
+        Audit::log('ITI_TRADE', 'iti_trades', $id, null, $itiId, $existing, ['trade_id' => $tradeId, 'units' => $units, 'seats_per_unit' => $seats]);
+        flash('success', $trade['name'] . ' added to your ITI. Now add its batch (unit & shift) below.');
+        redirect('/trades');
     }
 
     public function storeBatch(): void

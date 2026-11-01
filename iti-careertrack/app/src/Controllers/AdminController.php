@@ -28,7 +28,7 @@ final class AdminController extends Controller
                   FROM itis i JOIN districts d ON d.id = i.district_id LEFT JOIN talukas t ON t.id = i.taluka_id
                   LEFT JOIN regions rg ON rg.id = d.region_id WHERE $w ORDER BY rg.name, d.name, i.name";
         $this->render('admin/itis', ['title' => 'ITIs Management', 'p' => $this->paginate($sql, $p, 30),
-            'districts' => DB::all('SELECT id, name FROM districts ORDER BY name'), 'trades' => DB::all('SELECT id, name FROM trades ORDER BY name'),
+            'districts' => DB::all('SELECT id, name FROM districts ORDER BY name'), 'trades' => DB::all("SELECT id, name FROM trades WHERE status = 'ACTIVE' ORDER BY name"),
             'regions' => DB::all('SELECT id, name FROM regions ORDER BY id'), 'import' => $_SESSION['iti_import'] ?? null]);
         unset($_SESSION['iti_import']);
     }
@@ -114,7 +114,7 @@ final class AdminController extends Controller
         $this->render('admin/users', ['title' => Auth::is('PRINCIPAL') ? 'Staff & Teachers' : 'User & Role Management', 'requests' => $requests,
             'p' => $this->paginate($sql, $p, 30), 'roles' => $this->grantableRoles(),
             'itis' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, CONCAT(name, \' (\', iti_code, \')\') AS name FROM itis ORDER BY name') : [],
-            'regions' => DB::all('SELECT id, name FROM regions ORDER BY name'), 'trades' => DB::all('SELECT id, name FROM trades ORDER BY name'),
+            'regions' => DB::all('SELECT id, name FROM regions ORDER BY name'), 'trades' => DB::all("SELECT id, name FROM trades WHERE status = 'ACTIVE' ORDER BY name"),
             'defaultPassword' => (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'default_password'"),
             'itisWithoutLogin' => Auth::is('STATE_ADMIN') ? (int) DB::value("SELECT COUNT(*) FROM itis i WHERE i.status = 'ACTIVE' AND NOT EXISTS
                 (SELECT 1 FROM users u WHERE u.username = UPPER(i.iti_code))") : 0,

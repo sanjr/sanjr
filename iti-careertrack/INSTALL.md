@@ -50,6 +50,15 @@ Installer हे ITI आपोआप भरतो (`database/data/*_itis.csv`):
 (किमान NCVT MIS ITI Code, Institute Name, District; ITI Type, Taluka, Region असल्यास तेही — नसल्यास नावातून ओळखले जातात). ITI, Principal, DVTO व RO logins आपोआप बनतात.
 आधीच install केलेल्या website वर Pune ची यादी हवी असेल तर हीच Excel तिथे upload करा.
 
+## Trades (ट्रेड)
+- अधिकृत NCVT यादीतील **167 trades** आधीच भरलेले आहेत. कोणालाही नवीन trade नाव type करता येत नाही.
+- **Principal → Trades & Batches → "Add a trade to your ITI"**: dropdown मधून trade निवडा, units व seats भरा → मग त्याचा batch (unit & shift) बनवा.
+- State Admin → Master Data → Trades: प्रत्येक trade चा कालावधी (duration) तपासा / बदला, trade बंद-चालू करा, modules जोडा.
+- आधीच install केलेल्या database साठी: phpMyAdmin → Import → `database/mysql/08_trade_master.sql`.
+
+## प्रवेश (Admission)
+विद्यार्थ्याचा **फोटो अनिवार्य** आहे (JPG/PNG, 5 MB पर्यंत) — फोटोशिवाय प्रवेश जतन होत नाही.
+
 ## सर्व login ची यादी
 **`LOGINS.xlsx`** (ZIP सोबत वेगळी पाठवलेली फाइल — server वर upload करू नका) — 577 login (State Admin, 6 RO, 36 DVTO, 476 Principal, इतर roles), प्रत्येक login प्रत्यक्ष तपासलेला. Password `Demo@1234`.
 

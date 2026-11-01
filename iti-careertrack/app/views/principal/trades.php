@@ -11,7 +11,21 @@
         <td class="num"><?= (int) $t['duration_months'] ?> months</td><td class="num"><?= (int) $t['sanctioned_units'] ?></td><td class="num"><?= e($t['seats_per_unit'] ?? '—') ?></td>
         <td class="num"><?= num($t['current_students']) ?></td><td><?= badge($t['it_status']) ?></td></tr>
     <?php endforeach; ?>
+    <?php if (!$trades): ?><tr><td colspan="8" class="empty">No trades yet — add your ITI's trades below.</td></tr><?php endif; ?>
   </table></div>
+</div>
+
+<div class="card">
+  <h2>Add a trade to your ITI</h2>
+  <p class="muted">Choose from the official NCVT trade list. Trades cannot be typed in.</p>
+  <?php if ($available): ?>
+  <form method="post" action="<?= url('/trades/add') ?>" class="form-grid" id="add-trade"><?= csrf_field() ?>
+    <div class="field span2"><label>Trade <span class="req">*</span></label><select name="trade_id" required><?= options($available, 'id', 'name', null, 'Select trade') ?></select></div>
+    <div class="field"><label>Sanctioned units <span class="req">*</span></label><input type="number" name="sanctioned_units" min="1" max="20" value="1" required></div>
+    <div class="field"><label>Seats per unit <span class="req">*</span></label><input type="number" name="seats_per_unit" min="1" max="60" value="24" required></div>
+    <div class="field" style="align-self:end"><button class="btn" type="submit"><?= icon('plus') ?> Add trade</button></div>
+  </form>
+  <?php else: ?><div class="empty">Your ITI already offers every active trade.</div><?php endif; ?>
 </div>
 
 <div class="card card-tight">

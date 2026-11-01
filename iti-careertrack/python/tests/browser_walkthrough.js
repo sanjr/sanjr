@@ -6,6 +6,7 @@
 const { chromium } = require('playwright');
 const BASE = (process.argv[2] || 'http://127.0.0.1:8080').replace(/\/$/, '');
 const ORIGIN = new URL(BASE).origin;   // sidebar links already contain the sub-folder path
+const PNG_HEX = '89504e470d0a1a0a0000000d4948445200000001000000010806000000' + '1f15c4890000000d49444154789c6360000002000154a24f5d0000000049454e44ae426082';
 const ROLES = [
   ['STATE_ADMIN', 'DVET-ADMIN'], ['RO_ADMIN', 'RO-PUN'], ['DVTO', 'DVTO-PUNE'], ['APPRENTICE_ADVISOR', 'AA-PUNE'],
   ['PRINCIPAL', 'DEMO0001'], ['TEACHER', 'teacher.pune@demo.local'], ['PLACEMENT_OFFICER', 'placement.pune@demo.local'],
@@ -66,7 +67,11 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
   await p.fill('input[name=ssc_passing_year]', '2025');
   await p.click('[data-next]');
   await p.selectOption('select[name=trade_id]', { index: 1 });
-  await p.click('[data-next]'); await p.click('[data-next]');
+  await p.click('[data-next]');
+  await p.click('[data-next]');   // step 4 without photo: must stay
+  ok(await p.locator('input[name=photo]').isVisible(), 'wizard: cannot continue without the student photo (compulsory)');
+  await p.setInputFiles('input[name=photo]', { name: 'photo.png', mimeType: 'image/png', buffer: Buffer.from(PNG_HEX, 'hex') });
+  await p.click('[data-next]');
   ok(await p.locator('[data-review] div').count() > 5, 'wizard: review step lists the entered data');
   await p.check('input[name=consent]');
   await Promise.all([p.waitForNavigation(), p.click('[data-submit]')]);
@@ -75,6 +80,16 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
   await Promise.all([p.waitForNavigation(), p.click('a:has-text("PCID Card")')]);
   ok(await p.locator('.qr svg').count() === 1, 'PCID card with QR code opens');
   await check(p, 'PCID card page has no errors');
+  await p.context().close();
+
+  // Principal of a real ITI: add a trade from the official list (dropdown only)
+  p = await login(b, 'PRINCIPAL', 'GR27000019');
+  await p.goto(BASE + '/trades');
+  ok(await p.locator('#add-trade select[name=trade_id] option').count() > 150 && await p.locator('#add-trade input[name=trade_name]').count() === 0,
+     'Principal: trade is chosen from the official list (no typing)');
+  await p.selectOption('#add-trade select[name=trade_id]', { label: 'Electrician — 24 months' });
+  await Promise.all([p.waitForNavigation(), p.click('#add-trade button[type=submit]')]);
+  ok(/Electrician added/.test(await successText(p)), 'Principal added Electrician to Govt. ITI Karad');
   await p.context().close();
 
   // State Admin: create an Apprentice Advisor with the role-dependent form

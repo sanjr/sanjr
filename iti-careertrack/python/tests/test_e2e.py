@@ -186,16 +186,33 @@ def main() -> int:
 
     print("\n[3] Duplicate prevention")
     before = val("SELECT COUNT(*) FROM students")
-    _, body, _, _ = pp.post("/admissions", dict(form, mobile="9000000001", first_name=first + "x"))
+    _, body, _, _ = pp.post("/admissions", dict(form, mobile="9000000001", first_name=first + "x"), files={"photo": ("photo.png", png, "image/png")})
     ok("already exists" in flash(body) and val("SELECT COUNT(*) FROM students") == before,
        "Same SSC seat number -> blocked, no second student/PCID")
     form2 = dict(form, ssc_seat_number="", ssc_board="", ssc_passing_year="")
-    _, body, _, _ = pp.post("/admissions", form2)
+    _, body, _, _ = pp.post("/admissions", form2, files={"photo": ("photo.png", png, "image/png")})
     ok("very similar student" in flash(body) and val("SELECT COUNT(*) FROM students") == before,
        "Same name + DOB + mobile (no SSC) -> strong duplicate warning, nothing saved")
     twin = dict(form2, first_name=rand_name())
-    _, body, url, _ = pp.post("/admissions", twin)
+    _, body, url, _ = pp.post("/admissions", twin, files={"photo": ("photo.png", png, "image/png")})
     ok("PCID" in flash(body) or "very similar" in flash(body), "Twin sibling (different first name) handled without hard block")
+    before2 = val("SELECT COUNT(*) FROM students")
+    _, body, _, _ = pp.post("/admissions", dict(form, first_name=rand_name(), last_name=rand_name(), ssc_seat_number="P" + ssc_seat[1:], mobile="98" + mobile[2:]))
+    ok("photo is compulsory" in flash(body) and val("SELECT COUNT(*) FROM students") == before2, "Admission without a student photo is refused")
+    _, body, _, _ = pp.post("/admissions", dict(form, first_name=rand_name(), last_name=rand_name(), ssc_seat_number="Q" + ssc_seat[1:], mobile="97" + mobile[2:]),
+                            files={"photo": ("photo.png", b"not really an image", "image/png")})
+    ok("JPG or PNG" in flash(body) and val("SELECT COUNT(*) FROM students") == before2, "A file that is not an image is refused as photo")
+
+    print("\n[3b] Trades only from the official list")
+    ok(val("SELECT COUNT(*) FROM trades WHERE status = 'ACTIVE'") >= 160, "Official NCVT trade list loaded (167 trades)")
+    new_trade = val("SELECT t.id FROM trades t WHERE t.status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM iti_trades it WHERE it.iti_id = %s AND it.trade_id = t.id) ORDER BY t.id LIMIT 1", pune["id"])
+    _, body, _, _ = pp.post("/trades/add", {"trade_id": str(new_trade), "sanctioned_units": "2", "seats_per_unit": "20"})
+    ok("added to your ITI" in flash(body) and val("SELECT sanctioned_units FROM iti_trades WHERE iti_id = %s AND trade_id = %s", pune["id"], new_trade) == 2,
+       "Principal adds an official trade to own ITI")
+    _, body, _, _ = pp.post("/trades/add", {"trade_id": "999999", "sanctioned_units": "1", "seats_per_unit": "20"})
+    ok("official list" in flash(body), "A trade that is not in the official list is refused")
+    status, _, _, _ = as_user(base, "state@demo.local").post("/masters/trades", {"trade_code": "XYZ", "name": "Typed trade", "duration_months": "12"})
+    ok(status in (404, 405) and not val("SELECT COUNT(*) FROM trades WHERE name = 'Typed trade'"), "Nobody can type in a new trade name")
 
     print("\n[4] Institute isolation & teacher scope")
     pn = as_user(base, "principal.nashik@demo.local")

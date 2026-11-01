@@ -474,3 +474,10 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   .pcid-card .foot { flex-direction: column; gap: 2px; }
 }
 .grid > * { min-width: 0; }
+/* desktop: the sidebar column is dark all the way down, however long the page (or a full-page screenshot) is */
+@media (min-width: 761px) { .shell { background: linear-gradient(90deg, #08224f 0, #08224f 236px, transparent 236px); } }
+.form-grid > * { min-width: 0; } input[type=file] { max-width: 100%; width: 100%; }
+.trade-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 4px 12px; max-height: 260px; overflow: auto;
+  border: 1px solid var(--grey-300); border-radius: 10px; padding: 10px 12px; background: #fbfcff; }
+.trade-pick label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; font-weight: 500; color: var(--grey-900); margin: 0; }
+.trade-pick input { width: auto; margin-top: 2px; }

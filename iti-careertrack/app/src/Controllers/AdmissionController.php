@@ -49,6 +49,19 @@ final class AdmissionController extends Controller
             }
         }
 
+        // Student photo is compulsory (a returning student who already has one may keep it)
+        $photo = $_FILES['photo'] ?? null;
+        $hasUpload = $photo && ($photo['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK && ($photo['size'] ?? 0) > 0;
+        if (!$hasUpload && !($existing && DB::value('SELECT photo_document_id FROM students WHERE id = ?', [$existing]))) {
+            $this->photoError('Student photo is compulsory (JPG or PNG, up to 5 MB). Attach it in step 4 — Documents.');
+        }
+        if ($hasUpload) {
+            $mime = (new \finfo(FILEINFO_MIME_TYPE))->file($photo['tmp_name']) ?: '';
+            if (!in_array($mime, ['image/jpeg', 'image/png'], true) || !@getimagesize($photo['tmp_name'])) {
+                $this->photoError('The student photo must be a JPG or PNG image.');
+            }
+        }
+
         $candidates = [];
         $override = null;
         if (!$existing) {
@@ -78,5 +91,13 @@ final class AdmissionController extends Controller
         unset($_SESSION['dup_candidates']);
         flash('success', 'Admission confirmed. Permanent Career ID (PCID): ' . $res['pcid']);
         redirect('/students/' . $res['student_id']);
+    }
+
+    private function photoError(string $msg): never
+    {
+        $_SESSION['errors'] = ['photo' => $msg];
+        $_SESSION['old'] = array_diff_key($_POST, array_flip(['_csrf', 'aadhaar']));
+        flash('error', $msg);
+        redirect('/admissions/new');
     }
 }

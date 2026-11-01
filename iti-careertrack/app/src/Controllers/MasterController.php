@@ -23,7 +23,8 @@ final class MasterController extends Controller
             'title' => 'Master Data', 'tab' => $tab,
             'trades' => DB::all("SELECT t.*, (SELECT COUNT(*) FROM trade_modules m WHERE m.trade_id = t.id) AS modules,
                                         (SELECT COUNT(*) FROM iti_trades it WHERE it.trade_id = t.id AND it.status = 'ACTIVE') AS itis
-                                   FROM trades t ORDER BY t.name"),
+                                   FROM trades t" . (($q = trim((string) input('q', ''))) !== '' ? ' WHERE t.name LIKE ' . DB::pdo()->quote('%' . $q . '%') : '') . ' ORDER BY t.status, t.name'),
+            'activeTrades' => DB::all("SELECT id, name FROM trades WHERE status = 'ACTIVE' ORDER BY name"),
             'years' => DB::all('SELECT ay.*, (SELECT COUNT(*) FROM admissions a WHERE a.academic_year_id = ay.id) AS admissions FROM academic_years ay ORDER BY ay.start_date DESC'),
             'regions' => DB::all("SELECT r.*, (SELECT COUNT(*) FROM districts d WHERE d.region_id = r.id) AS districts,
                                          (SELECT COUNT(*) FROM itis i JOIN districts d ON d.id = i.district_id WHERE d.region_id = r.id) AS itis,
@@ -38,30 +39,33 @@ final class MasterController extends Controller
         ]);
     }
 
-    public function storeTrade(): void
+    /**
+     * Trades come only from the official NCVT list (database/mysql/08_trade_master.sql) — nobody can type
+     * a new trade name. The State Admin can correct the duration, switch a trade on/off and add modules.
+     */
+    public function updateTrade(int $id): void
     {
         Auth::require('master_data.manage');
-        $code = strtoupper(trim((string) input('trade_code', '')));
-        $name = trim((string) input('name', ''));
+        $t = DB::one('SELECT * FROM trades WHERE id = ?', [$id]);
         $dur = (int) input('duration_months');
-        if (!preg_match('/^[A-Z0-9-]{2,20}$/', $code) || mb_strlen($name) < 2 || !in_array($dur, [6, 12, 24, 36], true)) {
-            throw new \DomainException('Enter a trade code (letters/digits), a name and a duration of 6, 12, 24 or 36 months.');
+        $status = input('status') === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE';
+        if (!$t || !in_array($dur, [6, 12, 24, 36], true)) {
+            throw new \DomainException('Choose a duration of 6, 12, 24 or 36 months.');
         }
-        DB::tx(function () use ($code, $name, $dur) {
-            $tid = DB::insert('trades', ['trade_code' => $code, 'name' => mb_substr($name, 0, 120), 'name_mr' => mb_substr((string) input('name_mr', ''), 0, 120) ?: null,
-                'sector' => mb_substr((string) input('sector', ''), 0, 80) ?: null, 'scheme' => input('scheme') === 'SCVT' ? 'SCVT' : 'NCVT', 'duration_months' => $dur]);
-            $n = 0;
+        DB::tx(function () use ($t, $dur, $status) {
+            DB::run('UPDATE trades SET duration_months = ?, status = ? WHERE id = ?', [$dur, $status, $t['id']]);
+            $n = (int) DB::value('SELECT COUNT(*) FROM trade_modules WHERE trade_id = ?', [$t['id']]);
             foreach (preg_split('/\R/', (string) input('modules', '')) ?: [] as $line) {
                 $line = trim($line);
                 if ($line !== '') {
                     $n++;
-                    DB::insert('trade_modules', ['trade_id' => $tid, 'module_code' => sprintf('M%02d', $n), 'name' => mb_substr($line, 0, 150), 'sequence_no' => $n]);
+                    DB::insert('trade_modules', ['trade_id' => $t['id'], 'module_code' => sprintf('M%02d', $n), 'name' => mb_substr($line, 0, 150), 'sequence_no' => $n]);
                 }
             }
-            Audit::log('INSERT', 'trades', $tid, null, null, null, ['code' => $code, 'modules' => $n]);
+            Audit::log('UPDATE', 'trades', (int) $t['id'], null, null, $t, ['duration_months' => $dur, 'status' => $status]);
         });
-        flash('success', "Trade $code added.");
-        redirect('/masters', ['tab' => 'trades']);
+        flash('success', $t['name'] . ' saved.');
+        redirect('/masters', ['tab' => 'trades', 'q' => input('q', '')]);
     }
 
     public function storeYear(): void
@@ -101,8 +105,8 @@ final class MasterController extends Controller
         $iti = int_input('iti_id');
         $trade = int_input('trade_id');
         $units = max(1, min(20, (int) input('sanctioned_units', 1)));
-        if (!$iti || !$trade || !DB::value('SELECT 1 FROM itis WHERE id = ?', [$iti]) || !DB::value('SELECT 1 FROM trades WHERE id = ?', [$trade])) {
-            throw new \DomainException('Choose an ITI and a trade.');
+        if (!$iti || !$trade || !DB::value('SELECT 1 FROM itis WHERE id = ?', [$iti]) || !DB::value("SELECT 1 FROM trades WHERE id = ? AND status = 'ACTIVE'", [$trade])) {
+            throw new \DomainException('Choose an ITI and a trade from the official trade list.');
         }
         $existing = DB::one('SELECT * FROM iti_trades WHERE iti_id = ? AND trade_id = ?', [$iti, $trade]);
         if ($existing) {
