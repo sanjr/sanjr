@@ -30,19 +30,20 @@ Hosting वर `root` user आणि रिकामा password **चालत 
 8. Install अर्धवट झाले तर: installer मध्ये **"Delete existing tables in this database first"** वर tick करा आणि पुन्हा Install दाबा.
 9. Hostinger व अनेक hosting वर **MariaDB** असते — ते चालते (MariaDB 10.5+ तपासले: 10.11).
 
-## Pune, Mumbai, Nagpur व Nashik region चे ITI (आधीच भरलेले)
+## Pune, Mumbai, Nagpur, Nashik व Amravati region चे ITI (आधीच भरलेले)
 Installer हे ITI आपोआप भरतो (`database/data/*_itis.csv`):
 - **Pune region — 61:** Pune 16, Satara 11, Sangli 10, Solapur 12, Kolhapur 12
 - **Mumbai region — 78:** Mumbai City 8, Mumbai Suburban 9, Thane 16, Palghar 11, Raigad 16, Ratnagiri 10, Sindhudurg 8
 - **Nagpur region — 78:** Nagpur 17, Wardha 8, Bhandara 8, Gondia 10, Chandrapur 18, Gadchiroli 17
 - **Nashik region — 68:** Nashik 21, Ahilyanagar 16, Jalgaon 17, Nandurbar 8, Dhule 6
+- **Amravati region — 63:** Amravati 18, Yavatmal 18, Buldhana 13, Akola 8, Washim 6
 
 सर्वांचा password **`Demo@1234`**:
 | Login | User ID | काय दिसते |
 |---|---|---|
 | Principal | त्या ITI चा **NCVT MIS Code** (उदा. `GU27000009` Aundh Pune, `GU27000102` Dadar) | फक्त स्वतःची ITI |
-| DVTO | `DVTO-PUNE`, `DVTO-SATARA`, `DVTO-SANGLI`, `DVTO-SOLAPUR`, `DVTO-KOLHAPUR`, `DVTO-MUMBAI-CITY`, `DVTO-MUMBAI-SUBURBAN`, `DVTO-THANE`, `DVTO-PALGHAR`, `DVTO-RAIGAD`, `DVTO-RATNAGIRI`, `DVTO-SINDHUDURG`, `DVTO-NAGPUR`, `DVTO-WARDHA`, `DVTO-BHANDARA`, `DVTO-GONDIA`, `DVTO-CHANDRAPUR`, `DVTO-GADCHIROLI`, `DVTO-NASHIK`, `DVTO-AHILYANAGAR`, `DVTO-JALGAON`, `DVTO-NANDURBAR`, `DVTO-DHULE` | फक्त त्या जिल्ह्याच्या ITI |
-| RO Admin | `RO-PUN`, `RO-MUM`, `RO-NGP`, `RO-NSK` | त्या region च्या सर्व ITI |
+| DVTO | `DVTO-PUNE`, `DVTO-SATARA`, `DVTO-SANGLI`, `DVTO-SOLAPUR`, `DVTO-KOLHAPUR`, `DVTO-MUMBAI-CITY`, `DVTO-MUMBAI-SUBURBAN`, `DVTO-THANE`, `DVTO-PALGHAR`, `DVTO-RAIGAD`, `DVTO-RATNAGIRI`, `DVTO-SINDHUDURG`, `DVTO-NAGPUR`, `DVTO-WARDHA`, `DVTO-BHANDARA`, `DVTO-GONDIA`, `DVTO-CHANDRAPUR`, `DVTO-GADCHIROLI`, `DVTO-NASHIK`, `DVTO-AHILYANAGAR`, `DVTO-JALGAON`, `DVTO-NANDURBAR`, `DVTO-DHULE`, `DVTO-AMRAVATI`, `DVTO-YAVATMAL`, `DVTO-BULDHANA`, `DVTO-AKOLA`, `DVTO-WASHIM` | फक्त त्या जिल्ह्याच्या ITI |
+| RO Admin | `RO-PUN`, `RO-MUM`, `RO-NGP`, `RO-NSK`, `RO-AMR` | त्या region च्या सर्व ITI |
 
 **इतर region ची यादी:** State Admin → **ITIs Management** → *Import ITI list (Excel / CSV)* — त्याच format ची Excel upload करा
 (किमान NCVT MIS ITI Code, Institute Name, District; ITI Type, Taluka, Region असल्यास तेही — नसल्यास नावातून ओळखले जातात). ITI, Principal, DVTO व RO logins आपोआप बनतात.

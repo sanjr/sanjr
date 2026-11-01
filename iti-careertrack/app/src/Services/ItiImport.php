@@ -81,6 +81,12 @@ final class ItiImport
         return $name;
     }
 
+    /** Spelling-tolerant key: "Amaravati" and "Amravati" both give "mrvt". */
+    private static function loose(string $s): string
+    {
+        return preg_replace('/[^b-df-hj-np-tv-z]/', '', strtolower($s));
+    }
+
     private static function title(string $s): string
     {
         $t = ucwords(strtolower(trim($s)), " \t(-/.");
@@ -204,7 +210,7 @@ final class ItiImport
                     continue;
                 }
                 if ($it['region'] !== '' && $d['region_name'] !== null
-                    && stripos($d['region_name'] . ' ' . $d['hq_city'], $it['region']) === false) {
+                    && !str_contains(self::loose($d['region_name'] . ' ' . $d['hq_city']), self::loose($it['region']))) {
                     $res['warnings'][] = "Row {$it['row']}: {$it['district']} belongs to {$d['region_name']}, not \"{$it['region']}\" — district region kept.";
                 }
                 $type = stripos($it['type'], 'priv') !== false ? 'PRIVATE' : 'GOVERNMENT';
