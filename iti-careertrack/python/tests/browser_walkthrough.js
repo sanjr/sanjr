@@ -125,6 +125,18 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
   ok(/do not match|valid PCID/.test(await errorText(p)), 'employer: wrong date of birth is refused');
   await p.context().close();
 
+  // Pune region ITI list (database/data): each DVTO sees only the ITIs of own district; Principal logs in with NCVT MIS code
+  for (const [u, dist] of [['DVTO-SATARA', 'Satara'], ['DVTO-KOLHAPUR', 'Kolhapur']]) {
+    p = await login(b, 'DVTO', u);
+    await p.goto(BASE + '/itis');
+    const ds = await p.$$eval('table.table tr td:nth-child(5)', t => t.map(x => x.textContent.trim()));
+    ok(ds.length > 0 && ds.every(x => x === dist), `${u} sees only ${dist} ITIs (${ds.length})`);
+    await p.context().close();
+  }
+  p = await login(b, 'PRINCIPAL', 'GR27000019');
+  ok(/\/dashboard$/.test(p.url()) && (await p.content()).includes('Karad'), 'Principal logs in with NCVT MIS code GR27000019 (Govt. ITI Karad)');
+  await p.context().close();
+
   // Public website and installer lock
   const ctx = await b.newContext(); p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));

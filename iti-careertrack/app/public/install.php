@@ -218,13 +218,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->prepare("INSERT INTO user_role_assignments (user_id, role_id, scope_type, valid_from) SELECT ?, id, 'STATE', CURDATE() FROM roles WHERE code = 'STATE_ADMIN'")
                     ->execute([$uid]);
             }
+            // Official ITI lists shipped in database/data/*_itis.csv (e.g. Pune region):
+            // ITIs + Principal (User ID = NCVT MIS code), DVTO and RO logins, password Demo@1234.
+            $imported = [];
+            $dataDir = dirname($dbDir) . '/data';
+            $csvs = glob($dataDir . '/*_itis.csv') ?: [];
+            if ($csvs) {
+                require_once $root . '/src/bootstrap.php';
+                \App\Core\Database::usePdo($pdo);
+                $actor = (int) $pdo->query("SELECT u.id FROM users u JOIN user_role_assignments ura ON ura.user_id = u.id
+                                             JOIN roles r ON r.id = ura.role_id WHERE r.code = 'STATE_ADMIN' ORDER BY u.id LIMIT 1")->fetchColumn() ?: null;
+                foreach ($csvs as $csv) {
+                    $items = \App\Services\ItiImport::readFile($csv, basename($csv));
+                    $imported[basename($csv)] = ['rows' => count($items)] + \App\Services\ItiImport::import($items, 'Demo@1234', false, $actor);
+                }
+            }
             $config = ['app' => ['name' => 'ITI CareerTrack', 'env' => $in['mode'] === 'demo' ? 'demo' : 'production', 'secret' => bin2hex(random_bytes(32)),
                                  'timezone' => 'Asia/Kolkata', 'session_idle_minutes' => 30, 'force_https_cookies' => false],
                        'db' => ['host' => $in['host'], 'port' => (int) $in['port'], 'name' => $in['name'], 'user' => $in['user'], 'pass' => $in['pass']],
                        'storage' => ['documents' => $root . '/storage/documents', 'max_upload_bytes' => 5 * 1024 * 1024]];
             $php = "<?php\n// Written by the ITI CareerTrack installer on " . date('Y-m-d H:i') . ". Keep this file private.\nreturn " . var_export($config, true) . ";\n";
             $written = @file_put_contents($configFile, $php) !== false;
-            $done = ['statements' => $count, 'written' => $written, 'php' => $php, 'mode' => $in['mode'], 'no_triggers' => $noTriggers];
+            $done = ['statements' => $count, 'written' => $written, 'php' => $php, 'mode' => $in['mode'], 'no_triggers' => $noTriggers, 'imported' => $imported];
             session_destroy();
         } catch (Throwable $e) {
             $msg = $e->getMessage();
@@ -254,6 +269,10 @@ $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '
   <div class="card">
     <h2 style="color:var(--green)">Installation complete</h2>
     <p><?= (int) $done['statements'] ?> database steps completed.</p>
+    <?php foreach ($done['imported'] as $file => $im): ?>
+      <div class="alert alert-success">ITI list <b><?= $h($file) ?></b>: <?= (int) $im['rows'] ?> ITIs, <?= (int) $im['principals'] ?> Principal logins
+        (User ID = NCVT MIS code, password <b>Demo@1234</b>)<?= $im['dvto'] ? ', DVTO logins ' . $h(implode(', ', $im['dvto'])) : '' ?><?= $im['ro'] ? ', RO logins ' . $h(implode(', ', $im['ro'])) : '' ?>.</div>
+    <?php endforeach; ?>
     <?php if ($done['no_triggers']): ?>
       <div class="alert alert-info">This MySQL server does not allow triggers for your user (binary logging without the SUPER privilege — normal on web hosting).
         That is fine: the website applies the same rules in PHP. The extra database-level protection (for example the append-only audit log)

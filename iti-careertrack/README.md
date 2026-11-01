@@ -146,7 +146,8 @@ On the login page you can also just click a role on the right — in DEMO mode i
 |---|---|
 | State Admin (DVET) | `DVET-ADMIN` |
 | RO Admin | `RO-PUN` (also `RO-MUM`, `RO-NSK`, `RO-CSN`, `RO-AMR`, `RO-NGP`) |
-| DVTO Admin | `DVTO-PUNE`, `DVTO-NASHIK` |
+| DVTO Admin | `DVTO-PUNE`, `DVTO-SATARA`, `DVTO-SANGLI`, `DVTO-SOLAPUR`, `DVTO-KOLHAPUR`, `DVTO-NASHIK` |
+| Principal — real Pune-region ITIs (61) | the ITI's NCVT MIS code, e.g. `GU27000009` (list: `database/data/pune_region_itis.csv`) |
 | Apprentice Advisor | `AA-PUNE` (9 ITIs of the Pune region) |
 | Principal — Govt ITI Pune | `DEMO0001` (the ITI code; every ITI's Principal uses its code) |
 | Principal — Govt ITI Nashik | `DEMO0002` |

@@ -89,6 +89,7 @@ $r->get('/reports/export', [C\ReportController::class, 'export']);
 // --- administration
 $r->get('/itis', [C\AdminController::class, 'itis']);
 $r->post('/itis', [C\AdminController::class, 'storeIti']);
+$r->post('/itis/import', [C\AdminController::class, 'importItis']);
 $r->get('/users', [C\AdminController::class, 'users']);
 $r->post('/users', [C\AdminController::class, 'storeUser']);
 $r->post('/users/bulk-iti-logins', [C\AdminController::class, 'bulkItiLogins']);

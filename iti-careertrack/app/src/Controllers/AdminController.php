@@ -19,14 +19,42 @@ final class AdminController extends Controller
         }
         [$w, $p] = Access::itiScope('i.id');
         if ($d = int_input('district')) { $w .= ' AND i.district_id = ?'; $p[] = $d; }
+        if ($rg = int_input('region')) { $w .= ' AND d.region_id = ?'; $p[] = $rg; }
         if ($q = (string) input('q', '')) { $w .= ' AND (i.name LIKE ? OR i.iti_code LIKE ?)'; $p[] = "%$q%"; $p[] = "%$q%"; }
-        $sql = "SELECT i.*, d.name AS district,
+        $sql = "SELECT i.*, d.name AS district, t.name AS taluka, rg.name AS region,
                        (SELECT COUNT(*) FROM iti_trades it WHERE it.iti_id = i.id AND it.status = 'ACTIVE') AS trades,
                        (SELECT COUNT(*) FROM institute_affiliations ia WHERE ia.iti_id = i.id AND ia.status = 'ACTIVE') AS current_students,
                        (SELECT COUNT(*) FROM institute_affiliations ia WHERE ia.iti_id = i.id AND ia.status = 'COMPLETED') AS alumni
-                  FROM itis i JOIN districts d ON d.id = i.district_id WHERE $w ORDER BY d.name, i.name";
+                  FROM itis i JOIN districts d ON d.id = i.district_id LEFT JOIN talukas t ON t.id = i.taluka_id
+                  LEFT JOIN regions rg ON rg.id = d.region_id WHERE $w ORDER BY rg.name, d.name, i.name";
         $this->render('admin/itis', ['title' => 'ITIs Management', 'p' => $this->paginate($sql, $p, 30),
-            'districts' => DB::all('SELECT id, name FROM districts ORDER BY name'), 'trades' => DB::all('SELECT id, name FROM trades ORDER BY name')]);
+            'districts' => DB::all('SELECT id, name FROM districts ORDER BY name'), 'trades' => DB::all('SELECT id, name FROM trades ORDER BY name'),
+            'regions' => DB::all('SELECT id, name FROM regions ORDER BY id'), 'import' => $_SESSION['iti_import'] ?? null]);
+        unset($_SESSION['iti_import']);
+    }
+
+    /** State Admin: import an ITI list (Excel/CSV) — ITIs + Principal (User ID = NCVT MIS code), DVTO and RO logins. */
+    public function importItis(): void
+    {
+        Auth::requireRole('STATE_ADMIN');
+        $f = $_FILES['file'] ?? null;
+        if (!$f || ($f['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($f['tmp_name'])) {
+            throw new \DomainException('Choose the Excel (.xlsx) or CSV file with the ITI list.');
+        }
+        if ($f['size'] > 5 * 1024 * 1024) {
+            throw new \DomainException('File is larger than 5 MB.');
+        }
+        $password = (string) input('password', '');
+        if (strlen($password) < 8) {
+            throw new \DomainException('Default password: at least 8 characters.');
+        }
+        $items = \App\Services\ItiImport::readFile($f['tmp_name'], (string) $f['name']);
+        $res = \App\Services\ItiImport::import($items, $password, (bool) input('must_change'), Auth::id());
+        Audit::log('IMPORT', 'itis', null, null, null, null, ['file' => (string) $f['name'], 'rows' => count($items)] + array_diff_key($res, ['warnings' => 1]));
+        $_SESSION['iti_import'] = $res + ['rows' => count($items), 'password' => $password, 'must_change' => (bool) input('must_change')];
+        flash('success', sprintf('%d ITIs read: %d added, %d updated, %d Principal logins, %d DVTO and %d RO logins created.',
+            count($items), $res['itis_added'], $res['itis_updated'], $res['principals'], count($res['dvto']), count($res['ro'])));
+        redirect('/itis');
     }
 
     public function storeIti(): void

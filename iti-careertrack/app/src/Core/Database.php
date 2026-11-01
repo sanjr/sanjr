@@ -12,6 +12,12 @@ final class Database
 {
     private static ?PDO $pdo = null;
 
+    /** Used by the installer, which already holds a connection. */
+    public static function usePdo(PDO $pdo): void
+    {
+        self::$pdo = $pdo;
+    }
+
     public static function pdo(): PDO
     {
         if (self::$pdo === null) {

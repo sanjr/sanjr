@@ -30,6 +30,19 @@ Hosting वर `root` user आणि रिकामा password **चालत 
 8. Install अर्धवट झाले तर: installer मध्ये **"Delete existing tables in this database first"** वर tick करा आणि पुन्हा Install दाबा.
 9. Hostinger व अनेक hosting वर **MariaDB** असते — ते चालते (MariaDB 10.5+ तपासले: 10.11).
 
+## Pune region चे ITI (आधीच भरलेले)
+Installer Pune region चे **61 शासकीय ITI** आपोआप भरतो (Pune 16, Satara 11, Sangli 10, Solapur 12, Kolhapur 12 — `database/data/pune_region_itis.csv`).
+सर्वांचा password **`Demo@1234`**:
+| Login | User ID | काय दिसते |
+|---|---|---|
+| Principal | त्या ITI चा **NCVT MIS Code** (उदा. `GU27000009` — Govt. ITI Aundh Pune) | फक्त स्वतःची ITI |
+| DVTO | `DVTO-PUNE`, `DVTO-SATARA`, `DVTO-SANGLI`, `DVTO-SOLAPUR`, `DVTO-KOLHAPUR` | फक्त त्या जिल्ह्याच्या ITI |
+| RO Admin | `RO-PUN` | Pune region च्या सर्व ITI |
+
+**इतर region ची यादी:** State Admin → **ITIs Management** → *Import ITI list (Excel / CSV)* — त्याच format ची Excel upload करा
+(NCVT MIS ITI Code, Institute Name, ITI Type, Taluka, District, Region). ITI, Principal, DVTO व RO logins आपोआप बनतात.
+आधीच install केलेल्या website वर Pune ची यादी हवी असेल तर हीच Excel तिथे upload करा.
+
 ## English (Linux / any server)
 1. Copy the `ITI-CareerTrack` folder to the web server. Point Apache/Nginx to `ITI-CareerTrack/app/public` (recommended) — or keep the whole folder in the web root (the included `.htaccess` files block access to private folders).
 2. Open the site in a browser → the installer opens → enter MySQL details → choose Demo or Empty → Install.
