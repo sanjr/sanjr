@@ -153,6 +153,9 @@ final class AdminController extends Controller
         if ($username !== '' && !preg_match('/^[A-Z0-9][A-Z0-9_.-]{2,49}$/', $username)) { $errors['username'] = 'User ID: 3–50 letters, digits, - _ . only.'; }
         if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors['email'] = 'Invalid e-mail.'; }
         if ($mobile !== '' && !preg_match('/^[6-9][0-9]{9}$/', $mobile)) { $errors['mobile'] = 'Invalid mobile number.'; }
+        if (in_array($role['code'], ['TEACHER', 'ITI_STAFF'], true) && $username === '') {
+            $errors['username'] = 'Sevaarth ID is required for Instructor and ITI Staff (it is their login ID).';
+        }
         if ($username === '' && $email === '' && $mobile === '') { $errors['username'] = 'Give at least a User ID, e-mail or mobile number.'; }
         $pw = (string) ($_POST['password'] ?? '');
         $default = (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'default_password'");

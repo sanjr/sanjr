@@ -10,6 +10,13 @@ $demoEmails = ['STATE_ADMIN' => 'DVET-ADMIN', 'RO_ADMIN' => 'RO-PUN', 'DVTO' => 
                'TEACHER' => 'teacher.pune@demo.local', 'PLACEMENT_OFFICER' => 'placement.pune@demo.local', 'STUDENT' => 'rohit.deshmukh@demo.local',
                'EMPLOYER' => 'hr.sahyadri@demo.local', 'ITI_STAFF' => 'staff.pune@demo.local'];
 $stats = $stats ?? [];
+foreach ($demoEmails as $k => $v) {
+    $demoEmails[$k] = $demoIds[$v] ?? $v;   // demo account's User ID
+}
+// What the login box is called for each role
+$idLabel = static fn (string $code): string => match ($code) {
+    'PRINCIPAL' => 'NCVT MIS Code', 'TEACHER', 'ITI_STAFF' => 'Sevaarth ID', default => 'User ID' };
+$curLabel = $idLabel($as);
 ?>
 <section class="lx">
   <div class="lx-card">
@@ -38,7 +45,7 @@ $stats = $stats ?? [];
       <div class="role-pick" role="radiogroup" aria-label="Login as">
         <?php foreach (['STATE_ADMIN', 'RO_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR', 'PRINCIPAL', 'TEACHER', 'PLACEMENT_OFFICER', 'ITI_STAFF', 'EMPLOYER', 'STUDENT'] as $code): ?>
           <button type="button" role="radio" aria-checked="<?= $as === $code ? 'true' : 'false' ?>" class="<?= $as === $code ? 'sel' : '' ?>" title="<?= e(Auth::ROLE_LABELS[$code]) ?>"
-                  data-role="<?= e($code) ?>" data-label="<?= e(Auth::ROLE_LABELS[$code]) ?>" <?= $demo ? 'data-demo-email="' . e($demoEmails[$code]) . '"' : '' ?>>
+                  data-role="<?= e($code) ?>" data-label="<?= e(Auth::ROLE_LABELS[$code]) ?>" data-id-label="<?= e($idLabel($code)) ?>" <?= $demo ? 'data-demo-email="' . e($demoEmails[$code]) . '"' : '' ?>>
             <?= icon($roleIcons[$code]) ?><span><?= e($short[$code]) ?></span></button>
         <?php endforeach; ?>
       </div>
@@ -46,8 +53,9 @@ $stats = $stats ?? [];
       <form method="post" action="<?= url('/login') ?>" autocomplete="on" id="login-form">
         <?= csrf_field() ?>
         <input type="hidden" name="role" id="login-role" value="<?= e($as) ?>">
-        <div class="field mt"><label for="email">User ID / E-mail / Mobile</label>
-          <div class="lx-input"><?= icon('user') ?><input type="text" id="email" name="email" value="<?= e(old('email')) ?>" required autofocus autocomplete="username" placeholder="NCVT MIS code, DVTO-PUNE, e-mail…"></div></div>
+        <div class="field mt"><label for="email" id="id-label"><?= e($curLabel) ?></label>
+          <div class="lx-input"><?= icon('user') ?><input type="text" id="email" name="email" value="<?= e(old('email')) ?>" required autofocus autocomplete="username"
+            placeholder="Enter <?= e($curLabel) ?>" style="text-transform:uppercase"></div></div>
         <div class="field mt"><label for="password">Password</label>
           <div class="lx-input pw-wrap"><?= icon('shield') ?><input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter password">
             <button type="button" class="pw-toggle" data-pw-toggle="password" aria-label="Show password"><?= icon('eye') ?></button></div></div>
@@ -56,7 +64,7 @@ $stats = $stats ?? [];
         <div class="login-role-label" id="role-label"><?= $as ? 'Signing in as <b>' . e(Auth::ROLE_LABELS[$as]) . '</b>' : 'Your role is detected automatically from your User ID.' ?></div>
       </form>
       <?php if ($demo): ?>
-        <p class="note mt">DEMO: tap a role to fill its demo account (password <b>Demo@1234</b>). ITI Principal: User ID = NCVT MIS code.</p>
+        <p class="note mt">DEMO: tap a role to fill its demo account (password <b>Demo@1234</b>). Principal: NCVT MIS Code · Instructor / ITI Staff: Sevaarth ID · Student: PCID.</p>
       <?php endif; ?>
     </div>
   </div>

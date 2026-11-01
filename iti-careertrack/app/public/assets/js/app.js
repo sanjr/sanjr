@@ -130,6 +130,9 @@
       var hidden = document.getElementById('login-role'), lbl = document.getElementById('role-label');
       b.classList.add('sel'); b.setAttribute('aria-checked', 'true'); hidden.value = b.getAttribute('data-role');
       lbl.innerHTML = 'Signing in as <b></b>'; lbl.querySelector('b').textContent = b.getAttribute('data-label');
+      var idl = b.getAttribute('data-id-label') || 'User ID', lab = document.getElementById('id-label'), box = document.getElementById('email');
+      if (lab) lab.textContent = idl;
+      if (box) box.placeholder = 'Enter ' + idl;
       var demo = b.getAttribute('data-demo-email');
       if (demo) { document.getElementById('email').value = demo; document.getElementById('password').value = 'Demo@1234'; }
     });
@@ -145,6 +148,14 @@
         var want = f.getAttribute('data-for'), show = want === scope || (want === 'TEACHER' && code === 'TEACHER');
         f.style.display = show ? '' : 'none';
       });
+      // the login ID has a different name per role
+      var ul = form.querySelector('[data-username-label]'), ui = form.querySelector('[data-username-input]');
+      if (ul && ui) {
+        var sev = code === 'TEACHER' || code === 'ITI_STAFF';
+        ul.innerHTML = sev ? 'Sevaarth ID <span class="req">*</span>' : (code === 'PRINCIPAL' ? 'NCVT MIS Code' : 'User ID');
+        ui.placeholder = sev ? 'Enter Sevaarth ID' : (code === 'PRINCIPAL' ? 'Leave empty: the ITI\'s NCVT MIS code is used' : 'e.g. RO-PUN, DVTO-PUNE');
+        ui.required = sev;
+      }
     };
     rsel.addEventListener('change', sync); sync();
   }

@@ -64,6 +64,14 @@ Installer हे ITI आपोआप भरतो (`database/data/*_itis.csv`):
 ## प्रवेश (Admission)
 विद्यार्थ्याचा **फोटो अनिवार्य** आहे (JPG/PNG, 5 MB पर्यंत) — फोटोशिवाय प्रवेश जतन होत नाही.
 
+## Login ID (login page वर role निवडल्यावर नाव बदलते)
+| Role | Login ID |
+|---|---|
+| Principal | **NCVT MIS Code** |
+| Instructor, ITI Staff | **Sevaarth ID** (State Admin user बनवताना Sevaarth ID भरणे अनिवार्य) |
+| Student | **PCID** (Principal "Create login" दाबल्यावर) |
+| State Admin, RO, DVTO, Apprentice Advisor, Placement, Employer | **User ID** |
+
 ## सर्व login ची यादी
 **`LOGINS.xlsx`** (ZIP सोबत वेगळी पाठवलेली फाइल — server वर upload करू नका) — 577 login (State Admin, 6 RO, 36 DVTO, 476 Principal, इतर roles), प्रत्येक login प्रत्यक्ष तपासलेला. Password `Demo@1234`.
 

@@ -12,12 +12,29 @@ namespace App\Core;
  */
 final class Migrator
 {
-    /** version => file. Add new migrations at the end. */
-    public const MIGRATIONS = [7 => '07_performance.sql', 8 => '08_trade_master.sql'];
+    /** Updates start at 07 (01–06 are the base schema loaded by the installer). */
+    private const FIRST = 7;
+
+    /**
+     * version => file, read from database/mysql/NN_*.sql on disk (not from code, so a cached old
+     * copy of this class can never hide a newly uploaded migration). Adding a file = adding an update.
+     */
+    public static function migrations(): array
+    {
+        $out = [];
+        foreach (glob(self::sqlDir() . '/[0-9][0-9]_*.sql') ?: [] as $f) {
+            $n = (int) substr(basename($f), 0, 2);
+            if ($n >= self::FIRST) {
+                $out[$n] = basename($f);
+            }
+        }
+        ksort($out);
+        return $out;
+    }
 
     public static function latest(): int
     {
-        return (int) max(array_keys(self::MIGRATIONS));
+        return (int) (max(array_keys(self::migrations()) ?: [self::FIRST - 1]));
     }
 
     /** Cheap check on every request: a marker file says "already at the latest version". */
@@ -51,7 +68,7 @@ final class Migrator
         $current = (int) ($pdo->query("SELECT setting_value FROM settings WHERE setting_key = 'schema_version'")->fetchColumn() ?: 6);
         $dir = self::sqlDir();
         $maria = stripos((string) $pdo->query('SELECT VERSION()')->fetchColumn(), 'mariadb') !== false;
-        foreach (self::MIGRATIONS as $version => $file) {
+        foreach (self::migrations() as $version => $file) {
             if ($version <= $current) {
                 continue;
             }

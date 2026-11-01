@@ -57,7 +57,7 @@
         <?php foreach ($roles as $r): ?><option value="<?= (int) $r['id'] ?>" data-scope="<?= e($r['scope_type']) ?>" data-code="<?= e($r['code']) ?>" <?= (string) old('role_id') === (string) $r['id'] ? 'selected' : '' ?>><?= e($r['name']) ?></option><?php endforeach; ?>
       </select><?= field_error('role_id') ?></div>
     <div class="field<?= has_error('full_name') ?>"><label>Full name <span class="req">*</span></label><input type="text" name="full_name" required maxlength="150" value="<?= e(old('full_name')) ?>"><?= field_error('full_name') ?></div>
-    <div class="field<?= has_error('username') ?>"><label>User ID</label><input type="text" name="username" maxlength="50" value="<?= e(old('username')) ?>" placeholder="e.g. RO-PUN, DVTO-PUNE" style="text-transform:uppercase"><?= field_error('username') ?>
+    <div class="field<?= has_error('username') ?>"><label data-username-label>User ID</label><input type="text" name="username" maxlength="50" value="<?= e(old('username')) ?>" placeholder="e.g. RO-PUN, DVTO-PUNE" style="text-transform:uppercase" data-username-input><?= field_error('username') ?>
       <div class="hint">Leave empty for a Principal (NCVT MIS code is used).</div></div>
     <div class="field<?= has_error('email') ?>"><label>E-mail</label><input type="email" name="email" value="<?= e(old('email')) ?>"><?= field_error('email') ?></div>
     <div class="field<?= has_error('mobile') ?>"><label>Mobile</label><input type="tel" name="mobile" pattern="[6-9][0-9]{9}" maxlength="10" value="<?= e(old('mobile')) ?>"><?= field_error('mobile') ?></div>

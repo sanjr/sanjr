@@ -152,6 +152,21 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
   ok(/\/dashboard$/.test(p.url()) && (await p.content()).includes('Karad'), 'Principal logs in with NCVT MIS code GR27000019 (Govt. ITI Karad)');
   await p.context().close();
 
+  // Login page: the ID box is named per role; Instructor logs in with the Sevaarth ID
+  { const c = await b.newContext(); const lp = await c.newPage(); await lp.goto(BASE + '/login');
+    const lab = async () => [(await lp.locator('#id-label').innerText()).trim(), await lp.getAttribute('#email', 'placeholder')];
+    let [l0, p0] = await lab(); ok(l0 === 'User ID' && p0 === 'Enter User ID', 'login: default box is "User ID" / "Enter User ID"');
+    await lp.click('[data-role=PRINCIPAL]'); ok((await lab())[0] === 'NCVT MIS Code' && (await lab())[1] === 'Enter NCVT MIS Code', 'login: Principal -> NCVT MIS Code');
+    await lp.click('[data-role=TEACHER]'); ok((await lab())[0] === 'Sevaarth ID' && (await lab())[1] === 'Enter Sevaarth ID', 'login: Instructor -> Sevaarth ID');
+    await lp.click('[data-role=ITI_STAFF]'); ok((await lab())[0] === 'Sevaarth ID', 'login: ITI Staff -> Sevaarth ID');
+    for (const r of ['STATE_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR', 'PLACEMENT_OFFICER', 'EMPLOYER', 'STUDENT']) {
+      await lp.click(`[data-role=${r}]`); const [l, ph] = await lab(); ok(l === 'User ID' && ph === 'Enter User ID', `login: ${r} -> User ID`);
+    }
+    await lp.click('[data-role=TEACHER]'); const sev = await lp.inputValue('#email');
+    await Promise.all([lp.waitForNavigation(), lp.click('#login-form button[type=submit]')]);
+    ok(/^DEMOSEV\d+$/.test(sev) && /\/dashboard$/.test(lp.url()), `Instructor logged in with Sevaarth ID ${sev}`);
+    await c.close(); }
+
   // Public website and installer lock
   const ctx = await b.newContext(); p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));

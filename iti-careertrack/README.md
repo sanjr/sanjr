@@ -9,7 +9,7 @@
 > **Capacity:** [docs/04-PERFORMANCE-AND-CAPACITY.md](docs/04-PERFORMANCE-AND-CAPACITY.md) — tested with 2.7 lakh students and 100 simultaneous users.
 >
 > Tested before release: web installer (Demo and Empty), Apache sub-folder install from the ZIP,
-> a real-browser walkthrough of every menu of all 10 roles (245 checks) and 115 end-to-end tests — all passing.
+> a real-browser walkthrough of every menu of all 10 roles (256 checks) and 116 end-to-end tests — all passing.
 
 
 **ITI Student Lifecycle & Career Tracking System — Maharashtra**
@@ -39,8 +39,8 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | `python/seed_demo.py` | Creates DEMO data (36 districts, 46 ITIs, about 6,500 students with full career histories) |
 | `python/jobs/followup_job.py` | Nightly job that creates follow-up tasks for alumni who have not updated (it never changes their status) |
 | `python/reports/export_report.py` | Offline Excel/CSV report for the State or District office |
-| `python/tests/test_e2e.py` | **115 automated end-to-end acceptance and security tests** |
-| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (245 checks) |
+| `python/tests/test_e2e.py` | **116 automated end-to-end acceptance and security tests** |
+| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (256 checks) |
 | `python/tools/load_test.py`, `scale_clone.py` | Load test with many simultaneous users; multiplies the demo data to state scale |
 | `python/tools/export_logins.py` | Writes LOGINS.xlsx and checks that every account can log in |
 | `app/public/install.php` | One-time web installer (Demo or Empty system); disabled automatically after installation |
@@ -156,11 +156,11 @@ On the login page you can also just click a role on the right — in DEMO mode i
 | Apprentice Advisor | `AA-PUNE` (9 ITIs of the Pune region) |
 | Principal — Govt ITI Pune | `DEMO0001` (the ITI code; every ITI's Principal uses its code) |
 | Principal — Govt ITI Nashik | `DEMO0002` |
-| Instructor (Fitter, Pune) | `teacher.pune@demo.local` (Electrician: `teacher.pune.ele@demo.local`) |
-| Placement Officer (Pune) | `placement.pune@demo.local` |
-| ITI Staff (Pune) | `staff.pune@demo.local` |
-| Employer / HR | `hr.sahyadri@demo.local` |
-| Student / Alumni | `rohit.deshmukh@demo.local` |
+| Instructor (Fitter, Pune) | Sevaarth ID `DEMOSEV00002` (Electrician: `DEMOSEV00003`) |
+| Placement Officer (Pune) | `PO-DEMO0001` |
+| ITI Staff (Pune) | Sevaarth ID `DEMOSEV00008` |
+| Employer / HR | `EMP-0001` |
+| Student / Alumni | PCID `ITIC-MH-2022-001077-9` |
 
 ## Upgrading an existing database
 
@@ -176,7 +176,7 @@ mysql -uroot -p careertrack < database/mysql/05_regions_roles.sql
 CT_DB_USER=root CT_DB_PASS=yourpass python3 python/tests/test_e2e.py --base http://127.0.0.1:8080
 ```
 
-Expected result: `115 passed, 0 failed`.
+Expected result: `116 passed, 0 failed`.
 
 ## Nightly follow-up job (cron)
 

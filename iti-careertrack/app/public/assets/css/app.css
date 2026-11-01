@@ -481,3 +481,5 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   border: 1px solid var(--grey-300); border-radius: 10px; padding: 10px 12px; background: #fbfcff; }
 .trade-pick label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; font-weight: 500; color: var(--grey-900); margin: 0; }
 .trade-pick input { width: auto; margin-top: 2px; }
+#email::placeholder, [data-username-input]::placeholder { text-transform: none; }
+.lx .role-pick button.sel span { color: #fff; }

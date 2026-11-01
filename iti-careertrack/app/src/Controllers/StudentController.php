@@ -137,7 +137,7 @@ final class StudentController extends Controller
             'verifyUrl' => absolute_url('/verify', ['pcid' => $me['pcid']]), 'scripts' => ['qr.js'], 'bodyClass' => 'print-card']);
     }
 
-    /** Create (or reset) the student's own login. Login = primary mobile number; a temporary password is shown once. */
+    /** Create (or reset) the student's own login. User ID = the student's PCID; a temporary password is shown once. */
     public function account(int $id): void
     {
         Auth::require('student.update');
@@ -146,34 +146,38 @@ final class StudentController extends Controller
             throw new HttpException(403);
         }
         $me = StudentData::identity($id);
+        $pcid = (string) DB::value("SELECT pcid FROM pcid_registry WHERE student_id = ? AND status = 'ACTIVE'", [$id]);
+        if ($pcid === '') {
+            throw new \DomainException('The student has no PCID yet.');
+        }
         $mobile = DB::value("SELECT value_normalized FROM student_contacts WHERE student_id = ? AND contact_type = 'MOBILE' AND valid_to IS NULL ORDER BY is_primary DESC LIMIT 1", [$id]);
         $email = DB::value("SELECT value FROM student_contacts WHERE student_id = ? AND contact_type = 'EMAIL' AND valid_to IS NULL LIMIT 1", [$id]);
         $temp = AdminController::tempPassword();
         $hash = pw_hash($temp);
-        $login = DB::tx(function () use ($id, $me, $mobile, $email, $hash) {
+        DB::tx(function () use ($id, $me, $pcid, $mobile, $email, $hash) {
             $uid = DB::value('SELECT id FROM users WHERE student_id = ?', [$id]);
             if ($uid) {
-                DB::run('UPDATE users SET password_hash = ?, failed_login_count = 0, locked_until = NULL, status = \'ACTIVE\' WHERE id = ?', [$hash, $uid]);
+                DB::run("UPDATE users SET username = COALESCE(username, ?), password_hash = ?, failed_login_count = 0, locked_until = NULL, status = 'ACTIVE' WHERE id = ?",
+                    [$pcid, $hash, $uid]);
                 Audit::log('PASSWORD_RESET', 'users', (int) $uid, $id);
-                return DB::value('SELECT COALESCE(mobile, email) FROM users WHERE id = ?', [$uid]);
+                return;
             }
-            if (!$mobile && !$email) {
-                throw new \DomainException('Add a mobile number or e-mail in Contacts first.');
-            }
+            // mobile / e-mail are kept as extra login options only when no other login uses them
             if ($mobile && DB::value('SELECT 1 FROM users WHERE mobile = ?', [$mobile])) {
-                $mobile = null;   // family mobile already used by a sibling's login: use e-mail instead
+                $mobile = null;
             }
-            if (!$mobile && (!$email || DB::value('SELECT 1 FROM users WHERE email = ?', [mb_strtolower((string) $email)]))) {
-                throw new \DomainException('This mobile number / e-mail is already used by another login. Add a personal mobile or e-mail in Contacts.');
+            $email = $email ? mb_strtolower((string) $email) : null;
+            if ($email && DB::value('SELECT 1 FROM users WHERE email = ?', [$email])) {
+                $email = null;
             }
-            $uid = DB::insert('users', ['full_name' => trim($me['first_name'] . ' ' . $me['last_name']), 'mobile' => $mobile,
-                'email' => $mobile ? null : mb_strtolower((string) $email), 'password_hash' => $hash, 'status' => 'ACTIVE', 'student_id' => $id, 'created_by' => Auth::id()]);
+            $uid = DB::insert('users', ['full_name' => trim($me['first_name'] . ' ' . $me['last_name']), 'username' => $pcid, 'mobile' => $mobile ?: null,
+                'email' => $email, 'password_hash' => $hash, 'status' => 'ACTIVE', 'student_id' => $id, 'created_by' => Auth::id()]);
             DB::insert('user_role_assignments', ['user_id' => $uid, 'role_id' => (int) DB::value("SELECT id FROM roles WHERE code = 'STUDENT'"),
                 'scope_type' => 'SELF', 'valid_from' => date('Y-m-d'), 'created_by' => Auth::id()]);
             Audit::log('CREATE_STUDENT_LOGIN', 'users', $uid, $id);
-            return $mobile ?: $email;
         });
-        flash('success', "Student login: $login  ·  temporary password: $temp  — give it to the student privately (shown only once).");
+        $login = (string) DB::value('SELECT username FROM users WHERE student_id = ?', [$id]);
+        flash('success', "Student login — User ID: $login  ·  temporary password: $temp  — give it to the student privately (shown only once).");
         redirect('/students/' . $id);
     }
 

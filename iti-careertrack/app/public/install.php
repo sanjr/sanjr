@@ -163,8 +163,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Demo: the full dump, but its procedures/triggers are skipped and created from
             // 02_routines.sql afterwards, so that hosting without the SUPER privilege also works.
             $files = $in['mode'] === 'demo'
-                ? ['demo_data.sql.gz', '02_routines.sql', '07_performance.sql', '08_trade_master.sql']
-                : ['01_schema.sql', '02_routines.sql', '03_reference_data.sql', '05_regions_roles.sql', '06_districts.sql', '07_performance.sql', '08_trade_master.sql'];
+                ? ['demo_data.sql.gz', '02_routines.sql', '07_performance.sql', '08_trade_master.sql', '09_login_ids.sql']
+                : ['01_schema.sql', '02_routines.sql', '03_reference_data.sql', '05_regions_roles.sql', '06_districts.sql', '07_performance.sql', '08_trade_master.sql', '09_login_ids.sql'];
             $count = 0;
             $noTriggers = false;
             foreach ($files as $f) {

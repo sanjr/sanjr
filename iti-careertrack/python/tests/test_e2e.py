@@ -422,13 +422,13 @@ def main() -> int:
     ok(url.endswith("/dashboard"), "Login with the correct role works")
     pn.get(f"/students/{sid}")
     _, body, _, _ = pn.post(f"/students/{sid}/account", {})
-    m = re.search(r"Student login: (\S+)\s+·\s+temporary password: (\S+)", flash(body))
+    m = re.search(r"Student login — User ID: (\S+)\s+·\s+temporary password: (\S+)", flash(body))
     ok(bool(m), "Principal created the student's own login with a temporary password")
     if m:
         st = Client(base)
         st.get("/login")
         _, body, url, _ = st.post("/login", {"email": m.group(1), "password": m.group(2)})
-        ok(url.endswith("/dashboard") and pcid in body, "Student logs in with mobile number + temporary password and sees own PCID")
+        ok(m.group(1) == pcid and url.endswith("/dashboard") and pcid in body, "Student logs in with User ID = PCID + temporary password and sees own PCID")
         status, body, _, _ = st.get("/me/card")
         ok(status == 200 and "data-qr=" in body and "/verify?pcid=" + pcid in html.unescape(body), "Student PCID card has a QR code that links to verification")
     status, _, _, _ = tp.get(f"/students/{sid}/card")
@@ -502,6 +502,9 @@ def main() -> int:
     c, url, _ = uid_login("NCVT9999", "Test@12345")
     ok(url.endswith("/settings"), "New ITI logs in with NCVT MIS code + Test@12345 and must change the password")
     ins = val("SELECT id FROM roles WHERE code = 'TEACHER'")
+    _, body, _, _ = st_c.post("/users", {"role_id": str(ins), "full_name": "No Sevaarth", "email": "nosev@demo.local", "iti_id": str(pune["id"])})
+    ok("Sevaarth ID is required" in body and not val("SELECT COUNT(*) FROM users WHERE email = 'nosev@demo.local'"),
+       "Instructor cannot be created without a Sevaarth ID (login ID)")
     _, body, _, _ = st_c.post("/users", {"role_id": str(ins), "full_name": "Test Instructor", "username": "INS-TEST", "iti_id": str(pune["id"]),
                                           "trades[]": [str(val("SELECT id FROM trades WHERE trade_code = 'ELE'"))]})
     c, _, _ = uid_login("INS-TEST", "Test@12345")
