@@ -191,9 +191,10 @@ final class ItiImport
         return DB::tx(function () use ($items, $hash, $mustChange, $actor, $roles, $districts, $res, $today) {
             $seenDistricts = [];
             $seenCodes = [];
+            $repeats = 0;
             foreach ($items as $it) {
                 if (isset($seenCodes[$it['code']])) {
-                    $res['warnings'][] = "Row {$it['row']}: {$it['code']} is repeated (first in row {$seenCodes[$it['code']]}) — ignored.";
+                    $repeats++;   // e.g. one row per trade: the ITI is taken once
                     continue;
                 }
                 $seenCodes[$it['code']] = $it['row'];
@@ -225,6 +226,9 @@ final class ItiImport
                     $res['principals']++;
                 }
                 $seenDistricts[$d['id']] = $d;
+            }
+            if ($repeats) {
+                $res['warnings'][] = "$repeats repeated rows ignored (the same NCVT MIS code appears more than once; each ITI is taken once).";
             }
             $seenRegions = [];
             foreach ($seenDistricts as $d) {
