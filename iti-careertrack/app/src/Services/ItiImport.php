@@ -187,7 +187,7 @@ final class ItiImport
      */
     public static function import(array $items, string $password, bool $mustChange, ?int $actor): array
     {
-        $hash = password_hash($password, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT);
+        $hash = pw_hash($password);
         $roles = array_column(DB::all("SELECT id, code FROM roles WHERE code IN ('PRINCIPAL','DVTO','RO_ADMIN')"), 'id', 'code');
         $districts = DB::all('SELECT d.id, d.code, d.name, d.region_id, r.code AS region_code, r.name AS region_name, r.hq_city
                                 FROM districts d LEFT JOIN regions r ON r.id = d.region_id');

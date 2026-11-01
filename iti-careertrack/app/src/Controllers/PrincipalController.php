@@ -53,6 +53,10 @@ final class PrincipalController extends Controller
             throw new \App\Core\HttpException(403);
         }
         [$scope, $p] = Access::studentScope('s.id');
+        if (Auth::is('PRINCIPAL', 'PLACEMENT_OFFICER')) {
+            // their scope IS "affiliated with my ITI"; ia.iti_id below says the same, faster
+            [$scope, $p] = ['1=1', []];
+        }
         $w = "$scope AND ia.status = 'COMPLETED'";
         if (Auth::itiId()) { $w .= ' AND ia.iti_id = ?'; $p[] = Auth::itiId(); }
         if ($st = (string) input('status', '')) { $w .= ' AND COALESCE(cs.status, \'NOT_UPDATED\') = ?'; $p[] = $st; }
@@ -60,13 +64,13 @@ final class PrincipalController extends Controller
         if ($y = int_input('year')) { $w .= ' AND a.academic_year_id = ?'; $p[] = $y; }
         if ($q = (string) input('q', '')) { $w .= ' AND (pr.pcid LIKE ? OR CONCAT_WS(\' \', s.first_name, s.last_name) LIKE ?)'; $p[] = "%$q%"; $p[] = "%$q%"; }
         $sql = "SELECT s.id, pr.pcid, CONCAT_WS(' ', s.first_name, s.last_name) AS name, t.name AS trade, ay.label AS year_label, ia.end_date,
-                       cs.status, cs.effective_from, cs.verification_status, cs.days_since_update,
+                       cs.status, cs.effective_from, cs.verification_status, DATEDIFF(CURDATE(), cs.effective_from) AS days_since_update,
                        (SELECT c.legal_name FROM employments e JOIN companies c ON c.id = e.company_id WHERE e.student_id = s.id AND e.status = 'ACTIVE' AND e.voided_at IS NULL ORDER BY e.joining_date DESC LIMIT 1) AS employer
                   FROM institute_affiliations ia JOIN students s ON s.id = ia.student_id JOIN admissions a ON a.id = ia.admission_id
                   JOIN trades t ON t.id = a.trade_id JOIN academic_years ay ON ay.id = a.academic_year_id
                   LEFT JOIN pcid_registry pr ON pr.student_id = s.id AND pr.status = 'ACTIVE'
-                  LEFT JOIN v_student_current_status cs ON cs.student_id = s.id
-                 WHERE $w ORDER BY ia.end_date DESC, s.id DESC";
+                  LEFT JOIN career_status_history cs ON cs.student_id = s.id AND cs.current_flag = 1
+                 WHERE $w ORDER BY ia.end_date DESC, ia.student_id DESC";
         $this->render('principal/placements', ['title' => Auth::is('PRINCIPAL') ? 'Placement & Alumni' : 'Student Placement',
             'p' => $this->paginate($sql, $p), 'years' => $this->academicYears(), 'statuses' => CareerService::STATUSES]);
     }

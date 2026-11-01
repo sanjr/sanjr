@@ -50,6 +50,7 @@ $bellCount = \App\Services\Stats::bellCount();
     <div class="sidebar-foot">ITI Student Lifecycle &amp; Career Tracking System — Maharashtra</div>
   </aside>
 
+  <div class="sidebar-backdrop" data-close-sidebar></div>
   <div class="main">
     <header class="topbar">
       <button class="menu-toggle" type="button" data-toggle-sidebar aria-label="Menu"><?= icon('list') ?></button>

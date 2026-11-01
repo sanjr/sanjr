@@ -199,6 +199,10 @@ final class TeacherController extends Controller
     {
         Auth::require('student.view');
         [$scope, $p] = Access::studentScope('s.id');
+        if (Auth::itiId()) {   // results of my ITI only (uses ix_er_iti)
+            $scope .= ' AND er.iti_id = ?';
+            $p[] = Auth::itiId();
+        }
         $rows = DB::all("SELECT er.*, es.name AS session_name, CONCAT_WS(' ', s.first_name, s.last_name) AS name, pr.pcid, t.name AS trade
                            FROM exam_results er JOIN students s ON s.id = er.student_id JOIN exam_sessions es ON es.id = er.exam_session_id
                            JOIN admissions a ON a.id = er.admission_id JOIN trades t ON t.id = a.trade_id
@@ -215,7 +219,7 @@ final class TeacherController extends Controller
                                 (SELECT COUNT(*) FROM apprenticeships x WHERE x.student_id = s.id AND x.voided_at IS NULL) AS apprenticeships,
                                 (SELECT COUNT(*) FROM employments x WHERE x.student_id = s.id AND x.voided_at IS NULL) AS jobs
                            FROM students s LEFT JOIN pcid_registry pr ON pr.student_id = s.id AND pr.status = 'ACTIVE'
-                           LEFT JOIN v_student_current_status cs ON cs.student_id = s.id
+                           LEFT JOIN career_status_history cs ON cs.student_id = s.id AND cs.current_flag = 1
                           WHERE $scope ORDER BY s.first_name LIMIT 300", $p);
         $this->render('teacher/career', ['title' => 'Career Tracking', 'rows' => $rows]);
     }

@@ -74,7 +74,7 @@ final class ReportController extends Controller
                     ['type' => 'vbar', 'labels' => array_column($rows, 'trade'), 'values' => array_column($rows, 'pass_rate_%'), 'suffix' => '%', 'max' => 100]];
             case 'outcome':
                 $rows = DB::all("SELECT COALESCE(cs.status, 'NOT_UPDATED') AS status, COUNT(DISTINCT a.student_id) AS unique_students
-                                   FROM admissions a JOIN itis i ON i.id = a.iti_id LEFT JOIN v_student_current_status cs ON cs.student_id = a.student_id
+                                   FROM admissions a JOIN itis i ON i.id = a.iti_id LEFT JOIN career_status_history cs ON cs.student_id = a.student_id AND cs.current_flag = 1
                                   WHERE a.status = 'COMPLETED' AND $w GROUP BY COALESCE(cs.status, 'NOT_UPDATED') ORDER BY unique_students DESC", $p);
                 $events = DB::one("SELECT (SELECT COUNT(*) FROM employments e WHERE e.voided_at IS NULL AND e.student_id IN (SELECT a.student_id FROM admissions a JOIN itis i ON i.id = a.iti_id WHERE a.status = 'COMPLETED' AND $w)) AS jobs,
                                           (SELECT COUNT(*) FROM apprenticeships ap WHERE ap.voided_at IS NULL AND ap.student_id IN (SELECT a.student_id FROM admissions a JOIN itis i ON i.id = a.iti_id WHERE a.status = 'COMPLETED' AND $w)) AS apprenticeships",
@@ -95,7 +95,7 @@ final class ReportController extends Controller
                                         COUNT(DISTINCT CASE WHEN cs.status = 'SEEKING_EMPLOYMENT' THEN a.student_id END) AS seeking_employment,
                                         COUNT(DISTINCT CASE WHEN cs.status IN ('NOT_UPDATED','NOT_CONTACTABLE') OR cs.status IS NULL THEN a.student_id END) AS not_updated
                                    FROM admissions a JOIN itis i ON i.id = a.iti_id JOIN trades t ON t.id = a.trade_id
-                                   LEFT JOIN v_student_current_status cs ON cs.student_id = a.student_id
+                                   LEFT JOIN career_status_history cs ON cs.student_id = a.student_id AND cs.current_flag = 1
                                   WHERE a.status = 'COMPLETED' AND $w GROUP BY t.name ORDER BY t.name", array_merge(Stats::PLACED, Stats::PLACED, $p));
                 foreach ($rows as &$r) {
                     $r['placement_rate_%'] = $r['alumni'] ? round($r['placed'] * 100 / $r['alumni'], 1) : 0;
@@ -109,8 +109,9 @@ final class ReportController extends Controller
     {
         $this->guard();
         $f = $this->filters();
-        [$rows, $denominator, $chart] = self::build($f);
         [$is, $ip] = Access::itiScope('i.id');
+        [$rows, $denominator, $chart] = \App\Core\Cache::remember('report:' . md5($is . json_encode($ip) . json_encode($f)),
+            (int) config('cache.ttl', 600), static fn () => self::build($f));
         $this->render('reports/index', [
             'title' => 'Reports & Analytics', 'f' => $f, 'rows' => $rows, 'denominator' => $denominator, 'chart' => $chart,
             'years' => $this->academicYears(),

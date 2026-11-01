@@ -20,7 +20,8 @@ $loggedIn = \App\Core\Auth::check() && \App\Core\Auth::role();
   <div class="inner">
     <a class="pub-brand" href="<?= url('/') ?>"><img src="<?= asset('img/logo.svg') ?>" alt="" width="40" height="40">
       <span>ITI CareerTrack<small>Maharashtra</small></span></a>
-    <nav class="pub-nav" aria-label="Main">
+    <button class="pub-burger" type="button" data-toggle-pubnav aria-label="Menu" aria-expanded="false"><?= icon('list') ?></button>
+    <nav class="pub-nav" id="pub-nav" aria-label="Main">
       <?php foreach ($nav as [$l, $h]): ?>
         <a href="<?= url($h) ?>" class="<?= $path === $h ? 'active' : '' ?>"><?= e($l) ?></a>
       <?php endforeach; ?>

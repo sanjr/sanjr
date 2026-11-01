@@ -35,7 +35,7 @@ $verifyForm = static function (string $field, int $recId, string $status) use ($
   </div>
 </div>
 
-<div class="grid g-1-2" style="grid-template-columns: 290px 1fr">
+<div class="grid g-side">
   <div class="stack">
     <div class="card profile-card">
       <?php if ($photoId && $level === 'full'): ?><img class="photo" src="<?= url('/documents/' . $photoId) ?>" alt="Photo">

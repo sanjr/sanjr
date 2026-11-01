@@ -52,7 +52,7 @@ final class FollowUpController extends Controller
                        (SELECT value FROM student_contacts c WHERE c.student_id = s.id AND c.contact_type = 'MOBILE' AND c.valid_to IS NULL LIMIT 1) AS mobile
                   FROM follow_ups f JOIN students s ON s.id = f.student_id JOIN users u ON u.id = f.assigned_to_user_id
                   LEFT JOIN pcid_registry pr ON pr.student_id = s.id AND pr.status = 'ACTIVE'
-                  LEFT JOIN v_student_current_status cs ON cs.student_id = s.id
+                  LEFT JOIN career_status_history cs ON cs.student_id = s.id AND cs.current_flag = 1
                  WHERE $w ORDER BY f.due_date, f.id";
         $staff = can('followup.manage') && Auth::itiId() ? DB::all("SELECT DISTINCT u.id, CONCAT(u.full_name, ' (', r.name, ')') AS label FROM user_role_assignments ura
                   JOIN users u ON u.id = ura.user_id JOIN roles r ON r.id = ura.role_id WHERE ura.iti_id = ? AND ura.status = 'ACTIVE'

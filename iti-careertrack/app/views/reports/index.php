@@ -6,7 +6,7 @@ foreach ($years as $y) { if ((int) $y['id'] === (int) $f['academic_year_id']) { 
 ?>
 <div class="page-head"><div><h1><?= e($title) ?></h1><p>Live numbers from the database · generated <?= e(date('d M Y, H:i')) ?></p></div></div>
 
-<div class="grid" style="grid-template-columns: 280px 1fr">
+<div class="grid g-side">
   <form class="card" method="get" action="<?= url('/reports') ?>">
     <div class="field"><label>Report Type</label><select name="type"><?php foreach (ReportController::TYPES as $k => $v): ?>
       <option value="<?= e($k) ?>" <?= $f['type'] === $k ? 'selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></div>

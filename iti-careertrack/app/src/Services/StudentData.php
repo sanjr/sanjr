@@ -15,7 +15,7 @@ final class StudentData
                                cs.status AS current_status, cs.effective_from AS status_since, cs.verification_status AS status_verification
                           FROM students s
                           LEFT JOIN pcid_registry p ON p.student_id = s.id AND p.status = 'ACTIVE'
-                          LEFT JOIN v_student_current_status cs ON cs.student_id = s.id
+                          LEFT JOIN career_status_history cs ON cs.student_id = s.id AND cs.current_flag = 1
                          WHERE s.id = ?", [$sid]);
     }
 

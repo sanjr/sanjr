@@ -54,22 +54,31 @@ final class StudentController extends Controller
             $w[] = 'a.iti_id = ?';   // their ITI's own episode
             $params[] = Auth::itiId();
         }
-        $sql = "SELECT s.id, p.pcid, CONCAT_WS(' ', s.first_name, s.middle_name, s.last_name) AS name, s.gender, s.date_of_birth,
+        // Fast at state scale (lakhs of students): start from students in id order (STRAIGHT_JOIN) so a page
+        // reads only ~25 rows, and count without the display joins.
+        $where = implode(' AND ', $w);
+        $latest = 'JOIN admissions a ON a.id = (SELECT MAX(a2.id) FROM admissions a2 WHERE a2.student_id = s.id)';
+        $csJoin = 'LEFT JOIN career_status_history cs ON cs.student_id = s.id AND cs.current_flag = 1';
+        $sql = "SELECT STRAIGHT_JOIN s.id, p.pcid, CONCAT_WS(' ', s.first_name, s.middle_name, s.last_name) AS name, s.gender, s.date_of_birth,
                        t.name AS trade, i.name AS iti_name, ay.label AS year_label, a.status AS adm_status, b.batch_code, cs.status AS current_status
                   FROM students s
-                  JOIN admissions a ON a.id = " . self::LATEST_ADM . "
+                  $latest
                   JOIN trades t ON t.id = a.trade_id JOIN itis i ON i.id = a.iti_id JOIN academic_years ay ON ay.id = a.academic_year_id
                   LEFT JOIN batches b ON b.id = a.batch_id
                   LEFT JOIN pcid_registry p ON p.student_id = s.id AND p.status = 'ACTIVE'
-                  LEFT JOIN v_student_current_status cs ON cs.student_id = s.id
-                 WHERE " . implode(' AND ', $w) . ' ORDER BY s.id DESC';
+                  $csJoin
+                 WHERE $where ORDER BY s.id DESC";
+        $needA = str_contains($where, 'a.');
+        $countSql = 'SELECT COUNT(*) FROM students s ' . ($needA ? $latest : '') . ' '
+            . (str_contains($where, 'p.pcid') ? "LEFT JOIN pcid_registry p ON p.student_id = s.id AND p.status = 'ACTIVE' " : '')
+            . (str_contains($where, 'cs.') ? $csJoin : '') . " WHERE $where";
         $itis = [];
         if (Auth::is('STATE_ADMIN', ...Auth::OVERSIGHT)) {
             [$is, $ip] = Access::itiScope('id');
             $itis = DB::all("SELECT id, name FROM itis WHERE $is ORDER BY name", $ip);
         }
         $this->render('students/index', [
-            'title' => Auth::is('TEACHER') ? 'My Students' : 'Students', 'p' => $this->paginate($sql, $params),
+            'title' => Auth::is('TEACHER') ? 'My Students' : 'Students', 'p' => $this->paginate($sql, $params, 25, $countSql),
             'trades' => DB::all('SELECT id, name FROM trades ORDER BY name'), 'years' => $this->academicYears(), 'itis' => $itis,
         ]);
     }
@@ -140,7 +149,7 @@ final class StudentController extends Controller
         $mobile = DB::value("SELECT value_normalized FROM student_contacts WHERE student_id = ? AND contact_type = 'MOBILE' AND valid_to IS NULL ORDER BY is_primary DESC LIMIT 1", [$id]);
         $email = DB::value("SELECT value FROM student_contacts WHERE student_id = ? AND contact_type = 'EMAIL' AND valid_to IS NULL LIMIT 1", [$id]);
         $temp = AdminController::tempPassword();
-        $hash = password_hash($temp, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT);
+        $hash = pw_hash($temp);
         $login = DB::tx(function () use ($id, $me, $mobile, $email, $hash) {
             $uid = DB::value('SELECT id FROM users WHERE student_id = ?', [$id]);
             if ($uid) {

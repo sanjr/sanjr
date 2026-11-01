@@ -73,6 +73,9 @@ final class Auth
             $user = Database::one('SELECT * FROM users WHERE username = ?', [strtoupper($login)]);
         }
         $ok = $user && $user['password_hash'] && password_verify($password, $user['password_hash']);
+        if ($ok && defined('PASSWORD_ARGON2ID') && password_needs_rehash($user['password_hash'], PASSWORD_ARGON2ID, PW_OPTIONS)) {
+            Database::run('UPDATE users SET password_hash = ? WHERE id = ?', [pw_hash($password), $user['id']]);   // move old hashes to the current cost
+        }
 
         if ($user && $user['locked_until'] && strtotime($user['locked_until']) > time()) {
             Database::insert('login_attempts', ['ip' => $ip, 'login' => mb_substr($email, 0, 190), 'success' => 0]);
@@ -94,7 +97,7 @@ final class Auth
 
         if (password_needs_rehash($user['password_hash'], defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT)) {
             Database::run('UPDATE users SET password_hash = ? WHERE id = ?',
-                [password_hash($password, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT), $user['id']]);
+                [pw_hash($password), $user['id']]);
         }
         Database::run('UPDATE users SET failed_login_count = 0, locked_until = NULL, last_login_at = NOW() WHERE id = ?', [$user['id']]);
 

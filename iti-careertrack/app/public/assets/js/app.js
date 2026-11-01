@@ -100,7 +100,20 @@
 
   // ---------------- sidebar toggle (mobile)
   var t = document.querySelector('[data-toggle-sidebar]');
-  if (t) t.addEventListener('click', function () { document.getElementById('sidebar').classList.toggle('open'); });
+  var sb = document.getElementById('sidebar');
+  var setSb = function (open) { if (sb) { sb.classList.toggle('open', open); document.body.classList.toggle('sb-open', open); } };
+  if (t) t.addEventListener('click', function () { setSb(!sb.classList.contains('open')); });
+  document.querySelectorAll('[data-close-sidebar]').forEach(function (x) { x.addEventListener('click', function () { setSb(false); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setSb(false); });
+  // public website: hamburger menu on phones
+  var pb = document.querySelector('[data-toggle-pubnav]');
+  if (pb) pb.addEventListener('click', function () {
+    var open = document.getElementById('pub-nav').classList.toggle('open'); pb.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  // wide tables: let them scroll sideways on small screens
+  document.querySelectorAll('.content table.table').forEach(function (tb) {
+    if (!tb.closest('.table-wrap')) { var w = document.createElement('div'); w.className = 'table-wrap'; tb.parentNode.insertBefore(w, tb); w.appendChild(tb); }
+  });
 
   // ---------------- login: show/hide password
   document.querySelectorAll('[data-pw-toggle]').forEach(function (b) {

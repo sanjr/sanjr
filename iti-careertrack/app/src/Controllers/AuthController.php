@@ -19,7 +19,9 @@ final class AuthController extends Controller
             redirect('/dashboard');
         }
         $as = (string) input('as', '');
-        View::render('auth/login', ['title' => 'Login', 'as' => array_key_exists($as, Auth::ROLE_LABELS) ? $as : ''], 'public');
+        $stats = \App\Core\Database::one("SELECT (SELECT COUNT(*) FROM itis WHERE status = 'ACTIVE') AS itis,
+            (SELECT COUNT(*) FROM districts) AS districts, (SELECT COUNT(*) FROM regions) AS regions") ?? [];
+        View::render('auth/login', ['title' => 'Login', 'as' => array_key_exists($as, Auth::ROLE_LABELS) ? $as : '', 'stats' => $stats, 'wide' => true], 'public');
     }
 
     public function login(): void

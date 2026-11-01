@@ -50,6 +50,13 @@ Installer हे ITI आपोआप भरतो (`database/data/*_itis.csv`):
 (किमान NCVT MIS ITI Code, Institute Name, District; ITI Type, Taluka, Region असल्यास तेही — नसल्यास नावातून ओळखले जातात). ITI, Principal, DVTO व RO logins आपोआप बनतात.
 आधीच install केलेल्या website वर Pune ची यादी हवी असेल तर हीच Excel तिथे upload करा.
 
+## सर्व login ची यादी
+**`LOGINS.xlsx`** (ZIP सोबत वेगळी पाठवलेली फाइल — server वर upload करू नका) — 577 login (State Admin, 6 RO, 36 DVTO, 476 Principal, इतर roles), प्रत्येक login प्रत्यक्ष तपासलेला. Password `Demo@1234`.
+
+## वेग व क्षमता
+1.3 लाख प्रवेश/वर्ष साठी एकच database पुरेसा आहे — 2.7 लाख विद्यार्थी व 100 एकाच वेळचे users यावर तपासले.
+राज्यभर खऱ्या वापरासाठी shared hosting नव्हे तर VPS / cloud server (8 vCPU, 16–32 GB RAM) वापरा. तपशील: `docs/04-PERFORMANCE-AND-CAPACITY.md` (GitHub वर).
+
 ## English (Linux / any server)
 1. Copy the `ITI-CareerTrack` folder to the web server. Point Apache/Nginx to `ITI-CareerTrack/app/public` (recommended) — or keep the whole folder in the web root (the included `.htaccess` files block access to private folders).
 2. Open the site in a browser → the installer opens → enter MySQL details → choose Demo or Empty → Install.

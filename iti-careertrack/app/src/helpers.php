@@ -262,3 +262,17 @@ function absolute_url(string $path, array $query = []): string
     $host = preg_replace('/[^A-Za-z0-9.:\-\[\]]/', '', (string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
     return ($https ? 'https://' : 'http://') . $host . url($path, $query);
 }
+
+
+/**
+ * Password hash: Argon2id with the OWASP-recommended cost (19 MiB, 2 passes). Strong against
+ * cracking, yet hundreds of people can log in at the same moment without exhausting the server.
+ */
+function pw_hash(string $password): string
+{
+    return defined('PASSWORD_ARGON2ID')
+        ? password_hash($password, PASSWORD_ARGON2ID, PW_OPTIONS)
+        : password_hash($password, PASSWORD_DEFAULT);
+}
+
+const PW_OPTIONS = ['memory_cost' => 19456, 'time_cost' => 2, 'threads' => 1];

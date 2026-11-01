@@ -163,8 +163,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Demo: the full dump, but its procedures/triggers are skipped and created from
             // 02_routines.sql afterwards, so that hosting without the SUPER privilege also works.
             $files = $in['mode'] === 'demo'
-                ? ['demo_data.sql.gz', '02_routines.sql']
-                : ['01_schema.sql', '02_routines.sql', '03_reference_data.sql', '05_regions_roles.sql', '06_districts.sql'];
+                ? ['demo_data.sql.gz', '02_routines.sql', '07_performance.sql']
+                : ['01_schema.sql', '02_routines.sql', '03_reference_data.sql', '05_regions_roles.sql', '06_districts.sql', '07_performance.sql'];
             $count = 0;
             $noTriggers = false;
             foreach ($files as $f) {
@@ -213,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ->execute([$y . '-' . sprintf('%02d', ($y + 1) % 100), "$y-08-01", ($y + 1) . '-07-31']);
                 $pdo->prepare("INSERT INTO users (full_name, username, password_hash, status) VALUES (?, ?, ?, 'ACTIVE')")
                     ->execute([mb_substr((string) $in['admin_name'], 0, 150), $in['admin_user'],
-                        password_hash($adminPass, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT)]);
+                        defined('PASSWORD_ARGON2ID') ? password_hash($adminPass, PASSWORD_ARGON2ID, ['memory_cost' => 19456, 'time_cost' => 2, 'threads' => 1]) : password_hash($adminPass, PASSWORD_DEFAULT)]);
                 $uid = (int) $pdo->lastInsertId();
                 $pdo->prepare("INSERT INTO user_role_assignments (user_id, role_id, scope_type, valid_from) SELECT ?, id, 'STATE', CURDATE() FROM roles WHERE code = 'STATE_ADMIN'")
                     ->execute([$uid]);

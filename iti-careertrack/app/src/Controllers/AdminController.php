@@ -169,7 +169,7 @@ final class AdminController extends Controller
             } else {
                 $uid = DB::insert('users', ['full_name' => mb_substr((string) input('full_name'), 0, 150), 'username' => $username ?: null,
                     'email' => $email ?: null, 'mobile' => $mobile ?: null,
-                    'password_hash' => password_hash($pw, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT),
+                    'password_hash' => pw_hash($pw),
                     'must_change_password' => 1, 'status' => 'ACTIVE', 'created_by' => Auth::id()]);
             }
             $ra = DB::insert('user_role_assignments', ['user_id' => $uid, 'role_id' => $role['id'], 'scope_type' => $role['scope_type'],
@@ -194,7 +194,7 @@ final class AdminController extends Controller
     {
         Auth::requireRole('STATE_ADMIN');
         $default = (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'default_password'");
-        $hash = password_hash($default, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT);
+        $hash = pw_hash($default);
         $roleId = (int) DB::value("SELECT id FROM roles WHERE code = 'PRINCIPAL'");
         $n = DB::tx(function () use ($hash, $roleId) {
             $n = 0;
@@ -240,7 +240,7 @@ final class AdminController extends Controller
         }
         $temp = self::tempPassword();
         DB::run('UPDATE users SET password_hash = ?, must_change_password = 1, failed_login_count = 0, locked_until = NULL, updated_by = ? WHERE id = ?',
-            [password_hash($temp, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT), Auth::id(), $id]);
+            [pw_hash($temp), Auth::id(), $id]);
         Audit::log('PASSWORD_RESET', 'users', $id);
         flash('success', 'Temporary password for ' . DB::value('SELECT COALESCE(username, email, mobile) FROM users WHERE id = ?', [$id]) . ': ' . $temp . ' — share it privately; it is shown only once.');
         redirect('/users');
@@ -308,7 +308,7 @@ final class AdminController extends Controller
         if (hash_equals($current, $new) || $new === (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'default_password'")) {
             throw new \DomainException('Choose a new password that is different from the old / default password.');
         }
-        DB::run('UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?', [password_hash($new, defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT), Auth::id()]);
+        DB::run('UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?', [pw_hash($new), Auth::id()]);
         Audit::log('PASSWORD_CHANGE', 'users', Auth::id());
         session_regenerate_id(true);
         flash('success', 'Password changed.');

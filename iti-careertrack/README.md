@@ -5,8 +5,11 @@
 > Extract it into `C:\xampp\htdocs\`, open **http://localhost/ITI-CareerTrack/** and the installer does the rest.
 > Step-by-step guide (Marathi + English): **[INSTALL.md](INSTALL.md)** — XAMPP and web hosting (cPanel / Hostinger, MySQL 8 or MariaDB).
 >
+> **All logins:** run `python/tools/export_logins.py --check URL` to get LOGINS.xlsx (577 accounts, each checked by a real login). The file is not kept in git because it lists every User ID with its default password.
+> **Capacity:** [docs/04-PERFORMANCE-AND-CAPACITY.md](docs/04-PERFORMANCE-AND-CAPACITY.md) — tested with 2.7 lakh students and 100 simultaneous users.
+>
 > Tested before release: web installer (Demo and Empty), Apache sub-folder install from the ZIP,
-> a real-browser walkthrough of every menu of all 10 roles (233 checks) and 109 end-to-end tests — all passing.
+> a real-browser walkthrough of every menu of all 10 roles (242 checks) and 109 end-to-end tests — all passing.
 
 
 **ITI Student Lifecycle & Career Tracking System — Maharashtra**
@@ -37,7 +40,9 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | `python/jobs/followup_job.py` | Nightly job that creates follow-up tasks for alumni who have not updated (it never changes their status) |
 | `python/reports/export_report.py` | Offline Excel/CSV report for the State or District office |
 | `python/tests/test_e2e.py` | **109 automated end-to-end acceptance and security tests** |
-| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (233 checks) |
+| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (242 checks) |
+| `python/tools/load_test.py`, `scale_clone.py` | Load test with many simultaneous users; multiplies the demo data to state scale |
+| `python/tools/export_logins.py` | Writes LOGINS.xlsx and checks that every account can log in |
 | `app/public/install.php` | One-time web installer (Demo or Empty system); disabled automatically after installation |
 | `docs/` | Architecture review, ER diagrams, API design, implementation notes, **screenshots** |
 | `database/schema.sql` | The original PostgreSQL design reviewed in phase 1 (kept for reference) |

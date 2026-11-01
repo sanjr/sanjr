@@ -27,4 +27,6 @@ return [
         'documents' => __DIR__ . '/../storage/documents',
         'max_upload_bytes' => 5 * 1024 * 1024,
     ],
+    // Dashboard / report numbers are cached per data scope (seconds); list totals for count_ttl. 0 = off.
+    'cache' => ['ttl' => 600, 'count_ttl' => 60],
 ];

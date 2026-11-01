@@ -33,13 +33,13 @@ final class DashboardController extends Controller
         if (Auth::is(...Auth::OVERSIGHT)) {
             [$isc, $ip] = \App\Core\Access::itiScope('i.id');
             $ph = DB::in(Stats::PLACED);
-            $itiRows = DB::all("SELECT i.id, i.name, i.ownership_type,
+            $itiRows = \App\Core\Cache::remember('dash:itirows:' . md5($isc . json_encode($ip)), (int) config('cache.ttl', 600), static fn () => DB::all("SELECT i.id, i.name, i.ownership_type,
                         COUNT(DISTINCT CASE WHEN ia.status = 'ACTIVE' THEN ia.student_id END) AS current_students,
                         COUNT(DISTINCT CASE WHEN ia.status = 'COMPLETED' THEN ia.student_id END) AS alumni,
                         COUNT(DISTINCT CASE WHEN ia.status = 'COMPLETED' AND cs.status IN ($ph) THEN ia.student_id END) AS placed
                    FROM itis i LEFT JOIN institute_affiliations ia ON ia.iti_id = i.id
-                   LEFT JOIN v_student_current_status cs ON cs.student_id = ia.student_id
-                  WHERE $isc GROUP BY i.id, i.name, i.ownership_type ORDER BY i.name", array_merge(Stats::PLACED, $ip));
+                   LEFT JOIN career_status_history cs ON cs.student_id = ia.student_id AND cs.current_flag = 1
+                  WHERE $isc GROUP BY i.id, i.name, i.ownership_type ORDER BY i.name", array_merge(Stats::PLACED, $ip)));
         }
         $this->render(Auth::is('STATE_ADMIN') ? 'dashboards/state' : 'dashboards/district', [
             'title' => match (Auth::roleCode()) { 'STATE_ADMIN' => 'State Admin Dashboard (DVET)', 'RO_ADMIN' => 'RO Dashboard – ' . Auth::scopeName(),
@@ -47,8 +47,9 @@ final class DashboardController extends Controller
             'itis' => Stats::itiCount(), 'students' => Stats::totalStudents(), 'current' => Stats::currentStudents(),
             'alumni' => $alumni, 'placed' => $placed, 'outcomes' => $outcomes,
             'districts' => Auth::is('STATE_ADMIN') ? Stats::districtRates() : [], 'itiRows' => $itiRows,
-            'pendingVerification' => (int) DB::value("SELECT COUNT(*) FROM employments e WHERE e.verification_status = 'PENDING' AND e.voided_at IS NULL AND "
-                . \App\Core\Access::studentScope('e.student_id')[0], \App\Core\Access::studentScope('e.student_id')[1]),
+            'pendingVerification' => (int) \App\Core\Cache::remember('dash:pv:' . md5(json_encode(\App\Core\Access::studentScope('e.student_id'))), 120,
+                static fn () => DB::value("SELECT COUNT(*) FROM employments e WHERE e.verification_status = 'PENDING' AND e.voided_at IS NULL AND "
+                . \App\Core\Access::studentScope('e.student_id')[0], \App\Core\Access::studentScope('e.student_id')[1])),
         ]);
     }
 

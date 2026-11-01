@@ -14,7 +14,8 @@
   <div class="inner">
     <a class="pub-brand" href="public/home.html"><img src="img/logo.svg" alt="" width="40" height="40">
       <span>ITI CareerTrack<small>Maharashtra</small></span></a>
-    <nav class="pub-nav" aria-label="Main">
+    <button class="pub-burger" type="button" data-toggle-pubnav aria-label="Menu" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+    <nav class="pub-nav" id="pub-nav" aria-label="Main">
               <a href="public/home.html" class="">Home</a>
               <a href="public/about.html" class="">About ITIs</a>
               <a href="public/courses.html" class="">Trades</a>
@@ -26,66 +27,79 @@
   </div>
 </header>
 
-<main class="pub-main">
-    <div class="login-wrap">
-  <div class="login-card">
-    <div class="login-left">
-      <div class="logo-c">
-        <img src="img/logo.svg" alt="" width="60" height="60">
-        <h2>ITI Career<span>Track</span></h2><small>Maharashtra</small>
+<main class="">
+    <section class="lx">
+  <div class="lx-card">
+    <aside class="lx-brand">
+      <div class="lx-logo"><img src="img/logo.svg" alt="" width="54" height="54">
+        <div><b>ITI Career<span>Track</span></b><small>Maharashtra · DVET</small></div></div>
+      <h1>One Student.<br>One Permanent Career ID.</h1>
+      <p>Admission, training, examination, apprenticeship, employment and higher education — one journey, one PCID.</p>
+      <div class="lx-stats">
+        <div><b>476</b><span>ITIs</span></div>
+        <div><b>36</b><span>Districts</span></div>
+        <div><b>6</b><span>Regions</span></div>
       </div>
-      <h3>Login to Your Account</h3>
+      <ul class="lx-points">
+        <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg> Every user sees only the data of their own scope</li>
+        <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.5-1.5 1.6-2.2 3-2.2s2.5.7 3 2.2M15 10h3M15 14h3"/></svg> Permanent Career ID with QR verification</li>
+        <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg> Live placement reports for ITI, district, region and state</li>
+      </ul>
+    </aside>
+
+    <div class="lx-form">
+      <h2>Welcome back</h2>
+      <p class="muted">Sign in to continue to your dashboard.</p>
+
+      <div class="lx-label">Login as</div>
+      <div class="role-pick" role="radiogroup" aria-label="Login as">
+                  <button type="button" role="radio" aria-checked="false" class="" title="State Admin (DVET)"
+                  data-role="STATE_ADMIN" data-label="State Admin (DVET)" data-demo-email="DVET-ADMIN">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span>State Admin</span></button>
+                  <button type="button" role="radio" aria-checked="false" class="" title="RO Admin"
+                  data-role="RO_ADMIN" data-label="RO Admin" data-demo-email="RO-PUN">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4z"/><path d="M8 2v16M16 6v16"/></svg><span>RO Admin</span></button>
+                  <button type="button" role="radio" aria-checked="false" class="" title="DVTO Admin"
+                  data-role="DVTO" data-label="DVTO Admin" data-demo-email="DVTO-PUNE">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4z"/><path d="M8 2v16M16 6v16"/></svg><span>DVTO</span></button>
+                  <button type="button" role="radio" aria-checked="false" class="" title="Apprentice Advisor"
+                  data-role="APPRENTICE_ADVISOR" data-label="Apprentice Advisor" data-demo-email="AA-PUNE">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5L22 14l-8 8-2.3-2.3a4 4 0 0 0-5-5L2 10l8-8z"/></svg><span>Apprentice Advisor</span></button>
+                  <button type="button" role="radio" aria-checked="false" class="" title="Principal"
+                  data-role="PRINCIPAL" data-label="Principal" data-demo-email="DEMO0001">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg><span>Principal</span></button>
+                  <button type="button" role="radio" aria-checked="false" class="" title="Instructor"
+                  data-role="TEACHER" data-label="Instructor" data-demo-email="teacher.pune@demo.local">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c.9-4 4.1-6.5 8-6.5s7.1 2.5 8 6.5"/></svg><span>Instructor</span></button>
+                  <button type="button" role="radio" aria-checked="false" class="" title="Placement Officer"
+                  data-role="PLACEMENT_OFFICER" data-label="Placement Officer" data-demo-email="placement.pune@demo.local">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg><span>Placement</span></button>
+                  <button type="button" role="radio" aria-checked="false" class="" title="ITI Staff"
+                  data-role="ITI_STAFF" data-label="ITI Staff" data-demo-email="staff.pune@demo.local">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><span>ITI Staff</span></button>
+                  <button type="button" role="radio" aria-checked="false" class="" title="Employer / HR"
+                  data-role="EMPLOYER" data-label="Employer / HR" data-demo-email="hr.sahyadri@demo.local">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg><span>Employer</span></button>
+                  <button type="button" role="radio" aria-checked="false" class="" title="Student / Alumni"
+                  data-role="STUDENT" data-label="Student / Alumni" data-demo-email="rohit.deshmukh@demo.local">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg><span>Student</span></button>
+              </div>
+
       <form method="get" action="index.html" data-static-nav="1" autocomplete="on" id="login-form">
                 <input type="hidden" name="role" id="login-role" value="">
-        <div class="field"><label for="email">User ID / E-mail / Mobile</label>
-          <input type="text" id="email" data-x="email" value="" autofocus autocomplete="username" placeholder="e.g. ITI NCVT MIS code"></div>
+        <div class="field mt"><label for="email">User ID / E-mail / Mobile</label>
+          <div class="lx-input"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c.9-4 4.1-6.5 8-6.5s7.1 2.5 8 6.5"/></svg><input type="text" id="email" data-x="email" value="" autofocus autocomplete="username" placeholder="NCVT MIS code, DVTO-PUNE, e-mail…"></div></div>
         <div class="field mt"><label for="password">Password</label>
-          <div class="pw-wrap"><input type="password" id="password" data-x="password" autocomplete="current-password" placeholder="Enter password">
+          <div class="lx-input pw-wrap"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><input type="password" id="password" data-x="password" autocomplete="current-password" placeholder="Enter password">
             <button type="button" class="pw-toggle" data-pw-toggle="password" aria-label="Show password"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
         <div class="login-meta"><span class="muted">Locks for 15 min after 5 wrong tries</span><a href="public/forgot-password.html">Forgot password?</a></div>
-        <button class="btn btn-block mt" type="submit" style="padding:11px"><svg class="ic rot180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg> Login</button>
-        <div class="login-role-label" id="role-label">Your role is detected automatically — or choose it on the right.</div>
+        <button class="btn btn-block lx-submit" type="submit"><svg class="ic rot180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg> Login</button>
+        <div class="login-role-label" id="role-label">Your role is detected automatically from your User ID.</div>
       </form>
-    </div>
-    <div class="login-right">
-      <h4>Login As</h4>
-      <div class="role-pick" role="radiogroup" aria-label="Login as">
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="STATE_ADMIN" data-label="State Admin (DVET)" data-demo-email="DVET-ADMIN">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg> State Admin (DVET)</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="RO_ADMIN" data-label="RO Admin" data-demo-email="RO-PUN">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4z"/><path d="M8 2v16M16 6v16"/></svg> RO Admin</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="DVTO" data-label="DVTO Admin" data-demo-email="DVTO-PUNE">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4z"/><path d="M8 2v16M16 6v16"/></svg> DVTO Admin</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="APPRENTICE_ADVISOR" data-label="Apprentice Advisor" data-demo-email="AA-PUNE">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5L22 14l-8 8-2.3-2.3a4 4 0 0 0-5-5L2 10l8-8z"/></svg> Apprentice Advisor</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="PRINCIPAL" data-label="Principal" data-demo-email="DEMO0001">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01"/></svg> Principal</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="TEACHER" data-label="Instructor" data-demo-email="teacher.pune@demo.local">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c.9-4 4.1-6.5 8-6.5s7.1 2.5 8 6.5"/></svg> Instructor</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="STUDENT" data-label="Student / Alumni" data-demo-email="rohit.deshmukh@demo.local">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg> Student / Alumni</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="EMPLOYER" data-label="Employer / HR" data-demo-email="hr.sahyadri@demo.local">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.5 6.5-5.5s5.8 2.1 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.5.3 4.4 2.2 5 5.4"/></svg> Employer / HR</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="ITI_STAFF" data-label="ITI Staff" data-demo-email="staff.pune@demo.local">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> ITI Staff</button>
-                  <button type="button" role="radio" aria-checked="false" class=""
-                  data-role="PLACEMENT_OFFICER" data-label="Placement Officer" data-demo-email="placement.pune@demo.local">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg> Placement Officer</button>
-              </div>
-              <p class="note mt">DEMO: click a role to fill its demo account (password <b>Demo@1234</b>), then press Login.<br>
-          New accounts created by the State Admin use User ID + default password <b>Test@12345</b> (changed at first login).</p>
+              <p class="note mt">DEMO: tap a role to fill its demo account (password <b>Demo@1234</b>). ITI Principal: User ID = NCVT MIS code.</p>
           </div>
   </div>
-</div>
+</section>
 </main>
 
 <footer class="pub-footer">

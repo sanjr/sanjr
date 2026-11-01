@@ -44,12 +44,46 @@ abstract class Controller
     }
 
     /** Small pagination helper. */
-    protected function paginate(string $sql, array $params, int $perPage = 25): array
+    protected function paginate(string $sql, array $params, int $perPage = 25, ?string $countSql = null): array
     {
         $page = max(1, (int) input('page', 1));
-        $total = (int) DB::value("SELECT COUNT(*) FROM ($sql) x", $params);
+        // The total is cached for a minute (same query + same scope parameters): paging through a big
+        // list does not count lakhs of rows again on every click.
+        $cq = $countSql ?? self::countSql($sql);
+        $total = (int) \App\Core\Cache::remember('count:' . md5($cq . json_encode($params)), (int) config('cache.count_ttl', 60),
+            static fn () => DB::value($cq, $params));
         $rows = DB::all($sql . ' LIMIT ' . $perPage . ' OFFSET ' . (($page - 1) * $perPage), $params);
         return ['rows' => $rows, 'total' => $total, 'page' => $page, 'pages' => max(1, (int) ceil($total / $perPage))];
+    }
+
+    /**
+     * COUNT query for a list: when the top level is a plain SELECT … FROM … WHERE … ORDER BY (no DISTINCT,
+     * GROUP BY, HAVING or UNION), count over the FROM/WHERE part only — the display columns
+     * (and their sub-queries) are not computed for every row. Otherwise fall back to a derived table.
+     */
+    public static function countSql(string $sql): string
+    {
+        $fallback = "SELECT COUNT(*) FROM ($sql) x";
+        $depth = 0;
+        $from = $order = null;
+        $len = strlen($sql);
+        $quote = null;
+        for ($i = 0; $i < $len; $i++) {
+            $c = $sql[$i];
+            if ($quote) { if ($c === $quote) { $quote = null; } continue; }
+            if ($c === "'" || $c === '"') { $quote = $c; continue; }
+            if ($c === '(') { $depth++; continue; }
+            if ($c === ')') { $depth--; continue; }
+            if ($depth !== 0 || !ctype_space($c)) { continue; }
+            $rest = substr($sql, $i + 1, 12);
+            if ($from === null && preg_match('/^FROM\s/i', $rest)) { $from = $i + 1; }
+            elseif ($from !== null && preg_match('/^(GROUP\s+BY|HAVING|UNION)\b/i', $rest)) { return $fallback; }
+            elseif ($from !== null && preg_match('/^ORDER\s+BY\b/i', $rest)) { $order = $i; }
+        }
+        if ($from === null || preg_match('/^\s*SELECT\s+(DISTINCT|STRAIGHT_JOIN)\b/i', $sql) || str_contains(substr($sql, 0, $from), '?')) {
+            return $fallback;
+        }
+        return 'SELECT COUNT(*) ' . substr($sql, $from, ($order ?? $len) - $from);
     }
 
     protected function academicYears(): array

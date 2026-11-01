@@ -23,6 +23,7 @@
               <a href="../dvto/reports-type-result.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg><span>Training &amp; Results</span></a>
               <a href="../dvto/apprenticeships.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5L22 14l-8 8-2.3-2.3a4 4 0 0 0-5-5L2 10l8-8z"/></svg><span>Apprenticeship</span></a>
               <a href="../dvto/reports-type-placement.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg><span>Placement</span></a>
+              <a href="#" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span>Verification Queue</span></a>
               <a href="../dvto/reports-type-outcome.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Reports</span></a>
               <a href="../dvto/audit.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 11h6M9 15h4"/></svg><span>Audit Logs</span></a>
               <a href="../dvto/settings.html" class=""><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></a>
@@ -30,6 +31,7 @@
     <div class="sidebar-foot">ITI Student Lifecycle &amp; Career Tracking System — Maharashtra</div>
   </aside>
 
+  <div class="sidebar-backdrop" data-close-sidebar></div>
   <div class="main">
     <header class="topbar">
       <button class="menu-toggle" type="button" data-toggle-sidebar aria-label="Menu"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
@@ -55,20 +57,69 @@
 
 <form class="card filters" method="get" action="#">
   <div class="field" style="flex:1"><label>Search</label><input type="search" name="q" value="" placeholder="Name or code"></div>
-    <button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Filter</button>
+      <button class="btn" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Filter</button>
 </form>
 
 <div class="card card-tight">
   <div class="table-wrap"><table class="table">
-    <tr><th>Code</th><th>ITI</th><th>Type</th><th>District</th><th class="num">Trades</th><th class="num">Current students</th><th class="num">Alumni</th><th>Status</th><th></th></tr>
-          <tr><td class="code">DEMO0001</td><td><b>Government ITI, Pune</b></td><td>Government</td><td>Pune</td>
+    <tr><th>NCVT MIS Code</th><th>ITI</th><th>Type</th><th>Taluka</th><th>District</th><th>Region</th><th class="num">Trades</th><th class="num">Current students</th><th class="num">Alumni</th><th>Status</th><th></th></tr>
+          <tr><td class="code">DEMO0001</td><td><b>Government ITI, Pune</b></td><td>Government</td><td>—</td><td>Pune</td><td>Pune</td>
         <td class="num">5</td><td class="num">265</td><td class="num">701</td>
         <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
-          <tr><td class="code">DEMO0037</td><td><b>Shri Sai Private ITI, Pune</b></td><td>Private</td><td>Pune</td>
+          <tr><td class="code">GR27000059</td><td><b>Govt. ITI (Adivasi), Manikdoh</b></td><td>Government</td><td>Junnar</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GU27000226</td><td><b>Govt. ITI (Woman), Pune</b></td><td>Government</td><td>Pune City</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GU27000009</td><td><b>Govt. ITI Aundh Pune</b></td><td>Government</td><td>Pune City</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000091</td><td><b>Govt. ITI Bhor</b></td><td>Government</td><td>Bhor</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000227</td><td><b>Govt. ITI Ghodegaon</b></td><td>Government</td><td>Ambegaon</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GU27000616</td><td><b>Govt. ITI Haveli</b></td><td>Government</td><td>Haveli</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000060</td><td><b>Govt. ITI Indapur</b></td><td>Government</td><td>Indapur</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000359</td><td><b>Govt. ITI Khed (Rajgurunagar)</b></td><td>Government</td><td>Khed</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000064</td><td><b>Govt. ITI Lonavala</b></td><td>Government</td><td>Mawal</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000065</td><td><b>Govt. ITI Malegaon (BK)</b></td><td>Government</td><td>Baramati</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000424</td><td><b>Govt. ITI Mulshi</b></td><td>Government</td><td>Mulshi</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GU27000066</td><td><b>Govt. ITI Pimpri Chinchwad</b></td><td>Government</td><td>Haveli</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000425</td><td><b>Govt. ITI Purandar (Saswad)</b></td><td>Government</td><td>Purandar</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000502</td><td><b>Govt. ITI Shirur</b></td><td>Government</td><td>Shirur</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000426</td><td><b>Govt. ITI Varvand</b></td><td>Government</td><td>Daund</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">GR27000503</td><td><b>Govt. ITI Velhe</b></td><td>Government</td><td>Velhe</td><td>Pune</td><td>Pune</td>
+        <td class="num">0</td><td class="num">0</td><td class="num">0</td>
+        <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
+          <tr><td class="code">DEMO0037</td><td><b>Shri Sai Private ITI, Pune</b></td><td>Private</td><td>—</td><td>Pune</td><td>Pune</td>
         <td class="num">3</td><td class="num">33</td><td class="num">72</td>
         <td><span class="badge badge-green">Active</span></td><td class="right"><a class="btn btn-light btn-sm" href="../dvto/reports.html">Report</a></td></tr>
       </table></div>
-  <div class="pager muted">2 records</div></div>
+  <div class="pager muted">18 records</div></div>
+
 
     </main>
   </div>

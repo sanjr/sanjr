@@ -33,27 +33,27 @@ final class Stats
         return [implode(' AND ', $w), $p];
     }
 
-    public static function itiCount(array $f = []): int
+    private static function raw_itiCount(array $f = []): int
     {
         [$w, $p] = self::where($f);
         return (int) DB::value("SELECT COUNT(*) FROM itis i WHERE i.status = 'ACTIVE' AND $w", $p);
     }
 
-    public static function currentStudents(array $f = []): int
+    private static function raw_currentStudents(array $f = []): int
     {
         [$w, $p] = self::where($f);
         return (int) DB::value("SELECT COUNT(DISTINCT ia.student_id) FROM institute_affiliations ia JOIN itis i ON i.id = ia.iti_id
                                 WHERE ia.status = 'ACTIVE' AND $w", $p);
     }
 
-    public static function totalStudents(array $f = []): int
+    private static function raw_totalStudents(array $f = []): int
     {
         [$w, $p] = self::where($f);
         return (int) DB::value("SELECT COUNT(DISTINCT ia.student_id) FROM institute_affiliations ia JOIN itis i ON i.id = ia.iti_id WHERE $w", $p);
     }
 
     /** Current status distribution among alumni (completed). */
-    public static function outcomes(array $f = []): array
+    private static function raw_outcomes(array $f = []): array
     {
         [$w, $p] = self::where($f);
         $extra = '';
@@ -63,7 +63,7 @@ final class Stats
                            FROM institute_affiliations ia
                            JOIN itis i ON i.id = ia.iti_id
                            JOIN admissions a ON a.id = ia.admission_id
-                           LEFT JOIN v_student_current_status cs ON cs.student_id = ia.student_id
+                           LEFT JOIN career_status_history cs ON cs.student_id = ia.student_id AND cs.current_flag = 1
                           WHERE ia.status = 'COMPLETED' AND $w $extra
                           GROUP BY COALESCE(cs.status, 'NOT_UPDATED')", $p);
         $out = array_fill_keys(self::OUTCOME_ORDER, 0);
@@ -78,7 +78,7 @@ final class Stats
         return array_sum(array_intersect_key($outcomes, array_flip(self::PLACED)));
     }
 
-    public static function tradeWiseCurrent(array $f = []): array
+    private static function raw_tradeWiseCurrent(array $f = []): array
     {
         [$w, $p] = self::where($f);
         $extra = '';
@@ -89,7 +89,7 @@ final class Stats
                          WHERE ia.status = 'ACTIVE' AND $w $extra GROUP BY t.id, t.name ORDER BY n DESC", $p);
     }
 
-    public static function ongoingTraining(array $f = []): int
+    private static function raw_ongoingTraining(array $f = []): int
     {
         [$w, $p] = self::where($f);
         return (int) DB::value("SELECT COUNT(DISTINCT tr.student_id) FROM training_records tr JOIN itis i ON i.id = tr.iti_id
@@ -97,7 +97,7 @@ final class Stats
     }
 
     /** Per-district alumni placement rate (State dashboard tiles). */
-    public static function districtRates(array $f = []): array
+    private static function raw_districtRates(array $f = []): array
     {
         [$w, $p] = self::where($f);
         $ph = DB::in(self::PLACED);
@@ -106,12 +106,12 @@ final class Stats
                           FROM districts d
                           LEFT JOIN itis i ON i.district_id = d.id AND $w
                           LEFT JOIN institute_affiliations ia ON ia.iti_id = i.id AND ia.status = 'COMPLETED'
-                          LEFT JOIN v_student_current_status cs ON cs.student_id = ia.student_id
+                          LEFT JOIN career_status_history cs ON cs.student_id = ia.student_id AND cs.current_flag = 1
                          GROUP BY d.id, d.name ORDER BY d.name", array_merge(self::PLACED, $p));
     }
 
     /** Unique students who STARTED a job in each of the last N years. */
-    public static function placementTrend(array $f = [], int $years = 5): array
+    private static function raw_placementTrend(array $f = [], int $years = 5): array
     {
         [$w, $p] = self::where($f);
         $from = (int) date('Y') - $years + 1;
@@ -143,11 +143,58 @@ final class Stats
                          ORDER BY e.joining_date DESC, e.id DESC LIMIT $limit", $p);
     }
 
-    public static function pendingFollowUps(array $f = []): int
+    private static function raw_pendingFollowUps(array $f = []): int
     {
         [$w, $p] = self::where($f);
         return (int) DB::value("SELECT COUNT(*) FROM follow_ups fu JOIN itis i ON i.id = fu.iti_id
                                 WHERE fu.status IN ('PENDING','IN_PROGRESS') AND $w", $p);
+    }
+
+    /**
+     * Dashboard numbers are cached per data scope for config('cache.ttl') seconds (default 600):
+     * thousands of users opening dashboards at the same time cost the database one query per scope.
+     */
+    private static function memo(string $name, array $args, callable $fn): mixed
+    {
+        [$sql, $p] = Access::itiScope('i.id');
+        return \App\Core\Cache::remember('stats:' . $name . ':' . md5($sql . json_encode($p) . json_encode($args)), (int) config('cache.ttl', 600), $fn);
+    }
+
+    public static function itiCount(array $f = []): int
+    {
+        return self::memo('itiCount', func_get_args(), static fn () => self::raw_itiCount($f));
+    }
+    public static function currentStudents(array $f = []): int
+    {
+        return self::memo('currentStudents', func_get_args(), static fn () => self::raw_currentStudents($f));
+    }
+    public static function totalStudents(array $f = []): int
+    {
+        return self::memo('totalStudents', func_get_args(), static fn () => self::raw_totalStudents($f));
+    }
+    public static function outcomes(array $f = []): array
+    {
+        return self::memo('outcomes', func_get_args(), static fn () => self::raw_outcomes($f));
+    }
+    public static function tradeWiseCurrent(array $f = []): array
+    {
+        return self::memo('tradeWiseCurrent', func_get_args(), static fn () => self::raw_tradeWiseCurrent($f));
+    }
+    public static function ongoingTraining(array $f = []): int
+    {
+        return self::memo('ongoingTraining', func_get_args(), static fn () => self::raw_ongoingTraining($f));
+    }
+    public static function districtRates(array $f = []): array
+    {
+        return self::memo('districtRates', func_get_args(), static fn () => self::raw_districtRates($f));
+    }
+    public static function placementTrend(array $f = [], int $years = 5): array
+    {
+        return self::memo('placementTrend', func_get_args(), static fn () => self::raw_placementTrend($f, $years));
+    }
+    public static function pendingFollowUps(array $f = []): int
+    {
+        return self::memo('pendingFollowUps', func_get_args(), static fn () => self::raw_pendingFollowUps($f));
     }
 
     /** Red dot number on the bell icon. */

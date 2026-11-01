@@ -23,15 +23,15 @@ final class PublicController extends Controller
     /** Statewide aggregates computed without any login scope. */
     private function publicStats(): array
     {
-        return DB::one("SELECT (SELECT COUNT(*) FROM itis WHERE status = 'ACTIVE') AS itis,
+        return \App\Core\Cache::remember('public:stats', (int) config('cache.ttl', 600), static fn () => DB::one("SELECT (SELECT COUNT(*) FROM itis WHERE status = 'ACTIVE') AS itis,
                                (SELECT COUNT(*) FROM trades WHERE status = 'ACTIVE') AS trades,
                                (SELECT COUNT(*) FROM pcid_registry WHERE status = 'ACTIVE') AS pcids,
                                (SELECT COUNT(DISTINCT ia.student_id) FROM institute_affiliations ia WHERE ia.status = 'ACTIVE') AS in_training,
                                (SELECT COUNT(DISTINCT ia.student_id) FROM institute_affiliations ia WHERE ia.status = 'COMPLETED') AS alumni,
-                               (SELECT COUNT(DISTINCT ia.student_id) FROM institute_affiliations ia JOIN v_student_current_status cs ON cs.student_id = ia.student_id
+                               (SELECT COUNT(DISTINCT ia.student_id) FROM institute_affiliations ia JOIN career_status_history cs ON cs.student_id = ia.student_id AND cs.current_flag = 1
                                  WHERE ia.status = 'COMPLETED' AND cs.status IN ('EMPLOYED','APPRENTICE','SELF_EMPLOYED')) AS placed,
                                (SELECT COUNT(*) FROM companies WHERE status = 'ACTIVE') AS employers,
-                               (SELECT COUNT(*) FROM vacancies WHERE status = 'OPEN' AND (closes_on IS NULL OR closes_on >= CURDATE())) AS vacancies") ?? [];
+                               (SELECT COUNT(*) FROM vacancies WHERE status = 'OPEN' AND (closes_on IS NULL OR closes_on >= CURDATE())) AS vacancies") ?? []);
     }
 
     public function home(): void
@@ -64,15 +64,14 @@ final class PublicController extends Controller
 
     public function reports(): void
     {
-        $out = DB::all("SELECT COALESCE(cs.status, 'NOT_UPDATED') AS status, COUNT(DISTINCT ia.student_id) AS n
-                          FROM institute_affiliations ia LEFT JOIN v_student_current_status cs ON cs.student_id = ia.student_id
-                         WHERE ia.status = 'COMPLETED' GROUP BY COALESCE(cs.status, 'NOT_UPDATED')");
+        [$out, $byTrade] = \App\Core\Cache::remember('public:reports', (int) config('cache.ttl', 600), static fn () => [DB::all("SELECT COALESCE(cs.status, 'NOT_UPDATED') AS status, COUNT(DISTINCT ia.student_id) AS n
+                          FROM institute_affiliations ia LEFT JOIN career_status_history cs ON cs.student_id = ia.student_id AND cs.current_flag = 1
+                         WHERE ia.status = 'COMPLETED' GROUP BY COALESCE(cs.status, 'NOT_UPDATED')"), DB::all("SELECT t.name, COUNT(DISTINCT a.student_id) AS alumni,
+                                   COUNT(DISTINCT CASE WHEN cs.status IN ('EMPLOYED','APPRENTICE','SELF_EMPLOYED') THEN a.student_id END) AS placed
+                              FROM admissions a JOIN trades t ON t.id = a.trade_id LEFT JOIN career_status_history cs ON cs.student_id = a.student_id AND cs.current_flag = 1
+                             WHERE a.status = 'COMPLETED' GROUP BY t.name ORDER BY t.name")]);
         $outcomes = array_fill_keys(Stats::OUTCOME_ORDER, 0);
         foreach ($out as $r) { $outcomes[$r['status']] = (int) $r['n']; }
-        $byTrade = DB::all("SELECT t.name, COUNT(DISTINCT a.student_id) AS alumni,
-                                   COUNT(DISTINCT CASE WHEN cs.status IN ('EMPLOYED','APPRENTICE','SELF_EMPLOYED') THEN a.student_id END) AS placed
-                              FROM admissions a JOIN trades t ON t.id = a.trade_id LEFT JOIN v_student_current_status cs ON cs.student_id = a.student_id
-                             WHERE a.status = 'COMPLETED' GROUP BY t.name ORDER BY t.name");
         $this->page('public/reports', ['title' => 'Statewide outcomes', 's' => $this->publicStats(), 'outcomes' => $outcomes, 'byTrade' => $byTrade]);
     }
 
