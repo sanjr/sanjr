@@ -462,6 +462,22 @@ def main() -> int:
     ok(status == 200 and all(x in body for x in [card_dob, "DEMO0002", "Admission Year", "Result", " ".join(pcid.split("-"))]),
        "Card front: photo, name, date of birth, ITI, NCVT MIS code, trade, admission year, result, PCID in groups")
     ok(all(x in body for x in [mobile, "card.test@demo.local", "Card Road, Nashik", ">O+<"]), "Card back: address, mobile, e-mail, blood group")
+    sa = as_user(base, "state@demo.local")
+    sa.get("/settings")
+    sa.post("/settings/card", {"card_verify_url": "https://careertrack.example.gov.in/verify"})
+    _, body, _, _ = pn.get(f"/students/{sid}/card")
+    body = html.unescape(body)
+    ok("Verify: <b>careertrack.example.gov.in/verify</b>" in body and 'data-qr="https://careertrack.example.gov.in/verify?pcid=' + pcid in body,
+       "State Admin changed the verification link: card back and QR code use it")
+    _, body, _, _ = sa.post("/settings/card", {"card_verify_url": "javascript:alert(1)"})
+    ok("full web address" in body and val("SELECT setting_value FROM settings WHERE setting_key = 'card_verify_url'") == "https://careertrack.example.gov.in/verify",
+       "An invalid verification link is refused")
+    status, _, _, _ = pn.post("/settings/card", {"card_verify_url": "https://evil.example/verify"})
+    ok(status == 403 and val("SELECT setting_value FROM settings WHERE setting_key = 'card_verify_url'") == "https://careertrack.example.gov.in/verify",
+       "Only the State Admin can change the verification link")
+    sa.post("/settings/card", {"card_verify_url": ""})
+    _, body, _, _ = pn.get(f"/students/{sid}/card")
+    ok("/verify?pcid=" + pcid in html.unescape(body) and "example.gov.in" not in body, "Empty link = this website's verification page again")
     status, _, _, _ = tp.get(f"/students/{sid}/card")
     ok(status == 404, "Previous teacher cannot open the student's PCID card")
     tid = val("SELECT id FROM users WHERE email = 'teacher.pune@demo.local'")

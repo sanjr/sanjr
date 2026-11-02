@@ -20,6 +20,17 @@
     </form>
   </div>
 </div>
+<?php if (\App\Core\Auth::is('STATE_ADMIN')): ?>
+<form method="post" action="<?= url('/settings/card') ?>" class="card" id="card-settings"><?= csrf_field() ?>
+  <h2>PCID card — verification link</h2>
+  <p class="muted">Printed at the bottom of the back of every PCID card, and opened by its QR code (the PCID is added to the link automatically).
+    Leave empty to use this website: <span class="code"><?= e($defaultVerifyUrl) ?></span></p>
+  <div class="field"><label for="card-verify-url">Verification link</label>
+    <input type="url" id="card-verify-url" name="card_verify_url" maxlength="200" style="width:100%;max-width:560px" value="<?= e($cardVerifyUrl) ?>" placeholder="<?= e($defaultVerifyUrl) ?>">
+    <div class="hint">For example https://careertrack.dvet.gov.in/verify — the page there must be this website's verification page, or the QR code will not work.</div></div>
+  <button class="btn mt" type="submit">Save link</button>
+</form>
+<?php endif; ?>
 <?php if ($settings): ?>
 <div class="card card-tight">
   <h2>System settings <small class="muted"><?= num($pcidCount) ?> PCIDs issued</small></h2>

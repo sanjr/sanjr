@@ -145,7 +145,7 @@ final class StudentController extends Controller
         Audit::log('VIEW_CARD', 'students', $id, $id);
         $this->render('students/card', ['title' => 'Permanent Career ID Card', 'me' => $me, 'adm' => $adm, 'first' => $first, 'result' => $result, 'contact' => $contact,
             'issuedOn' => DB::value("SELECT issued_at FROM pcid_registry WHERE student_id = ? AND status = 'ACTIVE'", [$id]),
-            'verifyUrl' => absolute_url('/verify', ['pcid' => $me['pcid']]), 'scripts' => ['qr.js'], 'bodyClass' => 'print-card']);
+            'verifyUrl' => \App\Services\Pcid::verifyUrl((string) $me['pcid']), 'verifyBase' => \App\Services\Pcid::verifyBase(), 'scripts' => ['qr.js'], 'bodyClass' => 'print-card']);
     }
 
     /** Create (or reset) the student's own login. User ID = the student's PCID; a temporary password is shown once. */

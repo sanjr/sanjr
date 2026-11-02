@@ -321,7 +321,25 @@ final class AdminController extends Controller
     {
         $this->render('admin/settings', ['title' => 'Settings', 'user' => Auth::user(), 'roles' => Auth::assignments((int) Auth::id()),
             'settings' => Auth::is('STATE_ADMIN') ? DB::all('SELECT * FROM settings ORDER BY setting_key') : [],
-            'pcidCount' => Auth::is('STATE_ADMIN') ? (int) DB::value('SELECT COUNT(*) FROM pcid_registry') : 0]);
+            'pcidCount' => Auth::is('STATE_ADMIN') ? (int) DB::value('SELECT COUNT(*) FROM pcid_registry') : 0,
+            'cardVerifyUrl' => Auth::is('STATE_ADMIN') ? (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'card_verify_url'") : '',
+            'defaultVerifyUrl' => absolute_url('/verify')]);
+    }
+
+    /** State Admin: the verification link printed on the back of every PCID card (and opened by its QR code). */
+    public function saveCardSettings(): void
+    {
+        Auth::requireRole('STATE_ADMIN');
+        $url = trim((string) input('card_verify_url', ''));
+        if ($url !== '' && (!preg_match('~^https?://[^\s"<>]+$~i', $url) || strlen($url) > 200 || !filter_var($url, FILTER_VALIDATE_URL))) {
+            throw new \DomainException('Enter a full web address starting with https:// (at most 200 characters), or leave it empty for this website.');
+        }
+        $old = (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'card_verify_url'");
+        DB::run("REPLACE INTO settings (setting_key, setting_value, description) VALUES ('card_verify_url', ?, ?)",
+            [$url, 'Verification link on the back of the PCID card and in its QR code (empty = this website /verify)']);
+        Audit::log('UPDATE', 'settings', null, null, null, ['card_verify_url' => $old], ['card_verify_url' => $url]);
+        flash('success', $url === '' ? 'PCID cards now show this website\'s verification page.' : 'PCID cards now show the verification link ' . $url . '.');
+        redirect('/settings', ['tab' => 'card']);
     }
 
     public function changePassword(): void

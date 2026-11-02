@@ -1,7 +1,7 @@
 <?php
 use App\Core\Auth;
 
-/** @var array $me @var ?array $adm @var ?array $first @var ?array $result @var array $contact @var string $verifyUrl */
+/** @var array $me @var ?array $adm @var ?array $first @var ?array $result @var array $contact @var string $verifyUrl @var string $verifyBase */
 $sid = (int) $me['id'];
 $photoId = $me['photo_document_id'] ?? null;
 $canPhoto = $photoId && (can('student.document.view') || can('student.view'));
@@ -64,7 +64,7 @@ $head = static fn (string $sub) => '<div class="ic-head"><img src="' . e(asset('
       <div class="ic-qr"><div data-qr="<?= e($verifyUrl) ?>" data-qr-size="140" aria-label="QR code to verify this PCID"></div><small>Scan to verify</small></div>
     </div>
     <div class="ic-number ic-number-sm"><?= e($pcidSpaced) ?></div>
-    <div class="ic-note">Verify: <b><?= e(absolute_url('/verify')) ?></b> · If found, please return to <?= e($adm['iti_name'] ?? 'the ITI') ?>.</div>
+    <div class="ic-note">Verify: <b><?= e(preg_replace('~^https?://~i', '', $verifyBase)) ?></b> · If found, please return to <?= e($adm['iti_name'] ?? 'the ITI') ?>.</div>
   </section>
 </div>
 

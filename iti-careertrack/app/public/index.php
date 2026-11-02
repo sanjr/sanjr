@@ -129,6 +129,7 @@ $r->post('/masters/iti-trades', [C\MasterController::class, 'storeItiTrade']);
 $r->get('/verifications', [C\MasterController::class, 'verifications']);
 $r->get('/settings', [C\AdminController::class, 'settings']);
 $r->post('/settings/password', [C\AdminController::class, 'changePassword']);
+$r->post('/settings/card', [C\AdminController::class, 'saveCardSettings']);
 // --- principal
 $r->get('/trades', [C\PrincipalController::class, 'trades']);
 $r->post('/batches', [C\PrincipalController::class, 'storeBatch']);

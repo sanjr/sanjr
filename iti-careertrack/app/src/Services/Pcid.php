@@ -43,6 +43,20 @@ final class Pcid
         return $c === '' ? '' : "%$c%";   // '' matches no PCID (only punctuation was typed)
     }
 
+    /** Verification link printed on the back of the PCID card and in its QR code (State Admin setting; default = this website's /verify). */
+    public static function verifyBase(): string
+    {
+        $url = trim((string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'card_verify_url'"));
+        return $url !== '' ? $url : absolute_url('/verify');
+    }
+
+    /** The verification link for one PCID (what the QR code opens). */
+    public static function verifyUrl(string $pcid): string
+    {
+        $base = self::verifyBase();
+        return $base . (str_contains($base, '?') ? '&' : '?') . 'pcid=' . rawurlencode($pcid);
+    }
+
     /** True if the text looks like a PCID AND its last digit matches (catches typing mistakes). */
     public static function isValid(string $pcid): bool
     {
