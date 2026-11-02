@@ -38,6 +38,8 @@ final class StudentController extends Controller
 
         [$scope, $params] = Access::studentScope('s.id');
         $w = [$scope];
+        // deleted students are hidden; the State Admin can list them with ?deleted=1 to restore
+        $w[] = Auth::is('STATE_ADMIN') && input('deleted') ? "s.profile_status = 'INACTIVE'" : "s.profile_status <> 'INACTIVE'";
         if ($q = (string) input('q', '')) {
             $w[] = '(p.pcid LIKE ? OR CONCAT_WS(\' \', s.first_name, s.middle_name, s.last_name) LIKE ?)';
             $params[] = '%' . $q . '%';

@@ -139,6 +139,23 @@
     });
   });
 
+  // ---------------- outcome form: show only the fields of the chosen next step
+  var picks = document.querySelectorAll('[data-next-pick]');
+  if (picks.length) {
+    var syncNext = function () {
+      var v = (document.querySelector('[data-next-pick]:checked') || {}).value || '';
+      document.querySelectorAll('[data-for-next]').forEach(function (box) {
+        var on = v !== '' && box.getAttribute('data-for-next').split(' ').indexOf(v) !== -1;
+        box.style.display = on ? '' : 'none';
+        box.querySelectorAll('input, select').forEach(function (i) {
+          var lab = i.closest('.field') && i.closest('.field').querySelector('.req');
+          i.required = on && !!lab; i.disabled = !on;
+        });
+      });
+    };
+    picks.forEach(function (r) { r.addEventListener('change', syncNext); }); syncNext();
+  }
+
   // ---------------- login: "Remember me" keeps only the User ID on this device (never the password)
   var rem = document.getElementById('remember-id'), lf = document.getElementById('login-form');
   if (rem && lf) {

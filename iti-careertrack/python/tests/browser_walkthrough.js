@@ -9,8 +9,7 @@ const ORIGIN = new URL(BASE).origin;   // sidebar links already contain the sub-
 const PNG_HEX = '89504e470d0a1a0a0000000d4948445200000001000000010806000000' + '1f15c4890000000d49444154789c6360000002000154a24f5d0000000049454e44ae426082';
 const ROLES = [
   ['STATE_ADMIN', 'DVET-ADMIN'], ['RO_ADMIN', 'RO-PUN'], ['DVTO', 'DVTO-PUNE'], ['APPRENTICE_ADVISOR', 'AA-PUNE'],
-  ['PRINCIPAL', 'DEMO0001'], ['TEACHER', 'teacher.pune@demo.local'], ['PLACEMENT_OFFICER', 'placement.pune@demo.local'],
-  ['ITI_STAFF', 'staff.pune@demo.local'], ['EMPLOYER', 'hr.sahyadri@demo.local'], ['STUDENT', 'rohit.deshmukh@demo.local'],
+  ['PRINCIPAL', 'DEMO0001'], ['TEACHER', 'teacher.pune@demo.local'], ['EMPLOYER', 'hr.sahyadri@demo.local'], ['STUDENT', 'rohit.deshmukh@demo.local'],
 ];
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  PASS ', m); } else { fail++; console.log('  FAIL ', m); } };
@@ -113,7 +112,7 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
   await p.context().close();
 
   // Placement officer: record a job for an alumnus
-  p = await login(b, 'PLACEMENT_OFFICER', 'placement.pune@demo.local');
+  p = await login(b, 'PRINCIPAL', 'DEMO0001');   // the Principal records jobs (Placement Officer login no longer exists)
   await p.goto(BASE + '/placements?status=SEEKING_EMPLOYMENT');
   await Promise.all([p.waitForNavigation(), p.locator('a:has-text("+ Record")').first().click()]);
   await p.selectOption('#company_id', { index: 1 });
@@ -158,14 +157,40 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
     let [l0, p0] = await lab(); ok(l0 === 'User ID' && p0 === 'Enter User ID', 'login: default box is "User ID" / "Enter User ID"');
     await lp.click('[data-role=PRINCIPAL]'); ok((await lab())[0] === 'NCVT MIS Code' && (await lab())[1] === 'Enter NCVT MIS Code', 'login: Principal -> NCVT MIS Code');
     await lp.click('[data-role=TEACHER]'); ok((await lab())[0] === 'Sevaarth ID' && (await lab())[1] === 'Enter Sevaarth ID', 'login: Instructor -> Sevaarth ID');
-    await lp.click('[data-role=ITI_STAFF]'); ok((await lab())[0] === 'Sevaarth ID', 'login: ITI Staff -> Sevaarth ID');
-    for (const r of ['STATE_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR', 'PLACEMENT_OFFICER', 'EMPLOYER', 'STUDENT']) {
+    ok(await lp.locator('.role-pick [data-role]').count() === 8 && await lp.locator('[data-role=ITI_STAFF], [data-role=PLACEMENT_OFFICER]').count() === 0,
+       'login: 8 roles, no Placement Officer / ITI Staff');
+    for (const r of ['STATE_ADMIN', 'RO_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR', 'EMPLOYER', 'STUDENT']) {
       await lp.click(`[data-role=${r}]`); const [l, ph] = await lab(); ok(l === 'User ID' && ph === 'Enter User ID', `login: ${r} -> User ID`);
     }
     await lp.click('[data-role=TEACHER]'); const sev = await lp.inputValue('#email');
     await Promise.all([lp.waitForNavigation(), lp.click('#login-form button[type=submit]')]);
     ok(/^DEMOSEV\d+$/.test(sev) && /\/dashboard$/.test(lp.url()), `Instructor logged in with Sevaarth ID ${sev}`);
     await c.close(); }
+
+  // Instructor: final result + apprenticeship, from the outcome form
+  p = await login(b, 'TEACHER', 'teacher.pune@demo.local');
+  await p.goto(BASE + '/outcomes?exam=not_appeared');
+  const oh = await p.locator('a[href$="/outcome"]').first().getAttribute('href');
+  await p.goto(ORIGIN + oh);
+  await p.check('input[name=result][value=PASS]'); await p.fill('input[name=exam_month]', '2026-07');
+  await p.check('input[data-next-pick][value=APPRENTICE]', { force: true });
+  ok(await p.locator('input[name=appr_company]').isVisible() && await p.locator('input[name=job_company]').isHidden(), 'outcome form shows only the chosen step\'s fields');
+  await p.fill('input[name=appr_company]', 'Walkthrough Apprentice Co'); await p.fill('input[name=appr_start]', '2026-08-01');
+  await p.fill('input[name=appr_end]', '2027-07-31'); await p.fill('input[name=appr_stipend]', '9000');
+  await Promise.all([p.waitForNavigation(), p.click('#outcome-form button[type=submit]')]);
+  ok(/Saved: Result: Pass · Apprenticeship/.test(await successText(p)), 'Instructor recorded Pass + apprenticeship');
+  await check(p, 'outcome page has no errors');
+  await p.context().close();
+
+  // Principal adds an instructor (Sevaarth ID + trade)
+  p = await login(b, 'PRINCIPAL', 'DEMO0001');
+  await p.goto(BASE + '/users');
+  await p.selectOption('[data-role-select]', { label: 'Instructor' });
+  await p.fill('#new-user input[name=full_name]', 'Walkthrough Instructor'); await p.fill('#new-user input[name=username]', 'SEVWT' + rnd.toUpperCase());
+  await p.selectOption('select[name="trades[]"]', [{ index: 0 }]);
+  await Promise.all([p.waitForNavigation(), p.click('#new-user button[type=submit]')]);
+  ok(/User saved/.test(await successText(p)), 'Principal added an instructor');
+  await p.context().close();
 
   // Public website and installer lock
   const ctx = await b.newContext(); p = await ctx.newPage();

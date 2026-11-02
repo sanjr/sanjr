@@ -80,9 +80,14 @@ final class AdminController extends Controller
     // ------------------------------------------------------------------ users & roles
     private function grantableRoles(): array
     {
-        return Auth::is('STATE_ADMIN')
-            ? DB::all("SELECT * FROM roles WHERE code <> 'STUDENT' ORDER BY FIELD(code,'STATE_ADMIN','RO_ADMIN','DVTO','APPRENTICE_ADVISOR','PRINCIPAL','TEACHER','PLACEMENT_OFFICER','ITI_STAFF','EMPLOYER')")
-            : DB::all("SELECT * FROM roles WHERE code IN ('TEACHER','PLACEMENT_OFFICER','ITI_STAFF') ORDER BY id");
+        // Placement Officer and ITI Staff logins are no longer used.
+        return match (true) {
+            Auth::is('STATE_ADMIN') => DB::all("SELECT * FROM roles WHERE code NOT IN ('STUDENT','PLACEMENT_OFFICER','ITI_STAFF')
+                                                 ORDER BY FIELD(code,'STATE_ADMIN','RO_ADMIN','DVTO','APPRENTICE_ADVISOR','PRINCIPAL','TEACHER','EMPLOYER')"),
+            Auth::is('RO_ADMIN') => DB::all("SELECT * FROM roles WHERE code = 'APPRENTICE_ADVISOR'"),   // RO gives ITIs of the region to advisors
+            Auth::is('PRINCIPAL') => DB::all("SELECT * FROM roles WHERE code = 'TEACHER'"),           // Principal adds instructors
+            default => [],
+        };
     }
 
     public function users(): void
@@ -91,8 +96,12 @@ final class AdminController extends Controller
         $p = [];
         $w = '1=1';
         if (Auth::is('PRINCIPAL')) {
-            $w = 'ura.iti_id = ?';
+            $w = "ura.iti_id = ? AND r.code = 'TEACHER'";
             $p[] = Auth::itiId();
+        } elseif (Auth::is('RO_ADMIN')) {
+            $w = "r.code = 'APPRENTICE_ADVISOR' AND EXISTS (SELECT 1 FROM role_assignment_itis x JOIN itis xi ON xi.id = x.iti_id JOIN districts xd ON xd.id = xi.district_id
+                                                        WHERE x.role_assignment_id = ura.id AND xd.region_id = ?)";
+            $p[] = Auth::regionId();
         }
         if ($q = (string) input('q', '')) { $w .= ' AND (u.full_name LIKE ? OR u.email LIKE ? OR u.username LIKE ?)'; $p[] = "%$q%"; $p[] = "%$q%"; $p[] = "%$q%"; }
         if ($r = (string) input('role', '')) { $w .= ' AND r.code = ?'; $p[] = $r; }
@@ -111,10 +120,14 @@ final class AdminController extends Controller
                                   WHERE al.action = 'PASSWORD_RESET_REQUEST' AND al.occurred_at > NOW() - INTERVAL 14 DAY
                                     AND NOT EXISTS (SELECT 1 FROM audit_logs r WHERE r.action = 'PASSWORD_RESET' AND r.entity_id = al.entity_id AND r.occurred_at > al.occurred_at)
                                   GROUP BY al.entity_id, u.full_name, u.email"), fn ($r) => $this->canManageUser((int) $r['user_id'])));
-        $this->render('admin/users', ['title' => Auth::is('PRINCIPAL') ? 'Staff & Teachers' : 'User & Role Management', 'requests' => $requests,
+        [$myItis, $myItiP] = Access::itiScope('i.id');
+        $this->render('admin/users', ['title' => match (true) { Auth::is('PRINCIPAL') => 'Instructors', Auth::is('RO_ADMIN') => 'Apprentice Advisors', default => 'User & Role Management' },
+            'requests' => $requests, 'canCreate' => (bool) $this->grantableRoles(),
             'p' => $this->paginate($sql, $p, 30), 'roles' => $this->grantableRoles(),
-            'itis' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, CONCAT(name, \' (\', iti_code, \')\') AS name FROM itis ORDER BY name') : [],
-            'regions' => DB::all('SELECT id, name FROM regions ORDER BY name'), 'trades' => DB::all("SELECT id, name FROM trades WHERE status = 'ACTIVE' ORDER BY name"),
+            'itis' => Auth::is('STATE_ADMIN', 'RO_ADMIN') ? DB::all("SELECT i.id, CONCAT(i.name, ' (', i.iti_code, ')') AS name FROM itis i WHERE $myItis ORDER BY i.name", $myItiP) : [],
+            'regions' => DB::all('SELECT id, name FROM regions ORDER BY name'), 'trades' => Auth::is('PRINCIPAL')
+                ? DB::all("SELECT t.id, t.name FROM iti_trades it JOIN trades t ON t.id = it.trade_id WHERE it.iti_id = ? AND it.status = 'ACTIVE' ORDER BY t.name", [Auth::itiId()])
+                : DB::all("SELECT id, name FROM trades WHERE status = 'ACTIVE' ORDER BY name"),
             'defaultPassword' => (string) DB::value("SELECT setting_value FROM settings WHERE setting_key = 'default_password'"),
             'itisWithoutLogin' => Auth::is('STATE_ADMIN') ? (int) DB::value("SELECT COUNT(*) FROM itis i WHERE i.status = 'ACTIVE' AND NOT EXISTS
                 (SELECT 1 FROM users u WHERE u.username = UPPER(i.iti_code))") : 0,
@@ -122,13 +135,19 @@ final class AdminController extends Controller
             'companies' => Auth::is('STATE_ADMIN') ? DB::all('SELECT id, legal_name FROM companies ORDER BY legal_name') : []]);
     }
 
-    /** Only the State Admin (DVET) creates user IDs. Default password = settings.default_password, must be changed at first login. */
+    /**
+     * State Admin creates every kind of user ID; RO Admin creates Apprentice Advisors for ITIs of the
+     * region; Principal creates Instructors of the own ITI. Default password, changed at first login.
+     */
     public function storeUser(): void
     {
-        Auth::requireRole('STATE_ADMIN');
+        Auth::require('user.manage');
         $role = DB::one('SELECT * FROM roles WHERE id = ?', [(int) input('role_id')]);
-        if (!$role || $role['code'] === 'STUDENT') {
+        if (!$role || !in_array($role['code'], array_column($this->grantableRoles(), 'code'), true)) {
             $this->backWithErrors('/users', ['role_id' => 'Choose a role.']);
+        }
+        if (Auth::is('PRINCIPAL')) {
+            $_POST['iti_id'] = (string) Auth::itiId();   // an instructor of my own ITI
         }
         $username = strtoupper(trim((string) input('username', '')));
         $email = mb_strtolower(trim((string) input('email', '')));
@@ -149,12 +168,15 @@ final class AdminController extends Controller
         $itis = array_values(array_unique(array_map('intval', (array) ($_POST['itis'] ?? []))));
         $trades = array_values(array_unique(array_map('intval', (array) ($_POST['trades'] ?? []))));
         if ($role['code'] === 'APPRENTICE_ADVISOR' && !$itis) { $errors['itis'] = 'Select the ITIs under this advisor.'; }
+        foreach ($itis as $iid) {
+            if (!Access::isMyIti($iid)) { $errors['itis'] = 'Choose ITIs of your own area only.'; }
+        }
         if ($role['code'] === 'TEACHER' && !$trades) { $errors['trades'] = 'Select the trade(s) this instructor teaches.'; }
         if ($username !== '' && !preg_match('/^[A-Z0-9][A-Z0-9_.-]{2,49}$/', $username)) { $errors['username'] = 'User ID: 3–50 letters, digits, - _ . only.'; }
         if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) { $errors['email'] = 'Invalid e-mail.'; }
         if ($mobile !== '' && !preg_match('/^[6-9][0-9]{9}$/', $mobile)) { $errors['mobile'] = 'Invalid mobile number.'; }
-        if (in_array($role['code'], ['TEACHER', 'ITI_STAFF'], true) && $username === '') {
-            $errors['username'] = 'Sevaarth ID is required for Instructor and ITI Staff (it is their login ID).';
+        if ($role['code'] === 'TEACHER' && $username === '') {
+            $errors['username'] = 'Sevaarth ID is required for an Instructor (it is the login ID).';
         }
         if ($username === '' && $email === '' && $mobile === '') { $errors['username'] = 'Give at least a User ID, e-mail or mobile number.'; }
         $pw = (string) ($_POST['password'] ?? '');
@@ -221,8 +243,13 @@ final class AdminController extends Controller
         if (Auth::is('STATE_ADMIN')) {
             return true;
         }
+        if (Auth::is('RO_ADMIN')) {
+            return (bool) DB::value("SELECT 1 FROM user_role_assignments ura JOIN roles r ON r.id = ura.role_id AND r.code = 'APPRENTICE_ADVISOR'
+                JOIN role_assignment_itis x ON x.role_assignment_id = ura.id JOIN itis xi ON xi.id = x.iti_id JOIN districts xd ON xd.id = xi.district_id
+                WHERE ura.user_id = ? AND xd.region_id = ? LIMIT 1", [$userId, Auth::regionId()]);
+        }
         return Auth::is('PRINCIPAL') && (bool) DB::value("SELECT 1 FROM user_role_assignments ura JOIN roles r ON r.id = ura.role_id
-            WHERE ura.user_id = ? AND ura.iti_id = ? AND r.code IN ('TEACHER','PLACEMENT_OFFICER','ITI_STAFF') LIMIT 1", [$userId, Auth::itiId()]);
+            WHERE ura.user_id = ? AND ura.iti_id = ? AND r.code = 'TEACHER' LIMIT 1", [$userId, Auth::itiId()]);
     }
 
     public static function tempPassword(): string

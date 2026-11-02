@@ -56,7 +56,7 @@ $pathBadge = ['EMPLOYED' => 'green', 'APPRENTICE' => 'blue', 'HIGHER_EDUCATION' 
         <td><?php if ($r['appr']): ?><b><?= e($r['appr']['company']) ?></b><br><small class="muted"><?= fmt_date($r['appr']['from']) ?> – <?= $r['appr']['to'] ? fmt_date($r['appr']['to']) : 'ongoing' ?> · <?= e(label($r['appr']['status'])) ?></small><?php else: ?>—<?php endif; ?></td>
         <td><?= $r['after_appr'] ? e($r['after_appr']) : '—' ?></td>
         <td class="right nowrap"><a class="btn btn-light btn-sm" href="<?= url('/students/' . $r['student_id']) ?>">View</a>
-          <?php if (can('career.record')): ?><a class="btn btn-sm" href="<?= url('/students/' . $r['student_id'] . '/career') ?>">Update</a><?php endif; ?></td>
+          <?php if (can('outcome.record')): ?><a class="btn btn-sm" href="<?= url('/students/' . $r['student_id'] . '/outcome') ?>">Update</a><?php endif; ?></td>
       </tr>
     <?php endforeach; ?>
     <?php if (!$p['rows']): ?><tr><td colspan="8" class="empty">No students match.</td></tr><?php endif; ?>

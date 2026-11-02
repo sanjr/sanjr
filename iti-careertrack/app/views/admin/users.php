@@ -1,8 +1,10 @@
 <?php use App\Core\Auth; ?>
 <div class="page-head"><div><h1><?= e($title) ?></h1>
-  <p><?= Auth::is('PRINCIPAL') ? 'Instructors, placement officers and staff of your ITI. New user IDs are created by the State Admin (DVET); you can reset passwords of your staff.'
-        : 'Only the State Admin (DVET) creates user IDs. Every role is tied to a scope (Region, District, ITI list, ITI or Company).' ?></p></div>
-  <?php if (Auth::is('STATE_ADMIN')): ?><div class="actions"><a class="btn" href="#new-user"><?= icon('plus') ?> Create user</a></div><?php endif; ?></div>
+  <p><?= match (true) {
+      Auth::is('PRINCIPAL') => 'Instructors of your ITI. Add an instructor with the Sevaarth ID and assign the trade(s) — they then see the students of those trades.',
+      Auth::is('RO_ADMIN') => 'Apprentice Advisors of your region. Create an advisor and give the ITIs of your region whose data the advisor may see.',
+      default => 'The State Admin (DVET) creates user IDs. Every role is tied to a scope (Region, District, ITI list, ITI or Company).' } ?></p></div>
+  <?php if ($canCreate): ?><div class="actions"><a class="btn" href="#new-user"><?= icon('plus') ?> <?= Auth::is('PRINCIPAL') ? 'Add instructor' : (Auth::is('RO_ADMIN') ? 'Add advisor' : 'Create user') ?></a></div><?php endif; ?></div>
 
 <?php if ($requests): ?>
 <div class="card card-tight"><h2><?= icon('alert') ?> Password reset requests</h2>
@@ -46,7 +48,7 @@
   <?= pager($p) ?>
 </div>
 
-<?php if (Auth::is('STATE_ADMIN')): ?>
+<?php if ($canCreate): ?>
 <div class="card" id="new-user">
   <h2>Create user ID</h2>
   <p class="muted">Default password <b><?= e($defaultPassword) ?></b> — every new user must change it at first login. For a Principal, the User ID is the ITI's NCVT MIS code automatically.</p>
@@ -64,7 +66,7 @@
     <div class="field<?= has_error('password') ?>"><label>Password</label><input type="text" name="password" value="" placeholder="<?= e($defaultPassword) ?> (default)" autocomplete="off"><?= field_error('password') ?></div>
     <div class="field<?= has_error('region_id') ?>" data-for="REGION"><label>Region <span class="req">*</span></label><select name="region_id"><?= options($regions, 'id', 'name', old('region_id')) ?></select><?= field_error('region_id') ?></div>
     <div class="field<?= has_error('district_id') ?>" data-for="DISTRICT"><label>District <span class="req">*</span></label><select name="district_id"><?= options($districts, 'id', 'name', old('district_id')) ?></select><?= field_error('district_id') ?></div>
-    <div class="field<?= has_error('iti_id') ?>" data-for="ITI"><label>ITI <span class="req">*</span></label><select name="iti_id"><?= options($itis, 'id', 'name', old('iti_id')) ?></select><?= field_error('iti_id') ?></div>
+    <?php if (!Auth::is('PRINCIPAL')): ?><div class="field<?= has_error('iti_id') ?>" data-for="ITI"><label>ITI <span class="req">*</span></label><select name="iti_id"><?= options($itis, 'id', 'name', old('iti_id')) ?></select><?= field_error('iti_id') ?></div><?php endif; ?>
     <div class="field<?= has_error('company_id') ?>" data-for="COMPANY"><label>Company <span class="req">*</span></label><select name="company_id"><?= options($companies, 'id', 'legal_name', old('company_id')) ?></select><?= field_error('company_id') ?></div>
     <div class="field span2<?= has_error('itis') ?>" data-for="ITI_GROUP"><label>ITIs under this Apprentice Advisor <span class="req">*</span></label>
       <select name="itis[]" multiple size="8"><?= options($itis, 'id', 'name', null, '') ?></select><div class="hint">Hold Ctrl (or Cmd) to select several.</div><?= field_error('itis') ?></div>

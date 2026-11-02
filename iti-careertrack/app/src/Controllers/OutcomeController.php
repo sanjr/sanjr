@@ -22,7 +22,7 @@ final class OutcomeController extends Controller
 
     private function guard(): void
     {
-        if (!Auth::is('PRINCIPAL', 'PLACEMENT_OFFICER', 'STATE_ADMIN', ...Auth::OVERSIGHT)) {
+        if (!Auth::is('PRINCIPAL', 'TEACHER', 'PLACEMENT_OFFICER', 'STATE_ADMIN', ...Auth::OVERSIGHT)) {
             throw new HttpException(403);
         }
     }
@@ -31,7 +31,12 @@ final class OutcomeController extends Controller
     private function where(): array
     {
         [$w, $p] = Access::itiScope('a.iti_id');
-        $w = "a.status <> 'CANCELLED' AND $w";
+        $w = "a.status <> 'CANCELLED' AND s.profile_status = 'ACTIVE' AND $w";
+        if (Auth::is('TEACHER')) {   // an instructor: only the students assigned to him / her (own trades)
+            [$sw, $sp] = Access::studentScope('s.id');
+            $w .= " AND $sw";
+            $p = array_merge($p, $sp);
+        }
         if (Auth::is('STATE_ADMIN', ...Auth::OVERSIGHT) && ($iti = int_input('iti'))) { $w .= ' AND a.iti_id = ?'; $p[] = $iti; }
         if ($y = int_input('year'))  { $w .= ' AND a.academic_year_id = ?'; $p[] = $y; }
         if ($t = int_input('trade')) { $w .= ' AND a.trade_id = ?'; $p[] = $t; }
@@ -155,5 +160,168 @@ final class OutcomeController extends Controller
         }
         fclose($out);
         exit;
+    }
+
+    // ------------------------------------------------------------------ record one student's outcome
+
+    /** The student's admission this user may record a result for (own ITI for ITI-bound roles). */
+    private function admissionFor(int $sid): ?array
+    {
+        return Auth::itiId()
+            ? DB::one("SELECT * FROM admissions WHERE student_id = ? AND iti_id = ? AND status <> 'CANCELLED' ORDER BY id DESC LIMIT 1", [$sid, Auth::itiId()])
+            : DB::one("SELECT * FROM admissions WHERE student_id = ? AND status <> 'CANCELLED' ORDER BY id DESC LIMIT 1", [$sid]);
+    }
+
+    public function form(int $id): void
+    {
+        Auth::require('outcome.record');
+        Access::requireStudent($id);
+        $adm = $this->admissionFor($id);
+        $me = \App\Services\StudentData::identity($id);
+        $this->render('outcomes/form', [
+            'title' => 'Update student outcome', 'me' => $me, 'adm' => $adm,
+            'trade' => $adm ? DB::value('SELECT name FROM trades WHERE id = ?', [$adm['trade_id']]) : null,
+            'results' => $adm ? DB::all('SELECT er.*, es.name AS session FROM exam_results er JOIN exam_sessions es ON es.id = er.exam_session_id
+                                         WHERE er.admission_id = ? ORDER BY er.attempt_no', [$adm['id']]) : [],
+            'appr' => \App\Services\StudentData::apprenticeships($id), 'jobs' => \App\Services\StudentData::employments($id),
+            'business' => \App\Services\StudentData::businesses($id), 'higher' => \App\Services\StudentData::higherEducation($id),
+            'status' => DB::value('SELECT status FROM career_status_history WHERE student_id = ? AND current_flag = 1', [$id]),
+            'companies' => DB::all("SELECT legal_name FROM companies WHERE status = 'ACTIVE' ORDER BY legal_name LIMIT 2000"),
+            'colleges' => DB::all('SELECT name FROM colleges ORDER BY name LIMIT 2000'),
+        ]);
+    }
+
+    private function dateIn(string $key, bool $required = true): ?string
+    {
+        $v = (string) input($key, '');
+        if ($v === '' && !$required) {
+            return null;
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) || !strtotime($v) || $v > date('Y-m-d', strtotime('+3 years'))) {
+            throw new \DomainException('Enter a valid date.');
+        }
+        return $v;
+    }
+
+    private function amount(string $key): string
+    {
+        $v = trim((string) input($key, ''));
+        if ($v !== '' && (!is_numeric($v) || (float) $v < 0 || (float) $v > 10000000)) {
+            throw new \DomainException('Enter a valid amount (rupees per month).');
+        }
+        return $v;
+    }
+
+    /** Final result + what the student does next, in one save. Every entry is a NEW record (history is kept). */
+    public function save(int $id): void
+    {
+        Auth::require('outcome.record');
+        Access::requireStudent($id);
+        $done = [];
+        DB::tx(function () use ($id, &$done) {
+            // 1. final ITI result
+            $result = (string) input('result', '');
+            if ($result !== '') {
+                if (!in_array($result, ['PASS', 'FAIL'], true)) {
+                    throw new \DomainException('Choose Pass or Fail.');
+                }
+                $adm = $this->admissionFor($id);
+                if (!$adm) {
+                    throw new \DomainException('The student has no admission you can record a result for.');
+                }
+                $month = (string) input('exam_month', '');
+                if (!preg_match('/^(\d{4})-(\d{2})$/', $month, $m) || (int) $m[2] < 1 || (int) $m[2] > 12) {
+                    throw new \DomainException('Choose the exam month and year.');
+                }
+                $first = "$month-01";
+                $type = input('exam_type') === 'SUPPLEMENTARY' ? 'SUPPLEMENTARY' : 'MAIN';
+                $session = DB::value('SELECT id FROM exam_sessions WHERE session_month = ? AND exam_type = ?', [$first, $type])
+                    ?: DB::insert('exam_sessions', ['name' => 'AITT ' . ($type === 'MAIN' ? 'Main' : 'Supplementary') . ' ' . date('F Y', strtotime($first)),
+                        'exam_body' => 'NCVT', 'exam_type' => $type, 'session_month' => $first]);
+                if (DB::value('SELECT 1 FROM exam_results WHERE admission_id = ? AND exam_session_id = ?', [$adm['id'], $session])) {
+                    throw new \DomainException('A result for this exam session is already recorded.');
+                }
+                $marks = trim((string) input('marks_obtained', ''));
+                $max = trim((string) input('max_marks', ''));
+                $attempt = 1 + (int) DB::value('SELECT COALESCE(MAX(attempt_no), 0) FROM exam_results WHERE admission_id = ?', [$adm['id']]);
+                $rid = DB::insert('exam_results', ['student_id' => $id, 'admission_id' => $adm['id'], 'iti_id' => $adm['iti_id'], 'exam_session_id' => $session,
+                    'attempt_no' => $attempt, 'result' => $result, 'marks_obtained' => is_numeric($marks) ? $marks : null, 'max_marks' => is_numeric($max) ? $max : null,
+                    'result_declared_on' => date('Y-m-d'), 'created_by' => Auth::id()]);
+                \App\Core\Audit::log('INSERT', 'exam_results', $rid, $id, (int) $adm['iti_id'], null, ['result' => $result, 'attempt' => $attempt, 'by' => Auth::roleCode()]);
+                $done[] = 'Result: ' . ($result === 'PASS' ? 'Pass' : 'Fail');
+            }
+
+            // 2. what the student does now
+            $next = (string) input('next', '');
+            $openAppr = DB::one("SELECT * FROM apprenticeships WHERE student_id = ? AND status = 'ACTIVE' AND voided_at IS NULL ORDER BY start_date DESC LIMIT 1", [$id]);
+            switch ($next) {
+                case 'APPRENTICE':
+                    $start = $this->dateIn('appr_start');
+                    $end = $this->dateIn('appr_end', false);
+                    if ($end && $end < $start) { throw new \DomainException('Contract end date is before the start date.'); }
+                    $aid = \App\Services\CareerService::addApprenticeship($id, ['company_id' => \App\Services\CareerService::companyIdByName((string) input('appr_company')),
+                        'branch_id' => null, 'trade_id' => $this->admissionFor($id)['trade_id'] ?? null, 'scheme' => 'APPRENTICES_ACT', 'contract_number' => mb_substr((string) input('appr_contract', ''), 0, 40),
+                        'start_date' => $start, 'planned_end_date' => $end, 'stipend_amount' => $this->amount('appr_stipend')]);
+                    if ($end && $end < date('Y-m-d')) {   // contract already over
+                        \App\Services\CareerService::completeApprenticeship($aid, $id, $end, 'COMPLETED');
+                    }
+                    $done[] = 'Apprenticeship at ' . input('appr_company');
+                    break;
+                case 'JOB':
+                    $start = $this->dateIn('job_start');
+                    $end = $this->dateIn('job_end', false);
+                    if ($end && $end < $start) { throw new \DomainException('Job end date is before the start date.'); }
+                    $from = null;
+                    if ($openAppr) {   // a job after the apprenticeship: close the apprenticeship and link the two
+                        $apprEnd = min(date('Y-m-d', strtotime($start . ' -1 day')), $openAppr['planned_end_date'] ?: '9999-12-31');
+                        \App\Services\CareerService::completeApprenticeship((int) $openAppr['id'], $id, max($apprEnd, $openAppr['start_date']), 'COMPLETED');
+                        $from = (int) $openAppr['id'];
+                    } else {
+                        $from = DB::value("SELECT id FROM apprenticeships WHERE student_id = ? AND status = 'COMPLETED' AND voided_at IS NULL AND actual_end_date <= ? ORDER BY actual_end_date DESC LIMIT 1", [$id, $start]) ?: null;
+                    }
+                    $eid = \App\Services\CareerService::addEmployment($id, ['company_id' => \App\Services\CareerService::companyIdByName((string) input('job_company')),
+                        'branch_id' => null, 'designation' => mb_substr(trim((string) input('job_designation', '')) ?: 'Employee', 0, 120), 'employment_type' => 'FULL_TIME',
+                        'employer_sector' => 'PRIVATE', 'work_location' => mb_substr((string) input('job_location', ''), 0, 150), 'joining_date' => $start,
+                        'salary_amount' => $this->amount('job_salary'), 'salary_period' => 'MONTHLY', 'from_apprenticeship_id' => $from]);
+                    if ($end) {
+                        \App\Services\CareerService::endEmployment($eid, $id, $end, 'Job ended');
+                    }
+                    $done[] = 'Job at ' . input('job_company');
+                    break;
+                case 'BUSINESS':
+                    if (trim((string) input('bus_name')) === '' || trim((string) input('bus_type')) === '') {
+                        throw new \DomainException('Enter the business name and the type of business.');
+                    }
+                    \App\Services\CareerService::addBusiness($id, ['business_name' => mb_substr((string) input('bus_name'), 0, 150), 'business_type' => mb_substr((string) input('bus_type'), 0, 100),
+                        'registration_type' => null, 'registration_number' => '', 'location' => mb_substr((string) input('bus_location', ''), 0, 150),
+                        'start_date' => $this->dateIn('bus_start'), 'employees_count' => '']);
+                    $done[] = 'Business: ' . input('bus_name');
+                    break;
+                case 'HIGHER':
+                    $year = (int) input('he_year');
+                    if (trim((string) input('he_course')) === '' || $year < 1990 || $year > (int) date('Y') + 1) {
+                        throw new \DomainException('Enter the course name and the admission year.');
+                    }
+                    \App\Services\CareerService::addHigherEducation($id, ['college_id' => \App\Services\CareerService::collegeIdByName((string) input('he_college')),
+                        'course_name' => mb_substr((string) input('he_course'), 0, 150), 'course_level' => in_array(input('he_level'), ['ADVANCED_ITI', 'DIPLOMA', 'DEGREE', 'OTHER'], true) ? input('he_level') : 'OTHER',
+                        'study_mode' => 'FULL_TIME', 'admission_year' => $year]);
+                    $done[] = 'Higher education: ' . input('he_course');
+                    break;
+                case 'SEEKING_EMPLOYMENT':
+                case 'NOT_SEEKING':
+                    \App\Services\CareerService::setStatus($id, $next, date('Y-m-d'), [], mb_substr((string) input('note', ''), 0, 255) ?: null);
+                    $done[] = $next === 'NOT_SEEKING' ? 'Not employed (not looking for work)' : 'Not employed (looking for a job)';
+                    break;
+                case '':
+                    break;
+                default:
+                    throw new \DomainException('Choose what the student is doing now.');
+            }
+        });
+        if (!$done) {
+            throw new \DomainException('Nothing to save — choose a result or what the student is doing now.');
+        }
+        flash('success', 'Saved: ' . implode(' · ', $done) . '. The earlier records are kept in the student\'s history.');
+        redirect('/students/' . $id . '/outcome');
     }
 }

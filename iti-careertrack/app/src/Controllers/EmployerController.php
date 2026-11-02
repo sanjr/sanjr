@@ -103,6 +103,7 @@ final class EmployerController extends Controller
         $cid = $this->cid();
         Auth::require('employer.record');
         $this->render('employer/add', ['title' => 'Add Employee / Apprentice', 'pcid' => strtoupper(trim((string) input('pcid', ''))),
+            'company' => (string) DB::value('SELECT legal_name FROM companies WHERE id = ?', [$cid]),
             'branches' => DB::all('SELECT id, CONCAT(branch_name, IF(city IS NULL, \'\', CONCAT(\' (\', city, \')\'))) AS label FROM company_branches WHERE company_id = ? ORDER BY branch_name', [$cid]),
             'trades' => DB::all('SELECT id, name FROM trades ORDER BY name'), 'kind' => input('kind') === 'apprenticeship' ? 'apprenticeship' : 'employment']);
     }
@@ -127,8 +128,11 @@ final class EmployerController extends Controller
             throw new \DomainException('Choose one of your own branches.');
         }
         $start = $this->date('start_date');
-        if ($start > date('Y-m-d')) {
-            throw new \DomainException('Start date cannot be in the future.');
+        if ($start > date('Y-m-d', strtotime('+1 year'))) {
+            throw new \DomainException('Start date is too far in the future.');
+        }
+        if (input('planned_end_date') && (string) input('planned_end_date') < $start) {
+            throw new \DomainException('The contract end date must be after the start date.');
         }
         $who = Auth::user()['full_name'];
         DB::tx(function () use ($sid, $cid, $bid, $start, $who) {

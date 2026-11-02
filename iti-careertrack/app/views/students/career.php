@@ -68,7 +68,7 @@ $companySelect = static function () use ($companies, $branches, $selfService): s
     <div class="field"><label>Scheme</label><select name="scheme"><?= enum_options(['APPRENTICES_ACT', 'NAPS', 'DUAL_SYSTEM', 'OTHER'], 'APPRENTICES_ACT', '') ?></select></div>
     <div class="field"><label>Contract number</label><input type="text" name="contract_number" maxlength="40"></div>
     <div class="field"><label>Start date <span class="req">*</span></label><input type="date" name="start_date" required max="<?= e(date('Y-m-d')) ?>"></div>
-    <div class="field"><label>Planned end date</label><input type="date" name="planned_end_date"></div>
+    <div class="field"><label>Contract end date</label><input type="date" name="planned_end_date"></div>
     <div class="field"><label>Monthly stipend (₹)</label><input type="number" name="stipend_amount" min="0" step="1"></div>
     <div class="field span3"><button class="btn" type="submit"><?= icon('plus') ?> Add apprenticeship</button></div>
   </form>

@@ -706,3 +706,27 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .oc-table td { vertical-align: top; } .oc-table small { line-height: 1.35; }
 @media (max-width: 600px) { .oc-chip { min-width: calc(50% - 5px); flex: 1; } }
 .oc-table .code { white-space: nowrap; } .oc-table td:first-child { min-width: 175px; } .oc-table td:nth-child(6) { min-width: 170px; }
+/* 8 login roles: 4 x 2 */
+.lg .role-pick { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 600px) { .lg .role-pick { grid-template-columns: repeat(4, minmax(0, 1fr)); } .lg .role-pick button { font-size: 10.5px; } }
+/* outcome form */
+.oc-journey { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.oc-journey .j { background: #f6f8fd; border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.oc-journey small { color: var(--grey-500); font-weight: 600; font-size: 11.5px; } .oc-journey b { font-size: 1.05rem; } .oc-journey em { font-style: normal; font-size: 12px; color: var(--grey-700); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oc-form h2 .step { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--royal); color: #fff; font-size: 13px; margin-right: 6px; }
+.seg { display: flex; gap: 6px; flex-wrap: wrap; } .seg label { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1.5px solid var(--grey-300); border-radius: 10px; cursor: pointer; font-weight: 600; margin: 0; }
+.seg input, .next-pick input { width: auto; margin: 0; }
+.next-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-bottom: 14px; }
+.next-pick label { margin: 0; cursor: pointer; } .next-pick input { position: absolute; opacity: 0; }
+.next-pick span { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 12px; border: 1.5px solid #dfe5f1; background: #fbfcff; font-weight: 700; font-size: 13px; color: var(--ink); }
+.next-pick span .ic { color: var(--royal); }
+.next-pick input:checked + span { background: linear-gradient(135deg, #1e6bff, #0f37b5); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(23,71,214,.3); }
+.next-pick input:checked + span .ic { color: #ffd166; } .next-pick input:focus-visible + span { box-shadow: var(--ring); }
+.nx { margin-top: 6px; padding-top: 6px; }
+@media (max-width: 760px) { .oc-journey { grid-template-columns: 1fr 1fr; } }
+.rec-actions { min-width: 150px; } .rec-actions form.inline { display: inline; }
+.rec-edit { display: inline-block; margin-right: 6px; } .rec-edit summary { cursor: pointer; display: inline-block; padding: 4px 10px; border: 1px solid var(--grey-300); border-radius: 8px; font-size: 12.5px; font-weight: 600; color: var(--royal); }
+.rec-edit[open] { display: block; margin-bottom: 6px; } .rec-edit[open] form { margin-top: 8px; padding: 10px; background: #f6f8fd; border-radius: 10px; min-width: 280px; }
+.btn-del { color: #b42318 !important; } .danger-zone summary { cursor: pointer; } .danger-zone { border-color: #f4bcb6; }
+.oc-form h2 { justify-content: flex-start; gap: 4px; }
+@media (max-width: 600px) { .next-pick { grid-template-columns: 1fr 1fr; } .next-pick span { font-size: 12px; padding: 10px; } }

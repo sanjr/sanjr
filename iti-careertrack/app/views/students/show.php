@@ -25,6 +25,8 @@ $verifyForm = static function (string $field, int $recId, string $status) use ($
     <?php if ($level === 'summary'): ?><p>Summary view only. You can see the identity and records created by your own ITI.</p><?php endif; ?>
     <?php if (Auth::is('EMPLOYER')): ?><p>Full career history (view only). You can add new records only for your own company.</p><?php endif; ?></div>
   <div class="actions">
+    <?php if (can('outcome.record')): ?><a class="btn" href="<?= url('/students/' . $sid . '/outcome') ?>"><?= icon('target') ?> Update outcome</a><?php endif; ?>
+    <?php if (Auth::is('STATE_ADMIN') && ($me['profile_status'] ?? '') === 'INACTIVE'): ?><form method="post" action="<?= url('/students/' . $sid . '/restore') ?>" class="inline"><?= csrf_field() ?><button class="btn btn-light">Restore student</button></form><?php endif; ?>
     <?php if ($level === 'full' && can('career.record')): ?><a class="btn" href="<?= url('/students/' . $sid . '/career') ?>"><?= icon('plus') ?> Add career record</a><?php endif; ?>
     <?php if (Auth::is('EMPLOYER') && $level === 'full'): ?>
       <a class="btn" href="<?= url('/employer/add', ['pcid' => $me['pcid']]) ?>"><?= icon('plus') ?> Add job / apprenticeship at my company</a>

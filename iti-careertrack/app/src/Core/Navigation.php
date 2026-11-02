@@ -19,7 +19,7 @@ final class Navigation
                 ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
                 ['Training & Results', '/reports?type=result', 'book'], ['Student Outcomes', '/outcomes', 'target'], ['Apprenticeship', '/apprenticeships', 'tool'],
                 ['Placement', '/reports?type=placement', 'briefcase'], ['Verification Queue', '/verifications', 'shield'],
-                ['Reports', '/reports?type=outcome', 'chart'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
+                ['Reports', '/reports?type=outcome', 'chart'], ['Apprentice Advisors', '/users', 'users'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'DVTO' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
@@ -30,20 +30,20 @@ final class Navigation
             'APPRENTICE_ADVISOR' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
                 ['Apprenticeship', '/apprenticeships', 'tool'], ['Companies', '/companies', 'briefcase'],
-                ['Verification Queue', '/verifications', 'shield'], ['Reports', '/reports', 'chart'],
+                ['Student Outcomes', '/outcomes', 'target'], ['Verification Queue', '/verifications', 'shield'], ['Reports', '/reports', 'chart'],
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'PRINCIPAL' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['Students', '/students', 'users'], ['Admission', '/admissions/new', 'user'],
-                ['Trades & Batches', '/trades', 'layers'], ['Staff Mgmt', '/users', 'users'], ['Student Outcomes', '/outcomes', 'target'],
+                ['Trades & Batches', '/trades', 'layers'], ['Instructors', '/users', 'users'], ['Student Outcomes', '/outcomes', 'target'],
                 ['Examination', '/results', 'award'], ['Apprenticeship', '/apprenticeships', 'tool'], ['Placement', '/placements', 'briefcase'],
-                ['Transfer', '/transfers', 'transfer'], ['Follow-ups', '/follow-ups', 'phone'], ['Verification Queue', '/verifications', 'shield'], ['Reports', '/reports', 'chart'],
+                ['Transfer', '/transfers', 'transfer'], ['Companies & Jobs', '/companies', 'briefcase'], ['Follow-ups', '/follow-ups', 'phone'], ['Verification Queue', '/verifications', 'shield'], ['Reports', '/reports', 'chart'],
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'TEACHER' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['My Trade Students', '/students', 'users'], ['Attendance', '/attendance', 'calendar'],
                 ['Training & Modules', '/training', 'book'], ['Assessments', '/assessments', 'clipboard'], ['Results', '/results', 'award'],
-                ['Career Tracking', '/career-tracking', 'trending'], ['Follow-up Tasks', '/follow-ups', 'phone'], ['Settings', '/settings', 'settings'],
+                ['Student Outcomes', '/outcomes', 'target'], ['Career Tracking', '/career-tracking', 'trending'], ['Follow-up Tasks', '/follow-ups', 'phone'], ['Settings', '/settings', 'settings'],
             ],
             'PLACEMENT_OFFICER' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['Companies', '/companies', 'building'], ['Vacancies', '/companies?tab=vacancies', 'briefcase'],

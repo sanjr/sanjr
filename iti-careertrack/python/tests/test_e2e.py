@@ -233,9 +233,10 @@ def main() -> int:
     pp.post(f"/students/{sid}/teachers", {"teacher_user_id": str(teacher_pune), "assignment_role": "TRADE_INSTRUCTOR"})
     tp.get(f"/students/{sid}?tab=contacts")
     ok(mobile in tp.body, "Trade instructor has full access including contact details")
-    status, _, _, _ = tp.post(f"/students/{sid}/employments", {"company_id": sahyadri["id"], "designation": "X", "employment_type": "FULL_TIME",
+    status, _, _, _ = te.post(f"/students/{sid}/employments", {"company_id": sahyadri["id"], "designation": "X", "employment_type": "FULL_TIME",
                                                                  "joining_date": today.isoformat()})
-    ok(status == 403, "Teacher cannot write employment records (403)")
+    ok(status == 404 and not val("SELECT COUNT(*) FROM employments WHERE student_id = %s", sid),
+       "Instructor of another trade cannot write career records of the student")
     tr_id = val("SELECT id FROM training_records WHERE student_id = %s AND completion_status = 'IN_PROGRESS'", sid)
     tp.get("/attendance")
     tp.post("/attendance", {"date": today.isoformat(), f"status[{tr_id}]": "PRESENT", f"status[{tr_id + 99999}]": "PRESENT"})
@@ -295,7 +296,7 @@ def main() -> int:
     ok(val("SELECT status FROM institute_affiliations WHERE admission_id = %s", new_adm) == "COMPLETED", "Completed -> student is an alumnus of ITI Nashik")
 
     print("\n[8] Multiple pathways, job changes never overwrite")
-    po = as_user(base, "placement.nashik@demo.local")
+    po = as_user(base, "principal.nashik@demo.local")   # career records: Principal (Placement Officer login no longer exists)
     b_other = val("SELECT id FROM company_branches WHERE company_id = %s LIMIT 1", other_co["id"])
     b_sah = val("SELECT id FROM company_branches WHERE company_id = %s LIMIT 1", sahyadri["id"])
     d = lambda n: (today - timedelta(days=n)).isoformat()  # noqa: E731
@@ -339,10 +340,10 @@ def main() -> int:
 
     print("\n[10] Follow-ups")
     pn.get("/follow-ups")
-    po_id = val("SELECT id FROM users WHERE email = 'placement.nashik@demo.local'")
-    pn.post("/follow-ups", {"pcid": pcid, "assigned_to_user_id": str(po_id), "reason": "NO_RECENT_UPDATE", "channel": "PHONE", "due_date": d(-3)})
-    _, body, _, _ = po.get("/follow-ups")
-    ok(pcid[-8:] in body, "Staff created a follow-up and the assignee sees it")
+    tn_id = val("SELECT id FROM users WHERE email = 'teacher.nashik@demo.local'")
+    pn.post("/follow-ups", {"pcid": pcid, "assigned_to_user_id": str(tn_id), "reason": "NO_RECENT_UPDATE", "channel": "PHONE", "due_date": d(-3)})
+    _, body, _, _ = tn.get("/follow-ups")
+    ok(pcid[-8:] in body, "Principal created a follow-up for an instructor and the instructor sees it")
 
     print("\n[11] Employer confirmation & employer isolation")
     hr = as_user(base, "hr.sahyadri@demo.local")
@@ -393,10 +394,10 @@ def main() -> int:
     print("\n[13] Account lockout")
     lock = Client(base)
     for _ in range(5):
-        lock.login("staff.pune@demo.local", "wrong-password")
-    _, body, _, _ = lock.login("staff.pune@demo.local")
+        lock.login("teacher.nashik@demo.local", "wrong-password")
+    _, body, _, _ = lock.login("teacher.nashik@demo.local")
     ok("locked" in flash(body).lower(), "Account locks after 5 wrong passwords (even the right password is refused)")
-    cur.execute("UPDATE users SET failed_login_count = 0, locked_until = NULL WHERE email = 'staff.pune@demo.local'")
+    cur.execute("UPDATE users SET failed_login_count = 0, locked_until = NULL WHERE email = 'teacher.nashik@demo.local'")
 
     print("\n[14] Public website, login by role / mobile, PCID card, verification")
     pub = Client(base)
@@ -448,8 +449,9 @@ def main() -> int:
     status, _, _, _ = pp.post(f"/users/{state_id}/reset-password", {})
     ok(status == 404, "Principal cannot reset the State Admin's password")
     fu = val("SELECT id FROM follow_ups WHERE student_id = %s AND status = 'PENDING' LIMIT 1", sid)
-    po.get("/follow-ups")
-    po.post(f"/follow-ups/{fu}/start", {})
+    tn = as_user(base, "teacher.nashik@demo.local")
+    tn.get("/follow-ups")
+    tn.post(f"/follow-ups/{fu}/start", {})
     ok(val("SELECT status FROM follow_ups WHERE id = %s", fu) == "IN_PROGRESS", "Follow-up task moved to In Progress")
 
     print("\n[15] DVET hierarchy: RO Admin, DVTO, Apprentice Advisor, Instructor trades, User ID login")
@@ -561,10 +563,75 @@ def main() -> int:
     ok(co is not None and co["status"] == "PENDING_APPROVAL", "Student added a new company (pending approval)")
     ok(co is not None and val("SELECT COUNT(*) FROM employments WHERE company_id = %s AND student_id = %s AND source = 'STUDENT'", co["id"], rohit_sid) == 1,
        "Student's new job is saved at that company (source: student, pending verification)")
-    ppo = as_user(base, "placement.pune@demo.local")
+    ppo = as_user(base, "principal.pune@demo.local")
     ppo.get("/companies")
     ppo.post(f"/companies/{co['id']}/approve", {})
-    ok(val("SELECT status FROM companies WHERE id = %s", co["id"]) == "ACTIVE", "Placement Officer approved the company")
+    ok(val("SELECT status FROM companies WHERE id = %s", co["id"]) == "ACTIVE", "Principal approved the company")
+
+    print("\n[19] Roles as decided by DVET: who may add / edit / delete")
+    c = Client(base)
+    c.get("/login")
+    _, body, url, _ = c.post("/login", {"email": "placement.pune@demo.local", "password": PASSWORD})
+    ok("/dashboard" not in url, "Placement Officer login no longer works")
+    _, body, url, _ = Client(base).post("/login", {"email": "staff.pune@demo.local", "password": PASSWORD}, csrf=False)
+    ok("/dashboard" not in url, "ITI Staff login no longer works")
+    # Principal adds an instructor (Sevaarth ID + trade of own ITI); cannot create other roles
+    pr = as_user(base, "principal.pune@demo.local")
+    tch = val("SELECT id FROM roles WHERE code = 'TEACHER'")
+    ele = val("SELECT id FROM trades WHERE trade_code = 'ELE'")
+    pr.get("/users")
+    _, body, _, _ = pr.post("/users", {"role_id": str(tch), "full_name": "Principal Added Instructor", "username": "SEVTEST01", "trades[]": [str(ele)]})
+    ok(val("SELECT COUNT(*) FROM users u JOIN user_role_assignments ura ON ura.user_id = u.id JOIN itis i ON i.id = ura.iti_id "
+           "WHERE u.username = 'SEVTEST01' AND i.iti_code = 'DEMO0001' AND ura.status = 'ACTIVE'") == 1, "Principal created an instructor of own ITI with Sevaarth ID")
+    ro_role = val("SELECT id FROM roles WHERE code = 'RO_ADMIN'")
+    _, body, _, _ = pr.post("/users", {"role_id": str(ro_role), "full_name": "Hack RO", "username": "HACKRO", "region_id": "1"})
+    ok(not val("SELECT COUNT(*) FROM users WHERE username = 'HACKRO'"), "Principal cannot create an RO Admin")
+    # RO Admin gives ITIs of the own region to an Apprentice Advisor, never ITIs of another region
+    ro = as_user(base, "ro.pun@demo.local")
+    aa = val("SELECT id FROM roles WHERE code = 'APPRENTICE_ADVISOR'")
+    pune_iti = pune["id"]
+    nashik_iti = val("SELECT id FROM itis WHERE iti_code = 'DEMO0002'")
+    ro.get("/users")
+    ro.post("/users", {"role_id": str(aa), "full_name": "RO Advisor", "username": "AA-ROTEST", "itis[]": [str(pune_iti)]})
+    ok(val("SELECT COUNT(*) FROM users u JOIN user_role_assignments ura ON ura.user_id = u.id JOIN role_assignment_itis x ON x.role_assignment_id = ura.id "
+           "WHERE u.username = 'AA-ROTEST' AND x.iti_id = %s", pune_iti) == 1, "RO Admin created an Apprentice Advisor for an ITI of the region")
+    _, body, _, _ = ro.post("/users", {"role_id": str(aa), "full_name": "Bad Advisor", "username": "AA-BAD", "itis[]": [str(nashik_iti)]})
+    ok(not val("SELECT COUNT(*) FROM users WHERE username = 'AA-BAD'"), "RO Admin cannot give an ITI of another region")
+    # Instructor: final result + apprenticeship + job after it
+    tpe = as_user(base, "teacher.pune.ele@demo.local")
+    stu = val("SELECT a.student_id FROM admissions a JOIN trades t ON t.id = a.trade_id JOIN students s ON s.id = a.student_id WHERE a.iti_id = %s AND t.trade_code = 'ELE' "
+              "AND a.status = 'COMPLETED' AND s.profile_status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM exam_results e WHERE e.admission_id = a.id) ORDER BY a.id DESC LIMIT 1", pune_iti)
+    if not stu:
+        stu = val("SELECT a.student_id FROM admissions a JOIN trades t ON t.id = a.trade_id WHERE a.iti_id = %s AND t.trade_code = 'ELE' AND a.status = 'COMPLETED' ORDER BY a.id DESC LIMIT 1", pune_iti)
+    tpe.get(f"/students/{stu}/outcome")
+    _, body, _, _ = tpe.post(f"/students/{stu}/outcome", {"result": "PASS", "exam_month": "2026-07", "exam_type": "MAIN", "next": "APPRENTICE",
+                                                         "appr_company": "E2E Outcome Industries", "appr_start": d(300), "appr_end": d(-60), "appr_stipend": "8500"})
+    ok("Saved" in flash(body) and val("SELECT COUNT(*) FROM exam_results WHERE student_id = %s AND result = 'PASS'", stu) >= 1
+       and val("SELECT stipend_amount FROM apprenticeships a JOIN companies c ON c.id = a.company_id WHERE a.student_id = %s AND c.legal_name = 'E2E Outcome Industries'", stu) == 8500,
+       "Instructor recorded Pass + apprenticeship (new company name, contract dates, stipend)")
+    _, body, _, _ = tpe.post(f"/students/{stu}/outcome", {"next": "JOB", "job_company": "E2E Outcome Industries", "job_designation": "Wireman", "job_start": d(5), "job_salary": "17000"})
+    job = one("SELECT e.*, a.status AS appr_status FROM employments e JOIN apprenticeships a ON a.id = e.from_apprenticeship_id WHERE e.student_id = %s ORDER BY e.id DESC LIMIT 1", stu)
+    ok(job is not None and job["appr_status"] == "COMPLETED" and int(job["salary_amount"]) == 17000, "Job after the apprenticeship: apprenticeship closed and linked to the job")
+    fit_stu = val("SELECT a.student_id FROM admissions a JOIN trades t ON t.id = a.trade_id WHERE a.iti_id = %s AND t.trade_code = 'FIT' "
+                  "AND NOT EXISTS (SELECT 1 FROM teacher_assignments ta JOIN users u ON u.id = ta.teacher_user_id WHERE ta.student_id = a.student_id AND u.email = 'teacher.pune.ele@demo.local') LIMIT 1", pune_iti)
+    ok(tpe.get(f"/students/{fit_stu}/outcome")[0] == 404, "Instructor cannot record outcomes of another trade's student")
+    # RO edits, State deletes, DVTO may only view
+    ro.post(f"/records/employment/{job['id']}/edit", {"salary_amount": "19000", "work_location": "Bhosari"})
+    ok(int(val("SELECT salary_amount FROM employments WHERE id = %s", job["id"])) == 19000, "RO Admin corrected the salary of a job in the region")
+    dv = as_user(base, "dvto.pune@demo.local")
+    status, _, _, _ = dv.post(f"/records/employment/{job['id']}/delete", {})
+    ok(status == 403 and val("SELECT voided_at FROM employments WHERE id = %s", job["id"]) is None, "DVTO can view but cannot delete")
+    st = as_user(base, "state@demo.local")
+    st.post(f"/records/employment/{job['id']}/delete", {"reason": "Entered twice"})
+    ok(val("SELECT voided_at FROM employments WHERE id = %s", job["id"]) is not None, "State Admin deleted (voided) a record; it stays in the audit log")
+    # Employer: apprenticeship with contract end date and stipend
+    hr2 = as_user(base, "hr.sahyadri@demo.local")
+    rp = one("SELECT p.pcid, s.date_of_birth FROM pcid_registry p JOIN students s ON s.id = p.student_id WHERE p.student_id = %s", stu)
+    hr2.get("/employer/add")
+    _, body, _, _ = hr2.post("/employer/add", {"kind": "apprenticeship", "pcid": rp["pcid"], "date_of_birth": rp["date_of_birth"].isoformat(),
+                                              "start_date": d(2), "planned_end_date": d(-360), "amount": "9100"})
+    ok(val("SELECT COUNT(*) FROM apprenticeships WHERE student_id = %s AND company_id = %s AND planned_end_date IS NOT NULL AND stipend_amount = 9100", stu, sahyadri["id"]) == 1,
+       "Employer added an apprenticeship with contract end date and stipend")
 
     print(f"\n==== {RESULTS['pass']} passed, {RESULTS['fail']} failed ====")
     return 1 if RESULTS["fail"] else 0

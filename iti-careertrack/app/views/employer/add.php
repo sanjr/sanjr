@@ -1,5 +1,5 @@
 <div class="page-head"><div><h1><?= e($title) ?></h1>
-  <p>Add a new job or apprenticeship of an ITI student at <b>your company</b>. Earlier records of the student stay as they are (view only).</p></div></div>
+  <p>Add a new job or apprenticeship of an ITI student at <b><?= e($company) ?></b> (your company). Earlier records of the student stay as they are (view only).</p></div></div>
 
 <div class="grid g-2-1">
   <form method="post" action="<?= url('/employer/add') ?>" class="card form-grid"><?= csrf_field() ?>
@@ -10,7 +10,8 @@
     <div class="field"><label>Student's date of birth <span class="req">*</span></label><input type="date" name="date_of_birth" required value="<?= e(old('date_of_birth')) ?>">
       <div class="hint">From the student's documents — must match, for security.</div></div>
     <div class="field"><label>Branch / location</label><select name="branch_id"><?= options($branches, 'id', 'label', old('branch_id')) ?></select></div>
-    <div class="field"><label>Joining / start date <span class="req">*</span></label><input type="date" name="start_date" required max="<?= e(date('Y-m-d')) ?>" value="<?= e(old('start_date')) ?>"></div>
+    <div class="field"><label>Joining / contract start date <span class="req">*</span></label><input type="date" name="start_date" required max="<?= e(date('Y-m-d', strtotime('+1 year'))) ?>" value="<?= e(old('start_date')) ?>"></div>
+    <div class="field"><label>Contract end date (apprenticeship)</label><input type="date" name="planned_end_date" value="<?= e(old('planned_end_date')) ?>"></div>
     <div class="field"><label>Monthly salary / stipend (₹)</label><input type="number" name="amount" min="0" value="<?= e(old('amount')) ?>"></div>
     <div class="field"><label>Designation (job)</label><input type="text" name="designation" maxlength="120" value="<?= e(old('designation')) ?>" placeholder="e.g. Technician"></div>
     <div class="field"><label>Employment type (job)</label><select name="employment_type"><?= enum_options(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'GIG'], 'FULL_TIME', '') ?></select></div>

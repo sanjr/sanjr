@@ -117,7 +117,9 @@ final class MeController extends Controller
                 $company();
                 CareerService::addApprenticeship($sid, ['company_id' => int_input('company_id'), 'branch_id' => int_input('branch_id'), 'trade_id' => int_input('trade_id'),
                     'scheme' => in_array(input('scheme'), ['APPRENTICES_ACT', 'NAPS', 'DUAL_SYSTEM', 'OTHER'], true) ? input('scheme') : 'OTHER',
-                    'contract_number' => mb_substr((string) input('contract_number', ''), 0, 40), 'start_date' => $dateOk('start_date'), 'planned_end_date' => null,
+                    'contract_number' => mb_substr((string) input('contract_number', ''), 0, 40), 'start_date' => $dateOk('start_date'),
+                    'planned_end_date' => input('planned_end_date') ? (preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) input('planned_end_date')) && input('planned_end_date') >= input('start_date')
+                        ? (string) input('planned_end_date') : throw new \DomainException('The contract end date must be after the start date.')) : null,
                     'stipend_amount' => is_numeric(input('stipend_amount')) && (float) input('stipend_amount') >= 0 ? (string) input('stipend_amount') : '']);
             })(),
             'business' => CareerService::addBusiness($sid, ['business_name' => mb_substr((string) input('business_name', ''), 0, 150) ?: throw new \DomainException('Business name is required.'),

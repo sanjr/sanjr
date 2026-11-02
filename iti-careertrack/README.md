@@ -9,7 +9,7 @@
 > **Capacity:** [docs/04-PERFORMANCE-AND-CAPACITY.md](docs/04-PERFORMANCE-AND-CAPACITY.md) — tested with 2.7 lakh students and 100 simultaneous users.
 >
 > Tested before release: web installer (Demo and Empty), Apache sub-folder install from the ZIP,
-> a real-browser walkthrough of every menu of all 10 roles (256 checks) and 116 end-to-end tests — all passing.
+> a real-browser walkthrough of every menu of all 8 roles (244 checks) and 134 end-to-end tests — all passing.
 
 
 **ITI Student Lifecycle & Career Tracking System — Maharashtra**
@@ -39,8 +39,8 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | `python/seed_demo.py` | Creates DEMO data (36 districts, 46 ITIs, about 6,500 students with full career histories) |
 | `python/jobs/followup_job.py` | Nightly job that creates follow-up tasks for alumni who have not updated (it never changes their status) |
 | `python/reports/export_report.py` | Offline Excel/CSV report for the State or District office |
-| `python/tests/test_e2e.py` | **116 automated end-to-end acceptance and security tests** |
-| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (256 checks) |
+| `python/tests/test_e2e.py` | **134 automated end-to-end acceptance and security tests** |
+| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (244 checks) |
 | `python/tools/load_test.py`, `scale_clone.py` | Load test with many simultaneous users; multiplies the demo data to state scale |
 | `python/tools/export_logins.py` | Writes LOGINS.xlsx and checks that every account can log in |
 | `app/public/install.php` | One-time web installer (Demo or Empty system); disabled automatically after installation |
@@ -129,15 +129,17 @@ For production, point Apache or Nginx to `app/public` (an `.htaccess` file is in
 
 | Role | Sees | Can change |
 |---|---|---|
-| **State Admin (DVET)** | All of Maharashtra | Creates all user IDs, ITIs, master data; resets passwords |
-| **RO Admin** (6 Regional Offices: Mumbai, Pune, Nashik, Chh. Sambhajinagar, Amravati, Nagpur) | Full data of all ITIs in the region | Verification decisions (view + reports) |
-| **DVTO Admin** | Full data of all ITIs in the district | Verification decisions (view + reports) |
-| **Apprentice Advisor** | Full data of the ITIs assigned to them | Verification, company approval |
-| **Principal** | Full data of own ITI | Admissions, transfers, results, career records, staff passwords |
-| **Instructor** | All students (current + alumni) of **their trade(s)** at their ITI | Attendance, module progress, assessments |
-| **Student / Alumni** | Own Career Passport | Adds new job / company / course (pending verification) |
-| **Employer / HR** | Full career history (view only) of students who work, train or applied with consent | Adds new job / apprenticeship records **only for own company** (needs PCID + date of birth); cannot edit or delete |
-| Placement Officer, ITI Staff | Own ITI / assigned follow-ups | Placements, vacancies, follow-ups |
+| **State Admin (DVET)** | All of Maharashtra | Add / edit / delete everything; creates all user IDs, ITIs, master data |
+| **RO Admin** (6 regions) | All ITIs of the region | Add / edit / delete student records of the region; creates Apprentice Advisors for ITIs of the region |
+| **DVTO** | All ITIs of the district | View only |
+| **Apprentice Advisor** | ITIs given by the State Admin or RO Admin | View, apprenticeships, verification |
+| **Principal** | Own ITI | Add / edit / delete; admissions, trades, adds Instructors (Sevaarth ID) with trades |
+| **Instructor** | Students of own trade(s) | Final result and next step (apprenticeship, job, business, higher education, not employed) with company, contract dates, stipend / salary |
+| **Employer / HR** | Own company's students | Adds apprenticeship / job at own company (contract dates, stipend / salary); cannot edit or delete |
+| **Student / Alumni** | Own Career Passport | Adds own apprenticeship / job / course |
+
+Placement Officer and ITI Staff logins were removed (migration `10_roles_v2.sql`).
+"Delete" voids a record: it disappears from all lists but stays in the audit log.
 
 **User IDs:** only the State Admin creates them (Users page). A Principal's User ID is the ITI's **NCVT MIS code**;
 the *Create ITI logins* button creates one for every ITI at once. New accounts get the default password **`Test@12345`**
@@ -157,8 +159,6 @@ On the login page you can also just click a role on the right — in DEMO mode i
 | Principal — Govt ITI Pune | `DEMO0001` (the ITI code; every ITI's Principal uses its code) |
 | Principal — Govt ITI Nashik | `DEMO0002` |
 | Instructor (Fitter, Pune) | Sevaarth ID `DEMOSEV00002` (Electrician: `DEMOSEV00003`) |
-| Placement Officer (Pune) | `PO-DEMO0001` |
-| ITI Staff (Pune) | Sevaarth ID `DEMOSEV00008` |
 | Employer / HR | `EMP-0001` |
 | Student / Alumni | PCID `ITIC-MH-2022-001077-9` |
 
@@ -176,7 +176,7 @@ mysql -uroot -p careertrack < database/mysql/05_regions_roles.sql
 CT_DB_USER=root CT_DB_PASS=yourpass python3 python/tests/test_e2e.py --base http://127.0.0.1:8080
 ```
 
-Expected result: `116 passed, 0 failed`.
+Expected result: `134 passed, 0 failed`.
 
 ## Nightly follow-up job (cron)
 

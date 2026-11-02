@@ -27,7 +27,8 @@
         <td><span class="pcid"><?= e($r['pcid']) ?></span></td>
         <td><?= e($r['trade']) ?></td><td><?= e($r['iti_name']) ?></td><td><?= e($r['year_label']) ?></td><td><?= e($r['batch_code'] ?? '—') ?></td>
         <td><?= badge($r['adm_status']) ?></td><td><?= badge($r['current_status']) ?></td>
-        <td class="right"><a class="btn btn-light btn-sm" href="<?= url('/students/' . $r['id']) ?>">Open</a></td>
+        <td class="right nowrap"><a class="btn btn-light btn-sm" href="<?= url('/students/' . $r['id']) ?>">Open</a>
+          <?php if (can('outcome.record')): ?><a class="btn btn-sm" href="<?= url('/students/' . $r['id'] . '/outcome') ?>">Update outcome</a><?php endif; ?></td>
       </tr>
     <?php endforeach; ?>
     <?php if (!$p['rows']): ?><tr><td colspan="9" class="empty">No students match these filters.</td></tr><?php endif; ?>

@@ -21,6 +21,37 @@ final class CareerService
         return match (Auth::roleCode()) { 'STUDENT' => 'STUDENT', 'EMPLOYER' => 'EMPLOYER', default => 'STAFF' };
     }
 
+    /**
+     * Company by its name, as typed (case-insensitive match). A new name creates the company:
+     * ACTIVE when staff enter it, PENDING_APPROVAL when a student does (the ITI approves it).
+     */
+    public static function companyIdByName(string $name): int
+    {
+        $name = trim(preg_replace('/\s+/', ' ', $name));
+        if (mb_strlen($name) < 2) {
+            throw new \DomainException('Enter the company name.');
+        }
+        $id = DB::value("SELECT id FROM companies WHERE LOWER(legal_name) = LOWER(?) AND status IN ('ACTIVE','PENDING_APPROVAL') ORDER BY status = 'ACTIVE' DESC LIMIT 1", [$name]);
+        if ($id) {
+            return (int) $id;
+        }
+        $id = DB::insert('companies', ['legal_name' => mb_substr($name, 0, 200), 'display_name' => mb_substr($name, 0, 200),
+            'status' => self::source() === 'STUDENT' ? 'PENDING_APPROVAL' : 'ACTIVE', 'created_by' => Auth::id()]);
+        Audit::log('INSERT', 'companies', $id, null, Auth::itiId(), null, ['legal_name' => $name, 'by' => self::source()]);
+        return $id;
+    }
+
+    /** College by its name, as typed; a new name creates it. */
+    public static function collegeIdByName(string $name): int
+    {
+        $name = trim(preg_replace('/\s+/', ' ', $name));
+        if (mb_strlen($name) < 2) {
+            throw new \DomainException('Enter the college / institute name.');
+        }
+        $id = DB::value('SELECT id FROM colleges WHERE LOWER(name) = LOWER(?) LIMIT 1', [$name]);
+        return $id ? (int) $id : DB::insert('colleges', ['name' => mb_substr($name, 0, 200)]);
+    }
+
     /** Insert a new primary status and close the previous one (one current status at a time). */
     public static function setStatus(int $sid, string $status, string $from, array $link = [], ?string $note = null, ?string $source = null): int
     {

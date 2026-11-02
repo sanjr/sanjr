@@ -93,18 +93,18 @@ upload करा — तो header, login page वर आपोआप दिस�
 4. For production: use HTTPS, a MySQL user without DELETE rights (see `database/mysql/04_app_user.sql`), and regular backups of the database and `app/storage/documents`.
 
 ## Who does what (logins)
-| Login | Work |
-|---|---|
-| State Admin (DVET) | Whole Maharashtra; creates all user IDs, ITIs, trades, years; transfers, verification, reports, audit |
-| RO Admin (6 regions) | All ITIs of the region: students, results, apprenticeship, placement, verification, reports |
-| DVTO Admin | All ITIs of the district: same as RO, for one district |
-| Apprentice Advisor | Assigned ITIs: apprenticeship, companies (approve), verification, reports |
-| Principal (User ID = NCVT MIS code) | Own ITI: admission + PCID, batches, staff passwords, attendance, exams, transfers, placement, follow-ups, reports |
-| Instructor | All students of own trade(s): attendance, module progress, assessments, results, career view |
-| Placement Officer | Companies, vacancies, applications, jobs/apprenticeships, follow-ups, verification |
-| ITI Staff | Follow-up calls assigned to them |
-| Employer / HR | Own company, vacancies, applicants; full history (view only) of own employees/apprentices; adds new records only for own company |
-| Student / Alumni | Own Career Passport + PCID card, job search, adds new job/company/course |
+| Login | Sees | Can do |
+|---|---|---|
+| **State Admin (DVET)** | Whole Maharashtra — every ITI and student | Add, edit, delete everything; creates all user IDs; masters, ITIs, trades, transfers, reports, audit |
+| **RO Admin** | All ITIs of own region only | Add, edit, delete student records of the region; creates **Apprentice Advisors** and gives them ITIs of the region |
+| **DVTO** | All ITIs of own district | View data and reports (no changes) |
+| **Apprentice Advisor** | Only the ITIs given by the State Admin or RO Admin | View data, apprenticeships, verification |
+| **Principal** (User ID = NCVT MIS code) | Own ITI | Add, edit, delete; admissions, trades, **adds Instructors (Sevaarth ID) and assigns trades**, companies & jobs, follow-ups |
+| **Instructor** (User ID = Sevaarth ID) | Students of own trade(s) | Final ITI result (Pass / Fail); next step: apprenticeship (company, contract start / end, stipend), job (company, start / end, salary), business (type, location), higher education (college, course) or not employed |
+| **Employer / HR** | Own company's students | Adds apprenticeship / job at own company: contract start / end, stipend / salary |
+| **Student** (User ID = PCID) | Own career passport | Adds own apprenticeship / job (company name, contract start / end, stipend) |
+
+Placement Officer and ITI Staff logins are no longer used: their work is done by the Principal and the Instructor.
 
 ## Requirements
 MySQL 8.0.16+ **or MariaDB 10.5+** (tested on MariaDB 10.11). PHP 8.1+ with `pdo_mysql`, `zlib`, `mbstring`, `fileinfo`, `openssl`; MySQL 8.0.16+; Apache with `mod_rewrite` (XAMPP has it).

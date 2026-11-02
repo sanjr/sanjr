@@ -49,7 +49,7 @@ $curLabel = $idLabel($as);
 
       <div class="lg-label">Login As</div>
       <div class="role-pick" role="radiogroup" aria-label="Login as">
-        <?php foreach (['STATE_ADMIN', 'RO_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR', 'PRINCIPAL', 'TEACHER', 'PLACEMENT_OFFICER', 'ITI_STAFF', 'EMPLOYER', 'STUDENT'] as $code): ?>
+        <?php foreach (['STATE_ADMIN', 'RO_ADMIN', 'DVTO', 'APPRENTICE_ADVISOR', 'PRINCIPAL', 'TEACHER', 'EMPLOYER', 'STUDENT'] as $code): ?>
           <button type="button" role="radio" aria-checked="<?= $as === $code ? 'true' : 'false' ?>" class="<?= $as === $code ? 'sel' : '' ?>" title="<?= e(Auth::ROLE_LABELS[$code]) ?>"
                   data-role="<?= e($code) ?>" data-label="<?= e(Auth::ROLE_LABELS[$code]) ?>" data-id-label="<?= e($idLabel($code)) ?>" <?= $demo ? 'data-demo-email="' . e($demoEmails[$code]) . '"' : '' ?>>
             <?= icon($roleIcons[$code]) ?><span><?= e($short[$code]) ?></span></button>
@@ -70,7 +70,7 @@ $curLabel = $idLabel($as);
         <div class="lg-info" id="role-label"><?= icon('info') ?> <span><?= $as ? 'Signing in as <b>' . e(Auth::ROLE_LABELS[$as]) . '</b>' : 'Your role is detected automatically from your User ID.' ?></span></div>
       </form>
       <?php if ($demo): ?>
-        <p class="lg-demo">DEMO: tap a role to fill its demo account (password <b>Demo@1234</b>). Principal: NCVT MIS Code · Instructor / ITI Staff: Sevaarth ID · Student: PCID.</p>
+        <p class="lg-demo">DEMO: tap a role to fill its demo account (password <b>Demo@1234</b>). Principal: NCVT MIS Code · Instructor: Sevaarth ID · Student: PCID.</p>
       <?php endif; ?>
       <p class="lg-lock"><?= icon('lock') ?> Locks for 15 minutes after 5 wrong tries · <a href="<?= url('/') ?>">Back to home</a></p>
     </div>
