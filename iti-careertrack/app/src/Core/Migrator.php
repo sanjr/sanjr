@@ -83,7 +83,7 @@ final class Migrator
                     $pdo->exec($sql);
                 } catch (\PDOException $e) {
                     // index already there (installed by hand) = fine
-                    if (!str_contains($e->getMessage(), '1061') && !str_contains($e->getMessage(), 'Duplicate key name')) {
+                    if (!preg_match('/\b(1060|1061)\b|Duplicate (key|column) name/', $e->getMessage())) {   // index / column already there
                         throw $e;
                     }
                 }

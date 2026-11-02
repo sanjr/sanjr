@@ -133,8 +133,17 @@ final class StudentController extends Controller
         $adm = StudentData::latestAdmission($id);
         $first = DB::one('SELECT a.admission_date, ay.label FROM admissions a JOIN academic_years ay ON ay.id = a.academic_year_id
                            WHERE a.student_id = ? ORDER BY a.admission_date LIMIT 1', [$id]);
+        // latest final result: a pass wins over later failed attempts
+        $result = DB::one("SELECT er.result, es.session_month FROM exam_results er JOIN exam_sessions es ON es.id = er.exam_session_id
+                            WHERE er.student_id = ? ORDER BY er.result = 'PASS' DESC, es.session_month DESC, er.attempt_no DESC LIMIT 1", [$id]);
+        $contact = [];
+        foreach (StudentData::contacts($id) as $c) {
+            if (!isset($contact[$c['contact_type']]) || $c['is_primary']) {
+                $contact[$c['contact_type']] = $c['value'];   // the primary one, if several
+            }
+        }
         Audit::log('VIEW_CARD', 'students', $id, $id);
-        $this->render('students/card', ['title' => 'Permanent Career ID Card', 'me' => $me, 'adm' => $adm, 'first' => $first,
+        $this->render('students/card', ['title' => 'Permanent Career ID Card', 'me' => $me, 'adm' => $adm, 'first' => $first, 'result' => $result, 'contact' => $contact,
             'issuedOn' => DB::value("SELECT issued_at FROM pcid_registry WHERE student_id = ? AND status = 'ACTIVE'", [$id]),
             'verifyUrl' => absolute_url('/verify', ['pcid' => $me['pcid']]), 'scripts' => ['qr.js'], 'bodyClass' => 'print-card']);
     }
@@ -195,7 +204,18 @@ final class StudentController extends Controller
         if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new \DomainException('Enter a valid e-mail address.');
         }
-        DB::tx(function () use ($id, $mobile, $email) {
+        $blood = strtoupper(str_replace(' ', '', (string) input('blood_group', '')));
+        if ($blood !== '' && !in_array($blood, AdmissionService::BLOOD_GROUPS, true)) {
+            throw new \DomainException('Blood group must be one of A+, A-, B+, B-, AB+, AB-, O+, O-.');
+        }
+        DB::tx(function () use ($id, $mobile, $email, $blood) {
+            if (array_key_exists('blood_group', $_POST)) {
+                $old = DB::value('SELECT blood_group FROM students WHERE id = ?', [$id]);
+                if ((string) $old !== $blood) {
+                    DB::run('UPDATE students SET blood_group = ?, updated_by = ? WHERE id = ?', [$blood ?: null, Auth::id(), $id]);
+                    Audit::log('UPDATE', 'students', $id, $id, Auth::itiId(), ['blood_group' => $old], ['blood_group' => $blood ?: null]);
+                }
+            }
             AdmissionService::setContact($id, 'MOBILE', $mobile ?: null);
             AdmissionService::setContact($id, 'EMAIL', $email ? mb_strtolower($email) : null);
             AdmissionService::setContact($id, 'ADDRESS', (string) input('address', '') ?: null);

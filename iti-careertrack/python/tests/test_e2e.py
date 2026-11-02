@@ -168,7 +168,7 @@ def main() -> int:
     dob = (today - timedelta(days=365 * 17 + 40)).isoformat()
     form = {"first_name": first, "middle_name": "Sanjay", "last_name": last, "gender": "MALE", "date_of_birth": dob, "mobile": mobile,
             "ssc_board": "MSBSHSE", "ssc_seat_number": ssc_seat, "ssc_passing_year": str(today.year - 1), "trade_id": str(fitter),
-            "academic_year_id": str(cur_year), "admission_date": today.isoformat(), "consent": "1", "address": "DEMO test address"}
+            "academic_year_id": str(cur_year), "admission_date": today.isoformat(), "consent": "1", "address": "DEMO test address", "blood_group": "A+"}
     png = bytes.fromhex("89504e470d0a1a0a0000000d4948445200000001000000010806000000"
                         "1f15c4890000000d49444154789c6360000002000154a24f5d0000000049454e44ae426082")
     _, body, url, _ = pp.post("/admissions", form, files={"photo": ("photo.png", png, "image/png")})
@@ -179,6 +179,7 @@ def main() -> int:
     pcid, sid = m.group(1), int(sid_m.group(1))
     ok(luhn_ok(pcid), f"PCID {pcid} has a valid check digit")
     ok(val("SELECT COUNT(*) FROM pcid_registry WHERE student_id = %s", sid) == 1, "Exactly one PCID row for the student")
+    ok(val("SELECT blood_group FROM students WHERE id = %s", sid) == "A+", "Blood group saved from the admission form")
     ok(val("SELECT COUNT(*) FROM institute_affiliations WHERE student_id = %s AND status = 'ACTIVE' AND iti_id = %s", sid, pune["id"]) == 1,
        "Institute affiliation created automatically")
     photo_id = val("SELECT photo_document_id FROM students WHERE id = %s", sid)
@@ -449,6 +450,18 @@ def main() -> int:
         ok(m.group(1) == pcid and url.endswith("/dashboard") and pcid in body, "Student logs in with User ID = PCID + temporary password and sees own PCID")
         status, body, _, _ = st.get("/me/card")
         ok(status == 200 and "data-qr=" in body and "/verify?pcid=" + pcid in html.unescape(body), "Student PCID card has a QR code that links to verification")
+    pn.get(f"/students/{sid}?tab=contacts")
+    pn.post(f"/students/{sid}/contacts", {"mobile": mobile, "email": "card.test@demo.local", "address": "Card Road, Nashik", "blood_group": "o+"})
+    ok(val("SELECT blood_group FROM students WHERE id = %s", sid) == "O+", "Principal recorded the blood group")
+    _, body, _, _ = pn.post(f"/students/{sid}/contacts", {"mobile": mobile, "blood_group": "Z+"})
+    ok("Blood group must be" in body and val("SELECT blood_group FROM students WHERE id = %s", sid) == "O+", "An invalid blood group is refused")
+    pn.post(f"/students/{sid}/contacts", {"mobile": mobile, "email": "card.test@demo.local", "address": "Card Road, Nashik", "blood_group": "O+"})
+    status, body, _, _ = pn.get(f"/students/{sid}/card")
+    body = html.unescape(body)
+    card_dob = val("SELECT date_of_birth FROM students WHERE id = %s", sid).strftime("%d/%m/%Y")
+    ok(status == 200 and all(x in body for x in [card_dob, "DEMO0002", "Admission Year", "Result", " ".join(pcid.split("-"))]),
+       "Card front: photo, name, date of birth, ITI, NCVT MIS code, trade, admission year, result, PCID in groups")
+    ok(all(x in body for x in [mobile, "card.test@demo.local", "Card Road, Nashik", ">O+<"]), "Card back: address, mobile, e-mail, blood group")
     status, _, _, _ = tp.get(f"/students/{sid}/card")
     ok(status == 404, "Previous teacher cannot open the student's PCID card")
     tid = val("SELECT id FROM users WHERE email = 'teacher.pune@demo.local'")

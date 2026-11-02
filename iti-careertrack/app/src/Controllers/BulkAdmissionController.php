@@ -22,7 +22,7 @@ final class BulkAdmissionController extends Controller
     private const COLUMNS = [
         'First Name *' => 'first_name', 'Father / Middle Name' => 'middle_name', 'Surname *' => 'last_name', 'Gender * (Male / Female / Transgender)' => 'gender',
         'Date of Birth * (DD-MM-YYYY)' => 'date_of_birth', 'Mobile *' => 'mobile', 'Guardian Name' => 'guardian_name', 'Guardian Mobile' => 'guardian_mobile',
-        'E-mail' => 'email', 'Aadhaar (optional)' => 'aadhaar', 'Category (OPEN / OBC / SC / ST / VJNT / SBC / EWS)' => 'social_category', 'Address' => 'address',
+        'E-mail' => 'email', 'Aadhaar (optional)' => 'aadhaar', 'Category (OPEN / OBC / SC / ST / VJNT / SBC / EWS)' => 'social_category', 'Address' => 'address', 'Blood Group (A+ / B+ / O+ …)' => 'blood_group',
         'SSC Board' => 'ssc_board', 'SSC Seat Number' => 'ssc_seat_number', 'SSC Passing Year' => 'ssc_passing_year', 'SSC Percentage' => 'ssc_percentage',
         'Trade *' => 'trade', 'Admission Date * (DD-MM-YYYY)' => 'admission_date', 'Instructor Sevaarth ID (optional)' => 'sevaarth', 'Admission Ref. No.' => 'external_admission_ref',
     ];
@@ -71,9 +71,9 @@ final class BulkAdmissionController extends Controller
         $t2 = $trades[1]['name'] ?? $t1;
         $date = date('01-08-Y');
         $rows = [array_keys(self::COLUMNS),
-            ['Rahul', 'Suresh', 'Patil', 'Male', '15-06-2008', '9876543210', 'Suresh Patil', '9876500000', '', '', 'OBC', 'At post Example, Tal. Haveli, Dist. Pune',
+            ['Rahul', 'Suresh', 'Patil', 'Male', '15-06-2008', '9876543210', 'Suresh Patil', '9876500000', '', '', 'OBC', 'At post Example, Tal. Haveli, Dist. Pune', 'B+',
              'MSBSHSE', 'A123456', (string) ((int) date('Y') - 1), '72.40', $t1, $date, '', ''],
-            ['Sneha', 'Ramesh', 'Jadhav', 'Female', '02-11-2007', '9876543211', 'Ramesh Jadhav', '', '', '', 'OPEN', 'Example Nagar, Pune',
+            ['Sneha', 'Ramesh', 'Jadhav', 'Female', '02-11-2007', '9876543211', 'Ramesh Jadhav', '', '', '', 'OPEN', 'Example Nagar, Pune', 'O+',
              'MSBSHSE', 'B654321', (string) ((int) date('Y') - 1), '81.00', $t2, $date, '', ''],
         ];
         $tradeSheet = [['Trades of your ITI (copy the name exactly into the "Trade" column)']];
@@ -142,7 +142,7 @@ final class BulkAdmissionController extends Controller
             $wanted[self::norm($h)] = $field;
         }
         $wanted += ['fathername' => 'middle_name', 'middlename' => 'middle_name', 'lastname' => 'last_name', 'dob' => 'date_of_birth', 'mobilenumber' => 'mobile',
-                    'aadhaarnumber' => 'aadhaar', 'category' => 'social_category', 'sevaarthid' => 'sevaarth', 'instructor' => 'sevaarth', 'tradename' => 'trade'];
+                    'aadhaarnumber' => 'aadhaar', 'category' => 'social_category', 'sevaarthid' => 'sevaarth', 'instructor' => 'sevaarth', 'tradename' => 'trade', 'bloodgroup' => 'blood_group'];
         foreach ($rows as $i => $r) {
             $m = [];
             foreach ($r as $ci => $v) {
@@ -186,7 +186,7 @@ final class BulkAdmissionController extends Controller
                 'gender' => ['M' => 'MALE', 'F' => 'FEMALE', 'T' => 'TRANSGENDER'][$g] ?? ($get('gender') === '' ? '' : 'INVALID'),
                 'date_of_birth' => self::xlDate($get('date_of_birth')), 'mobile' => preg_replace('/\D/', '', $get('mobile')) ?? '',
                 'guardian_name' => $get('guardian_name'), 'guardian_mobile' => preg_replace('/\D/', '', $get('guardian_mobile')) ?? '', 'email' => $get('email'),
-                'aadhaar' => preg_replace('/\D/', '', $get('aadhaar')) ?? '', 'social_category' => strtoupper($get('social_category')), 'address' => $get('address'),
+                'aadhaar' => preg_replace('/\D/', '', $get('aadhaar')) ?? '', 'social_category' => strtoupper($get('social_category')), 'address' => $get('address'), 'blood_group' => $get('blood_group'),
                 'ssc_board' => strtoupper($get('ssc_board')), 'ssc_seat_number' => strtoupper($get('ssc_seat_number')), 'ssc_passing_year' => $get('ssc_passing_year'),
                 'ssc_percentage' => $get('ssc_percentage'), 'trade_id' => (string) ($trades[mb_strtolower($get('trade'))] ?? ''), 'academic_year_id' => (string) $yearId,
                 'admission_date' => self::xlDate($get('admission_date')), 'external_admission_ref' => $get('external_admission_ref'), 'consent' => '1', 'batch_id' => '',

@@ -77,7 +77,7 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
   const msg = await successText(p);
   ok(/PCID\): ITIC-MH-\d{4}-\d{6}-\d/.test(msg), 'admission saved, PCID shown: ' + ((msg.match(/ITIC\S+/) || [''])[0]));
   await Promise.all([p.waitForNavigation(), p.click('a:has-text("PCID Card")')]);
-  ok(await p.locator('.qr svg').count() === 1, 'PCID card with QR code opens');
+  ok(await p.locator('.ic-qr svg').count() === 1 && await p.locator('.ic-photo img').count() === 1 && await p.locator('.ic-card').count() === 2, 'PCID card (front + back) with photo and QR code opens');
   await check(p, 'PCID card page has no errors');
   await p.context().close();
 

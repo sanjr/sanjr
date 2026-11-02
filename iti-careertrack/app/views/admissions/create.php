@@ -60,6 +60,8 @@ $start = $dup ? 4 : $errStep;
         <input type="text" name="aadhaar" inputmode="numeric" pattern="[2-9][0-9]{11}" maxlength="12" autocomplete="off" data-review-label="Aadhaar">
         <div class="hint">Never stored in full — only an encrypted fingerprint (for duplicate check) and the last 4 digits.</div><?= field_error('aadhaar') ?></div>
       <div class="field"><label>Category</label><select name="social_category" data-review-label="Category"><?= enum_options(['OPEN', 'OBC', 'SC', 'ST', 'VJNT', 'SBC', 'EWS', 'OTHER'], old('social_category')) ?></select></div>
+      <div class="field<?= has_error('blood_group') ?>"><label>Blood group</label><select name="blood_group" data-review-label="Blood group"><option value="">Select</option>
+        <?php foreach (\App\Services\AdmissionService::BLOOD_GROUPS as $bg): ?><option<?= old('blood_group') === $bg ? ' selected' : '' ?>><?= e($bg) ?></option><?php endforeach; ?></select><?= field_error('blood_group') ?></div>
       <div class="field span2"><label>Address</label><input type="text" name="address" maxlength="255" value="<?= e(old('address')) ?>" data-review-label="Address"></div>
       <div class="field"><label><input type="checkbox" name="is_pwd" value="1" <?= old('is_pwd') ? 'checked' : '' ?> data-review-label="Person with disability"> Person with disability</label></div>
     </div>

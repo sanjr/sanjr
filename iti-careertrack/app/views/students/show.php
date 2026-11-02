@@ -272,6 +272,7 @@ $verifyForm = static function (string $field, int $recId, string $status) use ($
       <div class="table-wrap"><table class="table"><tr><th>Type</th><th>Value</th><th>Since</th></tr>
         <?php foreach ($contacts as $c): ?><tr><td><?= e(label($c['contact_type'])) ?></td><td><?= e($c['value']) ?></td><td><?= fmt_date($c['valid_from']) ?></td></tr><?php endforeach; ?>
         <?php if (!$contacts): ?><tr><td colspan="3" class="empty">No contact details.</td></tr><?php endif; ?>
+        <tr><td>Blood group</td><td><?= e($me['blood_group'] ?? '') ?: '—' ?></td><td></td></tr>
       </table></div>
       <?php if (can('student.update')):
           $cv = []; foreach ($contacts as $c) { $cv[$c['contact_type']] = $c['value']; } ?>
@@ -280,6 +281,8 @@ $verifyForm = static function (string $field, int $recId, string $status) use ($
           <div class="field"><label>Mobile</label><input type="tel" name="mobile" pattern="[6-9][0-9]{9}" value="<?= e($cv['MOBILE'] ?? '') ?>"></div>
           <div class="field"><label>E-mail</label><input type="email" name="email" value="<?= e($cv['EMAIL'] ?? '') ?>"></div>
           <div class="field"><label>Address</label><input type="text" name="address" value="<?= e($cv['ADDRESS'] ?? '') ?>"></div>
+          <div class="field"><label>Blood group</label><select name="blood_group"><option value="">Not known</option>
+            <?php foreach (\App\Services\AdmissionService::BLOOD_GROUPS as $bg): ?><option<?= ($me['blood_group'] ?? '') === $bg ? ' selected' : '' ?>><?= e($bg) ?></option><?php endforeach; ?></select></div>
           <div class="field"><button class="btn" type="submit">Save (old values kept in history)</button></div>
         </form>
       <?php endif; ?>

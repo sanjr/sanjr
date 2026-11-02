@@ -14,12 +14,14 @@ use App\Core\Database as DB;
  */
 final class AdmissionService
 {
+    public const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
     /** Validate the admission form. Returns [cleanData, errors]. */
     public static function validate(array $in): array
     {
         $e = [];
         $d = array_map(static fn ($v) => is_string($v) ? trim($v) : $v, $in);
-        foreach (['first_name', 'middle_name', 'last_name', 'full_name_mr', 'gender', 'date_of_birth', 'guardian_name', 'social_category', 'mobile',
+        foreach (['first_name', 'middle_name', 'last_name', 'full_name_mr', 'gender', 'date_of_birth', 'guardian_name', 'social_category', 'blood_group', 'mobile',
                   'guardian_mobile', 'email', 'aadhaar', 'address', 'highest_qualification', 'ssc_board', 'ssc_seat_number', 'ssc_passing_year',
                   'ssc_percentage', 'trade_id', 'academic_year_id', 'batch_id', 'admission_date', 'external_admission_ref'] as $k) {
             $d[$k] = isset($d[$k]) && is_string($d[$k]) ? $d[$k] : '';
@@ -44,6 +46,10 @@ final class AdmissionService
             if (!$ts || $age < 14 || $age > 60) {
                 $e['date_of_birth'] = 'Age must be between 14 and 60 years.';
             }
+        }
+        $d['blood_group'] = strtoupper(str_replace(' ', '', $d['blood_group']));
+        if ($d['blood_group'] !== '' && !in_array($d['blood_group'], self::BLOOD_GROUPS, true)) {
+            $e['blood_group'] = 'Blood group must be one of A+, A-, B+, B-, AB+, AB-, O+, O-.';
         }
         if (!empty($d['mobile']) && !preg_match('/^[6-9][0-9]{9}$/', $d['mobile'])) {
             $e['mobile'] = 'Enter a valid 10-digit Indian mobile number.';
@@ -100,7 +106,7 @@ final class AdmissionService
                 $row = [
                     'first_name' => $d['first_name'], 'middle_name' => $d['middle_name'] ?: null, 'last_name' => $d['last_name'],
                     'full_name_mr' => $d['full_name_mr'] ?: null, 'gender' => $d['gender'], 'date_of_birth' => $d['date_of_birth'],
-                    'guardian_name' => $d['guardian_name'] ?: null, 'social_category' => $d['social_category'] ?: null,
+                    'guardian_name' => $d['guardian_name'] ?: null, 'social_category' => $d['social_category'] ?: null, 'blood_group' => $d['blood_group'] ?: null,
                     'is_pwd' => !empty($d['is_pwd']) ? 1 : 0,
                     'ssc_board' => $d['ssc_board'] ?: null, 'ssc_seat_number' => $d['ssc_seat_number'] ? strtoupper($d['ssc_seat_number']) : null,
                     'ssc_passing_year' => $d['ssc_passing_year'] ?: null, 'ssc_percentage' => $d['ssc_percentage'] !== '' ? $d['ssc_percentage'] : null,
