@@ -83,7 +83,7 @@ final class PublicController extends Controller
     /** Public PCID check (e.g. scanned from the QR on a Career ID card). Shows the minimum needed. */
     public function verify(): void
     {
-        $pcid = strtoupper(trim((string) input('pcid', '')));
+        $pcid = \App\Services\Pcid::normalize((string) input('pcid', ''));
         $result = null;
         if ($pcid !== '') {
             $_SESSION['verify_hits'] = array_filter($_SESSION['verify_hits'] ?? [], static fn ($t) => $t > time() - 60);

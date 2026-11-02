@@ -49,7 +49,7 @@ final class OutcomeController extends Controller
             $w .= $path === 'NOT_UPDATED' ? " AND (cs.status IS NULL OR cs.status = 'NOT_UPDATED')" : ' AND cs.status = ?';
             if ($path !== 'NOT_UPDATED') { $p[] = $path; }
         }
-        if ($q = trim((string) input('q', ''))) { $w .= " AND (pr.pcid LIKE ? OR CONCAT_WS(' ', s.first_name, s.last_name) LIKE ?)"; $p[] = "%$q%"; $p[] = "%$q%"; }
+        if ($q = trim((string) input('q', ''))) { $w .= " AND (REPLACE(pr.pcid, '-', '') LIKE ? OR CONCAT_WS(' ', s.first_name, s.last_name) LIKE ?)"; $p[] = \App\Services\Pcid::searchLike($q); $p[] = "%$q%"; }
         return [$w, $p];
     }
 

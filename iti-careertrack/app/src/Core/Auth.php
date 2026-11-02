@@ -70,7 +70,7 @@ final class Auth
         } elseif (preg_match('/^(\+?91)?[6-9][0-9]{9}$/', preg_replace('/[\s-]/', '', $login) ?? '')) {
             $user = Database::one('SELECT * FROM users WHERE mobile = ?', [substr(preg_replace('/\D/', '', $login) ?? '', -10)]);
         } else {
-            $user = Database::one('SELECT * FROM users WHERE username = ?', [strtoupper($login)]);
+            $user = Database::one('SELECT * FROM users WHERE username = ?', [\App\Services\Pcid::normalize($login)]);   // a PCID may be typed without hyphens
         }
         $ok = $user && $user['password_hash'] && password_verify($password, $user['password_hash']);
         if ($ok && defined('PASSWORD_ARGON2ID') && password_needs_rehash($user['password_hash'], PASSWORD_ARGON2ID, PW_OPTIONS)) {

@@ -353,7 +353,7 @@ final class BulkAdmissionController extends Controller
         if ($y = int_input('year')) { $w .= ' AND a.academic_year_id = ?'; $p[] = $y; }
         if (input('show') === 'no_instructor') { $w .= ' AND NOT EXISTS (SELECT 1 FROM teacher_assignments x WHERE x.admission_id = a.id AND (x.end_date IS NULL OR x.end_date > CURDATE()))'; }
         if (input('show') === 'no_photo') { $w .= ' AND s.photo_document_id IS NULL'; }
-        if ($q = trim((string) input('q', ''))) { $w .= " AND (pr.pcid LIKE ? OR CONCAT_WS(' ', s.first_name, s.last_name) LIKE ?)"; $p[] = "%$q%"; $p[] = "%$q%"; }
+        if ($q = trim((string) input('q', ''))) { $w .= " AND (REPLACE(pr.pcid, '-', '') LIKE ? OR CONCAT_WS(' ', s.first_name, s.last_name) LIKE ?)"; $p[] = \App\Services\Pcid::searchLike($q); $p[] = "%$q%"; }
         $sql = "SELECT s.id, a.id AS admission_id, pr.pcid, CONCAT_WS(' ', s.first_name, s.middle_name, s.last_name) AS name, t.name AS trade, ay.label AS year,
                        s.photo_document_id,
                        (SELECT GROUP_CONCAT(u.full_name SEPARATOR ', ') FROM teacher_assignments x JOIN users u ON u.id = x.teacher_user_id

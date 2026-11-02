@@ -102,7 +102,7 @@ final class EmployerController extends Controller
     {
         $cid = $this->cid();
         Auth::require('employer.record');
-        $this->render('employer/add', ['title' => 'Add Employee / Apprentice', 'pcid' => strtoupper(trim((string) input('pcid', ''))),
+        $this->render('employer/add', ['title' => 'Add Employee / Apprentice', 'pcid' => \App\Services\Pcid::normalize((string) input('pcid', '')),
             'company' => (string) DB::value('SELECT legal_name FROM companies WHERE id = ?', [$cid]),
             'branches' => DB::all('SELECT id, CONCAT(branch_name, IF(city IS NULL, \'\', CONCAT(\' (\', city, \')\'))) AS label FROM company_branches WHERE company_id = ? ORDER BY branch_name', [$cid]),
             'trades' => DB::all('SELECT id, name FROM trades ORDER BY name'), 'kind' => input('kind') === 'apprenticeship' ? 'apprenticeship' : 'employment']);
@@ -112,7 +112,7 @@ final class EmployerController extends Controller
     {
         $cid = $this->cid();
         Auth::require('employer.record');
-        $pcid = strtoupper(trim((string) input('pcid', '')));
+        $pcid = \App\Services\Pcid::normalize((string) input('pcid', ''));
         $dob = (string) input('date_of_birth', '');
         if (!\App\Services\Pcid::isValid($pcid)) {
             throw new \DomainException('Enter a valid PCID (check the last digit).');

@@ -18,7 +18,7 @@ final class TransferController extends Controller
         }
         $itiId = Auth::itiId();
         $found = null;
-        $pcid = strtoupper(trim((string) input('pcid', '')));
+        $pcid = \App\Services\Pcid::normalize((string) input('pcid', ''));
         if ($pcid !== '' && can('transfer.request')) {
             $sid = (int) DB::value('SELECT student_id FROM pcid_registry WHERE pcid = ?', [$pcid]);
             if ($sid && Access::canViewStudent($sid)) {

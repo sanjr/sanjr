@@ -21,6 +21,28 @@ final class Pcid
         return (string) ((10 - $sum % 10) % 10);
     }
 
+    /**
+     * A PCID typed in any way -> the stored form. "itic mh 2026 001080 4", "ITICMH20260010804" and
+     * "ITIC-MH-2026-001080-4" all become "ITIC-MH-2026-001080-4" (like an Aadhaar number, typed with or
+     * without spaces / hyphens). Anything that is not shaped like a PCID is returned trimmed and in capitals.
+     */
+    public static function normalize(string $s): string
+    {
+        $s = strtoupper(trim($s));
+        $compact = preg_replace('/[^A-Z0-9]/', '', $s) ?? '';
+        if (preg_match('/^([A-Z]{2,6})([A-Z]{2})(\d{4})(\d{6})(\d)$/', $compact, $m)) {
+            return "$m[1]-$m[2]-$m[3]-$m[4]-$m[5]";
+        }
+        return $s;
+    }
+
+    /** LIKE pattern for searching PCIDs whatever the user typed (compare with REPLACE(pcid, '-', '')). */
+    public static function searchLike(string $q): string
+    {
+        $c = preg_replace('/[^A-Z0-9]/', '', strtoupper($q)) ?? '';
+        return $c === '' ? '' : "%$c%";   // '' matches no PCID (only punctuation was typed)
+    }
+
     /** True if the text looks like a PCID AND its last digit matches (catches typing mistakes). */
     public static function isValid(string $pcid): bool
     {

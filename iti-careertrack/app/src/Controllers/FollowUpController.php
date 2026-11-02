@@ -42,8 +42,8 @@ final class FollowUpController extends Controller
             $p[] = $status;
         }
         if ($q = (string) input('q', '')) {
-            $w .= " AND (pr.pcid LIKE ? OR CONCAT_WS(' ', s.first_name, s.last_name) LIKE ?)";
-            $p[] = "%$q%";
+            $w .= " AND (REPLACE(pr.pcid, '-', '') LIKE ? OR CONCAT_WS(' ', s.first_name, s.last_name) LIKE ?)";
+            $p[] = \App\Services\Pcid::searchLike($q);
             $p[] = "%$q%";
         }
         $sql = "SELECT f.*, CONCAT_WS(' ', s.first_name, s.last_name) AS name, pr.pcid, u.full_name AS assignee, cs.status AS career_status,
@@ -80,7 +80,7 @@ final class FollowUpController extends Controller
     public function store(): void
     {
         Auth::require('followup.manage');
-        $pcid = strtoupper(trim((string) input('pcid', '')));
+        $pcid = \App\Services\Pcid::normalize((string) input('pcid', ''));
         $sid = (int) DB::value('SELECT student_id FROM pcid_registry WHERE pcid = ?', [$pcid]);
         if (!$sid || !Access::canViewStudent($sid)) {
             throw new \DomainException('No student of your ITI has this PCID.');

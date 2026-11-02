@@ -96,7 +96,7 @@ final class PrincipalController extends Controller
         if ($st = (string) input('status', '')) { $w .= ' AND COALESCE(cs.status, \'NOT_UPDATED\') = ?'; $p[] = $st; }
         if ($v = (string) input('verification', '')) { $w .= ' AND cs.verification_status = ?'; $p[] = $v; }
         if ($y = int_input('year')) { $w .= ' AND a.academic_year_id = ?'; $p[] = $y; }
-        if ($q = (string) input('q', '')) { $w .= ' AND (pr.pcid LIKE ? OR CONCAT_WS(\' \', s.first_name, s.last_name) LIKE ?)'; $p[] = "%$q%"; $p[] = "%$q%"; }
+        if ($q = (string) input('q', '')) { $w .= ' AND (REPLACE(pr.pcid, \'-\', \'\') LIKE ? OR CONCAT_WS(\' \', s.first_name, s.last_name) LIKE ?)'; $p[] = \App\Services\Pcid::searchLike($q); $p[] = "%$q%"; }
         $sql = "SELECT s.id, pr.pcid, CONCAT_WS(' ', s.first_name, s.last_name) AS name, t.name AS trade, ay.label AS year_label, ia.end_date,
                        cs.status, cs.effective_from, cs.verification_status, DATEDIFF(CURDATE(), cs.effective_from) AS days_since_update,
                        (SELECT c.legal_name FROM employments e JOIN companies c ON c.id = e.company_id WHERE e.student_id = s.id AND e.status = 'ACTIVE' AND e.voided_at IS NULL ORDER BY e.joining_date DESC LIMIT 1) AS employer
