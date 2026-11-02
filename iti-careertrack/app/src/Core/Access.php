@@ -13,8 +13,8 @@ namespace App\Core;
  *    DVTO                : students of all ITIs in their district
  *    APPRENTICE_ADVISOR  : students of the ITIs assigned to the advisor
  *    PRINCIPAL, PLACEMENT_OFFICER : current students + alumni of their ITI
- *    TEACHER (Instructor): all students (current + alumni) of THEIR TRADE(S) at their ITI,
- *                          plus any student currently assigned to them
+ *    TEACHER (Instructor): only the students the Principal assigned to them (current), and
+ *                          passed-out students whose last instructor they were
  *    STUDENT             : only themself
  *    EMPLOYER            : students who work / train at the company, or applied with consent
  *                          (VIEW only — employers can add records only for their own company)
@@ -52,12 +52,14 @@ final class Access
         }
         return match ($role) {
             'STATE_ADMIN' => ['1=1', []],
-            'TEACHER' => ["($col IN (SELECT ia.student_id FROM institute_affiliations ia JOIN admissions ta ON ta.id = ia.admission_id
-                                     WHERE ia.iti_id = ? AND " . self::LIVE . "
-                                       AND ta.trade_id IN (SELECT rat.trade_id FROM role_assignment_trades rat WHERE rat.role_assignment_id = ?))
-                           OR $col IN (SELECT tas.student_id FROM teacher_assignments tas WHERE tas.teacher_user_id = ? AND tas.iti_id = ?
-                                     AND tas.start_date <= CURDATE() AND (tas.end_date IS NULL OR tas.end_date > CURDATE())))",
-                          [Auth::itiId(), Auth::raId(), Auth::id(), Auth::itiId()]],
+            // An instructor sees ONLY the students the Principal assigned to him / her (not the whole ITI or trade):
+            // current assignments, plus passed-out students whose last instructor he / she was (to record result and career)
+            'TEACHER' => ["$col IN (SELECT tas.student_id FROM teacher_assignments tas JOIN admissions tad ON tad.id = tas.admission_id
+                                     WHERE tas.teacher_user_id = ? AND tas.iti_id = ? AND tas.start_date <= CURDATE()
+                                       AND ((tas.end_date IS NULL OR tas.end_date > CURDATE())
+                                            OR (tad.status = 'COMPLETED' AND NOT EXISTS (SELECT 1 FROM teacher_assignments tnx
+                                                    WHERE tnx.admission_id = tas.admission_id AND tnx.assignment_role = tas.assignment_role AND tnx.id > tas.id))))",
+                          [Auth::id(), Auth::itiId()]],
             'STUDENT' => ["$col = ?", [Auth::studentId() ?? 0]],
             'EMPLOYER' => ["$col IN (SELECT ja.student_id FROM job_applications ja JOIN vacancies jv ON jv.id = ja.vacancy_id
                                       WHERE jv.company_id = ? AND ja.consent_to_share_profile = 1 AND ja.status <> 'WITHDRAWN'
@@ -98,10 +100,7 @@ final class Access
                 "SELECT 1 FROM transfer_requests WHERE student_id = ? AND to_iti_id = ? AND status = 'REQUESTED' LIMIT 1", [$sid, Auth::itiId()]);
         }
         return match ($role) {
-            'TEACHER' => (bool) Database::value('SELECT 1 FROM teacher_assignments WHERE student_id = ? AND teacher_user_id = ?
-                              UNION SELECT 1 FROM institute_affiliations ia JOIN admissions a ON a.id = ia.admission_id
-                               WHERE ia.student_id = ? AND ia.iti_id = ? AND a.trade_id IN (SELECT trade_id FROM role_assignment_trades WHERE role_assignment_id = ?) LIMIT 1',
-                              [$sid, Auth::id(), $sid, Auth::itiId(), Auth::raId()]),
+            // an instructor sees nothing of students no longer assigned to him / her
             'ITI_STAFF' => self::hasOpenFollowUp($sid),
             default => false,
         };

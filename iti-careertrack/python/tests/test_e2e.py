@@ -223,7 +223,7 @@ def main() -> int:
     tp = as_user(base, "teacher.pune@demo.local")              # Fitter instructor at Pune
     te = as_user(base, "teacher.pune.ele@demo.local")          # Electrician instructor at Pune
     status, body, _, _ = tp.get(f"/students/{sid}")
-    ok(status == 200 and "Career Timeline" in body, "Instructor of the student's trade sees the full lifecycle (no assignment needed)")
+    ok(status == 404, "Instructor of the student's trade does NOT see the student before the Principal assigns him / her")
     status, _, _, _ = te.get(f"/students/{sid}")
     ok(status == 404, "Instructor of ANOTHER trade at the same ITI cannot open the student")
     tn = as_user(base, "teacher.nashik@demo.local")
@@ -231,8 +231,8 @@ def main() -> int:
     ok(status == 404, "Instructor of another ITI cannot open the student")
     pp.get(f"/students/{sid}?tab=admissions")
     pp.post(f"/students/{sid}/teachers", {"teacher_user_id": str(teacher_pune), "assignment_role": "TRADE_INSTRUCTOR"})
-    tp.get(f"/students/{sid}?tab=contacts")
-    ok(mobile in tp.body, "Trade instructor has full access including contact details")
+    status, body, _, _ = tp.get(f"/students/{sid}?tab=contacts")
+    ok(status == 200 and mobile in body, "Assigned instructor sees the full lifecycle including contact details")
     status, _, _, _ = te.post(f"/students/{sid}/employments", {"company_id": sahyadri["id"], "designation": "X", "employment_type": "FULL_TIME",
                                                                  "joining_date": today.isoformat()})
     ok(status == 404 and not val("SELECT COUNT(*) FROM employments WHERE student_id = %s", sid),
@@ -280,7 +280,7 @@ def main() -> int:
     status, body, _, _ = pp.get(f"/students/{sid}")
     ok(status == 200 and "Summary view only" in body and mobile not in body, "Origin principal now has summary only (no contacts)")
     status, body, _, _ = tp.get(f"/students/{sid}")
-    ok("Summary view only" in body and "Career Timeline" not in body, "Previous teacher keeps summary only")
+    ok(status == 404 and "Career Timeline" not in body, "Previous instructor no longer sees the transferred student")
     status, body, _, _ = pn.get(f"/students/{sid}?tab=admissions")
     ok(status == 200 and "Transfer In" in body, "Destination principal sees full history incl. old admission")
 
@@ -511,7 +511,7 @@ def main() -> int:
                                           "trades[]": [str(val("SELECT id FROM trades WHERE trade_code = 'ELE'"))]})
     c, _, _ = uid_login("INS-TEST", "Test@12345")
     c.post("/settings/password", {"current_password": "Test@12345", "new_password": "Instructor@2026", "confirm_password": "Instructor@2026"})
-    ok(c.get(f"/students/{rohit_sid}")[0] == 200 and c.get(f"/students/{sid}")[0] == 404, "New Electrician instructor sees Electrician students only")
+    ok(c.get(f"/students/{rohit_sid}")[0] == 404 and c.get(f"/students/{sid}")[0] == 404, "New instructor sees no student until the Principal assigns students")
 
     print("\n[16b] Student Outcomes (Principal): exam -> result -> job / apprenticeship / business, and where")
     po = as_user(base, "principal.pune@demo.local")
@@ -632,6 +632,102 @@ def main() -> int:
                                               "start_date": d(2), "planned_end_date": d(-360), "amount": "9100"})
     ok(val("SELECT COUNT(*) FROM apprenticeships WHERE student_id = %s AND company_id = %s AND planned_end_date IS NOT NULL AND stipend_amount = 9100", stu, sahyadri["id"]) == 1,
        "Employer added an apprenticeship with contract end date and stipend")
+
+    print("\n[20] Bulk admission from Excel, bulk photos, assign trade & instructor")
+    pp = as_user(base, "principal.pune@demo.local")
+    status, body, _, _ = pp.get("/admissions/bulk")
+    ok(status == 200 and "Sample Excel" in body, "Principal opens Bulk Admission with the sample file link")
+    status, _, _, raw = pp.get("/admissions/bulk/sample")
+    ok(status == 200 and raw[:2] == b"PK", "Sample Excel (.xlsx) downloads")
+    import io
+    import zipfile
+    sample_names = zipfile.ZipFile(io.BytesIO(raw)).namelist()
+    ok("xl/worksheets/sheet2.xml" in sample_names, "Sample has the Students and Trades sheets")
+    sfx = str(random.randint(100000, 999999))
+    heads = ["First Name *", "Father / Middle Name", "Surname *", "Gender * (Male / Female / Transgender)", "Date of Birth * (DD-MM-YYYY)", "Mobile *",
+             "Guardian Name", "Guardian Mobile", "E-mail", "Aadhaar (optional)", "Category (OPEN / OBC / SC / ST / VJNT / SBC / EWS)", "Address",
+             "SSC Board", "SSC Seat Number", "SSC Passing Year", "SSC Percentage", "Trade *", "Admission Date * (DD-MM-YYYY)", "Instructor Sevaarth ID (optional)", "Admission Ref. No."]
+    adm_day = today.strftime("%d-%m-%Y")
+    m1, m2 = "97" + sfx + "01", "97" + sfx + "02"
+    rows = [["Bulkone", "R", "Electro", "Male", date(2008, 5, 4), m1, "", "", "", "", "OBC", "Pune", "MSBSHSE", "BK" + sfx + "1", "2025", "70", "Electrician", adm_day, "ins-test", ""],
+            ["Bulktwo", "", "Fitwala", "F", "12-01-2008", m2, "", "", "", "", "", "", "MSBSHSE", "BK" + sfx + "2", "2025", "65", "Fitter", adm_day, "", ""],
+            ["Bulkbad", "", "Wrongtrade", "Male", "01-01-2008", "97" + sfx + "03", "", "", "", "", "", "", "", "", "", "", "Astronaut", adm_day, "", ""]]
+    try:
+        import openpyxl
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.append(heads)
+        for r in rows:
+            ws.append(r)
+        ws["E2"].number_format = "dd-mm-yyyy"
+        buf = io.BytesIO()
+        wb.save(buf)
+        upload = ("students.xlsx", buf.getvalue(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    except ImportError:
+        import csv
+        buf = io.StringIO()
+        w = csv.writer(buf)
+        w.writerow(heads)
+        for r in rows:
+            w.writerow([x.strftime("%d-%m-%Y") if isinstance(x, date) else x for x in r])
+        upload = ("students.csv", buf.getvalue().encode(), "text/csv")
+    year = val("SELECT id FROM academic_years ORDER BY start_date DESC LIMIT 1")
+    _, body, _, _ = pp.post("/admissions/bulk", {"academic_year_id": str(year)}, files={"file": upload})
+    ok("Confirm that the consent" in body or "consent" in flash(body).lower(), "Bulk upload without the consent tick is refused")
+    _, body, _, _ = pp.post("/admissions/bulk", {"academic_year_id": str(year), "consent": "1"}, files={"file": upload})
+    b1 = val("SELECT id FROM students WHERE ssc_seat_number = %s", "BK" + sfx + "1")
+    b2 = val("SELECT id FROM students WHERE ssc_seat_number = %s", "BK" + sfx + "2")
+    ok("2 students admitted" in flash(body) and b1 and b2 and val("SELECT COUNT(*) FROM pcid_registry WHERE student_id IN (%s, %s)", b1, b2) == 2,
+       "Excel with 3 rows: 2 students admitted with PCID (several trades in one file)")
+    ok("Astronaut" in body and "not a trade of your ITI" in body and not val("SELECT COUNT(*) FROM students WHERE last_name = 'Wrongtrade'"),
+       "Row with a wrong trade is listed with the reason, not added")
+    ok(str(val("SELECT date_of_birth FROM students WHERE id = %s", b1)) == "2008-05-04", "Excel date cell read correctly")
+    ins_uid = val("SELECT id FROM users WHERE username = 'INS-TEST'")
+    ok(val("SELECT COUNT(*) FROM teacher_assignments WHERE student_id = %s AND teacher_user_id = %s AND end_date IS NULL", b1, ins_uid) == 1,
+       "Instructor Sevaarth ID in the sheet assigns the student to that instructor")
+    _, body, _, _ = pp.post("/admissions/bulk", {"academic_year_id": str(year), "consent": "1"}, files={"file": upload})
+    ok("0 students admitted" in flash(body) and "Already registered" in body and val("SELECT COUNT(*) FROM students WHERE first_name = 'Bulkone' AND ssc_seat_number = %s", "BK" + sfx + "1") == 1,
+       "Uploading the same file again adds nobody twice")
+    # INS-TEST (new Electrician instructor) now sees exactly the assigned student
+    c = uid_login("INS-TEST", "Instructor@2026")[0]
+    ok(c.get(f"/students/{b1}")[0] == 200 and c.get(f"/students/{b2}")[0] == 404 and c.get(f"/students/{rohit_sid}")[0] == 404,
+       "Instructor sees only the students assigned to him / her")
+    _, body, _, _ = c.get("/students")
+    ok("Bulkone" in body and "Bulktwo" not in body, "Instructor's student list shows only assigned students")
+    # photos: by PCID and by mobile number; unknown names are reported
+    p1 = val("SELECT pcid FROM pcid_registry WHERE student_id = %s", b1)
+    pp.get("/admissions/bulk")
+    _, body, _, _ = pp.request("/admissions/bulk/photos", {}, files={"photos[]": (p1 + ".png", png, "image/png")})
+    _, body2, _, _ = pp.request("/admissions/bulk/photos", {}, files={"photos[]": (m2 + ".png", png, "image/png")})
+    ok(val("SELECT photo_document_id FROM students WHERE id = %s", b1) and val("SELECT photo_document_id FROM students WHERE id = %s", b2),
+       "Bulk photos matched by PCID and by mobile number")
+    _, body, _, _ = pp.request("/admissions/bulk/photos", {}, files={"photos[]": ("nobody123.png", png, "image/png")})
+    ok("not matched" in flash(body) and "nobody123.png" in body, "A photo that matches no student is listed")
+    zbuf = io.BytesIO()
+    with zipfile.ZipFile(zbuf, "w") as z:
+        z.writestr("photos/" + p1 + ".png", png)
+    _, body, _, _ = pp.request("/admissions/bulk/photos", {}, files={"zip": ("photos.zip", zbuf.getvalue(), "application/zip")})
+    ok("1 photos saved" in flash(body), "Photos uploaded as one ZIP file")
+    # assign: change trade Fitter -> Electrician and give Electrician instructor
+    adm2 = val("SELECT id FROM admissions WHERE student_id = %s AND status IN ('ACCEPTED','ACTIVE')", b2)
+    te_uid = val("SELECT id FROM users WHERE email = 'teacher.pune.ele@demo.local'")
+    status, body, _, _ = pp.get("/students/assign?show=no_instructor")
+    ok(status == 200 and "Bulktwo" in body and "Bulkone" not in body, "Assign page lists students without instructor")
+    pp.post("/students/assign", {"admission_ids[]": [str(adm2)], "trade_id": str(ele), "teacher_user_id": str(te_uid)})
+    ok(val("SELECT t.trade_code FROM admissions a JOIN trades t ON t.id = a.trade_id WHERE a.id = %s", adm2) == "ELE"
+       and val("SELECT COUNT(*) FROM teacher_assignments WHERE admission_id = %s AND teacher_user_id = %s AND end_date IS NULL", adm2, te_uid) == 1,
+       "Principal changed the trade and assigned the instructor to the ticked students")
+    te2 = as_user(base, "teacher.pune.ele@demo.local")
+    ok(te2.get(f"/students/{b2}")[0] == 200, "Newly assigned instructor sees the student")
+    pp.post("/students/assign", {"admission_ids[]": [str(adm2)], "teacher_user_id": str(ins_uid)})
+    ok(te2.get(f"/students/{b2}")[0] == 404 and c.get(f"/students/{b2}")[0] == 200
+       and val("SELECT COUNT(*) FROM teacher_assignments WHERE admission_id = %s AND end_date IS NULL", adm2) == 1,
+       "Changing the instructor moves the student; the previous instructor loses access")
+    nk = val("SELECT a.id FROM admissions a JOIN itis i ON i.id = a.iti_id WHERE i.iti_code = 'DEMO0002' AND a.status IN ('ACCEPTED','ACTIVE') LIMIT 1")
+    pp.post("/students/assign", {"admission_ids[]": [str(nk)], "teacher_user_id": str(ins_uid)})
+    ok(not val("SELECT COUNT(*) FROM teacher_assignments WHERE admission_id = %s AND teacher_user_id = %s", nk, ins_uid),
+       "Principal cannot assign students of another ITI")
+    ok(te2.get("/admissions/bulk")[0] == 403 and te2.get("/students/assign")[0] == 403, "Instructor cannot use bulk admission or assign")
 
     print(f"\n==== {RESULTS['pass']} passed, {RESULTS['fail']} failed ====")
     return 1 if RESULTS["fail"] else 0

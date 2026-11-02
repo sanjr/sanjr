@@ -99,8 +99,8 @@ upload करा — तो header, login page वर आपोआप दिस�
 | **RO Admin** | All ITIs of own region only | Add, edit, delete student records of the region; creates **Apprentice Advisors** and gives them ITIs of the region |
 | **DVTO** | All ITIs of own district | View data and reports (no changes) |
 | **Apprentice Advisor** | Only the ITIs given by the State Admin or RO Admin | View data, apprenticeships, verification |
-| **Principal** (User ID = NCVT MIS code) | Own ITI | Add, edit, delete; admissions, trades, **adds Instructors (Sevaarth ID) and assigns trades**, companies & jobs, follow-ups |
-| **Instructor** (User ID = Sevaarth ID) | Students of own trade(s) | Final ITI result (Pass / Fail); next step: apprenticeship (company, contract start / end, stipend), job (company, start / end, salary), business (type, location), higher education (college, course) or not employed |
+| **Principal** (User ID = NCVT MIS code) | Own ITI | Add, edit, delete; admissions (single or **bulk from Excel** + bulk photos), trades, **adds Instructors (Sevaarth ID), assigns trade & instructor to students**, companies & jobs, follow-ups |
+| **Instructor** (User ID = Sevaarth ID) | Only the students assigned to him / her by the Principal | Final ITI result (Pass / Fail); next step: apprenticeship (company, contract start / end, stipend), job (company, start / end, salary), business (type, location), higher education (college, course) or not employed |
 | **Employer / HR** | Own company's students | Adds apprenticeship / job at own company: contract start / end, stipend / salary |
 | **Student** (User ID = PCID) | Own career passport | Adds own apprenticeship / job (company name, contract start / end, stipend) |
 
@@ -108,3 +108,11 @@ Placement Officer and ITI Staff logins are no longer used: their work is done by
 
 ## Requirements
 MySQL 8.0.16+ **or MariaDB 10.5+** (tested on MariaDB 10.11). PHP 8.1+ with `pdo_mysql`, `zlib`, `mbstring`, `fileinfo`, `openssl`; MySQL 8.0.16+; Apache with `mod_rewrite` (XAMPP has it).
+
+## Bulk admission (Principal) — Excel मधून सर्व विद्यार्थी एकदम
+
+1. Menu → **Bulk Admission (Excel)** → **Sample Excel file** डाउनलोड करा (Students, Trades, Instructors, Instructions sheets).
+2. प्रत्येक विद्यार्थ्यासाठी एक ओळ भरा. Trade नाव "Trades" sheet प्रमाणेच. Instructor Sevaarth ID (optional) भरल्यास विद्यार्थी त्या Instructor ला assign होतो.
+3. File upload करा → प्रत्येक विद्यार्थ्याला PCID मिळतो. चुकीच्या ओळी कारणासह दिसतात; दुरुस्त करून तीच file पुन्हा upload करा (आधी add झालेले विद्यार्थी परत add होत नाहीत).
+4. **Photos**: file चे नाव = PCID / SSC seat number / mobile number (उदा. `9876543210.jpg`); अनेक photos एकदम किंवा एक ZIP file.
+5. **Assign Trade & Instructor**: विद्यार्थी tick करा → trade आणि / किंवा instructor निवडा. Instructor ला फक्त त्याला assign केलेलेच विद्यार्थी दिसतात.

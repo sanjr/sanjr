@@ -192,6 +192,32 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
   ok(/User saved/.test(await successText(p)), 'Principal added an instructor');
   await p.context().close();
 
+  // Principal: bulk admission from Excel/CSV, photos, then assign instructor
+  p = await login(b, 'PRINCIPAL', 'DEMO0001');
+  await p.goto(BASE + '/admissions/bulk');
+  await check(p, 'bulk admission page');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('a[href$="/admissions/bulk/sample"]')]);
+  ok(/bulk-admission-sample\.xlsx$/.test(dl.suggestedFilename()), 'sample Excel downloads');
+  const seat = 'WT' + Math.floor(Math.random() * 1e6);
+  const csv = 'First Name *,Surname *,Gender *,Date of Birth *,Mobile *,Trade *,Admission Date *,SSC Board,SSC Seat Number,SSC Passing Year\n'
+    + `Walkbulk,Student,Female,10-03-2008,96${Math.floor(1e7 + Math.random() * 8e7)},Fitter,01-08-2026,MSBSHSE,${seat},2025\n`;
+  await p.setInputFiles('#bk-file', { name: 'students.csv', mimeType: 'text/csv', buffer: Buffer.from(csv) });
+  await p.check('#bulk-form input[name=consent]');
+  await Promise.all([p.waitForNavigation(), p.click('#bulk-form button[type=submit]')]);
+  ok(/1 students admitted/.test(await successText(p)), 'Principal admitted students from a sheet');
+  const bulkPcid = (await p.locator('.bk-report .code').first().textContent()).trim();
+  await p.setInputFiles('#bk-photos', { name: bulkPcid + '.png', mimeType: 'image/png', buffer: Buffer.from(PNG_HEX, 'hex') });
+  await Promise.all([p.waitForNavigation(), p.click('#photos button[type=submit]')]);
+  ok(/1 photos saved/.test(await successText(p)), 'bulk photo matched by PCID');
+  await p.goto(BASE + '/students/assign?q=' + encodeURIComponent(bulkPcid));
+  await check(p, 'assign trade & instructor page');
+  await p.check('input[name="admission_ids[]"]');
+  ok((await p.locator('[data-as-count]').textContent()).trim() === '1 selected', 'assign page counts the ticked students');
+  await p.selectOption('#as-teacher', { index: 1 });
+  await Promise.all([p.waitForNavigation(), p.click('#assign-form button[type=submit]')]);
+  ok(/Instructor assigned to 1 students/.test(await successText(p)), 'Principal assigned an instructor');
+  await p.context().close();
+
   // Public website and installer lock
   const ctx = await b.newContext(); p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));

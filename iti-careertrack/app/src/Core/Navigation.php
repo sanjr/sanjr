@@ -34,14 +34,14 @@ final class Navigation
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'PRINCIPAL' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['Students', '/students', 'users'], ['Admission', '/admissions/new', 'user'],
-                ['Trades & Batches', '/trades', 'layers'], ['Instructors', '/users', 'users'], ['Student Outcomes', '/outcomes', 'target'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['Students', '/students', 'users'], ['Admission', '/admissions/new', 'user'], ['Bulk Admission (Excel)', '/admissions/bulk', 'upload'],
+                ['Assign Trade & Instructor', '/students/assign', 'check-circle'], ['Trades & Batches', '/trades', 'layers'], ['Instructors', '/users', 'users'], ['Student Outcomes', '/outcomes', 'target'],
                 ['Examination', '/results', 'award'], ['Apprenticeship', '/apprenticeships', 'tool'], ['Placement', '/placements', 'briefcase'],
                 ['Transfer', '/transfers', 'transfer'], ['Companies & Jobs', '/companies', 'briefcase'], ['Follow-ups', '/follow-ups', 'phone'], ['Verification Queue', '/verifications', 'shield'], ['Reports', '/reports', 'chart'],
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'TEACHER' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['My Trade Students', '/students', 'users'], ['Attendance', '/attendance', 'calendar'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['My Students', '/students', 'users'], ['Attendance', '/attendance', 'calendar'],
                 ['Training & Modules', '/training', 'book'], ['Assessments', '/assessments', 'clipboard'], ['Results', '/results', 'award'],
                 ['Student Outcomes', '/outcomes', 'target'], ['Career Tracking', '/career-tracking', 'trending'], ['Follow-up Tasks', '/follow-ups', 'phone'], ['Settings', '/settings', 'settings'],
             ],

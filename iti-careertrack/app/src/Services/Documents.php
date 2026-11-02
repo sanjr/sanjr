@@ -45,6 +45,32 @@ final class Documents
         ]);
     }
 
+    /** Save file CONTENT (e.g. a photo taken out of an uploaded ZIP). Same checks as store(). */
+    public static function storeBytes(int $studentId, string $type, string $bytes, string $name): int
+    {
+        $max = (int) config('storage.max_upload_bytes', 5 * 1024 * 1024);
+        if ($bytes === '' || strlen($bytes) > $max) {
+            throw new \DomainException("$name: file is empty or larger than " . round($max / 1048576) . ' MB.');
+        }
+        $mime = (new \finfo(FILEINFO_MIME_TYPE))->buffer($bytes) ?: '';
+        if (!isset(self::MIME[$mime]) || ($type === 'PHOTO' && ($mime === 'application/pdf' || !@getimagesizefromstring($bytes)))) {
+            throw new \DomainException("$name: only JPG or PNG photos are allowed.");
+        }
+        $rel = date('Y/m/') . bin2hex(random_bytes(16)) . '.' . self::MIME[$mime];
+        $dest = rtrim((string) config('storage.documents'), '/') . '/' . $rel;
+        if (!is_dir(dirname($dest)) && !mkdir(dirname($dest), 0750, true) && !is_dir(dirname($dest))) {
+            throw new \RuntimeException('Storage folder is not writable.');
+        }
+        if (file_put_contents($dest, $bytes) === false) {
+            throw new \RuntimeException('Could not save the file.');
+        }
+        return DB::insert('student_documents', [
+            'student_id' => $studentId, 'document_type' => $type, 'storage_key' => $rel,
+            'original_filename' => mb_substr(basename($name), 0, 200), 'mime_type' => $mime,
+            'size_bytes' => strlen($bytes), 'sha256' => hash('sha256', $bytes), 'uploaded_by' => Auth::id(),
+        ]);
+    }
+
     public static function path(array $doc): string
     {
         $base = realpath((string) config('storage.documents'));

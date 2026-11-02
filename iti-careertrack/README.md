@@ -9,7 +9,7 @@
 > **Capacity:** [docs/04-PERFORMANCE-AND-CAPACITY.md](docs/04-PERFORMANCE-AND-CAPACITY.md) — tested with 2.7 lakh students and 100 simultaneous users.
 >
 > Tested before release: web installer (Demo and Empty), Apache sub-folder install from the ZIP,
-> a real-browser walkthrough of every menu of all 8 roles (244 checks) and 134 end-to-end tests — all passing.
+> a real-browser walkthrough of every menu of all 8 roles (255 checks) and 154 end-to-end tests — all passing.
 
 
 **ITI Student Lifecycle & Career Tracking System — Maharashtra**
@@ -39,8 +39,8 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | `python/seed_demo.py` | Creates DEMO data (36 districts, 46 ITIs, about 6,500 students with full career histories) |
 | `python/jobs/followup_job.py` | Nightly job that creates follow-up tasks for alumni who have not updated (it never changes their status) |
 | `python/reports/export_report.py` | Offline Excel/CSV report for the State or District office |
-| `python/tests/test_e2e.py` | **134 automated end-to-end acceptance and security tests** |
-| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (244 checks) |
+| `python/tests/test_e2e.py` | **154 automated end-to-end acceptance and security tests** |
+| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (255 checks) |
 | `python/tools/load_test.py`, `scale_clone.py` | Load test with many simultaneous users; multiplies the demo data to state scale |
 | `python/tools/export_logins.py` | Writes LOGINS.xlsx and checks that every account can log in |
 | `app/public/install.php` | One-time web installer (Demo or Empty system); disabled automatically after installation |
@@ -133,8 +133,8 @@ For production, point Apache or Nginx to `app/public` (an `.htaccess` file is in
 | **RO Admin** (6 regions) | All ITIs of the region | Add / edit / delete student records of the region; creates Apprentice Advisors for ITIs of the region |
 | **DVTO** | All ITIs of the district | View only |
 | **Apprentice Advisor** | ITIs given by the State Admin or RO Admin | View, apprenticeships, verification |
-| **Principal** | Own ITI | Add / edit / delete; admissions, trades, adds Instructors (Sevaarth ID) with trades |
-| **Instructor** | Students of own trade(s) | Final result and next step (apprenticeship, job, business, higher education, not employed) with company, contract dates, stipend / salary |
+| **Principal** | Own ITI | Add / edit / delete; admissions (one by one or **bulk from Excel**, with bulk photo upload), trades, adds Instructors (Sevaarth ID), **assigns trade & instructor to students** |
+| **Instructor** | Only the students the Principal assigned | Final result and next step (apprenticeship, job, business, higher education, not employed) with company, contract dates, stipend / salary |
 | **Employer / HR** | Own company's students | Adds apprenticeship / job at own company (contract dates, stipend / salary); cannot edit or delete |
 | **Student / Alumni** | Own Career Passport | Adds own apprenticeship / job / course |
 
@@ -176,7 +176,7 @@ mysql -uroot -p careertrack < database/mysql/05_regions_roles.sql
 CT_DB_USER=root CT_DB_PASS=yourpass python3 python/tests/test_e2e.py --base http://127.0.0.1:8080
 ```
 
-Expected result: `134 passed, 0 failed`.
+Expected result: `154 passed, 0 failed`.
 
 ## Nightly follow-up job (cron)
 

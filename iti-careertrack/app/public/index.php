@@ -80,6 +80,12 @@ $r->get('/documents/{id}', [C\StudentController::class, 'document']);
 $r->post('/students/{id}/documents', [C\StudentController::class, 'uploadDocument']);
 // --- admission & transfer
 $r->get('/admissions/new', [C\AdmissionController::class, 'create']);
+$r->get('/admissions/bulk', [C\BulkAdmissionController::class, 'index']);
+$r->get('/admissions/bulk/sample', [C\BulkAdmissionController::class, 'sample']);
+$r->post('/admissions/bulk', [C\BulkAdmissionController::class, 'import']);
+$r->post('/admissions/bulk/photos', [C\BulkAdmissionController::class, 'photos']);
+$r->get('/students/assign', [C\BulkAdmissionController::class, 'assignForm']);
+$r->post('/students/assign', [C\BulkAdmissionController::class, 'assign']);
 $r->post('/admissions', [C\AdmissionController::class, 'store']);
 $r->get('/transfers', [C\TransferController::class, 'index']);
 $r->post('/transfers', [C\TransferController::class, 'store']);
