@@ -289,43 +289,48 @@ pre.json { white-space: pre-wrap; word-break: break-word; font-size: 11.5px; bac
 .login-meta { display: flex; justify-content: space-between; font-size: 12.5px; margin-top: 8px; }
 .login-role-label { text-align: center; font-size: 12.5px; color: var(--grey-500); margin-top: 10px; }
 
-/* PCID card — identity-card layout (front + back), CR80 proportions 85.6 × 54 mm; sizes scale with the card (cqw) */
+/* PCID card — identity-card layout (front + back), CR80 proportions 85.6 × 54 mm.
+   Every size is a multiple of --u = 1/100 of the card width, so the card scales as one piece:
+   470 px on screen, the screen width on phones, exactly 85.6 mm when printed. (Plain calc + custom
+   property, not container units, which some browsers do not apply when printing.) */
 .ic-sheet { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
-.ic-card { container-type: inline-size; width: min(470px, 100%); aspect-ratio: 85.6 / 54; display: flex; flex-direction: column; border-radius: 16px; overflow: hidden;
+.ic-card { --u: min(4.7px, calc((100vw - 48px) / 100)); width: calc(100 * var(--u)); min-height: calc(63.08 * var(--u)); flex: none; display: flex; flex-direction: column; border-radius: 16px; overflow: hidden;
   background: radial-gradient(circle at 88% 78%, #e9f1ff 0, transparent 38%), radial-gradient(circle at 8% 100%, #fff4dc 0, transparent 30%), #fff;
   border: 1px solid var(--grey-300); box-shadow: 0 10px 30px rgba(15,61,138,.18); color: var(--grey-900); }
-.ic-head { display: flex; align-items: center; gap: 2.4cqw; padding: 2cqw 4cqw; background: linear-gradient(110deg, var(--blue-900), var(--blue-600)); color: #fff; }
-.ic-head img { width: 8cqw; height: 8cqw; }
-.ic-head b { display: block; font-size: 3.3cqw; line-height: 1.2; } .ic-head b span { color: #ffd166; }
-.ic-head small { display: block; font-size: 2.35cqw; color: #dbe7ff; margin-top: .3cqw; }
-.ic-front { flex: 1; display: grid; grid-template-columns: 21cqw 1fr; gap: 3.4cqw; padding: 2.8cqw 4cqw 0; align-items: start; }
-.ic-photo { width: 21cqw; height: 26cqw; border-radius: 1.6cqw; border: .45cqw solid #c9d7f5; overflow: hidden; background: var(--blue-50); display: grid; place-items: center; }
+.ic-head { display: flex; align-items: center; gap: calc(2.4 * var(--u)); padding: calc(2 * var(--u)) calc(4 * var(--u)); background: linear-gradient(110deg, var(--blue-900), var(--blue-600)); color: #fff; }
+.ic-head img { width: calc(8 * var(--u)); height: calc(8 * var(--u)); }
+.ic-head b { display: block; font-size: calc(3.3 * var(--u)); line-height: 1.2; } .ic-head b span { color: #ffd166; }
+.ic-head small { display: block; font-size: calc(2.35 * var(--u)); color: #dbe7ff; margin-top: calc(.3 * var(--u)); }
+.ic-front { flex: 1; display: grid; grid-template-columns: calc(21 * var(--u)) 1fr; gap: calc(3.4 * var(--u)); padding: calc(2.8 * var(--u)) calc(4 * var(--u)) 0; align-items: start; }
+.ic-photo { width: calc(21 * var(--u)); height: calc(26 * var(--u)); border-radius: calc(1.6 * var(--u)); border: calc(.45 * var(--u)) solid #c9d7f5; overflow: hidden; background: var(--blue-50); display: grid; place-items: center; }
 .ic-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.ic-photo span { font-size: 7cqw; font-weight: 800; color: var(--blue-800); }
-.ic-kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: .65cqw 2.2cqw; margin: 0; font-size: 2.35cqw; line-height: 1.25; align-content: start; }
+.ic-photo span { font-size: calc(7 * var(--u)); font-weight: 800; color: var(--blue-800); }
+.ic-kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: calc(.65 * var(--u)) calc(2.2 * var(--u)); margin: 0; font-size: calc(2.35 * var(--u)); line-height: 1.25; align-content: start; }
 .ic-kv dt { color: var(--grey-500); font-weight: 600; }
 .ic-kv dd { margin: 0; font-weight: 650; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.ic-kv .ic-name { font-size: 3cqw; font-weight: 800; color: var(--blue-900); }
+.ic-kv .ic-name { font-size: calc(3 * var(--u)); font-weight: 800; color: var(--blue-900); }
 .ic-kv .ic-address { -webkit-line-clamp: 3; }
-.ic-mono { font-variant-numeric: tabular-nums; letter-spacing: .15cqw; }
-.ic-sep { color: var(--grey-500); margin: 0 1cqw; }
-.ic-result { display: inline-block; padding: .1cqw 1.4cqw; border-radius: 1cqw; font-weight: 800; }
+.ic-mono { font-variant-numeric: tabular-nums; letter-spacing: calc(.15 * var(--u)); }
+.ic-sep { color: var(--grey-500); margin: 0 calc(1 * var(--u)); }
+.ic-result { display: inline-block; padding: calc(.1 * var(--u)) calc(1.4 * var(--u)); border-radius: calc(1 * var(--u)); font-weight: 800; }
 .ic-pass { background: var(--green-bg); color: #0d6b34; } .ic-fail { background: var(--red-bg); color: #a32418; } .ic-wait { background: var(--grey-100); color: var(--grey-700); }
-.ic-number { margin: 1.6cqw 4cqw 0; padding: 1.1cqw 0 .6cqw; border-top: .35cqw solid #d33a2c; text-align: center; font-size: 5cqw; font-weight: 800; letter-spacing: .55cqw;
+.ic-number { margin: calc(1.6 * var(--u)) calc(4 * var(--u)) 0; padding: calc(1.1 * var(--u)) 0 calc(.6 * var(--u)); border-top: calc(.35 * var(--u)) solid #d33a2c; text-align: center; font-size: calc(5 * var(--u)); font-weight: 800; letter-spacing: calc(.55 * var(--u));
   font-variant-numeric: tabular-nums; color: #111; white-space: nowrap; }
-.ic-number-sm { font-size: 3.6cqw; letter-spacing: .4cqw; margin-top: 1cqw; }
-.ic-tag { margin-top: auto; background: var(--blue-800); color: #fff; text-align: center; font-size: 2.4cqw; font-weight: 700; padding: 1.1cqw; }
-.ic-back { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 23cqw; gap: 3cqw; padding: 2.8cqw 4cqw 0; align-items: start; }
-.ic-back .ic-kv { font-size: 2.5cqw; gap: 1.1cqw 2.2cqw; }
-.ic-blood { display: inline-block; background: var(--red-bg); color: #a32418; font-weight: 800; font-size: 3cqw; padding: 0 1.6cqw; border-radius: 1cqw; }
-.ic-qr { text-align: center; } .ic-qr svg { width: 100%; height: auto; display: block; border: .3cqw solid var(--grey-200); border-radius: 1cqw; }
-.ic-qr small { display: block; font-size: 2cqw; color: var(--grey-500); margin-top: .6cqw; }
-.ic-note { margin-top: auto; text-align: center; font-size: 1.95cqw; color: var(--grey-700); padding: 1cqw 4cqw 1.8cqw; background: var(--blue-50); }
+.ic-number-sm { font-size: calc(3.6 * var(--u)); letter-spacing: calc(.4 * var(--u)); margin-top: calc(1 * var(--u)); }
+.ic-tag { margin-top: auto; background: var(--blue-800); color: #fff; text-align: center; font-size: calc(2.4 * var(--u)); font-weight: 700; padding: calc(1.1 * var(--u)); }
+.ic-back { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) calc(23 * var(--u)); gap: calc(3 * var(--u)); padding: calc(2.8 * var(--u)) calc(4 * var(--u)) 0; align-items: start; }
+.ic-back .ic-kv { font-size: calc(2.5 * var(--u)); gap: calc(1.1 * var(--u)) calc(2.2 * var(--u)); }
+.ic-blood { display: inline-block; background: var(--red-bg); color: #a32418; font-weight: 800; font-size: calc(3 * var(--u)); padding: 0 calc(1.6 * var(--u)); border-radius: calc(1 * var(--u)); }
+.ic-qr { text-align: center; } .ic-qr svg { width: 100%; height: auto; display: block; border: calc(.3 * var(--u)) solid var(--grey-200); border-radius: calc(1 * var(--u)); }
+.ic-qr small { display: block; font-size: calc(2 * var(--u)); color: var(--grey-500); margin-top: calc(.6 * var(--u)); }
+.ic-note { margin-top: auto; text-align: center; font-size: calc(1.95 * var(--u)); color: var(--grey-700); padding: calc(1 * var(--u)) calc(4 * var(--u)) calc(1.8 * var(--u)); background: var(--blue-50); }
 .ic-help { max-width: 760px; }
 @media print {
+  @page { margin: 10mm; }
+  html, body.print-card { background: #fff !important; }
   body.print-card * { visibility: hidden; } body.print-card .ic-sheet, body.print-card .ic-sheet * { visibility: visible; }
   body.print-card .ic-sheet { position: absolute; left: 12mm; top: 12mm; flex-direction: column; gap: 8mm; }
-  body.print-card .ic-card { width: 85.6mm; border-radius: 3mm; box-shadow: none; border: .25mm solid #999; -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid; }
+  body.print-card .ic-card { --u: .856mm; width: 85.6mm; min-height: 54mm; border-radius: 3mm; box-shadow: none; border: .25mm solid #999; -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid; }
 }
 
 /* verify */
