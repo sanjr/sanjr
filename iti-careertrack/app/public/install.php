@@ -120,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             @set_time_limit(600);
             $pdo = new PDO(sprintf('mysql:host=%s;port=%d;charset=utf8mb4', $in['host'], (int) $in['port']), $in['user'], $in['pass'],
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
+            $pdo->exec('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');   // match the tables' collation (MariaDB 11 default differs)
             $ver = (string) $pdo->query('SELECT VERSION()')->fetchColumn();
             $maria = stripos($ver, 'mariadb') !== false;
             if (!$maria && version_compare($ver, '8.0.16', '<')) {

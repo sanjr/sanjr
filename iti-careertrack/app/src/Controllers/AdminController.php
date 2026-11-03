@@ -187,8 +187,10 @@ final class AdminController extends Controller
             $this->backWithErrors('/users', $errors);
         }
         DB::tx(function () use ($role, $scope, $username, $email, $mobile, $pw, $itis, $trades) {
-            $existing = DB::one('SELECT * FROM users WHERE (username = ? AND ? <> \'\') OR (email = ? AND ? <> \'\') OR (mobile = ? AND ? <> \'\') LIMIT 1',
-                [$username, $username, $email, $email, $mobile, $mobile]);
+            // look up only by the IDs actually given (empty ones are left out in PHP, not compared in SQL)
+            $by = array_filter(['username' => $username, 'email' => $email, 'mobile' => $mobile], static fn ($v) => $v !== '' && $v !== null);
+            $existing = $by ? DB::one('SELECT * FROM users WHERE ' . implode(' OR ', array_map(static fn ($c) => "$c = ?", array_keys($by))) . ' LIMIT 1',
+                array_values($by)) : null;
             if ($existing) {
                 $uid = (int) $existing['id'];   // existing person: only the new role is added
             } else {

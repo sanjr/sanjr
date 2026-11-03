@@ -29,6 +29,9 @@ final class Database
                 PDO::ATTR_EMULATE_PREPARES   => false,
                 PDO::ATTR_STRINGIFY_FETCHES  => false,
             ]);
+            // same text rules as the tables (utf8mb4_unicode_ci) — MariaDB 11 on shared hosting otherwise
+            // defaults to another collation and comparing two values fails with error 1267
+            self::$pdo->exec('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');
             self::$pdo->exec("SET time_zone = '+05:30', SESSION sql_mode = 'STRICT_ALL_TABLES,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY'");
         }
         return self::$pdo;
