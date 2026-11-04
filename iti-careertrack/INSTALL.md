@@ -116,3 +116,35 @@ MySQL 8.0.16+ **or MariaDB 10.5+** (tested on MariaDB 10.11). PHP 8.1+ with `pdo
 3. File upload करा → प्रत्येक विद्यार्थ्याला PCID मिळतो. चुकीच्या ओळी कारणासह दिसतात; दुरुस्त करून तीच file पुन्हा upload करा (आधी add झालेले विद्यार्थी परत add होत नाहीत).
 4. **Photos**: file चे नाव = PCID / SSC seat number / mobile number (उदा. `9876543210.jpg`); अनेक photos एकदम किंवा एक ZIP file.
 5. **Assign Trade & Instructor**: विद्यार्थी tick करा → trade आणि / किंवा instructor निवडा. Instructor ला फक्त त्याला assign केलेलेच विद्यार्थी दिसतात.
+
+## आपोआप माहिती जोडणी (Automatic Data Linking) — विद्यार्थ्याने काही न भरता नोंद
+
+विद्यार्थी ITI नंतर update देत नाहीत, म्हणून शासकीय नोंदींमधून माहिती आपोआप PCID ला जोडली जाते.
+
+| स्रोत | काय भरले जाते |
+| --- | --- |
+| NCVT MIS | निकाल, गुण, प्रमाणपत्र क्रमांक |
+| NAPS (Apprenticeship portal) | Apprenticeship: आस्थापना, contract तारखा, stipend, पूर्ण/रद्द |
+| EPFO (UAN) | नोकरी: employer, रुजू तारीख, सोडल्याची तारीख, पगार |
+| Udyam | स्वयंरोजगार: उद्योगाचे नाव, प्रकार, ठिकाण |
+| DTE / विद्यापीठ / APAAR | पुढील शिक्षण: संस्था, अभ्यासक्रम, वर्ष |
+| ID list | NCVT reg. no., UAN, APAAR … फक्त जोडणी |
+
+**विद्यार्थी कसा ओळखला जातो (क्रमाने):** त्या प्रणालीचा ID (UAN, NCVT reg. no. …) → PCID → Aadhaar (फक्त encrypted तुलना, Aadhaar साठवला जात नाही) → mobile + जन्मतारीख → नाव + जन्मतारीख (एकच विद्यार्थी जुळला तरच).
+न जुळलेल्या ओळी ठेवल्या जातात आणि दररोज रात्री पुन्हा तपासल्या जातात — ITI ने विद्यार्थ्याचा UAN / NCVT reg. no. जोडला की त्या लगेच जुळतात.
+
+**वापर:**
+1. State Admin → **Automatic Data Linking** → स्रोत निवडा → *Sample file* पाहा → मिळालेली Excel/CSV फाइल **Import** करा.
+2. **पूर्ण आपोआप:** फाइल `app/storage/imports/inbox/<SOURCE>/` मध्ये ठेवा (उदा. `inbox/EPFO/epfo-nov.xlsx`). रात्रीचे job ती import करून `done/` मध्ये हलवते.
+3. Hostinger → Advanced → **Cron Jobs** → दररोज 02:00:
+   `php /home/USER/domains/DOMAIN/public_html/app/app/bin/auto_import.php`
+4. **API (MoU झाल्यावर):** `app/config/config.php` मध्ये जोडा:
+   ```php
+   'integrations' => [
+       'EPFO' => ['url' => 'https://…/members?since={since}', 'token' => 'KEY'],
+       'NCVT' => ['url' => 'https://…/results?since={since}', 'token' => 'KEY'],
+   ],
+   ```
+   रात्रीचे job ते API रोज वाचते (JSON: rows ची यादी).
+
+अशा नोंदी profile वर **"Official record — EPFO (automatic)"** अशा दिसतात आणि लगेच *Verified* असतात. शासकीय API / data वापरण्यासाठी DVET/DGT कडून अधिकृत करारनामा (MoU) व विद्यार्थ्याची संमती आवश्यक आहे.

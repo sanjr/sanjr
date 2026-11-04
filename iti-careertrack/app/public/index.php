@@ -130,6 +130,12 @@ $r->get('/verifications', [C\MasterController::class, 'verifications']);
 $r->get('/settings', [C\AdminController::class, 'settings']);
 $r->post('/settings/password', [C\AdminController::class, 'changePassword']);
 $r->post('/settings/card', [C\AdminController::class, 'saveCardSettings']);
+$r->get('/integrations', [C\IntegrationController::class, 'index']);
+$r->get('/integrations/sample', [C\IntegrationController::class, 'sample']);
+$r->post('/integrations/upload', [C\IntegrationController::class, 'upload']);
+$r->post('/integrations/retry', [C\IntegrationController::class, 'retry']);
+$r->post('/students/{id}/ids', [C\IntegrationController::class, 'saveIds']);
+$r->post('/student-ids/{id}/delete', [C\IntegrationController::class, 'removeId']);
 // --- principal
 $r->get('/trades', [C\PrincipalController::class, 'trades']);
 $r->post('/batches', [C\PrincipalController::class, 'storeBatch']);

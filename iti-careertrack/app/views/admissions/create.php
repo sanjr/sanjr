@@ -90,6 +90,9 @@ $start = $dup ? 4 : $errStep;
         <select name="batch_id" data-review-label="Batch"><?= options($batches, 'id', 'label', old('batch_id'), 'Assign later') ?></select><?= field_error('batch_id') ?></div>
       <div class="field<?= has_error('admission_date') ?>"><label>Admission date <span class="req">*</span></label>
         <input type="date" name="admission_date" required value="<?= e(old('admission_date', date('Y-m-d'))) ?>" data-review-label="Admission date"><?= field_error('admission_date') ?></div>
+      <div class="field"><label>NCVT trainee reg. no. <small class="muted">(optional)</small></label><input type="text" name="id_ncvt_reg" maxlength="40" value="<?= e(old('id_ncvt_reg')) ?>" data-review-label="NCVT reg. no."></div>
+      <div class="field"><label>APAAR ID <small class="muted">(optional)</small></label><input type="text" name="id_apaar" maxlength="40" value="<?= e(old('id_apaar')) ?>" data-review-label="APAAR ID"></div>
+      <div class="field"><label>UAN (EPFO) <small class="muted">(if any)</small></label><input type="text" name="id_uan" maxlength="40" value="<?= e(old('id_uan')) ?>" data-review-label="UAN"></div>
       <div class="field"><label>State admission portal reference</label><input type="text" name="external_admission_ref" maxlength="40" value="<?= e(old('external_admission_ref')) ?>" data-review-label="Portal ref."></div>
     </div>
   </section>

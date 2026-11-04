@@ -775,6 +775,60 @@ def main() -> int:
        "Principal cannot assign students of another ITI")
     ok(te2.get("/admissions/bulk")[0] == 403 and te2.get("/students/assign")[0] == 403, "Instructor cannot use bulk admission or assign")
 
+    print("\n[21] Automatic data linking: official records fill the career without the student")
+    sa = as_user(base, "state@demo.local")
+    status, body, _, _ = sa.get("/integrations")
+    ok(status == 200 and "Automatic Data Linking" in body and "Sample file" in body, "State Admin opens Automatic Data Linking")
+    ok(as_user(base, "principal.pune@demo.local").get("/integrations")[0] == 403, "Only the State Admin can import official records")
+    import csv as _csv
+    import io as _io
+    def sheet(rows):
+        b = _io.StringIO()
+        _csv.writer(b).writerows(rows)
+        return {"file": ("list.csv", b.getvalue().encode(), "text/csv")}
+    al = val("SELECT s.id FROM students s JOIN admissions a ON a.student_id = s.id AND a.status = 'COMPLETED' "
+             "WHERE s.profile_status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM employments e WHERE e.student_id = s.id) "
+             "AND EXISTS (SELECT 1 FROM student_contacts c WHERE c.student_id = s.id AND c.contact_type = 'MOBILE') ORDER BY s.id DESC LIMIT 1")
+    al_mob = val("SELECT value FROM student_contacts WHERE student_id = %s AND contact_type = 'MOBILE' AND valid_to IS NULL LIMIT 1", al)
+    al_dob = val("SELECT date_of_birth FROM students WHERE id = %s", al).strftime("%d-%m-%Y")
+    al_name = val("SELECT CONCAT(first_name, ' ', last_name) FROM students WHERE id = %s", al)
+    doj = (today - timedelta(days=40)).strftime("%d-%m-%Y")
+    head = ["UAN", "Name", "Date of Birth", "Mobile", "Aadhaar", "Establishment Name", "Date of Joining", "Date of Exit", "Wages"]
+    sa.get("/integrations")
+    _, body, _, _ = sa.post("/integrations/upload", {"source": "EPFO"}, files=sheet([head, ["100777000111", al_name, al_dob, al_mob, "", "E2E Auto Industries", doj, "", "16500"]]))
+    emp = one("SELECT * FROM employments e JOIN companies c ON c.id = e.company_id WHERE e.student_id = %s AND c.legal_name = 'E2E Auto Industries'", al)
+    ok(emp is not None and emp["source"] == "IMPORT" and emp["verification_status"] == "VERIFIED" and emp["data_import_id"],
+       "EPFO row matched by mobile + date of birth: job added and verified automatically")
+    ok(val("SELECT status FROM career_status_history WHERE student_id = %s AND current_flag = 1", al) == "EMPLOYED"
+       and val("SELECT COUNT(*) FROM student_external_ids WHERE student_id = %s AND id_type = 'UAN' AND id_value = '100777000111'", al) == 1,
+       "Career status set to Employed and the UAN remembered for the student")
+    _, body, _, _ = sa.post("/integrations/upload", {"source": "EPFO"}, files=sheet([head, ["100777000111", "", "", "", "", "E2E Auto Industries", doj, "", "16500"]]))
+    ok("1 already known" in flash(body) and val("SELECT COUNT(*) FROM employments WHERE student_id = %s AND voided_at IS NULL", al) == 1,
+       "Same EPFO record again (matched by UAN only) adds nothing twice")
+    exit_d = (today - timedelta(days=5)).strftime("%d-%m-%Y")
+    sa.post("/integrations/upload", {"source": "EPFO"}, files=sheet([head, ["100777000111", "", "", "", "", "E2E Auto Industries", doj, exit_d, ""]]))
+    ok(val("SELECT status FROM employments WHERE id = %s", emp["id"]) == "ENDED"
+       and val("SELECT status FROM career_status_history WHERE student_id = %s AND current_flag = 1", al) == "NOT_UPDATED",
+       "Date of exit from EPFO ends the job; status becomes Not updated (never counted as unemployed)")
+    _, s2, _, _ = sa.get(f"/students/{al}")
+    ok("Official record — EPFO (automatic)" in html.unescape(s2), "Profile timeline marks the job as an official automatic record")
+    # a row that fits nobody is kept (without raw Aadhaar) and matched later, when the ITI links the ID
+    al2 = val("SELECT s.id FROM students s JOIN admissions a ON a.student_id = s.id AND a.status = 'COMPLETED' JOIN itis i ON i.id = a.iti_id AND i.iti_code = 'DEMO0001' "
+              "WHERE s.profile_status = 'ACTIVE' AND s.id <> %s AND NOT EXISTS (SELECT 1 FROM apprenticeships x WHERE x.student_id = s.id) ORDER BY s.id DESC LIMIT 1", al)
+    st_d = (today - timedelta(days=60)).strftime("%d-%m-%Y")
+    nh = ["Apprentice Reg No", "Contract No", "Name", "Aadhaar", "Establishment Name", "Contract Start Date", "Contract End Date", "Stipend", "Status"]
+    _, body, _, _ = sa.post("/integrations/upload", {"source": "NAPS"}, files=sheet([nh, ["A99887766", "NAPS/E2E/1", "Someone Else", "234567890123", "E2E Apprentice Works", st_d, "", "9000", "Active"]]))
+    kept = one("SELECT * FROM data_import_rows WHERE source = 'NAPS' AND status = 'UNMATCHED' ORDER BY id DESC LIMIT 1")
+    ok("1 not matched" in flash(body) and kept is not None and "234567890123" not in kept["payload"], "Unmatched row is kept, and the raw Aadhaar is not stored")
+    pr = as_user(base, "principal.pune@demo.local")
+    pr.get(f"/students/{al2}?tab=contacts")
+    _, body, _, _ = pr.post(f"/students/{al2}/ids", {"id_naps": "a99887766"})
+    ok("1 waiting official record" in flash(body) and val("SELECT COUNT(*) FROM apprenticeships a WHERE a.student_id = %s AND a.contract_number = 'NAPS/E2E/1' AND a.source = 'IMPORT'", al2) == 1,
+       "Principal linked the NAPS no. — the waiting apprenticeship was added to the student at once")
+    _, body, _, _ = pr.post(f"/students/{al}/ids", {"id_naps": "A99887766"})
+    ok("already belongs to another student" in body, "An ID can belong to one student only")
+    ok(pr.post("/integrations/retry", {})[0] == 403, "Principal cannot run the State import")
+
     print(f"\n==== {RESULTS['pass']} passed, {RESULTS['fail']} failed ====")
     return 1 if RESULTS["fail"] else 0
 

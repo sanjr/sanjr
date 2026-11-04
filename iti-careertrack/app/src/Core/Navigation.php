@@ -12,7 +12,7 @@ final class Navigation
             'STATE_ADMIN' => [
                 ['Dashboard', '/dashboard', 'dashboard'], ['ITIs Management', '/itis', 'building'], ['Students (State)', '/students', 'users'],
                 ['Transfers', '/transfers', 'transfer'], ['Student Outcomes', '/outcomes', 'target'], ['Companies', '/companies', 'briefcase'], ['Verification Queue', '/verifications', 'shield'],
-                ['Reports & Analytics', '/reports', 'chart'], ['User & Role Mgmt', '/users', 'users'], ['Master Data', '/masters', 'layers'],
+                ['Reports & Analytics', '/reports', 'chart'], ['Automatic Data Linking', '/integrations', 'transfer'], ['User & Role Mgmt', '/users', 'users'], ['Master Data', '/masters', 'layers'],
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'RO_ADMIN' => [

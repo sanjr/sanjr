@@ -89,7 +89,15 @@ final class AdmissionController extends Controller
 
         $res = AdmissionService::admit($d, $_FILES, $existing, $override, $candidates);
         unset($_SESSION['dup_candidates']);
-        flash('success', 'Admission confirmed. Permanent Career ID (PCID): ' . $res['pcid']);
+        $note = '';
+        foreach (['NCVT_REG' => 'id_ncvt_reg', 'APAAR' => 'id_apaar', 'UAN' => 'id_uan'] as $type => $field) {   // IDs for automatic records later
+            try {
+                \App\Services\AutoLink::linkId((int) $res['student_id'], $type, (string) input($field, ''));
+            } catch (\DomainException $e) {
+                $note .= ' ' . $e->getMessage();
+            }
+        }
+        flash($note ? 'warning' : 'success', 'Admission confirmed. Permanent Career ID (PCID): ' . $res['pcid'] . $note);
         redirect('/students/' . $res['student_id']);
     }
 

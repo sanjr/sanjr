@@ -116,6 +116,19 @@ final class StudentData
     }
 
     /** Chronological "Career Journey" combining every lifecycle table. */
+    /** " · Official record — EPFO (automatic)" for a record written by an automatic import. */
+    public static function autoNote(array $r): string
+    {
+        static $src = [];
+        $id = (int) ($r['data_import_id'] ?? 0);
+        if (!$id) {
+            return '';
+        }
+        $src[$id] ??= (string) DB::value('SELECT source FROM data_imports WHERE id = ?', [$id]);
+        $name = ['NCVT' => 'NCVT MIS', 'NAPS' => 'NAPS', 'EPFO' => 'EPFO', 'UDYAM' => 'Udyam', 'HIGHER_EDU' => 'admission list'][$src[$id]] ?? $src[$id];
+        return ' · Official record — ' . $name . ' (automatic)';
+    }
+
     public static function timeline(int $sid): array
     {
         $ev = [];
@@ -132,26 +145,26 @@ final class StudentData
         }
         foreach (self::results($sid) as $r) {
             $ev[] = ['date' => $r['result_declared_on'] ?? $r['created_at'], 'type' => 'RESULT', 'icon' => 'award', 'color' => $r['result'] === 'PASS' ? 'green' : 'red',
-                     'title' => 'Exam result: ' . label($r['result']), 'meta' => $r['session_name'] . ' · attempt ' . $r['attempt_no']];
+                     'title' => 'Exam result: ' . label($r['result']), 'meta' => $r['session_name'] . ' · attempt ' . $r['attempt_no'] . self::autoNote($r)];
         }
         foreach (self::apprenticeships($sid) as $a) {
             $ev[] = ['date' => $a['start_date'], 'type' => 'APPRENTICESHIP', 'icon' => 'tool', 'color' => 'purple', 'title' => 'Apprenticeship',
-                     'meta' => fmt_date($a['start_date'], 'M Y') . ' – ' . ($a['actual_end_date'] ? fmt_date($a['actual_end_date'], 'M Y') : 'Present') . ' · ' . $a['company'],
+                     'meta' => fmt_date($a['start_date'], 'M Y') . ' – ' . ($a['actual_end_date'] ? fmt_date($a['actual_end_date'], 'M Y') : 'Present') . ' · ' . $a['company'] . self::autoNote($a),
                      'verification' => $a['verification_status']];
         }
         foreach (self::employments($sid) as $e) {
             $ev[] = ['date' => $e['joining_date'], 'type' => 'EMPLOYMENT', 'icon' => 'briefcase', 'color' => 'orange', 'title' => 'Employed – ' . $e['company'],
                      'meta' => fmt_date($e['joining_date'], 'M Y') . ' – ' . ($e['leaving_date'] ? fmt_date($e['leaving_date'], 'M Y') : 'Present')
-                               . ' · ' . $e['designation'] . ($salary && $e['salary_amount'] ? ' · Salary ' . money($e['salary_amount'], $e['salary_period']) : ''),
+                               . ' · ' . $e['designation'] . ($salary && $e['salary_amount'] ? ' · Salary ' . money($e['salary_amount'], $e['salary_period']) : '') . self::autoNote($e),
                      'verification' => $e['verification_status']];
         }
         foreach (self::businesses($sid) as $b) {
             $ev[] = ['date' => $b['start_date'], 'type' => 'BUSINESS', 'icon' => 'store', 'color' => 'orange', 'title' => 'Started business – ' . $b['business_name'],
-                     'meta' => $b['business_type'] . ($b['location'] ? ' · ' . $b['location'] : ''), 'verification' => $b['verification_status']];
+                     'meta' => $b['business_type'] . ($b['location'] ? ' · ' . $b['location'] : '') . self::autoNote($b), 'verification' => $b['verification_status']];
         }
         foreach (self::higherEducation($sid) as $h) {
             $ev[] = ['date' => $h['admission_year'] . '-06-01', 'type' => 'HIGHER_EDUCATION', 'icon' => 'graduation', 'color' => 'purple',
-                     'title' => 'Higher education – ' . $h['course_name'], 'meta' => $h['college'] . ' · ' . label($h['study_mode']), 'verification' => $h['verification_status']];
+                     'title' => 'Higher education – ' . $h['course_name'], 'meta' => $h['college'] . ' · ' . label($h['study_mode']) . self::autoNote($h), 'verification' => $h['verification_status']];
         }
         foreach (self::transfers($sid) as $t) {
             if ($t['status'] === 'ACCEPTED') {

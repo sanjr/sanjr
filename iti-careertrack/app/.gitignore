@@ -3,3 +3,4 @@ storage/documents/*
 storage/logs/*
 !storage/documents/.gitkeep
 !storage/logs/.gitkeep
+storage/imports/

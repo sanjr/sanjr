@@ -104,6 +104,7 @@ final class StudentController extends Controller
                 'businesses' => StudentData::businesses($id), 'higher' => StudentData::higherEducation($id), 'statuses' => StudentData::statusHistory($id),
                 'documents' => can('student.document.view') ? StudentData::documents($id) : [],
                 'contacts' => can('student.contact.view') ? StudentData::contacts($id) : [],
+                'externalIds' => can('student.contact.view') ? DB::all('SELECT * FROM student_external_ids WHERE student_id = ? ORDER BY id_type', [$id]) : [],
                 'transfers' => StudentData::transfers($id),
                 'teachers' => DB::all("SELECT ta.*, u.full_name, i.name AS iti_name FROM teacher_assignments ta JOIN users u ON u.id = ta.teacher_user_id
                                         JOIN itis i ON i.id = ta.iti_id WHERE ta.student_id = ? ORDER BY ta.start_date", [$id]),

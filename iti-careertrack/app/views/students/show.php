@@ -287,6 +287,24 @@ $verifyForm = static function (string $field, int $recId, string $status) use ($
         </form>
       <?php endif; ?>
 
+    <?php if ($tab === 'contacts' && can('student.contact.view')): ?>
+      <h3 class="mt">Linked IDs <small class="muted">— official records with these IDs (NCVT, NAPS, EPFO, Udyam, APAAR) are added to this profile automatically</small></h3>
+      <div class="ext-ids">
+        <?php foreach ($externalIds ?? [] as $x): ?><span class="chip"><b><?= e(\App\Services\AutoLink::ID_TYPES[$x['id_type']] ?? $x['id_type']) ?>:</b> <span class="code"><?= e($x['id_value']) ?></span>
+          <?= $x['source'] === 'IMPORT' ? '<small class="muted">(from official list)</small>' : '' ?>
+          <?php if (can('record.delete')): ?><form method="post" action="<?= url('/student-ids/' . (int) $x['id'] . '/delete') ?>" data-confirm="Remove this ID?"><?= csrf_field() ?><button type="submit" title="Remove" aria-label="Remove">×</button></form><?php endif; ?></span>
+        <?php endforeach; ?>
+        <?php if (empty($externalIds)): ?><span class="muted">No ID linked yet.</span><?php endif; ?>
+      </div>
+      <?php if (can('student.update')): ?>
+        <form method="post" action="<?= url('/students/' . $sid . '/ids') ?>" class="form-grid"><?= csrf_field() ?>
+          <?php foreach (\App\Services\AutoLink::ID_TYPES as $t => $lbl): ?>
+            <div class="field"><label><?= e($lbl) ?></label><input type="text" name="id_<?= e(strtolower($t)) ?>" maxlength="40" autocomplete="off"></div>
+          <?php endforeach; ?>
+          <div class="field"><button class="btn" type="submit">Link IDs</button></div>
+        </form>
+      <?php endif; ?>
+    <?php endif; ?>
     <?php else: ?>
       <h3>Career status history <small class="muted">— one current status; earlier periods are kept</small></h3>
       <div class="table-wrap"><table class="table"><tr><th>Status</th><th>From</th><th>To</th><th>Source</th><th>Verification</th><th>Note</th></tr>

@@ -25,6 +25,7 @@ final class BulkAdmissionController extends Controller
         'E-mail' => 'email', 'Aadhaar (optional)' => 'aadhaar', 'Category (OPEN / OBC / SC / ST / VJNT / SBC / EWS)' => 'social_category', 'Address' => 'address', 'Blood Group (A+ / B+ / O+ …)' => 'blood_group',
         'SSC Board' => 'ssc_board', 'SSC Seat Number' => 'ssc_seat_number', 'SSC Passing Year' => 'ssc_passing_year', 'SSC Percentage' => 'ssc_percentage',
         'Trade *' => 'trade', 'Admission Date * (DD-MM-YYYY)' => 'admission_date', 'Instructor Sevaarth ID (optional)' => 'sevaarth', 'Admission Ref. No.' => 'external_admission_ref',
+        'NCVT Trainee Reg No (optional)' => 'id_ncvt_reg', 'APAAR ID (optional)' => 'id_apaar', 'UAN (optional)' => 'id_uan',
     ];
     private const MAX_ROWS = 2000;
 
@@ -142,7 +143,7 @@ final class BulkAdmissionController extends Controller
             $wanted[self::norm($h)] = $field;
         }
         $wanted += ['fathername' => 'middle_name', 'middlename' => 'middle_name', 'lastname' => 'last_name', 'dob' => 'date_of_birth', 'mobilenumber' => 'mobile',
-                    'aadhaarnumber' => 'aadhaar', 'category' => 'social_category', 'sevaarthid' => 'sevaarth', 'instructor' => 'sevaarth', 'tradename' => 'trade', 'bloodgroup' => 'blood_group'];
+                    'aadhaarnumber' => 'aadhaar', 'category' => 'social_category', 'sevaarthid' => 'sevaarth', 'instructor' => 'sevaarth', 'tradename' => 'trade', 'bloodgroup' => 'blood_group', 'traineeregno' => 'id_ncvt_reg', 'ncvttraineeregno' => 'id_ncvt_reg', 'apaarid' => 'id_apaar', 'uan' => 'id_uan'];
         foreach ($rows as $i => $r) {
             $m = [];
             foreach ($r as $ci => $v) {
@@ -230,10 +231,13 @@ final class BulkAdmissionController extends Controller
                     $skipped[] = ['row' => $i + 1, 'name' => $name, 'reason' => 'A very similar student already exists (PCID ' . ($candidates[0]['row']['pcid'] ?? '') . ') — check and admit from the Admission form'];
                     continue;
                 }
-                $res = DB::tx(function () use ($d, $candidates, $teacherId) {
+                $res = DB::tx(function () use ($d, $candidates, $teacherId, $get) {
                     $res = AdmissionService::admit($d, [], null, null, array_filter($candidates, static fn ($c) => $c['score'] >= DuplicateMatcher::FLAG));
                     if ($teacherId) {
                         self::assignTeacher($res['student_id'], $res['admission_id'], $teacherId);
+                    }
+                    foreach (['NCVT_REG' => 'id_ncvt_reg', 'APAAR' => 'id_apaar', 'UAN' => 'id_uan'] as $type => $f) {   // for automatic records later
+                        \App\Services\AutoLink::linkId((int) $res['student_id'], $type, $get($f));
                     }
                     return $res;
                 });
