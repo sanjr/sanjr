@@ -141,10 +141,19 @@ MySQL 8.0.16+ **or MariaDB 10.5+** (tested on MariaDB 10.11). PHP 8.1+ with `pdo
 4. **API (MoU झाल्यावर):** `app/config/config.php` मध्ये जोडा:
    ```php
    'integrations' => [
-       'EPFO' => ['url' => 'https://…/members?since={since}', 'token' => 'KEY'],
-       'NCVT' => ['url' => 'https://…/results?since={since}', 'token' => 'KEY'],
+       'EPFO' => [
+           'url'     => 'https://…/members',                 // API देणाऱ्या विभागाने दिलेला पत्ता
+           'method'  => 'POST',                             // GET किंवा POST (त्यांच्या कागदपत्रानुसार)
+           'headers' => ['X-APISETU-CLIENTID' => 'तुमचा client id', 'X-APISETU-APIKEY' => 'तुमची key'],
+           'token'   => '',                                 // Bearer token दिला असेल तर इथे
+           'body'    => ['fromDate' => '{since}'],          // {since} = मागच्या वेळची तारीख (आपोआप)
+           'rows'    => 'data.records',                     // उत्तरात यादी कुठे आहे
+           'map'     => ['memberUan' => 'UAN', 'estName' => 'Establishment Name', 'doj' => 'Date of Joining'],
+       ],
    ],
    ```
-   रात्रीचे job ते API रोज वाचते (JSON: rows ची यादी).
+   रात्रीचे job ते API रोज वाचते. चाचणीसाठी हाताने चालवा:
+   `php app/bin/auto_import.php --source=EPFO --no-retry`
+   निकाल State Admin → Automatic Data Linking → *Recent imports* मध्ये "Api" म्हणून दिसतो; चूक असेल तर "API failed (HTTP 401)" असे दिसते.
 
 अशा नोंदी profile वर **"Official record — EPFO (automatic)"** अशा दिसतात आणि लगेच *Verified* असतात. शासकीय API / data वापरण्यासाठी DVET/DGT कडून अधिकृत करारनामा (MoU) व विद्यार्थ्याची संमती आवश्यक आहे.

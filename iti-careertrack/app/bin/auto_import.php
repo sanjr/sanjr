@@ -8,9 +8,18 @@ declare(strict_types=1);
  *  1. Imports every file in storage/imports/inbox/<SOURCE>/  (SOURCE = NCVT, NAPS, EPFO, UDYAM,
  *     HIGHER_EDU, ID_LINK; .xlsx or .csv) and moves it to storage/imports/done/ (or failed/).
  *  2. Fetches every API configured in config.php → 'integrations' (when an MoU gives one):
- *        'integrations' => ['EPFO' => ['url' => 'https://…', 'token' => '…'], …]
- *     The API must answer JSON: a list of rows, or {"rows": [...]} / {"data": [...]}.
- *     "{since}" in the url is replaced by the date of the last successful fetch.
+ *        'integrations' => [
+ *            'EPFO' => [
+ *                'url'     => 'https://…/members?from={since}',     // {since} = date of the last fetch (YYYY-MM-DD)
+ *                'token'   => '…',                                   // optional: sent as "Authorization: Bearer …"
+ *                'headers' => ['X-APISETU-CLIENTID' => '…', 'X-APISETU-APIKEY' => '…'],   // optional, any extra headers
+ *                'method'  => 'GET',                                 // or POST
+ *                'body'    => ['fromDate' => '{since}'],             // optional JSON body for POST
+ *                'rows'    => 'data.records',                        // optional: where the list is in the answer
+ *                'map'     => ['memberUan' => 'UAN', 'doj' => 'Date of Joining'],   // optional: their field => our column
+ *            ],
+ *        ]
+ *     Without 'rows' the answer may be a list, or {"rows": [...]}, {"data": [...]}, {"records": [...]}.
  *  3. Tries all kept (not yet matched) rows again.
  *
  * Options: --source=EPFO  (only that source)   --no-api   --no-retry
@@ -84,18 +93,52 @@ if (!isset($opt['no-api'])) {
         }
         $since = (string) (DB::value("SELECT DATE(MAX(started_at)) FROM data_imports WHERE source = ? AND channel = 'API'", [$source]) ?: '2000-01-01');
         $url = str_replace('{since}', rawurlencode($since), (string) $c['url']);
+        $method = strtoupper((string) ($c['method'] ?? 'GET')) === 'POST' ? 'POST' : 'GET';
+        $headers = "Accept: application/json\r\n" . (!empty($c['token']) ? 'Authorization: Bearer ' . $c['token'] . "\r\n" : '');
+        foreach ((array) ($c['headers'] ?? []) as $hk => $hv) {
+            $headers .= preg_replace('/[\r\n:]/', '', (string) $hk) . ': ' . preg_replace('/[\r\n]/', '', (string) $hv) . "\r\n";
+        }
+        $body = null;
+        if ($method === 'POST') {
+            $payload = json_decode(str_replace('{since}', $since, (string) json_encode($c['body'] ?? [])), true);
+            $body = json_encode($payload ?: new stdClass());
+            $headers .= "Content-Type: application/json\r\n";
+        }
         $t0 = microtime(true);
-        $ctx = stream_context_create(['http' => ['method' => 'GET', 'timeout' => 120, 'ignore_errors' => true,
-            'header' => "Accept: application/json\r\n" . (!empty($c['token']) ? 'Authorization: Bearer ' . $c['token'] . "\r\n" : '')]]);
-        $body = @file_get_contents($url, false, $ctx);
-        $code = isset($http_response_header[0]) && preg_match('/\s(\d{3})\s/', $http_response_header[0], $m) ? (int) $m[1] : 0;
-        $data = is_string($body) ? json_decode($body, true) : null;
-        $items = is_array($data) ? ($data['rows'] ?? $data['data'] ?? (array_is_list($data) ? $data : [])) : null;
+        $ctx = stream_context_create(['http' => ['method' => $method, 'timeout' => 120, 'ignore_errors' => true, 'header' => $headers] + ($body !== null ? ['content' => $body] : [])]);
+        $answer = @file_get_contents($url, false, $ctx);
+        $code = isset($http_response_header[0]) && preg_match('/\s(\d{3})\b/', $http_response_header[0], $m) ? (int) $m[1] : 0;
+        $data = is_string($answer) ? json_decode($answer, true) : null;
+        $items = null;
+        if (is_array($data)) {
+            if (!empty($c['rows'])) {
+                $items = $data;
+                foreach (explode('.', (string) $c['rows']) as $part) {
+                    $items = is_array($items) && array_key_exists($part, $items) ? $items[$part] : null;
+                }
+            } else {
+                $items = $data['rows'] ?? $data['data'] ?? $data['records'] ?? (array_is_list($data) ? $data : null);
+            }
+        }
         if ($code !== 200 || !is_array($items)) {
             $say("$source API failed (HTTP $code)");
             DB::insert('integration_logs', ['integration' => $source, 'operation' => 'import:api', 'status' => 'FAILED', 'http_status' => $code ?: null,
                 'duration_ms' => (int) ((microtime(true) - $t0) * 1000), 'error_code' => 'bad_response']);
             continue;
+        }
+        if (!empty($c['map'])) {   // their field names -> our column names
+            $items = array_map(static function ($it) use ($c) {
+                if (!is_array($it)) {
+                    return $it;
+                }
+                foreach ((array) $c['map'] as $from => $to) {
+                    if (array_key_exists($from, $it)) {
+                        $it[$to] = $it[$from];
+                        unset($it[$from]);
+                    }
+                }
+                return $it;
+            }, $items);
         }
         $imp = AutoLink::run($source, AutoLink::rowsFromJson($items), 'API', parse_url($url, PHP_URL_HOST) ?: 'api', null);
         $say("$source API: {$imp['rows_total']} rows, {$imp['matched']} matched ({$imp['created']} new), {$imp['unmatched']} waiting");
