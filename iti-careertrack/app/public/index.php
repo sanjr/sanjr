@@ -131,6 +131,10 @@ $r->get('/settings', [C\AdminController::class, 'settings']);
 $r->post('/settings/password', [C\AdminController::class, 'changePassword']);
 $r->post('/settings/card', [C\AdminController::class, 'saveCardSettings']);
 $r->get('/integrations', [C\IntegrationController::class, 'index']);
+$r->get('/whatsapp', [C\WhatsAppController::class, 'index']);
+$r->post('/whatsapp/send', [C\WhatsAppController::class, 'send']);
+$r->get('/whatsapp/{id}', [C\WhatsAppController::class, 'thread']);
+$r->post('/whatsapp/{id}/simulate', [C\WhatsAppController::class, 'simulate']);
 $r->get('/integrations/sample', [C\IntegrationController::class, 'sample']);
 $r->post('/integrations/upload', [C\IntegrationController::class, 'upload']);
 $r->post('/integrations/retry', [C\IntegrationController::class, 'retry']);
@@ -185,6 +189,12 @@ $r->get('/me/update', [C\MeController::class, 'updateForm']);
 $r->post('/me/update', [C\MeController::class, 'update']);
 $r->get('/jobs', [C\MeController::class, 'jobs']);
 $r->post('/jobs/{id}/apply', [C\MeController::class, 'apply']);
+
+// WhatsApp webhook (called by Meta, not by a browser): no login, no CSRF — the signature is checked instead
+if (current_path() === '/webhooks/whatsapp') {
+    \App\Controllers\WhatsAppController::webhook();
+    exit;
+}
 
 try {
     Auth::startSession();

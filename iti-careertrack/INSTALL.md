@@ -157,3 +157,34 @@ MySQL 8.0.16+ **or MariaDB 10.5+** (tested on MariaDB 10.11). PHP 8.1+ with `pdo
    निकाल State Admin → Automatic Data Linking → *Recent imports* मध्ये "Api" म्हणून दिसतो; चूक असेल तर "API failed (HTTP 401)" असे दिसते.
 
 अशा नोंदी profile वर **"Official record — EPFO (automatic)"** अशा दिसतात आणि लगेच *Verified* असतात. शासकीय API / data वापरण्यासाठी DVET/DGT कडून अधिकृत करारनामा (MoU) व विद्यार्थ्याची संमती आवश्यक आहे.
+
+## WhatsApp Bot — विद्यार्थी फक्त क्रमांक पाठवून स्टेटस अपडेट करतात (Principal व Instructor)
+
+Menu: **WhatsApp Updates** (Principal: ITI चे विद्यार्थी; Instructor: फक्त assign केलेले).
+1. यादीतून विद्यार्थी tick करा → **Send WhatsApp question**. विद्यार्थ्याला संदेश जातो: "1 नोकरी · 2 Apprenticeship · 3 पुढील शिक्षण · 4 व्यवसाय · 5 नोकरी शोधत आहे".
+2. विद्यार्थी क्रमांक पाठवतो; bot कंपनी/कॉलेज आणि तारीख विचारतो. उत्तर येताच नोंद होते (source: Student, ITI ने पडताळायची) आणि सध्याचा status लगेच बदलतो. STOP = संदेश बंद.
+3. रात्रीचे cron job, status माहीत नसलेल्या / 6 महिने जुन्या pass-outs ना आपोआप आठवण पाठवते (WhatsApp जोडल्यावरच).
+
+**DEMO mode:** खालील settings नसतील तर संदेश फोनवर जात नाहीत; Chat page वर "DEMO: reply as the student" ने उत्तर देऊन पूर्ण प्रक्रिया दाखवता येते (jury साठी).
+
+**खरा WhatsApp जोडणे (Meta — WhatsApp Business Cloud API):**
+1. business.facebook.com → Business Account (शक्यतो DVET/ITI नावाने, verification) → developers.facebook.com → App → *WhatsApp* product जोडा → फोन नंबर जोडा.
+2. WhatsApp Manager → **Message template** बनवा: नाव `career_status_update`, भाषा Marathi (`mr`), category Utility, body:
+   `नमस्कार {{1}}! ITI CareerTrack (DVET महाराष्ट्र): तुम्ही सध्या काय करत आहात? फक्त क्रमांक पाठवा: 1 नोकरी, 2 Apprenticeship, 3 पुढील शिक्षण, 4 स्वतःचा व्यवसाय, 5 नोकरी शोधत आहे. (बंद करण्यासाठी STOP)` — Meta ची मंजुरी लागते.
+3. App → WhatsApp → Configuration → **Webhook**: Callback URL `https://तुमचे-domain/app/public/webhooks/whatsapp` (जिथे site उघडते तो पत्ता + `/webhooks/whatsapp`), Verify token = तुम्ही ठरवलेला शब्द; field **messages** subscribe करा.
+4. `app/config/config.php` मध्ये जोडा:
+   ```php
+   'whatsapp' => [
+       'phone_number_id' => 'Meta मधील Phone number ID',
+       'token'           => 'Permanent access token (System user)',
+       'app_secret'      => 'App → Settings → Basic → App secret',
+       'verify_token'    => 'webhook साठी ठरवलेला शब्द',
+       'template'        => 'career_status_update',
+       'language'        => 'mr',
+       'reminder_days'   => 180,      // इतके दिवस अपडेट नसेल तर रात्री आपोआप आठवण (0 = बंद)
+       'reminders_per_night' => 500,
+   ],
+   ```
+5. WhatsApp Updates page वर "WhatsApp connected" (हिरवा) दिसेल. एका विद्यार्थ्याला (स्वतःचा नंबर) पाठवून तपासा.
+
+टीप: Meta business-initiated (template) संदेशांसाठी शुल्क आकारते; विद्यार्थ्याच्या उत्तरानंतर 24 तासांतील bot चे उत्तर मोफत असते. विद्यार्थ्याची संमती (प्रवेश फॉर्ममधील consent) आवश्यक.

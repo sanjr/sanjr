@@ -268,7 +268,7 @@
   var all = document.querySelector('[data-check-all]');
   var cnt = document.querySelector('[data-as-count]');
   if (cnt) {
-    var boxes = function () { return document.querySelectorAll('input[name="admission_ids[]"]'); };
+    var boxes = function () { return document.querySelectorAll('input[name="admission_ids[]"], input[name="student_ids[]"]'); };
     var upd = function () { var n = 0; boxes().forEach(function (b) { if (b.checked) n++; }); cnt.textContent = n + ' selected'; };
     if (all) all.addEventListener('change', function () { boxes().forEach(function (b) { b.checked = all.checked; }); upd(); });
     boxes().forEach(function (b) { b.addEventListener('change', upd); });

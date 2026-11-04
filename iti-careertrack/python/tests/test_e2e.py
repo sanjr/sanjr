@@ -829,6 +829,36 @@ def main() -> int:
     ok("already belongs to another student" in body, "An ID can belong to one student only")
     ok(pr.post("/integrations/retry", {})[0] == 403, "Principal cannot run the State import")
 
+    print("\n[22] WhatsApp bot: student answers with a number, the career record updates itself")
+    wp = as_user(base, "principal.pune@demo.local")
+    status, body, _, _ = wp.get("/whatsapp")
+    ok(status == 200 and "DEMO mode" in body and "Send WhatsApp question" in body, "Principal opens WhatsApp Status Updates (DEMO mode without API keys)")
+    wids = re.findall(r'name="student_ids\[\]" value="(\d+)"', body)[:3]
+    _, body, _, _ = wp.post("/whatsapp/send", {"student_ids[]": wids})
+    ok(len(wids) == 3 and "3 messages recorded" in flash(body) and val("SELECT COUNT(*) FROM whatsapp_messages WHERE direction = 'OUT' AND student_id IN (%s, %s, %s)", *wids) >= 3,
+       "Principal asked 3 pass-outs on WhatsApp")
+    w1, w2, w3 = (int(x) for x in wids)
+    for txt in ["1", "E2E WhatsApp Works, Chakan", "01-09-2026"]:
+        wp.post(f"/whatsapp/{w1}/simulate", {"text": txt})
+    job = one("SELECT e.*, c.status AS cstatus FROM employments e JOIN companies c ON c.id = e.company_id WHERE e.student_id = %s AND c.legal_name = 'E2E WhatsApp Works, Chakan'", w1)
+    ok(job is not None and str(job["joining_date"]) == "2026-09-01" and job["source"] == "STUDENT" and job["verification_status"] == "PENDING" and job["cstatus"] == "PENDING_APPROVAL",
+       "Reply 1 → company → date: job recorded as the student's own word, waiting for ITI verification")
+    ok(val("SELECT status FROM career_status_history WHERE student_id = %s AND current_flag = 1", w1) == "EMPLOYED", "Current status became Employed at once")
+    _, body, _, _ = wp.get(f"/whatsapp/{w1}")
+    ok("तुमची नोंद झाली" in html.unescape(body), "Bot thanked the student in Marathi; the conversation is visible to the ITI")
+    wp.post(f"/whatsapp/{w2}/simulate", {"text": "५"})
+    ok(val("SELECT status FROM career_status_history WHERE student_id = %s AND current_flag = 1", w2) == "SEEKING_EMPLOYMENT", "Reply ५ (Marathi digit) = looking for a job")
+    wp.post(f"/whatsapp/{w3}/simulate", {"text": "STOP"})
+    _, body, _, _ = wp.post("/whatsapp/send", {"student_ids[]": [str(w3)]})
+    ok("1 stopped" in flash(body), "After STOP the student is not messaged again")
+    wt = as_user(base, "teacher.pune.ele@demo.local")
+    ok(wt.get("/whatsapp")[0] == 200 and wt.get(f"/whatsapp/{w1}")[0] in (200, 404), "Instructor has WhatsApp Updates for own students")
+    other = val("SELECT a.student_id FROM admissions a JOIN itis i ON i.id = a.iti_id WHERE i.iti_code = 'DEMO0002' LIMIT 1")
+    ok(wt.get(f"/whatsapp/{other}")[0] == 404 and wp.get(f"/whatsapp/{other}")[0] == 404, "Nobody sees WhatsApp chats of another ITI's students")
+    ok(as_user(base, "dvto.pune@demo.local").get("/whatsapp")[0] == 403, "DVTO has no WhatsApp sending")
+    status, _, _, _ = Client(base).request("/webhooks/whatsapp", {"x": "1"}, csrf=False)
+    ok(status == 403, "Webhook refuses calls without the WhatsApp signature")
+
     print(f"\n==== {RESULTS['pass']} passed, {RESULTS['fail']} failed ====")
     return 1 if RESULTS["fail"] else 0
 

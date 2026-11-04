@@ -151,5 +151,10 @@ if (!isset($opt['no-retry'])) {
     $r = AutoLink::retryOpen(null);
     $say("Retry: {$r['tried']} waiting rows tried, {$r['matched']} matched now");
 }
+// 4. WhatsApp reminders to pass-outs whose status is unknown or old (only when WhatsApp is connected)
+if (!$only) {
+    $w = \App\Services\WhatsApp::reminders((int) config('whatsapp.reminders_per_night', 500));
+    $say('WhatsApp reminders: ' . ($w['reason'] !== '' ? 'not sent (' . $w['reason'] . ')' : "{$w['sent']} sent, {$w['skipped']} skipped"));
+}
 $say("Done ($total files / feeds).");
 flock($lock, LOCK_UN);
