@@ -11,6 +11,7 @@
 <?php if (config('app.env') === 'demo'): ?>
 <div class="demo-ribbon">DEMO DATA — all names, institutes and companies are synthetic. Not an official government system.</div>
 <?php endif; ?>
+<?php if (\App\Core\Database::readOnly()): ?><div class="ro-ribbon" role="alert">मुख्य database सध्या उपलब्ध नाही — website backup प्रतीवरून फक्त पाहण्यासाठी चालू आहे (<?= e((string) \App\Core\Database::value("SELECT setting_value FROM settings WHERE setting_key = 'backup_copy_of'")) ?>). काहीही save होणार नाही.</div><?php endif; ?>
 <div class="auth-hero">
   <div class="auth-hero-inner">
     <img src="<?= asset('img/logo.svg') ?>" alt="" width="64" height="64">

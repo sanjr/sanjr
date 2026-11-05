@@ -859,6 +859,21 @@ def main() -> int:
     status, _, _, _ = Client(base).request("/webhooks/whatsapp", {"x": "1"}, csrf=False)
     ok(status == 403, "Webhook refuses calls without the WhatsApp signature")
 
+    print("\n[23] Database safety: backup file, download, access")
+    sb = as_user(base, "state@demo.local")
+    status, body, _, _ = sb.get("/backups")
+    ok(status == 200 and "Database Backups" in body, "State Admin opens Database Backups")
+    _, body, _, _ = sb.post("/backups/run", {})
+    m = re.search(r"Backup made: (careertrack-\d{8}-\d{6}\.sql\.gz)", flash(body))
+    ok(bool(m), "Backup now writes a backup file")
+    if m:
+        status, _, _, raw = sb.get("/backups/download?f=" + m.group(1))
+        import gzip as _gz
+        text = _gz.decompress(raw).decode("utf-8", "replace") if raw[:2] == b"\x1f\x8b" else ""
+        ok(status == 200 and "CREATE TABLE `students`" in text and "-- @@COMPLETE" in text, "Backup file downloads, complete, with all tables")
+    ok(sb.get("/backups/download?f=../config/config.php")[0] == 404, "Only backup files can be downloaded")
+    ok(as_user(base, "principal.pune@demo.local").get("/backups")[0] == 403, "Only the State Admin sees backups")
+
     print(f"\n==== {RESULTS['pass']} passed, {RESULTS['fail']} failed ====")
     return 1 if RESULTS["fail"] else 0
 

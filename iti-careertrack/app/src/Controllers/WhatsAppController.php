@@ -135,6 +135,12 @@ final class WhatsAppController extends Controller
             return;
         }
         $raw = (string) file_get_contents('php://input');
+        \App\Core\Database::pdo();
+        if (\App\Core\Database::readOnly()) {   // main database down: WhatsApp sends the message again later
+            http_response_code(503);
+            echo 'busy';
+            return;
+        }
         $code = WhatsApp::webhook($raw, $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? null);
         http_response_code($code);
         echo $code === 200 ? 'ok' : 'forbidden';

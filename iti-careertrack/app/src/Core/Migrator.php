@@ -40,6 +40,10 @@ final class Migrator
     /** Cheap check on every request: a marker file says "already at the latest version". */
     public static function runIfNeeded(): void
     {
+        Database::pdo();
+        if (Database::readOnly()) {
+            return;   // never change the backup copy
+        }
         $marker = self::markerFile();
         if (is_file($marker) && (int) @file_get_contents($marker) >= self::latest()) {
             return;

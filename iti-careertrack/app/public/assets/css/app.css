@@ -814,3 +814,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .wa-quick { display: flex; flex-wrap: wrap; gap: 6px; }
 @media (max-width: 1400px) { .wa-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 560px) { .wa-bubble { max-width: 92%; } }
+.ro-ribbon { background: #b42318; color: #fff; text-align: center; font-weight: 700; padding: 8px 16px; font-size: .9rem; }
+.bk-table td { vertical-align: middle; }
+.code-block { display: block; white-space: pre; overflow-x: auto; background: var(--grey-100); border: 1px solid var(--grey-200); border-radius: 8px; padding: 10px 12px; font-size: .8rem; margin: 8px 0; }

@@ -43,6 +43,9 @@ final class Router
             }
             if ($method === 'POST') {
                 Csrf::verify();
+                if (Database::readOnly() && !in_array($path, ['/login', '/logout'], true)) {
+                    throw new \DomainException('The main database is not available right now. The website shows the backup copy and nothing can be saved — please try again later.');
+                }
             }
             $params = array_map('intval', array_filter($m, 'is_string', ARRAY_FILTER_USE_KEY));
             [$class, $action] = $r['handler'];

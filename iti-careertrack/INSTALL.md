@@ -188,3 +188,29 @@ Menu: **WhatsApp Updates** (Principal: ITI चे विद्यार्थी
 5. WhatsApp Updates page वर "WhatsApp connected" (हिरवा) दिसेल. एका विद्यार्थ्याला (स्वतःचा नंबर) पाठवून तपासा.
 
 टीप: Meta business-initiated (template) संदेशांसाठी शुल्क आकारते; विद्यार्थ्याच्या उत्तरानंतर 24 तासांतील bot चे उत्तर मोफत असते. विद्यार्थ्याची संमती (प्रवेश फॉर्ममधील consent) आवश्यक.
+
+## Database सुरक्षा — रोज backup, दुसरा database (replica) आणि आपोआप failover
+
+एकाच database ला काही झाले तरी system थांबू नये म्हणून तीन स्तर:
+
+| स्तर | काय होते | कधी |
+| --- | --- | --- |
+| 1. Backup file | संपूर्ण database (tables, data, views, triggers) ची `.sql.gz` फाइल `app/storage/backups/` मध्ये; शेवटच्या 14 ठेवल्या जातात | रोज रात्री (cron) किंवा State Admin → **Database Backups → Backup now** |
+| 2. Backup database (replica) | तीच फाइल **दुसऱ्या database** मध्ये भरली जाते — शक्यतो दुसऱ्या server / hosting खात्यावर | रोज रात्री backup नंतर लगेच |
+| 3. Failover | मुख्य database उत्तर देत नसेल तर website आपोआप backup database वर, **फक्त पाहण्यासाठी (read-only)** चालू राहते; लाल पट्टी दिसते; save बंद. मुख्य परत आला की आपोआप मुख्य वापरला जातो | आपोआप |
+
+**एकदाच सेटअप:**
+1. दुसरा MySQL database + user बनवा (Hostinger hPanel → Databases; उत्तम: दुसऱ्या hosting / शासकीय server वर).
+2. `app/config/config.php` मध्ये:
+   ```php
+   'db_backup' => ['host' => 'localhost', 'port' => 3306, 'name' => 'u427511805_ctbackup', 'user' => 'u427511805_ctbackup', 'pass' => '…'],
+   'backup'    => ['keep' => 14, 'failover' => true],
+   ```
+3. Cron — रोज 01:30 (02:00 च्या import आधी):
+   `php /home/USER/domains/DOMAIN/public_html/app/app/bin/backup.php`
+4. आठवड्यातून एकदा State Admin → Database Backups → सर्वात नवीन फाइल **Download** करून शासकीय संगणक / Drive वर ठेवा (personal data — सुरक्षित ठिकाणी).
+
+**Data हरवला / बिघडला तर (restore):**
+`php app/bin/backup.php --restore=careertrack-YYYYmmdd-HHiiss.sql.gz --yes` — आधी सध्याच्या स्थितीची safety copy आपोआप बनते, मग निवडलेली फाइल मुख्य database मध्ये भरली जाते.
+
+**राज्यभर वापरासाठी (VPS / शासकीय server):** MySQL ची real-time **source → replica replication** (GTID) वापरा — replica काही सेकंदांत अद्ययावत राहते. वरील `db_backup` मध्ये replica चा पत्ता दिला की failover तसेच चालते. Hostinger shared hosting वर real-time replication शक्य नाही; तिथे रोजची प्रत (वरील पद्धत) वापरा.

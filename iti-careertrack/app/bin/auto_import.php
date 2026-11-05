@@ -40,6 +40,11 @@ $opt = getopt('', ['source:', 'no-api', 'no-retry']);
 $only = isset($opt['source']) ? strtoupper((string) $opt['source']) : null;
 $say = static fn (string $m) => fwrite(STDOUT, '[' . date('Y-m-d H:i:s') . "] $m\n");
 
+DB::pdo();
+if (DB::readOnly()) {
+    $say('Main database is not reachable — nothing imported (the website runs read-only on the backup copy).');
+    exit(1);
+}
 Migrator::run();   // database up to date (also after an update of the files)
 $lock = fopen(AutoLink::inboxDir() . '.lock', 'c');
 if (!$lock || !flock($lock, LOCK_EX | LOCK_NB)) {

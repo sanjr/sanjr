@@ -11,6 +11,25 @@ use Throwable;
 final class Database
 {
     private static ?PDO $pdo = null;
+    private static bool $readOnly = false;
+
+    /** True when the main database did not answer and the website runs on the backup copy (view only). */
+    public static function readOnly(): bool
+    {
+        return self::$readOnly;
+    }
+
+    private static function open(array $c): PDO
+    {
+        return new PDO(sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $c['host'] ?? 'localhost', (int) ($c['port'] ?? 3306), $c['name'] ?? ''),
+            (string) ($c['user'] ?? ''), (string) ($c['pass'] ?? ''), [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+                PDO::ATTR_STRINGIFY_FETCHES  => false,
+                PDO::ATTR_TIMEOUT            => 5,
+            ]);
+    }
 
     /** Used by the installer, which already holds a connection. */
     public static function usePdo(PDO $pdo): void
@@ -21,14 +40,19 @@ final class Database
     public static function pdo(): PDO
     {
         if (self::$pdo === null) {
-            $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4',
-                config('db.host'), config('db.port'), config('db.name'));
-            self::$pdo = new PDO($dsn, config('db.user'), config('db.pass'), [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES   => false,
-                PDO::ATTR_STRINGIFY_FETCHES  => false,
-            ]);
+            try {
+                self::$pdo = self::open((array) config('db'));
+            } catch (\PDOException $e) {
+                // main database down: continue on the nightly backup copy, view only (no changes are lost
+                // because nothing can be saved there) — config.php → 'db_backup', 'backup' => ['failover' => true]
+                $b = (array) config('db_backup', []);
+                if (empty($b['name']) || config('backup.failover', true) === false) {
+                    throw $e;
+                }
+                self::$pdo = self::open($b);
+                self::$readOnly = true;
+                error_log('ITI CareerTrack: main database not reachable (' . $e->getCode() . '), running READ-ONLY on the backup database');
+            }
             // same text rules as the tables (utf8mb4_unicode_ci) — MariaDB 11 on shared hosting otherwise
             // defaults to another collation and comparing two values fails with error 1267
             self::$pdo->exec('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');
