@@ -714,3 +714,6 @@ body.nav-open .site-header.collapsed ~ .sidebar-backdrop { display: block; posit
   .lang-select { padding: 7px 26px 7px 11px; font-size: 13px; }
   .btn-login { padding: 8px 14px; font-size: 13.5px; }
 }
+@media (max-width: 720px) {
+  .site-header { padding: 0 12px; gap: 8px; }
+}
