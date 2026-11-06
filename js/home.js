@@ -82,6 +82,7 @@
     }
   };
   const X = TX[L] || TX.en;
+  C.renderShell("home");
   const prof = C.getProfile();
   const st = C.getStats();
 
@@ -159,17 +160,6 @@
   const stars = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>';
 
   document.getElementById("lp").innerHTML =
-    /* NAV */
-    '<header class="lp-nav" id="lpNav"><div class="lp-wrap">' +
-    '<a class="lp-logo" href="index.html"><span class="mk"></span><span>COPA<b> MCQ</b>.<small>ITI • Learn • Practice • Excel</small></span></a>' +
-    '<nav class="lp-links" aria-label="Main">' + X.nav.map((n, i) => '<a href="' + href[i] + '" class="' + (i === 0 ? "on" : "") + '">' + n + "</a>").join("") + "</nav>" +
-    '<div class="lp-acts"><label class="sr-only" for="lpLang">Language</label><select class="lp-lang" id="lpLang"><option value="en">English</option><option value="hi">हिंदी</option><option value="mr">मराठी</option></select>' +
-    '<button class="lp-signin" id="lpSign"><i class="fa-regular fa-user"></i> ' + (prof ? esc(prof.name.split(" ")[0]) : X.signin) + "</button>" +
-    '<a class="lp-btn p sm" href="exam.html">' + X.start + "</a>" +
-    '<button class="lp-burger" id="lpBurger" aria-label="Menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button></div></div>' +
-    '<div class="lp-drawer" id="lpDrawer">' + X.nav.map((n, i) => '<a href="' + href[i] + '"><i class="fa-solid ' + icons[i] + '"></i>' + n + "</a>").join("") +
-    '<a href="#" id="lpSign2"><i class="fa-regular fa-user"></i>' + (prof ? esc(prof.name) : X.signin) + '</a><a class="lp-btn p" href="exam.html">' + X.start + "</a></div></header>" +
-
     /* HERO */
     '<section class="lp-hero"><div class="lp-wrap"><div class="lp-frame">' +
     '<span class="lp-deco q"></span><span class="lp-deco sq"></span>' +
@@ -231,22 +221,6 @@
     '<div class="bot"><span>© ' + new Date().getFullYear() + " COPA MCQ. " + t("footerRights") + "</span><span>" + t("footerTag") + "</span></div></div></footer>";
 
   /* ---------- behaviour ---------- */
-  const sel = document.getElementById("lpLang");
-  sel.value = L;
-  sel.addEventListener("change", () => C.setLang(sel.value));
-  const login = (e) => { if (e) e.preventDefault(); C.openLogin(); };
-  document.getElementById("lpSign").addEventListener("click", login);
-  document.getElementById("lpSign2").addEventListener("click", login);
-  const bur = document.getElementById("lpBurger"), dr = document.getElementById("lpDrawer");
-  bur.addEventListener("click", () => {
-    const o = dr.classList.toggle("open");
-    bur.setAttribute("aria-expanded", o);
-    bur.innerHTML = '<i class="fa-solid ' + (o ? "fa-xmark" : "fa-bars") + '"></i>';
-  });
-  const nav = document.getElementById("lpNav");
-  const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 8);
-  window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
-
   const els = document.querySelectorAll(".rv");
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver((ents) => ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { threshold: 0.12 });
