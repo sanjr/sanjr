@@ -152,3 +152,12 @@
   .btn-run .lbl { display: inline !important; }
   .btn-run kbd { display: none; }
 }
+
+/* ---------- VS Code-style suggestion list ---------- */
+.CodeMirror-hints { background: #252526; border: 1px solid #454545; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.45); padding: 3px; max-height: 260px; min-width: 260px; font: 13.5px/1.4 "JetBrains Mono", Consolas, monospace; z-index: 200; }
+.CodeMirror-hint { color: #d4d4d4; padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 9px; white-space: nowrap; max-width: 460px; }
+.CodeMirror-hint .hk { width: 20px; text-align: center; font: 700 11px var(--font-head); flex: none; }
+.CodeMirror-hint .ht { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.CodeMirror-hint .hd { color: #8b8b8b; font: 12px var(--font); overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+li.CodeMirror-hint-active { background: #04395e; color: #fff; }
+li.CodeMirror-hint-active .hd { color: #c8c8c8; }

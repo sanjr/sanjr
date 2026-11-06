@@ -25,7 +25,13 @@ An online MCQ practice and CBT mock-test website for the ITI **COPA** (Computer 
   - When `index.html` is opened directly from a folder (`file://`), browsers block the bundled engine, so Python is loaded from the internet (jsDelivr CDN) instead. Internet is needed in that case.
 - 24 ready COPA practicals: 5 HTML, 2 CSS, 5 JavaScript and 12 Python (`js/practicals.js`).
 - Logged-in students can save a program with a title. Saved programs, with their output, appear in **Dashboard → My Live Practicals**.
-- Shortcuts: Ctrl + Enter = Run, Ctrl + S = Save. You can also download a program as `.html` / `.py`.
+- **VS Code-style code suggestions** (`js/live-hints.js`). They appear while typing:
+  - HTML: tags and attributes.
+  - CSS: properties and values.
+  - JavaScript: keywords, `document.` / `console.` / `Math.` methods, and snippets such as `for`, `if`, `function`, `log`.
+  - Python: keywords, built-in functions, list/str/dict methods, `math.` / `random.` members, and snippets such as `def`, `for`, `if`, `class`.
+  - Emmet-style Tab: `h1` + Tab → `<h1></h1>`, `!` + Tab → a full HTML page, `table` + Tab → a table.
+- Shortcuts: Ctrl + Space = show suggestions, Ctrl + Enter = Run, Ctrl + S = Save. You can also download a program as `.html` / `.py`.
 
 ## Admin Panel (`admin.html`)
 Open `admin.html` in the browser. The link is not shown in the site menu, so only you know it.

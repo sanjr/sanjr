@@ -18,7 +18,7 @@
       pyLoading: "Loading Python… (first time ~14 MB)", pyReady: "Python ready", running: "Running…", saved: "Saved to your dashboard!", loginSave: "Login to save your program in your dashboard.",
       noMine: "No saved programs yet. Write a program and click Save.", loginMine: "Login to save and see your programs here.", del: "Delete this program?", untitled: "Untitled program",
       code: "Code", out: "Output", full: "Full screen", exitFull: "Exit full screen", needTitle: "Please enter a program title.", runFirst: "Program finished", copy: "Copy code", copied: "Code copied",
-      tip1: ["Live preview", "HTML, CSS and JS output updates while you type."], tip2: ["Ctrl + Enter", "Runs the program (Python and web)."], tip3: ["Save to dashboard", "Login and save – your program and its output appear in your dashboard."],
+      tip1: ["Live preview", "HTML, CSS and JS output updates while you type."], tip2: ["Code suggestions", "Suggestions appear while typing (like VS Code). Tab = expand h1 → <h1></h1>, ! → full page. Ctrl+Space = show suggestions. Ctrl+Enter = Run."], tip3: ["Save to dashboard", "Login and save – your program and its output appear in your dashboard."],
       cats: { html: "HTML", css: "CSS", js: "JavaScript", py: "Python" }, pyErr: "Error",
       pyFile: "Python needs internet when the website is opened directly from a folder (file://). Connect to the internet, or open the website from a web server / hosting.", pyNet: "Python could not load. Please check the internet connection and refresh the page.", emptyOut: "Click ▶ Run to see the output." },
     hi: { title: "लाइव प्रैक्टिस लैब", sub: "HTML, CSS, JavaScript या Python लिखें और तुरंत आउटपुट देखें – बिलकुल COPA प्रैक्टिकल लैब जैसा।",
@@ -28,7 +28,7 @@
       pyLoading: "Python लोड हो रहा है… (पहली बार ~14 MB)", pyReady: "Python तैयार", running: "चल रहा है…", saved: "आपके डैशबोर्ड में सेव हो गया!", loginSave: "प्रोग्राम डैशबोर्ड में सेव करने के लिए लॉगिन करें।",
       noMine: "अभी कोई सेव प्रोग्राम नहीं। प्रोग्राम लिखकर Save दबाएँ।", loginMine: "अपने प्रोग्राम सेव करने और यहाँ देखने के लिए लॉगिन करें।", del: "यह प्रोग्राम हटाएँ?", untitled: "बिना शीर्षक प्रोग्राम",
       code: "कोड", out: "आउटपुट", full: "फुल स्क्रीन", exitFull: "फुल स्क्रीन बंद", needTitle: "कृपया प्रोग्राम का शीर्षक लिखें।", runFirst: "प्रोग्राम पूरा हुआ", copy: "कोड कॉपी", copied: "कोड कॉपी हुआ",
-      tip1: ["लाइव प्रीव्यू", "टाइप करते समय HTML, CSS, JS का आउटपुट बदलता है।"], tip2: ["Ctrl + Enter", "प्रोग्राम चलाता है (Python और वेब)।"], tip3: ["डैशबोर्ड में सेव", "लॉगिन करके सेव करें – प्रोग्राम और आउटपुट डैशबोर्ड में दिखेंगे।"],
+      tip1: ["लाइव प्रीव्यू", "टाइप करते समय HTML, CSS, JS का आउटपुट बदलता है।"], tip2: ["कोड सुझाव", "टाइप करते समय सुझाव आते हैं (VS Code जैसे)। Tab = h1 → <h1></h1>, ! → पूरा पेज। Ctrl+Space = सुझाव दिखाएँ। Ctrl+Enter = चलाएँ।"], tip3: ["डैशबोर्ड में सेव", "लॉगिन करके सेव करें – प्रोग्राम और आउटपुट डैशबोर्ड में दिखेंगे।"],
       cats: { html: "HTML", css: "CSS", js: "JavaScript", py: "Python" }, pyErr: "त्रुटि",
       pyFile: "वेबसाइट सीधे फ़ोल्डर (file://) से खोलने पर Python के लिए इंटरनेट चाहिए। इंटरनेट चालू करें या वेबसाइट सर्वर/होस्टिंग से खोलें।", pyNet: "Python लोड नहीं हुआ। इंटरनेट कनेक्शन जाँचें और पेज रिफ्रेश करें।", emptyOut: "आउटपुट देखने के लिए ▶ चलाएँ दबाएँ।" },
     mr: { title: "लाइव्ह प्रॅक्टिस लॅब", sub: "HTML, CSS, JavaScript किंवा Python लिहा आणि लगेच आउटपुट पहा – अगदी COPA प्रॅक्टिकल लॅबसारखे.",
@@ -38,7 +38,7 @@
       pyLoading: "Python लोड होत आहे… (पहिल्यांदा ~14 MB)", pyReady: "Python तयार", running: "चालू आहे…", saved: "तुमच्या डॅशबोर्डमध्ये सेव्ह झाले!", loginSave: "प्रोग्राम डॅशबोर्डमध्ये सेव्ह करण्यासाठी लॉगिन करा.",
       noMine: "अजून एकही सेव्ह केलेला प्रोग्राम नाही. प्रोग्राम लिहून Save दाबा.", loginMine: "तुमचे प्रोग्राम सेव्ह करण्यासाठी व इथे पाहण्यासाठी लॉगिन करा.", del: "हा प्रोग्राम काढायचा?", untitled: "शीर्षक नसलेला प्रोग्राम",
       code: "कोड", out: "आउटपुट", full: "फुल स्क्रीन", exitFull: "फुल स्क्रीन बंद", needTitle: "कृपया प्रोग्रामचे शीर्षक लिहा.", runFirst: "प्रोग्राम पूर्ण झाला", copy: "कोड कॉपी", copied: "कोड कॉपी झाला",
-      tip1: ["लाइव्ह प्रिव्ह्यू", "टाइप करताना HTML, CSS, JS चे आउटपुट बदलते."], tip2: ["Ctrl + Enter", "प्रोग्राम चालवते (Python आणि वेब)."], tip3: ["डॅशबोर्डमध्ये सेव्ह", "लॉगिन करून सेव्ह करा – प्रोग्राम आणि आउटपुट डॅशबोर्डमध्ये दिसेल."],
+      tip1: ["लाइव्ह प्रिव्ह्यू", "टाइप करताना HTML, CSS, JS चे आउटपुट बदलते."], tip2: ["कोड सूचना", "टाइप करताना सूचना येतात (VS Code सारख्या). Tab = h1 → <h1></h1>, ! → पूर्ण पेज. Ctrl+Space = सूचना दाखवा. Ctrl+Enter = चालवा."], tip3: ["डॅशबोर्डमध्ये सेव्ह", "लॉगिन करून सेव्ह करा – प्रोग्राम आणि आउटपुट डॅशबोर्डमध्ये दिसेल."],
       cats: { html: "HTML", css: "CSS", js: "JavaScript", py: "Python" }, pyErr: "त्रुटी",
       pyFile: "वेबसाइट थेट फोल्डरमधून (file://) उघडल्यावर Python साठी इंटरनेट लागते. इंटरनेट चालू करा किंवा वेबसाइट सर्व्हर/होस्टिंगवरून उघडा.", pyNet: "Python लोड झाले नाही. इंटरनेट कनेक्शन तपासा आणि पेज रिफ्रेश करा.", emptyOut: "आउटपुट पाहण्यासाठी ▶ चालवा दाबा." }
   };
@@ -87,11 +87,12 @@
       cm = window.CodeMirror($("edHost"), {
         theme: "dracula", lineNumbers: true, lineWrapping: true, tabSize: 4, indentUnit: 4, indentWithTabs: false,
         autoCloseBrackets: true, autoCloseTags: true, matchBrackets: true, styleActiveLine: true,
-        extraKeys: { "Ctrl-Enter": run, "Cmd-Enter": run, "Ctrl-S": () => save(), "Ctrl-/": "toggleComment", Tab: (c) => (c.somethingSelected() ? c.indentSelection("add") : c.replaceSelection("    ")) }
+        extraKeys: { "Ctrl-Enter": run, "Cmd-Enter": run, "Ctrl-S": () => save(), "Ctrl-/": "toggleComment", Tab: (c) => { if (window.COPA_HINTS && window.COPA_HINTS.tab(c)) return; if (c.somethingSelected()) c.indentSelection("add"); else c.replaceSelection("    "); } }
       });
       Object.keys(FILES).forEach((m) => FILES[m].forEach((f) => { docs[f[0]] = window.CodeMirror.Doc(S.buf[f[0]], f[3]); }));
       cm.swapDoc(docs[S.file]);
       cm.on("change", () => { S.buf[S.file] = cm.getValue(); onEdit(); });
+      if (window.COPA_HINTS) window.COPA_HINTS.attach(cm);
     } else {
       const ta = document.createElement("textarea"); ta.className = "fallback"; ta.spellcheck = false; $("edHost").appendChild(ta);
       cm = { _ta: ta, getValue: () => ta.value, setValue: (v) => (ta.value = v), refresh() {}, focus: () => ta.focus() };
