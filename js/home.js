@@ -1,89 +1,255 @@
-/* Home page */
+/* Home page – landing design */
 (function () {
   "use strict";
-  const C = window.COPA, t = C.t, esc = C.esc;
-  C.renderShell("home");
+  const C = window.COPA, t = C.t, esc = C.esc, L = C.lang;
 
+  /* ---------- page-specific text ---------- */
+  const TX = {
+    en: {
+      nav: ["Home", "Modules", "Mock Test", "Study", "Results", "About"],
+      signin: "Sign in", start: "Start Mock Test",
+      h1a: "Learning in the computer age means we must practise", h1b: "tomorrow’s", h1c: "skills today",
+      sub: "The complete ITI COPA question bank – 355 MCQs in English, Hindi & Marathi with real CBT-style mock tests.",
+      joinI: "Start Practice", joinS: "Take Mock Test", tagI: "COPA Instructor", tagS: "ITI Trainee",
+      trust: ["Free for all trainees", "No negative marking", "Works offline & on mobile"],
+      popT: "Our Most", popH: "Popular Modules", popP: "Start with the modules every COPA trainee must master",
+      explore: "Explore Modules", lessons: "Questions",
+      catT: "Explore", catH: "All Modules", catP: "Choose a module and practise topic-wise",
+      whyT: "Why", whyH: "COPA MCQ?", whyP: "Everything you need to clear the ITI COPA exam",
+      f: [["Real CBT Exam", "Timer, question palette, mark for review and auto-submit – exactly like the ITI online exam."],
+          ["3 Languages", "Read every question in English, हिंदी or मराठी and switch anytime."],
+          ["Instant Feedback", "Practise module-wise and see the right answer immediately."],
+          ["Detailed Analysis", "Score, pass/fail and module-wise strengths after every test."]],
+      st: ["Modules", "MCQ Questions", "Languages", "Negative Marking"],
+      bandH: "Prepare smart. Score high in the ITI COPA exam!",
+      bandP: "Take a full 50-question CBT mock test with a 60-minute timer and get your result instantly.",
+      bandB: "Take a Mock Test", bandB2: "Study Material",
+      progT: "Your Progress", tests: "Tests attempted", avg: "Average score", prac: "Questions practised",
+      footP: "Free online learning platform for ITI Computer Operator & Programming Assistant (COPA) trainees.",
+      fh: ["Learn", "Practice", "Institute"], fl1: ["All Modules", "Study Material", "Python", "JavaScript"],
+      fl2: ["Mock Test (CBT)", "Quick Test", "My Results", "Dashboard"], fl3: ["About", "Contact", "MHNJE ITI", "Maharashtra"],
+      by: "P. R. Gaikwad", byR: "COPA Instructor"
+    },
+    hi: {
+      nav: ["होम", "मॉड्यूल", "मॉक टेस्ट", "अध्ययन", "परिणाम", "परिचय"],
+      signin: "लॉगिन", start: "मॉक टेस्ट शुरू करें",
+      h1a: "कंप्यूटर युग में सीखने का अर्थ है कि हम आज ही", h1b: "कल के", h1c: "कौशल का अभ्यास करें",
+      sub: "पूरा ITI COPA प्रश्न बैंक – अंग्रेज़ी, हिंदी और मराठी में 355 MCQ, वास्तविक CBT जैसे मॉक टेस्ट के साथ।",
+      joinI: "अभ्यास शुरू करें", joinS: "मॉक टेस्ट दें", tagI: "COPA अनुदेशक", tagS: "ITI प्रशिक्षु",
+      trust: ["सभी प्रशिक्षुओं के लिए निःशुल्क", "कोई नकारात्मक अंकन नहीं", "ऑफ़लाइन और मोबाइल पर चलता है"],
+      popT: "हमारे सबसे", popH: "लोकप्रिय मॉड्यूल", popP: "वे मॉड्यूल जिनमें हर COPA प्रशिक्षु को निपुण होना चाहिए",
+      explore: "मॉड्यूल देखें", lessons: "प्रश्न",
+      catT: "देखें", catH: "सभी मॉड्यूल", catP: "मॉड्यूल चुनें और विषयवार अभ्यास करें",
+      whyT: "क्यों", whyH: "COPA MCQ?", whyP: "ITI COPA परीक्षा पास करने के लिए सब कुछ",
+      f: [["वास्तविक CBT परीक्षा", "टाइमर, प्रश्न पैलेट, रिव्यू मार्क और ऑटो-सबमिट – बिलकुल ITI ऑनलाइन परीक्षा जैसा।"],
+          ["3 भाषाएँ", "हर प्रश्न English, हिंदी या मराठी में पढ़ें और कभी भी बदलें।"],
+          ["तुरंत फीडबैक", "मॉड्यूलवार अभ्यास करें और तुरंत सही उत्तर देखें।"],
+          ["विस्तृत विश्लेषण", "हर टेस्ट के बाद स्कोर, परिणाम और मॉड्यूलवार ताकत।"]],
+      st: ["मॉड्यूल", "MCQ प्रश्न", "भाषाएँ", "नकारात्मक अंकन"],
+      bandH: "स्मार्ट तैयारी करें। ITI COPA परीक्षा में अधिक अंक पाएँ!",
+      bandP: "60 मिनट टाइमर के साथ 50 प्रश्नों का पूरा CBT मॉक टेस्ट दें और तुरंत परिणाम पाएँ।",
+      bandB: "मॉक टेस्ट दें", bandB2: "अध्ययन सामग्री",
+      progT: "आपकी प्रगति", tests: "दिए गए टेस्ट", avg: "औसत स्कोर", prac: "अभ्यास किए प्रश्न",
+      footP: "ITI कंप्यूटर ऑपरेटर एवं प्रोग्रामिंग असिस्टेंट (COPA) प्रशिक्षुओं के लिए निःशुल्क ऑनलाइन लर्निंग प्लेटफ़ॉर्म।",
+      fh: ["सीखें", "अभ्यास", "संस्थान"], fl1: ["सभी मॉड्यूल", "अध्ययन सामग्री", "पायथन", "जावास्क्रिप्ट"],
+      fl2: ["मॉक टेस्ट (CBT)", "क्विक टेस्ट", "मेरे परिणाम", "डैशबोर्ड"], fl3: ["परिचय", "संपर्क", "MHNJE ITI", "महाराष्ट्र"],
+      by: "पी. आर. गायकवाड", byR: "COPA अनुदेशक"
+    },
+    mr: {
+      nav: ["होम", "मॉड्युल्स", "मॉक टेस्ट", "अभ्यास", "निकाल", "माहिती"],
+      signin: "लॉगिन", start: "मॉक टेस्ट सुरू करा",
+      h1a: "संगणक युगात शिकणे म्हणजे आजच", h1b: "उद्याच्या", h1c: "कौशल्यांचा सराव करणे",
+      sub: "संपूर्ण ITI COPA प्रश्नपेढी – इंग्रजी, हिंदी आणि मराठीमध्ये 355 MCQ, प्रत्यक्ष CBT सारख्या मॉक टेस्टसह.",
+      joinI: "सराव सुरू करा", joinS: "मॉक टेस्ट द्या", tagI: "COPA निदेशक", tagS: "ITI प्रशिक्षणार्थी",
+      trust: ["सर्व प्रशिक्षणार्थ्यांसाठी मोफत", "निगेटिव्ह मार्किंग नाही", "ऑफलाइन व मोबाइलवर चालते"],
+      popT: "आमचे सर्वात", popH: "लोकप्रिय मॉड्युल्स", popP: "प्रत्येक COPA प्रशिक्षणार्थ्याने आत्मसात करावीत अशी मॉड्युल्स",
+      explore: "मॉड्युल्स पहा", lessons: "प्रश्न",
+      catT: "पहा", catH: "सर्व मॉड्युल्स", catP: "मॉड्युल निवडा आणि विषयनिहाय सराव करा",
+      whyT: "का", whyH: "COPA MCQ?", whyP: "ITI COPA परीक्षा उत्तीर्ण होण्यासाठी आवश्यक सर्व काही",
+      f: [["प्रत्यक्ष CBT परीक्षा", "टायमर, प्रश्न पॅलेट, रिव्ह्यू मार्क आणि ऑटो-सबमिट – अगदी ITI ऑनलाइन परीक्षेसारखे."],
+          ["3 भाषा", "प्रत्येक प्रश्न English, हिंदी किंवा मराठीत वाचा आणि कधीही बदला."],
+          ["लगेच फीडबॅक", "मॉड्युलनिहाय सराव करा आणि लगेच बरोबर उत्तर पहा."],
+          ["सविस्तर विश्लेषण", "प्रत्येक टेस्टनंतर गुण, निकाल आणि मॉड्युलनिहाय ताकद."]],
+      st: ["मॉड्युल्स", "MCQ प्रश्न", "भाषा", "निगेटिव्ह मार्किंग"],
+      bandH: "स्मार्ट तयारी करा. ITI COPA परीक्षेत जास्त गुण मिळवा!",
+      bandP: "60 मिनिटांच्या टायमरसह 50 प्रश्नांची पूर्ण CBT मॉक टेस्ट द्या आणि लगेच निकाल मिळवा.",
+      bandB: "मॉक टेस्ट द्या", bandB2: "अभ्यास साहित्य",
+      progT: "तुमची प्रगती", tests: "दिलेल्या टेस्ट", avg: "सरासरी गुण", prac: "सराव केलेले प्रश्न",
+      footP: "ITI कॉम्प्युटर ऑपरेटर अँड प्रोग्रामिंग असिस्टंट (COPA) प्रशिक्षणार्थ्यांसाठी मोफत ऑनलाइन लर्निंग प्लॅटफॉर्म.",
+      fh: ["शिका", "सराव", "संस्था"], fl1: ["सर्व मॉड्युल्स", "अभ्यास साहित्य", "पायथन", "जावास्क्रिप्ट"],
+      fl2: ["मॉक टेस्ट (CBT)", "क्विक टेस्ट", "माझे निकाल", "डॅशबोर्ड"], fl3: ["माहिती", "संपर्क", "MHNJE ITI", "महाराष्ट्र"],
+      by: "पी. आर. गायकवाड", byR: "COPA निदेशक"
+    }
+  };
+  const X = TX[L] || TX.en;
   const prof = C.getProfile();
   const st = C.getStats();
 
-  const heroArt =
-    '<svg viewBox="0 0 420 330" role="img" aria-label="ITI COPA computer illustration">' +
-    '<defs><linearGradient id="scr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a6df4"/><stop offset="1" stop-color="#0b1f4d"/></linearGradient>' +
-    '<linearGradient id="bk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a2b52"/><stop offset="1" stop-color="#0b1530"/></linearGradient></defs>' +
-    '<ellipse cx="215" cy="305" rx="180" ry="16" fill="#0b1f4d" opacity=".18"/>' +
-    '<rect x="70" y="20" width="300" height="200" rx="14" fill="#111b33"/>' +
-    '<rect x="82" y="32" width="276" height="176" rx="8" fill="url(#scr)"/>' +
-    '<path d="M82 160c60-40 140-70 276-60v108H82z" fill="#fff" opacity=".08"/>' +
-    '<text x="220" y="112" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="900" font-size="44" fill="#fff" font-style="italic">ITI</text>' +
-    '<text x="220" y="162" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="900" font-size="50" fill="#fff" font-style="italic">COPA</text>' +
-    '<rect x="196" y="220" width="48" height="40" fill="#1c2948"/><rect x="150" y="258" width="140" height="12" rx="6" fill="#1c2948"/>' +
-    '<rect x="105" y="276" width="220" height="22" rx="6" fill="#26355c"/>' +
-    '<g fill="#3a4a75">' + Array.from({ length: 10 }, (_, i) => '<rect x="' + (112 + i * 21) + '" y="281" width="17" height="5" rx="1.5"/>').join("") +
-    Array.from({ length: 10 }, (_, i) => '<rect x="' + (112 + i * 21) + '" y="289" width="17" height="5" rx="1.5"/>').join("") + "</g>" +
-    '<ellipse cx="352" cy="290" rx="16" ry="10" fill="#26355c"/>' +
-    '<g transform="translate(14 150) rotate(-8)"><rect width="96" height="130" rx="8" fill="url(#bk)"/><rect x="6" y="6" width="84" height="118" rx="5" fill="none" stroke="#ffc21a" stroke-width="1.5" opacity=".6"/>' +
-    '<text x="48" y="74" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="800" font-size="22" fill="#fff">COPA</text>' +
-    '<text x="48" y="96" text-anchor="middle" font-family="Poppins,sans-serif" font-size="9" fill="#ffc21a">355 MCQ</text></g>' +
-    '<g transform="translate(330 40)"><circle r="26" fill="#ffc21a"/><path d="M-10 0l7 7 14-14" stroke="#0b1f4d" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
-    "</svg>";
+  /* ---------- illustrations ---------- */
+  function avatar(kind) {
+    const inst = kind === "i";
+    const bg = inst ? "#e9e4ff" : "#ffd84d";
+    const skin = inst ? "#e8b48f" : "#8a5536";
+    const hair = inst ? "#3b2a22" : "#1d1410";
+    const shirt = inst ? "#7fc4e8" : "#cfe6f7";
+    return '<svg viewBox="0 0 132 160" aria-hidden="true"><rect width="132" height="160" fill="' + bg + '"/>' +
+      '<circle cx="' + (inst ? 105 : 25) + '" cy="28" r="34" fill="#fff" opacity=".35"/>' +
+      '<path d="M18 160c2-30 22-46 48-46s46 16 48 46z" fill="' + shirt + '"/>' +
+      (inst ? '<path d="M52 116l14 18 14-18" fill="#fff"/>' : '<path d="M48 116c6 10 30 10 36 0l-4 44H52z" fill="#3f7dc2"/>') +
+      '<rect x="57" y="96" width="18" height="22" rx="8" fill="' + skin + '"/>' +
+      '<ellipse cx="66" cy="72" rx="26" ry="31" fill="' + skin + '"/>' +
+      (inst
+        ? '<path d="M40 66c0-24 12-34 27-34s26 10 26 33c-4-10-10-15-26-15-14 0-22 6-27 16z" fill="' + hair + '"/><path d="M42 80c2 20 12 28 24 28s22-8 24-28c-4 8-10 11-24 11s-20-3-24-11z" fill="' + hair + '" opacity=".85"/>' +
+          '<rect x="47" y="68" width="15" height="10" rx="4" fill="none" stroke="#2a2a2a" stroke-width="2"/><rect x="70" y="68" width="15" height="10" rx="4" fill="none" stroke="#2a2a2a" stroke-width="2"/><path d="M62 72h8" stroke="#2a2a2a" stroke-width="2"/>'
+        : '<path d="M39 70c-2-26 12-40 28-40s30 12 27 40c-2-12-6-18-10-20-6 4-26 4-34-2-6 4-9 12-11 22z" fill="' + hair + '"/>' +
+          '<circle cx="56" cy="73" r="2.6" fill="#1a1a1a"/><circle cx="76" cy="73" r="2.6" fill="#1a1a1a"/>') +
+      '<path d="M57 90c5 5 13 5 18 0" stroke="' + (inst ? "#fff" : "#4a2a1a") + '" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>';
+  }
 
-  const loginCard = prof
-    ? '<div class="avatar"><i class="fa-solid fa-user-graduate"></i></div><div><h3>' + t("welcomeBack") + ", " + esc(prof.name.split(" ")[0]) + "!</h3><p>" +
-      (prof.roll ? t("rollNo") + " " + esc(prof.roll) : t("accessDash")) + "</p></div>" +
-      '<a class="btn btn-primary btn-block" href="results.html"><i class="fa-solid fa-gauge"></i> ' + t("dashboard") + "</a>" +
-      '<div class="or">' + t("or") + '</div><a class="btn btn-outline btn-block" href="exam.html"><i class="fa-solid fa-play"></i> ' + t("takeMock") + "</a>"
-    : '<div class="avatar"><i class="fa-solid fa-users"></i></div><div><h3>' + t("studentLogin") + "</h3><p>" + t("accessDash") + "</p></div>" +
-      '<button class="btn btn-primary btn-block" id="heroLogin">' + t("login") + ' <i class="fa-solid fa-arrow-right"></i></button>' +
-      '<div class="or">' + t("or") + '</div><button class="btn btn-outline btn-block" id="heroReg"><i class="fa-solid fa-user-plus"></i> ' + t("register") + "</button>";
+  // scene artwork for course cards (purple / blue / pink themes)
+  function art(type, theme) {
+    const th = {
+      blue: ["#1b6fb8", "#0b3f75", "#7fd3ff"], lav: ["#e9e6ff", "#cfc6ff", "#7c5cff"], vio: ["#8b6cff", "#5b3df5", "#ffd166"],
+      pink: ["#f3d6f2", "#d9b7ff", "#ff6bb0"], indigo: ["#6c5ce7", "#3d2fb3", "#a29bfe"], teal: ["#c8f1ee", "#9ad9f5", "#0fa3b1"]
+    }[theme];
+    let g = '<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="g' + type + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + th[0] + '"/><stop offset="1" stop-color="' + th[1] + '"/></linearGradient></defs>' +
+      '<rect width="320" height="180" fill="url(#g' + type + ')"/><circle cx="270" cy="30" r="60" fill="#fff" opacity=".12"/><circle cx="40" cy="170" r="50" fill="#fff" opacity=".1"/>';
+    const a = th[2];
+    if (type === "computer") {
+      g += '<g transform="translate(70 30)"><rect width="180" height="110" rx="10" fill="#0e1a36"/><rect x="8" y="8" width="164" height="94" rx="6" fill="' + a + '" opacity=".85"/>' +
+        '<path d="M8 80c40-30 90-40 164-30v52H8z" fill="#fff" opacity=".15"/><rect x="74" y="110" width="32" height="18" fill="#0e1a36"/><rect x="44" y="126" width="92" height="8" rx="4" fill="#0e1a36"/>' +
+        '<g fill="#fff"><rect x="22" y="22" width="60" height="8" rx="4"/><rect x="22" y="38" width="90" height="6" rx="3" opacity=".7"/><rect x="22" y="50" width="70" height="6" rx="3" opacity=".7"/></g></g>';
+    } else if (type === "doc") {
+      g += '<g transform="translate(105 24)"><rect x="18" y="8" width="96" height="124" rx="8" fill="' + th[1] + '"/><rect width="96" height="124" rx="8" fill="#fff"/>' +
+        '<g fill="' + a + '"><rect x="14" y="16" width="50" height="8" rx="4"/></g><g fill="#d6d3f0"><rect x="14" y="34" width="68" height="6" rx="3"/><rect x="14" y="46" width="60" height="6" rx="3"/><rect x="14" y="58" width="68" height="6" rx="3"/><rect x="14" y="70" width="44" height="6" rx="3"/></g>' +
+        '<rect x="14" y="86" width="40" height="26" rx="4" fill="#ffe2b8"/><circle cx="96" cy="112" r="20" fill="#3ccf91"/><path d="M87 112l6 6 12-12" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/></g>';
+    } else if (type === "db") {
+      g += '<g transform="translate(160 40)">' + [0, 1, 2].map((i) => '<g transform="translate(0 ' + (i * 26) + ')"><path d="M-70 0l70-26 70 26-70 26z" fill="#a99bff"/><path d="M-70 0v14l70 26V26z" fill="#6c56e8"/><path d="M70 0v14L0 40V26z" fill="#5440d6"/></g>').reverse().join("") +
+        '<g transform="translate(-48 84)"><ellipse rx="20" ry="9" fill="' + a + '"/><ellipse cy="-5" rx="20" ry="9" fill="#ffe08a"/></g><g transform="translate(48 84)"><ellipse rx="20" ry="9" fill="' + a + '"/><ellipse cy="-5" rx="20" ry="9" fill="#ffe08a"/></g></g>';
+    } else if (type === "code") {
+      g += '<g transform="translate(70 30)"><rect width="180" height="118" rx="10" fill="#fff" opacity=".95"/><rect width="180" height="22" rx="10" fill="#eceaff"/><circle cx="14" cy="11" r="4" fill="#ff6b6b"/><circle cx="28" cy="11" r="4" fill="#ffd166"/><circle cx="42" cy="11" r="4" fill="#3ccf91"/>' +
+        '<text x="16" y="58" font-family="monospace" font-size="24" font-weight="700" fill="' + th[1] + '">&lt;/&gt;</text>' +
+        '<g fill="#cfc8ff"><rect x="76" y="38" width="86" height="7" rx="3.5"/><rect x="76" y="52" width="60" height="7" rx="3.5"/></g><g fill="#ffcf9e"><rect x="16" y="76" width="120" height="7" rx="3.5"/><rect x="16" y="90" width="80" height="7" rx="3.5"/></g></g>' +
+        '<circle cx="46" cy="50" r="16" fill="#ffd166"/><text x="46" y="55" text-anchor="middle" font-size="13" font-weight="800" fill="#5b3df5" font-family="sans-serif">JS</text>' +
+        '<circle cx="280" cy="140" r="16" fill="#ff8a65"/><text x="280" y="145" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="sans-serif">HTML</text>';
+    } else if (type === "python") {
+      g += '<g transform="translate(40 34)"><path d="M10 112L120 92l110 20-110 22z" fill="#2e1f9e" opacity=".6"/><rect x="40" y="0" width="160" height="96" rx="8" fill="#1d1270" transform="skewX(-8)"/>' +
+        '<text x="118" y="44" text-anchor="middle" font-family="monospace" font-size="22" font-weight="700" fill="#fff">10:00 AM</text><text x="118" y="64" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#cfc8ff">print("Hello COPA")</text></g>' +
+        '<g transform="translate(262 46)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#3572a5"/><rect x="-6" y="-6" width="36" height="36" rx="10" fill="#ffd43b"/></g>';
+    } else if (type === "chart") {
+      g += '<g transform="translate(86 26)"><rect width="150" height="104" rx="10" fill="#fff"/><g fill="' + a + '"><rect x="18" y="62" width="18" height="28" rx="3"/><rect x="46" y="44" width="18" height="46" rx="3" opacity=".8"/><rect x="74" y="28" width="18" height="62" rx="3"/><rect x="102" y="50" width="18" height="40" rx="3" opacity=".8"/></g><path d="M18 40l30-14 28 10 46-24" stroke="#ff8a65" stroke-width="3" fill="none"/></g>' +
+        '<g transform="translate(250 120) rotate(-12)"><rect width="46" height="34" rx="6" fill="#ffd166"/><path d="M8 8h30M8 16h22" stroke="#fff" stroke-width="3"/></g><circle cx="58" cy="44" r="12" fill="#3ccf91"/>';
+    }
+    return g + "</svg>";
+  }
 
-  const stats = [
-    { n: "15", l: t("statSubjects"), ic: "fa-graduation-cap", c: "#1554e0" },
-    { n: C.QUESTIONS.length + "+", l: t("statQ"), ic: "fa-circle-question", c: "#7b3fe4" },
-    { n: "∞", l: t("statMock"), ic: "fa-clipboard-list", c: "#18a957" },
-    { n: "3", l: t("statLang"), ic: "fa-language", c: "#f58a07" }
+  const FEATURED = [
+    { m: 1, art: "computer", th: "blue", tag: "Basics", tc: "#16b364" },
+    { m: 5, art: "doc", th: "lav", tag: "Office", tc: "#0ea5e9" },
+    { m: 8, art: "db", th: "vio", tag: "Database", tc: "#ef4444" },
+    { m: 10, art: "code", th: "indigo", tag: "Web", tc: "#7c5cff" },
+    { m: 15, art: "python", th: "indigo", tag: "Python", tc: "#ff6b1a" },
+    { m: 12, art: "chart", th: "pink", tag: "Excel", tc: "#3b82f6" }
   ];
+  const CAT_COLORS = ["#3b82f6", "#0078d4", "#ef4444", "#334155", "#2b579a", "#16b364", "#f97316", "#0ea5e9", "#8b5cf6", "#ef6c3a", "#eab308", "#10b981", "#ff6b1a", "#06b6d4", "#3572a5"];
 
-  const subjects = C.MODULES.map((m) => {
-    const p = C.moduleProgress(m.id);
-    return '<a class="subject" href="' + C.modulePage(m.id) + '"><span class="s-no">M' + m.id + "</span>" +
-      '<span class="s-ic" style="background:' + m.bg + ";color:" + m.color + '"><i class="' + (m.icon.indexOf("fa-brands") === 0 ? m.icon : "fa-solid " + m.icon) + '"></i></span>' +
-      '<span class="s-name">' + esc(C.modName(m)) + "</span>" +
-      '<span class="s-meta">' + p.total + " " + t("questions") + "</span>" +
-      '<span class="bar"><i style="width:' + p.pct + '%"></i></span></a>';
-  }).join("");
+  const href = ["index.html", "modules.html", "exam.html", "study.html", "results.html", "about.html"];
+  const icons = ["fa-house", "fa-layer-group", "fa-stopwatch", "fa-book-open", "fa-chart-simple", "fa-circle-info"];
+  const ringV = st.tests ? st.avg : (st.practiced ? Math.round((st.practicedCorrect / st.practiced) * 100) : 0);
+  const stars = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>';
 
-  const ringPct = st.tests ? st.avg : (st.practiced ? Math.round((st.practicedCorrect / st.practiced) * 100) : 0);
+  document.getElementById("lp").innerHTML =
+    /* NAV */
+    '<header class="lp-nav" id="lpNav"><div class="lp-wrap">' +
+    '<a class="lp-logo" href="index.html"><span class="mk"></span><span>COPA<b> MCQ</b>.<small>MHNJE ITI • Maharashtra</small></span></a>' +
+    '<nav class="lp-links" aria-label="Main">' + X.nav.map((n, i) => '<a href="' + href[i] + '" class="' + (i === 0 ? "on" : "") + '">' + n + "</a>").join("") + "</nav>" +
+    '<div class="lp-acts"><label class="sr-only" for="lpLang">Language</label><select class="lp-lang" id="lpLang"><option value="en">English</option><option value="hi">हिंदी</option><option value="mr">मराठी</option></select>' +
+    '<button class="lp-signin" id="lpSign"><i class="fa-regular fa-user"></i> ' + (prof ? esc(prof.name.split(" ")[0]) : X.signin) + "</button>" +
+    '<a class="lp-btn p sm" href="exam.html">' + X.start + "</a>" +
+    '<button class="lp-burger" id="lpBurger" aria-label="Menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button></div></div>' +
+    '<div class="lp-drawer" id="lpDrawer">' + X.nav.map((n, i) => '<a href="' + href[i] + '"><i class="fa-solid ' + icons[i] + '"></i>' + n + "</a>").join("") +
+    '<a href="#" id="lpSign2"><i class="fa-regular fa-user"></i>' + (prof ? esc(prof.name) : X.signin) + '</a><a class="lp-btn p" href="exam.html">' + X.start + "</a></div></header>" +
 
-  document.getElementById("home").innerHTML =
-    '<section class="hero">' +
-    "<div><span class=\"hero-badge\">" + t("welcome") + "</span>" +
-    '<h1>COPA <span>MCQ</span></h1><p class="lead">' + t("heroLead") + "</p>" +
-    '<ul><li><i class="fa-solid fa-check"></i>' + t("f1") + '</li><li><i class="fa-solid fa-check"></i>' + t("f2") + '</li><li><i class="fa-solid fa-check"></i>' + t("f3") + "</li></ul>" +
-    '<a class="btn btn-yellow" href="modules.html"><i class="fa-solid fa-circle-play"></i> ' + t("startPracticing") + ' <i class="fa-solid fa-arrow-right"></i></a></div>' +
-    '<div class="hero-art"><span class="hero-tag">' + t("beExpert") + "</span>" + heroArt + "</div>" +
-    '<div class="card login-card">' + loginCard + "</div></section>" +
+    /* HERO */
+    '<section class="lp-hero"><div class="lp-wrap"><div class="lp-frame">' +
+    '<span class="lp-deco q"></span><span class="lp-deco sq"></span>' +
+    '<div class="lp-avas"><div class="lp-ava l"><div class="ph">' + avatar("i") + '</div><span class="tag"><i class="fa-solid fa-chalkboard-user"></i>' + X.tagI + "</span></div>" +
+    '<div class="lp-ava r"><div class="ph">' + avatar("s") + '</div><span class="tag"><i class="fa-solid fa-graduation-cap"></i>' + X.tagS + "</span></div></div>" +
+    '<h1 class="rv">' + esc(X.h1a) + ' <span class="hl-o">' + esc(X.h1b) + '</span><br><span class="hl-p sw">' + esc(X.h1c) +
+    '<svg viewBox="0 0 70 40" aria-hidden="true"><path d="M66 6C50 30 26 34 6 26" stroke="#b9a8ff" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M14 18l-8 8 10 4" stroke="#b9a8ff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></h1>' +
+    '<p class="sub rv">' + esc(X.sub) + "</p>" +
+    '<div class="lp-cta rv"><span class="lp-arrow l"></span><span class="lp-arrow r"></span>' +
+    '<a class="lp-btn o" href="modules.html"><i class="fa-solid fa-pen-to-square"></i> ' + X.joinI + '</a><a class="lp-btn p" href="exam.html"><i class="fa-solid fa-stopwatch"></i> ' + X.joinS + "</a></div>" +
+    '<div class="lp-trust rv">' + X.trust.map((s) => '<span><i class="fa-solid fa-circle-check"></i>' + s + "</span>").join("") + "</div>" +
+    "</div>" +
+    '<div class="lp-strip rv" aria-label="Topics covered"><span><i class="fa-brands fa-windows"></i>Windows</span><span><i class="fa-brands fa-linux"></i>Linux</span><span><i class="fa-brands fa-html5"></i>HTML5</span>' +
+    '<span><i class="fa-brands fa-js"></i>JavaScript</span><span><i class="fa-brands fa-python"></i>Python</span><span><i class="fa-solid fa-database"></i>SQL</span><span><i class="fa-solid fa-cloud"></i>Cloud</span></div>' +
+    "</div></section>" +
 
-    '<section class="stats">' + stats.map((s) => '<div class="card stat"><span class="ic" style="background:' + s.c + '"><i class="fa-solid ' + s.ic + '"></i></span><div><b>' + s.n + "</b><span>" + s.l + "</span></div></div>").join("") + "</section>" +
+    /* POPULAR */
+    '<section class="lp-sec tint"><div class="lp-wrap" style="position:relative">' +
+    '<span class="lp-deco tri" style="left:46%;top:-18px"></span>' +
+    '<div class="lp-head rv"><div><h2>' + X.popT + ' <span class="hl-p">' + X.popH + "</span></h2><p>" + X.popP + '</p></div><a class="lp-more" href="modules.html">' + X.explore + ' <i class="fa-solid fa-arrow-right" style="transform:rotate(-45deg)"></i></a></div>' +
+    '<div class="lp-courses">' + FEATURED.map((f, i) => {
+      const md = C.MODULES[f.m - 1];
+      const n = C.byModule(f.m).length;
+      return '<a class="lp-card rv" href="' + C.modulePage(f.m) + '" style="transition-delay:' + (i % 3) * 80 + 'ms"><div class="art">' + art(f.art, f.th) + "</div>" +
+        '<div class="bd"><div class="meta"><span class="ls"><i style="background:' + f.tc + '" class="fa-solid fa-circle-play"></i>' + n + " " + X.lessons + '</span><span class="stars">' + stars + "</span></div>" +
+        "<h3>" + esc(C.modName(md)) + "</h3>" +
+        '<div class="ft"><span class="who"><span class="av">' + X.by.charAt(0) + "</span><span>" + esc(X.by) + "<small>" + X.byR + " • M" + f.m + "</small></span></span>" +
+        '<span class="lp-pill" style="background:' + f.tc + '">' + f.tag + "</span></div></div></a>";
+    }).join("") + "</div></div></section>" +
 
-    '<div class="home-grid"><section><div class="section-title"><h2>' + t("explore") + '</h2><a href="modules.html">' + t("viewAll") + ' <i class="fa-solid fa-arrow-right"></i></a></div>' +
-    '<div class="subject-grid">' + subjects + "</div></section>" +
-    '<aside class="card card-pad progress-card" style="margin-top:30px"><h3><i class="fa-solid fa-chart-simple" style="color:var(--blue-600)"></i> ' + t("yourProgress") + "</h3>" +
-    '<div class="progress-wrap"><div class="ring" style="--p:' + ringPct + '" data-label="' + ringPct + '%"></div>' +
-    '<div class="p-list">' + t("testsAttempted") + "<b>" + st.tests + "</b>" + t("avgScore") + "<b>" + st.avg + "%</b>" + t("questionsPracticed") + "<b>" + st.practiced + "</b></div></div>" +
-    '<a class="btn btn-primary btn-block" href="results.html">' + t("viewReport") + ' <i class="fa-solid fa-arrow-right"></i></a></aside></div>' +
+    /* CATEGORIES */
+    '<section class="lp-sec"><div class="lp-wrap" style="position:relative"><span class="lp-deco dot" style="right:22%;top:24px"></span>' +
+    '<div class="lp-head center rv"><h2>' + X.catT + ' <span class="hl-p">' + X.catH + "</span></h2><p>" + X.catP + "</p></div>" +
+    '<div class="lp-cats">' + C.MODULES.map((m, i) => '<a class="lp-cat rv" href="' + C.modulePage(m.id) + '" style="transition-delay:' + (i % 5) * 50 + 'ms"><span class="ci" style="background:' + CAT_COLORS[i] + ";--sh:" + CAT_COLORS[i] + '55"><i class="' + C.iconCls(m) + '"></i></span><b>' + esc(C.modName(m)) + "</b><small>M" + m.id + " • " + C.byModule(m.id).length + " " + X.lessons + "</small></a>").join("") +
+    "</div></div></section>" +
 
-    '<div class="bottom-grid"><section class="banner"><span class="target"><i class="fa-solid fa-bullseye"></i></span>' +
-    "<h3>" + t("prepare1") + "<br>" + t("prepare2") + " <em>ITI COPA</em> " + t("prepare3") + "</h3>" +
-    '<a class="btn btn-yellow" href="exam.html">' + t("takeMock") + ' <i class="fa-solid fa-arrow-right"></i></a></section>' +
-    '<section class="card quick"><h3><i class="fa-solid fa-bolt" style="color:var(--yellow-600)"></i> ' + t("quickLinks") + '</h3><div class="quick-grid">' +
-    '<a href="modules.html" style="background:var(--pink-100)"><i class="fa-solid fa-pen-to-square" style="color:var(--red)"></i>' + t("qPractice") + "</a>" +
-    '<a href="exam.html" style="background:var(--green-100)"><i class="fa-solid fa-circle-play" style="color:var(--green)"></i>' + t("qTest") + "</a>" +
-    '<a href="study.html" style="background:var(--purple-100)"><i class="fa-solid fa-book-open-reader" style="color:var(--purple)"></i>' + t("qNotes") + "</a>" +
-    '<a href="results.html" style="background:var(--orange-100)"><i class="fa-solid fa-chart-column" style="color:var(--orange)"></i>' + t("qResults") + "</a>" +
-    "</div></section></div>";
+    /* WHY */
+    '<section class="lp-sec tint"><div class="lp-wrap"><div class="lp-head center rv"><h2>' + X.whyT + ' <span class="hl-p">' + X.whyH + "</span></h2><p>" + X.whyP + "</p></div>" +
+    '<div class="lp-feat">' + X.f.map((f, i) => {
+      const c = [["#f3f0ff", "#7c5cff", "fa-laptop-code"], ["#fff1e8", "#ff6b1a", "fa-language"], ["#e8f8ef", "#16b364", "fa-bolt"], ["#e8f2ff", "#3b82f6", "fa-chart-pie"]][i];
+      return '<div class="lp-f rv"><span class="fi" style="background:' + c[0] + ";color:" + c[1] + '"><i class="fa-solid ' + c[2] + '"></i></span><h3>' + f[0] + "</h3><p>" + f[1] + "</p></div>";
+    }).join("") + "</div>" +
+    '<div class="lp-stats rv"><div><b>15</b><span>' + X.st[0] + "</span></div><div><b>" + C.QUESTIONS.length + "+</b><span>" + X.st[1] + "</span></div><div><b>3</b><span>" + X.st[2] + "</span></div><div><b>0</b><span>" + X.st[3] + "</span></div></div>" +
+    "</div></section>" +
 
-  const hl = document.getElementById("heroLogin"), hr = document.getElementById("heroReg");
-  if (hl) hl.addEventListener("click", () => C.openLogin());
-  if (hr) hr.addEventListener("click", () => C.openLogin());
+    /* CTA BAND */
+    '<section class="lp-sec" style="padding-bottom:0"><div class="lp-wrap"><div class="lp-band rv"><div><h2>' + X.bandH + "</h2><p>" + X.bandP + "</p>" +
+    '<div class="cta"><a class="lp-btn o" href="exam.html"><i class="fa-solid fa-play"></i> ' + X.bandB + '</a><a class="lp-btn w" href="study.html"><i class="fa-solid fa-book-open"></i> ' + X.bandB2 + "</a></div></div>" +
+    '<div class="lp-prog"><h4><i class="fa-solid fa-chart-simple"></i> ' + X.progT + '</h4><div class="row"><div class="lp-ring" style="--v:' + ringV + '" data-l="' + ringV + '%"></div>' +
+    "<ul><li>" + X.tests + ": <b>" + st.tests + "</b></li><li>" + X.avg + ": <b>" + st.avg + "%</b></li><li>" + X.prac + ": <b>" + st.practiced + "</b></li></ul></div>" +
+    '<a class="lp-btn w sm" style="margin-top:16px;width:100%" href="results.html">' + t("viewReport") + ' <i class="fa-solid fa-arrow-right"></i></a></div></div></div></section>' +
+
+    /* FOOTER */
+    '<footer class="lp-foot"><div class="lp-wrap"><div class="cols"><div><a class="lp-logo" href="index.html"><span class="mk"></span><span>COPA<b> MCQ</b>.</span></a><p>' + X.footP + "</p>" +
+    '<div class="lp-soc"><a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a><a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></div>' +
+    "<div><h5>" + X.fh[0] + "</h5><ul>" + [["modules.html", 0], ["study.html", 1], [C.modulePage(15), 2], [C.modulePage(11), 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl1[a[1]] + "</a></li>").join("") + "</ul></div>" +
+    "<div><h5>" + X.fh[1] + "</h5><ul>" + [["exam.html", 0], ["exam.html", 1], ["results.html", 2], ["results.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl2[a[1]] + "</a></li>").join("") + "</ul></div>" +
+    "<div><h5>" + X.fh[2] + "</h5><ul>" + [["about.html", 0], ["about.html#contact", 1], ["about.html", 2], ["about.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl3[a[1]] + "</a></li>").join("") + "</ul></div></div>" +
+    '<div class="bot"><span>© ' + new Date().getFullYear() + " MHNJE ITI COPA MCQ. " + t("footerRights") + "</span><span>" + t("footerTag") + "</span></div></div></footer>";
+
+  /* ---------- behaviour ---------- */
+  const sel = document.getElementById("lpLang");
+  sel.value = L;
+  sel.addEventListener("change", () => C.setLang(sel.value));
+  const login = (e) => { if (e) e.preventDefault(); C.openLogin(); };
+  document.getElementById("lpSign").addEventListener("click", login);
+  document.getElementById("lpSign2").addEventListener("click", login);
+  const bur = document.getElementById("lpBurger"), dr = document.getElementById("lpDrawer");
+  bur.addEventListener("click", () => {
+    const o = dr.classList.toggle("open");
+    bur.setAttribute("aria-expanded", o);
+    bur.innerHTML = '<i class="fa-solid ' + (o ? "fa-xmark" : "fa-bars") + '"></i>';
+  });
+  const nav = document.getElementById("lpNav");
+  const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 8);
+  window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  const els = document.querySelectorAll(".rv");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((ents) => ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { threshold: 0.12 });
+    els.forEach((el) => io.observe(el));
+  } else els.forEach((el) => el.classList.add("in"));
 })();
