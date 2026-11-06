@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Material – COPA Question Bank with Answers | MHNJE ITI</title>
+  <meta name="description" content="Complete ITI COPA question bank with correct answers, module-wise, in English, Hindi and Marathi. Searchable and printable.">
+  <meta name="theme-color" content="#0b1f4d">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-root="">
+  <div id="app-header"></div>
+  <div class="layout">
+    <div id="app-sidebar"></div>
+    <main class="content"><div class="container">
+      <div class="page-head">
+        <div class="breadcrumb"><a href="index.html" data-i18n="home">Home</a> / <span data-i18n="study">Study Material</span></div>
+        <h1><i class="fa-solid fa-book-open-reader" style="color:var(--purple)"></i> <span data-i18n="studyTitle">Study Material</span></h1>
+        <p data-i18n="studyDesc"></p>
+      </div>
+      <div class="toolbar">
+        <select class="input" id="fMod" style="max-width:320px" aria-label="Module"></select>
+        <input class="input" id="fSearch" data-i18n-ph="search" aria-label="Search">
+        <label style="display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" id="fAns" checked style="accent-color:var(--blue-600);width:18px;height:18px"> <span data-i18n="showAns"></span></label>
+        <button class="btn btn-ghost btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> <span data-i18n="print"></span></button>
+        <span id="fCount" style="color:var(--ink-3);font-size:13.5px"></span>
+      </div>
+      <div id="list"></div>
+    </div></main>
+  </div>
+  <div id="app-footer"></div>
+
+  <script src="data/questions.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+  (function () {
+    var C = window.COPA, t = C.t, esc = C.esc, l = C.lang;
+    C.renderShell("study");
+    C.applyStatic();
+    var fMod = document.getElementById("fMod"), fS = document.getElementById("fSearch"), fA = document.getElementById("fAns");
+    fMod.innerHTML = '<option value="0">' + t("allModules") + ' (' + C.QUESTIONS.length + ')</option>' +
+      C.MODULES.map(function (m) { return '<option value="' + m.id + '">M' + m.id + ' – ' + esc(C.modName(m)) + '</option>'; }).join("");
+    var hm = parseInt((location.hash || "").replace("#m", ""), 10);
+    if (hm >= 1 && hm <= 15) fMod.value = hm;
+    function draw() {
+      var m = +fMod.value, s = fS.value.trim().toLowerCase(), show = fA.checked;
+      var items = C.QUESTIONS.filter(function (q) {
+        if (m && q.m !== m) return false;
+        if (!s) return true;
+        return [q.en.q, q[l].q].concat(q.en.o, q[l].o, q.code || "").join(" ").toLowerCase().indexOf(s) > -1;
+      });
+      document.getElementById("fCount").textContent = t("showing") + " " + items.length;
+      var html = "", lastM = 0;
+      items.slice(0, 400).forEach(function (q) {
+        if (q.m !== lastM) {
+          lastM = q.m;
+          var mod = C.MODULES[q.m - 1];
+          html += '<div class="section-title"><h2 style="border-color:' + mod.color + '">' + t("module") + ' ' + q.m + ': ' + esc(C.modName(mod)) + '</h2><a href="' + C.modulePage(q.m) + '">' + t("startPractice") + ' <i class="fa-solid fa-arrow-right"></i></a></div>';
+        }
+        html += '<article class="card study-item"><div class="sq"><small>Q' + q.id.split("-")[1] + '.</small>' + esc(q[l].q) + '</div>' +
+          (l !== "en" ? '<div class="alt">' + esc(q.en.q) + '</div>' : "") +
+          (q.code ? '<pre class="code">' + esc(q.code) + '</pre>' : "") +
+          (q.img ? '<img class="q-img" src="' + q.img + '" alt="" loading="lazy">' : "") +
+          '<ol>' + [0, 1, 2, 3].map(function (i) { return '<li class="' + (show && i === q.a ? "ans" : "") + '">(' + "ABCD"[i] + ') ' + esc(q[l].o[i]) + (show && i === q.a ? ' <i class="fa-solid fa-check"></i>' : "") + '</li>'; }).join("") + '</ol>' +
+          (show ? '<span class="chip green"><i class="fa-solid fa-key"></i> ' + t("correctAns") + ': ' + "ABCD"[q.a] + '</span>' : "") + '</article>';
+      });
+      document.getElementById("list").innerHTML = html || '<div class="card empty"><i class="fa-solid fa-magnifying-glass"></i><p>' + t("noMatch") + '</p></div>';
+    }
+    fMod.addEventListener("change", function () { history.replaceState(null, "", +fMod.value ? "#m" + fMod.value : "#"); draw(); });
+    fS.addEventListener("input", draw);
+    fA.addEventListener("change", draw);
+    draw();
+  })();
+  </script>
+</body>
+</html>

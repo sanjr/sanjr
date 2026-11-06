@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About & Contact – COPA MCQ | MHNJE ITI</title>
+  <meta name="description" content="About MHNJE ITI COPA MCQ – free online practice platform for ITI COPA trainees.">
+  <meta name="theme-color" content="#0b1f4d">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-root="">
+  <div id="app-header"></div>
+  <div class="layout">
+    <div id="app-sidebar"></div>
+    <main class="content"><div class="container" id="about"></div></main>
+  </div>
+  <div id="app-footer"></div>
+
+  <script src="data/questions.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+  (function () {
+    var C = window.COPA, t = C.t, l = C.lang;
+    C.renderShell(location.hash === "#contact" ? "contact" : "about");
+    var TXT = {
+      en: {
+        intro: "COPA MCQ is a free online learning platform for ITI trainees of the Computer Operator and Programming Assistant (COPA) trade (CTS, NSQF Level 3.5, one year). It contains the complete COPA question bank – 355 MCQs across 15 modules – in English, Hindi and Marathi.",
+        f: [["fa-language", "3 Languages", "Every question and option in English, हिंदी and मराठी. Switch anytime – even during the exam."],
+            ["fa-laptop-code", "Real CBT Experience", "Timer, question palette, Save & Next, Mark for Review, Clear Response and auto-submit – just like the ITI online exam."],
+            ["fa-layer-group", "Module-wise Practice", "A separate page for every module with instant right/wrong feedback and progress tracking."],
+            ["fa-chart-pie", "Detailed Result", "Score, percentage, pass/fail, module-wise analysis and answer review after every test."],
+            ["fa-book-open", "Study Material", "All questions with correct answers – searchable and printable as PDF."],
+            ["fa-mobile-screen", "Mobile Friendly", "Fully responsive design – works on phone, tablet and computer."]],
+        src: "Question bank source: COPA Question Bank (DGT – CTS, NSQF Level 3.5) compiled by P. R. Gaikwad, COPA Instructor.",
+        contact: "For suggestions, corrections or help, contact your COPA instructor at MHNJE ITI."
+      },
+      hi: {
+        intro: "COPA MCQ, कंप्यूटर ऑपरेटर एवं प्रोग्रामिंग असिस्टेंट (COPA) ट्रेड (CTS, NSQF स्तर 3.5, एक वर्ष) के ITI प्रशिक्षुओं के लिए एक निःशुल्क ऑनलाइन लर्निंग प्लेटफ़ॉर्म है। इसमें पूरा COPA प्रश्न बैंक – 15 मॉड्यूल के 355 MCQ – अंग्रेज़ी, हिंदी और मराठी में है।",
+        f: [["fa-language", "3 भाषाएँ", "हर प्रश्न और विकल्प English, हिंदी और मराठी में। परीक्षा के दौरान भी भाषा बदलें।"],
+            ["fa-laptop-code", "वास्तविक CBT अनुभव", "टाइमर, प्रश्न पैलेट, सेव और अगला, रिव्यू के लिए मार्क, उत्तर हटाएँ और ऑटो-सबमिट – बिलकुल ITI ऑनलाइन परीक्षा जैसा।"],
+            ["fa-layer-group", "मॉड्यूलवार अभ्यास", "हर मॉड्यूल का अलग पेज, तुरंत सही/गलत फीडबैक और प्रगति ट्रैकिंग।"],
+            ["fa-chart-pie", "विस्तृत परिणाम", "हर टेस्ट के बाद स्कोर, प्रतिशत, उत्तीर्ण/अनुत्तीर्ण, मॉड्यूलवार विश्लेषण और उत्तर समीक्षा।"],
+            ["fa-book-open", "अध्ययन सामग्री", "सभी प्रश्न सही उत्तरों के साथ – खोज योग्य और PDF के रूप में प्रिंट योग्य।"],
+            ["fa-mobile-screen", "मोबाइल फ्रेंडली", "पूरी तरह रिस्पॉन्सिव डिज़ाइन – फ़ोन, टैबलेट और कंप्यूटर पर चलता है।"]],
+        src: "प्रश्न बैंक स्रोत: COPA प्रश्न बैंक (DGT – CTS, NSQF स्तर 3.5), संकलन: पी. आर. गायकवाड, COPA अनुदेशक।",
+        contact: "सुझाव, सुधार या सहायता के लिए MHNJE ITI के अपने COPA अनुदेशक से संपर्क करें।"
+      },
+      mr: {
+        intro: "COPA MCQ हे कॉम्प्युटर ऑपरेटर अँड प्रोग्रामिंग असिस्टंट (COPA) ट्रेडच्या (CTS, NSQF स्तर 3.5, एक वर्ष) ITI प्रशिक्षणार्थ्यांसाठी मोफत ऑनलाइन लर्निंग प्लॅटफॉर्म आहे. यामध्ये संपूर्ण COPA प्रश्नपेढी – 15 मॉड्युल्समधील 355 MCQ – इंग्रजी, हिंदी आणि मराठीमध्ये आहेत.",
+        f: [["fa-language", "3 भाषा", "प्रत्येक प्रश्न व पर्याय English, हिंदी आणि मराठीमध्ये. परीक्षेदरम्यानही भाषा बदला."],
+            ["fa-laptop-code", "प्रत्यक्ष CBT अनुभव", "टायमर, प्रश्न पॅलेट, सेव्ह आणि पुढील, रिव्ह्यूसाठी मार्क, उत्तर काढा आणि ऑटो-सबमिट – अगदी ITI ऑनलाइन परीक्षेसारखे."],
+            ["fa-layer-group", "मॉड्युलनिहाय सराव", "प्रत्येक मॉड्युलसाठी स्वतंत्र पेज, लगेच बरोबर/चूक फीडबॅक आणि प्रगतीची नोंद."],
+            ["fa-chart-pie", "सविस्तर निकाल", "प्रत्येक टेस्टनंतर गुण, टक्केवारी, उत्तीर्ण/अनुत्तीर्ण, मॉड्युलनिहाय विश्लेषण आणि उत्तरांचे पुनरावलोकन."],
+            ["fa-book-open", "अभ्यास साहित्य", "सर्व प्रश्न बरोबर उत्तरांसह – शोधता येणारे आणि PDF म्हणून प्रिंट करता येणारे."],
+            ["fa-mobile-screen", "मोबाइल फ्रेंडली", "पूर्णपणे रिस्पॉन्सिव्ह डिझाइन – फोन, टॅबलेट आणि संगणकावर चालते."]],
+        src: "प्रश्नपेढी स्रोत: COPA प्रश्नपेढी (DGT – CTS, NSQF स्तर 3.5), संकलन: पी. आर. गायकवाड, COPA निदेशक.",
+        contact: "सूचना, दुरुस्त्या किंवा मदतीसाठी MHNJE ITI मधील तुमच्या COPA निदेशकांशी संपर्क साधा."
+      }
+    };
+    var X = TXT[l] || TXT.en;
+    document.getElementById("about").innerHTML =
+      '<div class="page-head"><div class="breadcrumb"><a href="index.html">' + t("home") + '</a> / ' + t("about") + '</div><h1><i class="fa-solid fa-circle-info" style="color:var(--blue-600)"></i> ' + t("aboutTitle") + '</h1><p style="max-width:860px">' + X.intro + '</p></div>' +
+      '<div class="about-grid">' + X.f.map(function (f) { return '<div class="card feature"><i class="fa-solid ' + f[0] + '"></i><h3>' + f[1] + '</h3><p>' + f[2] + '</p></div>'; }).join("") + '</div>' +
+      '<p style="color:var(--ink-3);font-size:13.5px;margin-top:18px"><i class="fa-solid fa-file-pdf"></i> ' + X.src + '</p>' +
+      '<div class="section-title" id="contact"><h2>' + t("contactTitle") + '</h2></div>' +
+      '<div class="card card-pad" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><span class="stat"><span class="ic" style="background:var(--blue-600)"><i class="fa-solid fa-envelope"></i></span></span>' +
+      '<div style="flex:1;min-width:220px"><b>MHNJE ITI – COPA</b><p style="margin:4px 0 0;color:var(--ink-2)">' + X.contact + '</p></div>' +
+      '<div class="socials"><a class="yt" href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a class="tg" href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a><a class="wa" href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></div>';
+    if (location.hash === "#contact") setTimeout(function () { document.getElementById("contact").scrollIntoView(); }, 50);
+  })();
+  </script>
+</body>
+</html>
