@@ -28,6 +28,12 @@
   /* ---------- UI strings ---------- */
   const I18N = {
     en: {
+      pin: "4-digit PIN", pinNote: "Remember your Roll No. and PIN – you need them to log in again on this computer.", createAcc: "Create Account", pinErr: "PIN must be exactly 4 digits.", rollExists: "This Roll No. is already registered. Please login.", noAccount: "No account found for this Roll No. Please register first.", wrongPin: "Wrong PIN. Please try again.",
+      myDash: "My Dashboard", hello: "Hello", memberSince: "Member since", lastLogin: "Last login", passed: "Passed", failed: "Failed", passRate: "Pass Rate", lastScore: "Last Score",
+      scoreTrend: "Score Trend", scoreTrendDesc: "Percentage in each test (dashed line = 40% pass mark)", testHistory: "Test History", allTests: "All tests saved for this student",
+      loginToSee: "Login to see your dashboard", loginToSeeDesc: "Create a free student account with your Roll No. and a 4-digit PIN. All your test results will be saved in your dashboard.",
+      loginFirst: "Please login first – your test result will be saved in your dashboard.", strong: "Strong", weak: "Needs Practice", modulePerf: "Module-wise Performance (all tests)", noTestModules: "Attempt a test to see module-wise performance.",
+      questionsAns: "Questions", practiceProgress: "Practice Progress",
       home: "Home", dashboard: "Dashboard", practice: "MCQ Practice", mock: "Mock Test", onlineTest: "Online Test (CBT)",
       subjects: "Subjects", study: "Study Material", results: "Results", about: "About", contact: "Contact Us", login: "Login", logout: "Logout",
       tagline: "Learn • Practice • Excel", iti: "Industrial Training Institute", maharashtra: "Maharashtra",
@@ -71,12 +77,12 @@
       cancel: "Cancel", yesSubmit: "Yes, Submit", timeUp: "Time is up! Your test has been submitted automatically.",
       resultTitle: "Test Result", pass: "PASS", fail: "FAIL", percentage: "Percentage", unattempted: "Unattempted", timeTaken: "Time Taken",
       moduleWise: "Module-wise Analysis", reviewAns: "Review Answers", all: "All", yourAns: "Your answer", notAnsweredShort: "Not answered",
-      retake: "Retake Test", newTest: "New Test", passMark: "Pass mark: 33%",
+      retake: "Retake Test", newTest: "New Test", passMark: "Pass mark: 40%",
       historyTitle: "My Results", historyDesc: "All your test attempts are saved on this device.", noResults: "No tests attempted yet. Take your first mock test now!",
       date: "Date", test: "Test", marks: "Marks", status: "Status", view: "View", clearHistory: "Clear History",
       best: "Best Score", total: "Total",
       name: "Full Name", roll: "Roll Number", batch: "Batch / Year", saveProfile: "Save & Continue",
-      loginNote: "Your profile and results are stored only on this device (no password needed).", loggedIn: "Logged in successfully!",
+      loginNote: "Login with your Roll No. and 4-digit PIN. Results are saved on this computer.", loggedIn: "Logged in successfully!",
       resumeTitle: "Resume unfinished test?", resumeDesc: "You have an unfinished test. Do you want to continue it?", resume: "Resume", discard: "Discard",
       studyTitle: "Study Material", studyDesc: "All questions with correct answers – module-wise. Read, revise and print.",
       aboutTitle: "About COPA MCQ", contactTitle: "Contact Us",
@@ -85,6 +91,12 @@
       selectOneModule: "Please select at least one module.", progress: "Progress", accuracy: "Accuracy"
     },
     hi: {
+      pin: "4 अंकों का PIN", pinNote: "अपना रोल नं. और PIN याद रखें – इस कंप्यूटर पर दोबारा लॉगिन के लिए इनकी ज़रूरत होगी।", createAcc: "अकाउंट बनाएँ", pinErr: "PIN ठीक 4 अंकों का होना चाहिए।", rollExists: "यह रोल नं. पहले से रजिस्टर है। कृपया लॉगिन करें।", noAccount: "इस रोल नं. का कोई अकाउंट नहीं मिला। पहले रजिस्टर करें।", wrongPin: "गलत PIN। फिर से कोशिश करें।",
+      myDash: "मेरा डैशबोर्ड", hello: "नमस्ते", memberSince: "सदस्य बने", lastLogin: "पिछला लॉगिन", passed: "उत्तीर्ण", failed: "अनुत्तीर्ण", passRate: "उत्तीर्ण दर", lastScore: "पिछला स्कोर",
+      scoreTrend: "स्कोर ट्रेंड", scoreTrendDesc: "हर टेस्ट का प्रतिशत (डैश रेखा = 40% उत्तीर्ण अंक)", testHistory: "टेस्ट इतिहास", allTests: "इस छात्र के सभी सेव किए गए टेस्ट",
+      loginToSee: "अपना डैशबोर्ड देखने के लिए लॉगिन करें", loginToSeeDesc: "अपने रोल नं. और 4 अंकों के PIN से मुफ्त छात्र अकाउंट बनाएँ। आपके सभी टेस्ट परिणाम डैशबोर्ड में सेव होंगे।",
+      loginFirst: "कृपया पहले लॉगिन करें – आपका परिणाम आपके डैशबोर्ड में सेव होगा।", strong: "मज़बूत", weak: "अभ्यास ज़रूरी", modulePerf: "मॉड्यूलवार प्रदर्शन (सभी टेस्ट)", noTestModules: "मॉड्यूलवार प्रदर्शन देखने के लिए टेस्ट दें।",
+      questionsAns: "प्रश्न", practiceProgress: "अभ्यास प्रगति",
       home: "होम", dashboard: "डैशबोर्ड", practice: "MCQ अभ्यास", mock: "मॉक टेस्ट", onlineTest: "ऑनलाइन टेस्ट (CBT)",
       subjects: "विषय", study: "अध्ययन सामग्री", results: "परिणाम", about: "परिचय", contact: "संपर्क करें", login: "लॉगिन", logout: "लॉगआउट",
       tagline: "सीखें • अभ्यास करें • उत्कृष्ट बनें", iti: "औद्योगिक प्रशिक्षण संस्थान", maharashtra: "महाराष्ट्र",
@@ -128,12 +140,12 @@
       cancel: "रद्द करें", yesSubmit: "हाँ, सबमिट करें", timeUp: "समय समाप्त! आपका टेस्ट अपने आप सबमिट हो गया है।",
       resultTitle: "टेस्ट परिणाम", pass: "उत्तीर्ण", fail: "अनुत्तीर्ण", percentage: "प्रतिशत", unattempted: "अनुत्तरित", timeTaken: "लिया गया समय",
       moduleWise: "मॉड्यूलवार विश्लेषण", reviewAns: "उत्तरों की समीक्षा", all: "सभी", yourAns: "आपका उत्तर", notAnsweredShort: "उत्तर नहीं दिया",
-      retake: "फिर से टेस्ट दें", newTest: "नया टेस्ट", passMark: "उत्तीर्ण अंक: 33%",
+      retake: "फिर से टेस्ट दें", newTest: "नया टेस्ट", passMark: "उत्तीर्ण अंक: 40%",
       historyTitle: "मेरे परिणाम", historyDesc: "आपके सभी टेस्ट प्रयास इस डिवाइस पर सेव हैं।", noResults: "अभी तक कोई टेस्ट नहीं दिया। अभी अपना पहला मॉक टेस्ट दें!",
       date: "दिनांक", test: "टेस्ट", marks: "अंक", status: "स्थिति", view: "देखें", clearHistory: "इतिहास हटाएँ",
       best: "सर्वश्रेष्ठ स्कोर", total: "कुल",
       name: "पूरा नाम", roll: "रोल नंबर", batch: "बैच / वर्ष", saveProfile: "सेव करें और आगे बढ़ें",
-      loginNote: "आपकी प्रोफ़ाइल और परिणाम केवल इसी डिवाइस पर सेव होते हैं (पासवर्ड की ज़रूरत नहीं)।", loggedIn: "सफलतापूर्वक लॉगिन हुआ!",
+      loginNote: "अपने रोल नं. और 4 अंकों के PIN से लॉगिन करें। परिणाम इसी कंप्यूटर पर सेव होते हैं।", loggedIn: "सफलतापूर्वक लॉगिन हुआ!",
       resumeTitle: "अधूरा टेस्ट जारी रखें?", resumeDesc: "आपका एक टेस्ट अधूरा है। क्या आप उसे जारी रखना चाहते हैं?", resume: "जारी रखें", discard: "हटाएँ",
       studyTitle: "अध्ययन सामग्री", studyDesc: "सभी प्रश्न सही उत्तरों के साथ – मॉड्यूलवार। पढ़ें, दोहराएँ और प्रिंट करें।",
       aboutTitle: "COPA MCQ के बारे में", contactTitle: "संपर्क करें",
@@ -142,6 +154,12 @@
       selectOneModule: "कृपया कम से कम एक मॉड्यूल चुनें।", progress: "प्रगति", accuracy: "सटीकता"
     },
     mr: {
+      pin: "4 अंकी PIN", pinNote: "तुमचा रोल नं. आणि PIN लक्षात ठेवा – या संगणकावर पुन्हा लॉगिनसाठी ते लागतील.", createAcc: "अकाउंट तयार करा", pinErr: "PIN बरोबर 4 अंकांचा असावा.", rollExists: "हा रोल नं. आधीच नोंदणीकृत आहे. कृपया लॉगिन करा.", noAccount: "या रोल नं. चे अकाउंट सापडले नाही. आधी नोंदणी करा.", wrongPin: "चुकीचा PIN. पुन्हा प्रयत्न करा.",
+      myDash: "माझा डॅशबोर्ड", hello: "नमस्कार", memberSince: "सदस्य झाल्यापासून", lastLogin: "शेवटचे लॉगिन", passed: "उत्तीर्ण", failed: "अनुत्तीर्ण", passRate: "उत्तीर्ण दर", lastScore: "शेवटचे गुण",
+      scoreTrend: "गुणांचा ट्रेंड", scoreTrendDesc: "प्रत्येक टेस्टची टक्केवारी (डॅश रेषा = 40% उत्तीर्ण गुण)", testHistory: "टेस्ट इतिहास", allTests: "या विद्यार्थ्याच्या सर्व सेव्ह केलेल्या टेस्ट",
+      loginToSee: "तुमचा डॅशबोर्ड पाहण्यासाठी लॉगिन करा", loginToSeeDesc: "तुमचा रोल नं. आणि 4 अंकी PIN वापरून मोफत विद्यार्थी अकाउंट तयार करा. तुमचे सर्व टेस्ट निकाल डॅशबोर्डमध्ये सेव्ह होतील.",
+      loginFirst: "कृपया आधी लॉगिन करा – तुमचा निकाल तुमच्या डॅशबोर्डमध्ये सेव्ह होईल.", strong: "मजबूत", weak: "सराव आवश्यक", modulePerf: "मॉड्युलनिहाय कामगिरी (सर्व टेस्ट)", noTestModules: "मॉड्युलनिहाय कामगिरी पाहण्यासाठी टेस्ट द्या.",
+      questionsAns: "प्रश्न", practiceProgress: "सराव प्रगती",
       home: "होम", dashboard: "डॅशबोर्ड", practice: "MCQ सराव", mock: "मॉक टेस्ट", onlineTest: "ऑनलाइन टेस्ट (CBT)",
       subjects: "विषय", study: "अभ्यास साहित्य", results: "निकाल", about: "माहिती", contact: "संपर्क", login: "लॉगिन", logout: "लॉगआउट",
       tagline: "शिका • सराव करा • यशस्वी व्हा", iti: "औद्योगिक प्रशिक्षण संस्था", maharashtra: "महाराष्ट्र",
@@ -185,12 +203,12 @@
       cancel: "रद्द करा", yesSubmit: "होय, सबमिट करा", timeUp: "वेळ संपली! तुमची टेस्ट आपोआप सबमिट झाली आहे.",
       resultTitle: "टेस्ट निकाल", pass: "उत्तीर्ण", fail: "अनुत्तीर्ण", percentage: "टक्केवारी", unattempted: "न सोडवलेले", timeTaken: "लागलेला वेळ",
       moduleWise: "मॉड्युलनिहाय विश्लेषण", reviewAns: "उत्तरांचे पुनरावलोकन", all: "सर्व", yourAns: "तुमचे उत्तर", notAnsweredShort: "उत्तर दिले नाही",
-      retake: "पुन्हा टेस्ट द्या", newTest: "नवीन टेस्ट", passMark: "उत्तीर्ण गुण: 33%",
+      retake: "पुन्हा टेस्ट द्या", newTest: "नवीन टेस्ट", passMark: "उत्तीर्ण गुण: 40%",
       historyTitle: "माझे निकाल", historyDesc: "तुमचे सर्व टेस्ट प्रयत्न या डिव्हाइसवर सेव्ह आहेत.", noResults: "अजून एकही टेस्ट दिली नाही. आताच तुमची पहिली मॉक टेस्ट द्या!",
       date: "तारीख", test: "टेस्ट", marks: "गुण", status: "स्थिती", view: "पहा", clearHistory: "इतिहास काढा",
       best: "सर्वोत्तम गुण", total: "एकूण",
       name: "पूर्ण नाव", roll: "रोल नंबर", batch: "बॅच / वर्ष", saveProfile: "सेव्ह करा आणि पुढे जा",
-      loginNote: "तुमची प्रोफाइल आणि निकाल फक्त याच डिव्हाइसवर सेव्ह होतात (पासवर्डची गरज नाही).", loggedIn: "यशस्वीरीत्या लॉगिन झाले!",
+      loginNote: "तुमचा रोल नं. आणि 4 अंकी PIN वापरून लॉगिन करा. निकाल याच संगणकावर सेव्ह होतात.", loggedIn: "यशस्वीरीत्या लॉगिन झाले!",
       resumeTitle: "अपूर्ण टेस्ट सुरू ठेवायची?", resumeDesc: "तुमची एक टेस्ट अपूर्ण आहे. ती सुरू ठेवायची का?", resume: "सुरू ठेवा", discard: "काढून टाका",
       studyTitle: "अभ्यास साहित्य", studyDesc: "सर्व प्रश्न बरोबर उत्तरांसह – मॉड्युलनिहाय. वाचा, उजळणी करा आणि प्रिंट करा.",
       aboutTitle: "COPA MCQ विषयी", contactTitle: "संपर्क",
@@ -200,14 +218,24 @@
     }
   };
 
-  /* ---------- Storage helpers ---------- */
-  const store = {
+  /* ---------- Storage helpers ----------
+     results / practice / exam data are stored per logged-in student,
+     so several students can share one lab computer. */
+  const PASS = 40;
+  const SCOPED = { results: 1, practice: 1, exam_session: 1, exam_pending: 1 };
+  const raw = {
     get(k, def) { try { const v = localStorage.getItem("copa_" + k); return v == null ? def : JSON.parse(v); } catch (e) { return def; } },
     set(k, v) { try { localStorage.setItem("copa_" + k, JSON.stringify(v)); } catch (e) { /* ignore */ } },
     del(k) { try { localStorage.removeItem("copa_" + k); } catch (e) { /* ignore */ } }
   };
+  const scopedKey = (k) => { if (!SCOPED[k]) return k; const u = raw.get("current", null); return u ? k + "__" + u : k; };
+  const store = {
+    get: (k, def) => raw.get(scopedKey(k), def),
+    set: (k, v) => raw.set(scopedKey(k), v),
+    del: (k) => raw.del(scopedKey(k))
+  };
 
-  let lang = store.get("lang", "en");
+  let lang = raw.get("lang", "en");
   if (!I18N[lang]) lang = "en";
   const t = (k) => (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k;
   const modName = (m, l) => { const mod = typeof m === "number" ? MODULES[m - 1] : m; return mod ? mod[l || lang] : ""; };
@@ -251,32 +279,63 @@
     return { el: back, close };
   }
 
-  /* ---------- Profile / login ---------- */
-  const getProfile = () => store.get("profile", null);
-  function openLogin(onDone) {
-    const p = getProfile() || {};
-    const m = modal(
-      '<button class="close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
-      '<h3><i class="fa-solid fa-user-graduate" style="color:var(--blue-600)"></i> ' + t("studentLogin") + "</h3>" +
-      '<p style="color:var(--ink-3);font-size:13.5px;margin:0 0 16px">' + t("loginNote") + "</p>" +
-      '<form id="loginForm">' +
-      '<div class="field"><label for="lf-name">' + t("name") + '</label><input class="input" id="lf-name" required maxlength="60" value="' + esc(p.name || "") + '"></div>' +
-      '<div class="field"><label for="lf-roll">' + t("roll") + '</label><input class="input" id="lf-roll" maxlength="30" value="' + esc(p.roll || "") + '"></div>' +
-      '<div class="field"><label for="lf-batch">' + t("batch") + '</label><input class="input" id="lf-batch" maxlength="30" value="' + esc(p.batch || "") + '"></div>' +
-      '<div class="modal-acts">' + (p.name ? '<button type="button" class="btn btn-ghost" id="lf-out">' + t("logout") + "</button>" : "") +
-      '<button class="btn btn-primary" type="submit"><i class="fa-solid fa-arrow-right-to-bracket"></i> ' + t("saveProfile") + "</button></div></form>"
-    );
-    m.el.querySelector("#lf-name").focus();
-    m.el.querySelector("#loginForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = m.el.querySelector("#lf-name").value.trim();
-      if (!name) return;
-      store.set("profile", { name, roll: m.el.querySelector("#lf-roll").value.trim(), batch: m.el.querySelector("#lf-batch").value.trim() });
-      m.close(); toast(t("loggedIn"));
-      if (onDone) onDone(); else location.reload();
-    });
-    const out = m.el.querySelector("#lf-out");
-    if (out) out.addEventListener("click", () => { store.del("profile"); m.close(); location.reload(); });
+  /* ---------- Student accounts ---------- */
+  const hashPin = (pin) => { let h = 5381; const x = "copa|" + pin; for (let i = 0; i < x.length; i++) h = ((h << 5) + h + x.charCodeAt(i)) >>> 0; return h.toString(36); };
+  const uidOf = (roll) => String(roll || "").trim().toLowerCase().replace(/\s+/g, "");
+  const getUsers = () => raw.get("users", {});
+  const getProfile = () => { const u = raw.get("current", null); const users = getUsers(); return u && users[u] ? Object.assign({ uid: u }, users[u]) : null; };
+  function signIn(uid) {
+    const users = getUsers();
+    users[uid].lastLogin = Date.now();
+    users[uid].logins = (users[uid].logins || 0) + 1;
+    raw.set("users", users); raw.set("current", uid);
+  }
+  function logout() { raw.del("current"); location.href = ROOT + "index.html"; }
+
+  function openLogin(onDone, startTab) {
+    let tab = startTab || (Object.keys(getUsers()).length ? "login" : "register");
+    const m = modal('<div id="authBox"></div>');
+    const box = m.el.querySelector("#authBox");
+    const done = () => { m.close(); toast(t("loggedIn")); if (onDone) onDone(); else location.href = ROOT + "dashboard.html"; };
+    function draw(err) {
+      const reg = tab === "register";
+      box.innerHTML =
+        '<button class="close" data-x aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
+        '<h3><i class="fa-solid fa-user-graduate" style="color:var(--blue-600)"></i> ' + t("studentLogin") + "</h3>" +
+        '<div class="auth-tabs"><button type="button" data-t="login" class="' + (!reg ? "on" : "") + '">' + t("login") + '</button><button type="button" data-t="register" class="' + (reg ? "on" : "") + '">' + t("register") + "</button></div>" +
+        (err ? '<div class="auth-err"><i class="fa-solid fa-circle-exclamation"></i> ' + err + "</div>" : "") +
+        '<form id="authForm" autocomplete="off">' +
+        (reg ? '<div class="field"><label for="af-name">' + t("name") + ' *</label><input class="input" id="af-name" required maxlength="60"></div>' : "") +
+        '<div class="field"><label for="af-roll">' + t("roll") + ' *</label><input class="input" id="af-roll" required maxlength="30"></div>' +
+        (reg ? '<div class="field"><label for="af-batch">' + t("batch") + '</label><input class="input" id="af-batch" maxlength="30" placeholder="2025-26"></div>' : "") +
+        '<div class="field"><label for="af-pin">' + t("pin") + ' *</label><input class="input" id="af-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required placeholder="••••"></div>' +
+        '<p style="color:var(--ink-3);font-size:12.5px;margin:-4px 0 14px">' + t(reg ? "pinNote" : "loginNote") + "</p>" +
+        '<button class="btn btn-primary btn-block" type="submit"><i class="fa-solid fa-' + (reg ? "user-plus" : "arrow-right-to-bracket") + '"></i> ' + t(reg ? "createAcc" : "login") + "</button></form>";
+      box.querySelector("[data-x]").addEventListener("click", m.close);
+      box.querySelectorAll("[data-t]").forEach((b) => b.addEventListener("click", () => { tab = b.getAttribute("data-t"); draw(); }));
+      const first = box.querySelector("input"); if (first) first.focus();
+      box.querySelector("#authForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const roll = box.querySelector("#af-roll").value.trim(), uid = uidOf(roll), pin = box.querySelector("#af-pin").value.trim();
+        if (!/^\d{4}$/.test(pin)) return draw(t("pinErr"));
+        const users = getUsers();
+        if (reg) {
+          if (users[uid]) return draw(t("rollExists"));
+          const guestRes = raw.get("results", []), guestPrac = raw.get("practice", {});
+          users[uid] = { name: box.querySelector("#af-name").value.trim(), roll, batch: box.querySelector("#af-batch").value.trim(), pin: hashPin(pin), created: Date.now() };
+          raw.set("users", users);
+          // move results/practice done before registering (guest) into the new account
+          if (guestRes.length) { raw.set("results__" + uid, guestRes); raw.del("results"); }
+          if (Object.keys(guestPrac).length) { raw.set("practice__" + uid, guestPrac); raw.del("practice"); }
+          signIn(uid); done();
+        } else {
+          if (!users[uid]) return draw(t("noAccount"));
+          if (users[uid].pin !== hashPin(pin)) return draw(t("wrongPin"));
+          signIn(uid); done();
+        }
+      });
+    }
+    draw();
   }
 
   /* ---------- Layout ---------- */
@@ -291,11 +350,11 @@
     { k: "practice", href: "modules.html", icon: "fa-pen-to-square" },
     { k: "mock", href: "exam.html", icon: "fa-trophy" },
     { k: "study", href: "study.html", icon: "fa-book-open" },
-    { k: "results", href: "results.html", icon: "fa-chart-simple" },
+    { k: "dashboard", href: "dashboard.html", icon: "fa-gauge-high" },
     { k: "about", href: "about.html", icon: "fa-circle-info" }
   ];
   function renderShell(active) {
-    if (active === "dashboard") active = "results";
+    if (active === "results") active = "dashboard";
     if (active === "contact") active = "about";
     const prof = getProfile();
     const links = (cls) => NAV.map((n) => '<a href="' + ROOT + n.href + '" class="' + (active === n.k ? "active" : "") + '"><i class="fa-solid ' + n.icon + '"></i><span class="lbl">' + t(n.k) + "</span></a>").join("");
@@ -329,7 +388,7 @@
     const sel = document.getElementById("langSel");
     if (sel) { sel.value = lang; sel.addEventListener("change", () => setLang(sel.value)); }
     const lb = document.getElementById("loginBtn");
-    if (lb) lb.addEventListener("click", () => openLogin());
+    if (lb) lb.addEventListener("click", () => (getProfile() ? (location.href = ROOT + "dashboard.html") : openLogin()));
     const mt = document.getElementById("menuToggle");
     if (mt) mt.addEventListener("click", () => {
       const o = document.body.classList.toggle("nav-open");
@@ -343,7 +402,7 @@
   const langListeners = [];
   function setLang(l) {
     if (!I18N[l]) return;
-    lang = l; store.set("lang", l);
+    lang = l; raw.set("lang", l);
     document.documentElement.lang = l;
     document.body.setAttribute("data-lang", l);
     if (langListeners.length) { langListeners.forEach((f) => f(l)); } else { location.reload(); }
@@ -381,6 +440,6 @@
     ROOT, MODULES, I18N, QUESTIONS, qById, byModule, modulePage, iconCls,
     get lang() { return lang; },
     t, modName, esc, fmtTime, shuffle, pad, store, toast, modal,
-    renderShell, setLang, onLang, applyStatic, getProfile, openLogin, getStats, moduleProgress, qBlock, optText
+    PASS, renderShell, setLang, onLang, applyStatic, getProfile, openLogin, logout, getStats, moduleProgress, qBlock, optText
   };
 })();

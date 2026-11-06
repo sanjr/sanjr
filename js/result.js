@@ -27,17 +27,17 @@
   function render(container, rec, opts) {
     opts = opts || {};
     const l = C.lang;
-    const pass = rec.pct >= 33;
+    const pass = rec.pct >= C.PASS;
     const pctInt = Math.round(rec.pct);
     container.innerHTML =
-      '<div class="breadcrumb"><a href="index.html">' + t("home") + '</a> / <a href="results.html">' + t("results") + "</a> / " + t("resultTitle") + "</div>" +
+      '<div class="breadcrumb"><a href="index.html">' + t("home") + '</a> / <a href="dashboard.html">' + t("dashboard") + "</a> / " + t("resultTitle") + "</div>" +
       '<section class="result-hero"><div class="ring" style="--p:' + pctInt + '" data-label="' + rec.pct + '%"></div>' +
       "<div><h2>" + t("resultTitle") + "</h2><div>" + esc(rec.title) + "</div>" +
       '<div style="opacity:.85;font-size:14px;margin-top:4px">' + esc(rec.name || "") + (rec.roll ? " • " + t("rollNo") + " " + esc(rec.roll) : "") + " • " + new Date(rec.date).toLocaleString() + "</div>" +
       '<span class="verdict ' + (pass ? "pass" : "fail") + '">' + (pass ? t("pass") : t("fail")) + '</span> <small style="opacity:.8;margin-left:8px">' + t("passMark") + "</small></div>" +
       '<div style="display:flex;flex-direction:column;gap:10px">' +
       '<a class="btn btn-yellow" href="exam.html' + (rec.cfg && rec.cfg.preset === "module" ? "?module=" + rec.cfg.mods[0] : "") + '"><i class="fa-solid fa-rotate-right"></i> ' + t("retake") + "</a>" +
-      '<a class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff" href="results.html"><i class="fa-solid fa-chart-simple"></i> ' + t("results") + "</a></div></section>" +
+      '<a class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff" href="dashboard.html"><i class="fa-solid fa-gauge-high"></i> ' + t("myDash") + "</a></div></section>" +
 
       '<div class="r-stats">' +
       stat(rec.correct + "/" + rec.total, t("marks"), "var(--blue-600)") +
@@ -56,7 +56,7 @@
       rec.per.map((p) => {
         const s = Math.round((p.c / p.total) * 100);
         return "<tr><td><b>M" + p.m + "</b> " + esc(C.modName(p.m)) + "</td><td>" + p.total + '</td><td style="color:var(--green);font-weight:600">' + p.c + '</td><td style="color:var(--red);font-weight:600">' + p.w + "</td><td>" + p.u +
-          '</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar" style="flex:1"><i style="width:' + s + "%;background:" + (s >= 33 ? "var(--green)" : "var(--red)") + '"></i></div><b>' + s + "%</b></div></td></tr>";
+          '</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar" style="flex:1"><i style="width:' + s + "%;background:" + (s >= C.PASS ? "var(--green)" : "var(--red)") + '"></i></div><b>' + s + "%</b></div></td></tr>";
       }).join("") + "</tbody></table></div></section>" +
 
       '<div class="section-title"><h2>' + t("reviewAns") + '</h2><div class="mode-tabs" style="margin:0" id="revTabs">' +

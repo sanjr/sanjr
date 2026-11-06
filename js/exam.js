@@ -78,7 +78,9 @@
       if (cfg.preset !== "module") { cfg.preset = "custom"; stageEl.querySelectorAll("[data-p]").forEach((x) => x.classList.toggle("active", x.getAttribute("data-p") === "custom")); }
     }));
 
+    if (prof) { document.getElementById("cName").readOnly = true; document.getElementById("cRoll").readOnly = true; }
     document.getElementById("goInstr").addEventListener("click", () => {
+      if (!C.getProfile()) { C.toast(t("loginFirst")); C.openLogin(() => location.reload()); return; }
       const mods = selMods();
       if (!mods.length) { C.toast(t("selectOneModule")); return; }
       const pool = mods.reduce((s, m) => s + C.byModule(m).length, 0);
@@ -87,8 +89,8 @@
       cfg.min = Math.max(1, Math.min(400, parseInt(minEl.value, 10) || 10));
       cfg.shuffleOpts = document.getElementById("cfgShuf").checked;
       cfg.lang = document.getElementById("cfgLang").value;
-      cfg.name = document.getElementById("cName").value.trim() || "Student";
-      cfg.roll = document.getElementById("cRoll").value.trim();
+      cfg.name = C.getProfile().name;
+      cfg.roll = C.getProfile().roll;
       if (cfg.lang !== C.lang) C.store.set("lang", cfg.lang);
       C.store.set("exam_pending", cfg);
       location.href = "exam.html?stage=instr";
@@ -312,6 +314,8 @@
       m.el.querySelector("#res").addEventListener("click", () => { m.close(); sess = existing; history.replaceState(null, "", "exam.html?stage=exam"); runExam(); });
       m.el.querySelector("#disc").addEventListener("click", () => { C.store.del(SESSION); m.close(); });
     }
+  } else if (!C.getProfile() && params.get("stage")) {
+    history.replaceState(null, "", "exam.html"); setup();
   } else if (params.get("stage") === "instr" && C.store.get("exam_pending", null)) {
     instructions(C.store.get("exam_pending"));
   } else {

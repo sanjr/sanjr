@@ -3,69 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Results & Dashboard – COPA MCQ</title>
-  <meta name="description" content="Your COPA mock test results, module-wise progress and performance dashboard.">
-  <meta name="theme-color" content="#0b1f4d">
-  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
+  <title>Dashboard – COPA MCQ</title>
+  <meta http-equiv="refresh" content="0; url=dashboard.html">
+  <link rel="canonical" href="dashboard.html">
 </head>
-<body data-root="">
-  <div id="app-header"></div>
-  <div class="layout">
-    <div id="app-sidebar"></div>
-    <main class="content"><div class="container" id="res"></div></main>
-  </div>
-  <div id="app-footer"></div>
-
-  <script src="data/questions.js"></script>
-  <script src="js/app.js"></script>
-  <script>
-  (function () {
-    var C = window.COPA, t = C.t, esc = C.esc;
-    C.renderShell("results");
-    var st = C.getStats(), prof = C.getProfile();
-    var hist = st.hist;
-    var html = '<div class="page-head"><div class="breadcrumb"><a href="index.html">' + t("home") + '</a> / ' + t("results") + '</div>' +
-      '<h1><i class="fa-solid fa-chart-line" style="color:var(--green)"></i> ' + t("historyTitle") + '</h1><p>' + (prof ? '<b>' + esc(prof.name) + '</b>' + (prof.roll ? ' • ' + t("rollNo") + ' ' + esc(prof.roll) : '') + ' — ' : '') + t("historyDesc") + '</p></div>' +
-      '<div class="stats" style="margin-top:0">' +
-      card(st.tests, t("testsAttempted"), "fa-clipboard-check", "#1554e0") +
-      card(st.avg + "%", t("avgScore"), "fa-percent", "#7b3fe4") +
-      card(st.best + "%", t("best"), "fa-trophy", "#f58a07") +
-      card(st.practiced, t("questionsPracticed"), "fa-pen", "#18a957") + '</div>';
-
-    html += '<div class="section-title"><h2>' + t("results") + '</h2>' + (hist.length ? '<button class="btn btn-ghost btn-sm" id="clr"><i class="fa-solid fa-trash"></i> ' + t("clearHistory") + '</button>' : '') + '</div>';
-    if (!hist.length) {
-      html += '<div class="card empty"><i class="fa-solid fa-clipboard-question"></i><p>' + t("noResults") + '</p><a class="btn btn-yellow" href="exam.html"><i class="fa-solid fa-play"></i> ' + t("takeMock") + '</a></div>';
-    } else {
-      html += '<div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>#</th><th>' + t("date") + '</th><th>' + t("test") + '</th><th>' + t("marks") + '</th><th>' + t("percentage") + '</th><th>' + t("timeTaken") + '</th><th>' + t("status") + '</th><th></th></tr></thead><tbody>' +
-        hist.map(function (r, i) {
-          var pass = r.pct >= 33;
-          return '<tr><td>' + (hist.length - i) + '</td><td>' + new Date(r.date).toLocaleString() + '</td><td>' + esc(r.title) + '</td><td><b>' + r.correct + '/' + r.total + '</b></td>' +
-            '<td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar" style="flex:1"><i style="width:' + r.pct + '%;background:' + (pass ? 'var(--green)' : 'var(--red)') + '"></i></div>' + r.pct + '%</div></td>' +
-            '<td>' + C.fmtTime(r.timeTaken) + '</td><td><span class="chip ' + (pass ? 'green' : 'red') + '">' + (pass ? t("pass") : t("fail")) + '</span></td>' +
-            '<td><a class="btn btn-ghost btn-sm" href="exam.html?result=' + r.id + '">' + t("view") + '</a></td></tr>';
-        }).join("") + '</tbody></table></div></div>';
-    }
-
-    html += '<div class="section-title"><h2>' + t("moduleWise") + ' – ' + t("practiceMode") + '</h2></div><div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>' + t("module") + '</th><th>' + t("progress") + '</th><th>' + t("correct") + '</th><th>' + t("wrong") + '</th><th>' + t("accuracy") + '</th><th></th></tr></thead><tbody>' +
-      C.MODULES.map(function (m) {
-        var p = C.moduleProgress(m.id), acc = p.done ? Math.round(p.ok / p.done * 100) : 0;
-        return '<tr><td><b>M' + m.id + '</b> ' + esc(C.modName(m)) + '</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar" style="flex:1"><i style="width:' + p.pct + '%"></i></div>' + p.done + '/' + p.total + '</div></td>' +
-          '<td style="color:var(--green);font-weight:600">' + p.ok + '</td><td style="color:var(--red);font-weight:600">' + (p.done - p.ok) + '</td><td>' + acc + '%</td>' +
-          '<td><a class="btn btn-ghost btn-sm" href="' + C.modulePage(m.id) + '">' + t("startPractice") + '</a></td></tr>';
-      }).join("") + '</tbody></table></div></div>';
-
-    document.getElementById("res").innerHTML = html;
-    var clr = document.getElementById("clr");
-    if (clr) clr.addEventListener("click", function () {
-      if (confirm(t("clearHistory") + "?")) { C.store.del("results"); location.reload(); }
-    });
-    function card(n, l, ic, c) { return '<div class="card stat"><span class="ic" style="background:' + c + '"><i class="fa-solid ' + ic + '"></i></span><div><b>' + n + '</b><span>' + l + '</span></div></div>'; }
-  })();
-  </script>
-</body>
+<body><p><a href="dashboard.html">Open Dashboard</a></p></body>
 </html>

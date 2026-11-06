@@ -154,7 +154,7 @@
   ];
   const CAT_COLORS = ["#3b82f6", "#0078d4", "#ef4444", "#334155", "#2b579a", "#16b364", "#f97316", "#0ea5e9", "#8b5cf6", "#ef6c3a", "#eab308", "#10b981", "#ff6b1a", "#06b6d4", "#3572a5"];
 
-  const href = ["index.html", "modules.html", "exam.html", "study.html", "results.html", "about.html"];
+  const href = ["index.html", "modules.html", "exam.html", "study.html", "dashboard.html", "about.html"];
   const icons = ["fa-house", "fa-layer-group", "fa-stopwatch", "fa-book-open", "fa-chart-simple", "fa-circle-info"];
   const ringV = st.tests ? st.avg : (st.practiced ? Math.round((st.practicedCorrect / st.practiced) * 100) : 0);
   const stars = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>';
@@ -210,13 +210,13 @@
     '<div class="cta"><a class="lp-btn o" href="exam.html"><i class="fa-solid fa-play"></i> ' + X.bandB + '</a><a class="lp-btn w" href="study.html"><i class="fa-solid fa-book-open"></i> ' + X.bandB2 + "</a></div></div>" +
     '<div class="lp-prog"><h4><i class="fa-solid fa-chart-simple"></i> ' + X.progT + '</h4><div class="row"><div class="lp-ring" style="--v:' + ringV + '" data-l="' + ringV + '%"></div>' +
     "<ul><li>" + X.tests + ": <b>" + st.tests + "</b></li><li>" + X.avg + ": <b>" + st.avg + "%</b></li><li>" + X.prac + ": <b>" + st.practiced + "</b></li></ul></div>" +
-    '<a class="lp-btn w sm" style="margin-top:16px;width:100%" href="results.html">' + t("viewReport") + ' <i class="fa-solid fa-arrow-right"></i></a></div></div></div></section>' +
+    '<a class="lp-btn w sm" style="margin-top:16px;width:100%" href="dashboard.html">' + t("viewReport") + ' <i class="fa-solid fa-arrow-right"></i></a></div></div></div></section>' +
 
     /* FOOTER */
     '<footer class="lp-foot"><div class="lp-wrap"><div class="cols"><div><a class="lp-logo" href="index.html"><span class="mk"></span><span>COPA<b> MCQ</b>.</span></a><p>' + X.footP + "</p>" +
     '<div class="lp-soc"><a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a><a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></div>' +
     "<div><h5>" + X.fh[0] + "</h5><ul>" + [["modules.html", 0], ["study.html", 1], [C.modulePage(15), 2], [C.modulePage(11), 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl1[a[1]] + "</a></li>").join("") + "</ul></div>" +
-    "<div><h5>" + X.fh[1] + "</h5><ul>" + [["exam.html", 0], ["exam.html", 1], ["results.html", 2], ["results.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl2[a[1]] + "</a></li>").join("") + "</ul></div>" +
+    "<div><h5>" + X.fh[1] + "</h5><ul>" + [["exam.html", 0], ["exam.html", 1], ["dashboard.html", 2], ["dashboard.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl2[a[1]] + "</a></li>").join("") + "</ul></div>" +
     "<div><h5>" + X.fh[2] + "</h5><ul>" + [["about.html", 0], ["about.html#contact", 1], ["about.html", 2], ["about.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl3[a[1]] + "</a></li>").join("") + "</ul></div></div>" +
     '<div class="bot"><span>© ' + new Date().getFullYear() + " COPA MCQ. " + t("footerRights") + "</span><span>" + t("footerTag") + "</span></div></div></footer>";
 
