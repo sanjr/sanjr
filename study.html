@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/site-config.js"></script>
+  <script src="js/ads.js"></script>
 </head>
 <body data-root="">
   <div id="app-header"></div>
@@ -28,12 +30,16 @@
         <button class="btn btn-ghost btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> <span data-i18n="print"></span></button>
         <span id="fCount" style="color:var(--ink-3);font-size:13.5px"></span>
       </div>
+      <div id="notes"></div>
+      <div class="ad-slot" data-slot="top"></div>
       <div id="list"></div>
+      <div class="ad-slot" data-slot="bottom"></div>
     </div></main>
   </div>
   <div id="app-footer"></div>
 
   <script src="data/questions.js"></script>
+  <script src="js/db.js"></script>
   <script src="js/app.js"></script>
   <script>
   (function () {
@@ -67,6 +73,8 @@
           '<ol>' + [0, 1, 2, 3].map(function (i) { return '<li class="' + (show && i === q.a ? "ans" : "") + '">(' + "ABCD"[i] + ') ' + esc(q[l].o[i]) + (show && i === q.a ? ' <i class="fa-solid fa-check"></i>' : "") + '</li>'; }).join("") + '</ol>' +
           (show ? '<span class="chip green"><i class="fa-solid fa-key"></i> ' + t("correctAns") + ': ' + "ABCD"[q.a] + '</span>' + C.explain(q, l) : "") + '</article>';
       });
+      var nl = C.notesFor(m).filter(function (n) { return !s || (n.title + " " + n.body).toLowerCase().indexOf(s) > -1; });
+      document.getElementById("notes").innerHTML = nl.length ? '<div class="section-title"><h2 style="border-color:var(--purple)"><i class="fa-solid fa-note-sticky" style="color:var(--purple)"></i> ' + t("qNotes") + ' (' + nl.length + ')</h2></div>' + C.renderNotes(nl) : "";
       document.getElementById("list").innerHTML = html || '<div class="card empty"><i class="fa-solid fa-magnifying-glass"></i><p>' + t("noMatch") + '</p></div>';
     }
     fMod.addEventListener("change", function () { history.replaceState(null, "", +fMod.value ? "#m" + fMod.value : "#"); draw(); });

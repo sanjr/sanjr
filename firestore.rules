@@ -1,0 +1,19 @@
+rules_version = '2';
+// COPA MCQ – Cloud Firestore security rules
+// 1. Replace admin@example.com with your admin e-mail (the user you created in Firebase Authentication).
+// 2. Firebase console → Firestore Database → Rules → paste this file → Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email in ['admin@example.com'];
+    }
+    // content managed by the admin, readable by every visitor
+    match /questions/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /notes/{id}     { allow read: if true; allow write: if isAdmin(); }
+    match /settings/{id}  { allow read: if true; allow write: if isAdmin(); }
+    // written by students' browsers, readable only by the admin
+    match /results/{id}  { allow create: if request.resource.data.size() < 40; allow read, update, delete: if isAdmin(); }
+    match /students/{id} { allow create, update: if request.resource.data.size() < 20; allow read, delete: if isAdmin(); }
+    match /live/{id}     { allow create, update: if request.resource.data.size() < 30; allow delete: if true; allow read: if isAdmin(); }
+  }
+}

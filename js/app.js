@@ -246,7 +246,30 @@
   const pad = (n) => String(n).padStart(2, "0");
   const fmtTime = (s) => { s = Math.max(0, Math.round(s)); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60; return (h ? pad(h) + ":" : "") + pad(m) + ":" + pad(x); };
   const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  const QUESTIONS = window.COPA_QUESTIONS || [];
+  /* built-in questions + questions added/edited/hidden by the admin (cached by db.js) */
+  const readCache = (k, d) => { try { const v = localStorage.getItem("copa_db_" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+  function normQ(c) {
+    const en = c.en || { q: "", o: ["", "", "", ""] };
+    const lang = (L) => ({ q: (L && L.q) || en.q, o: [0, 1, 2, 3].map((i) => (L && L.o && L.o[i]) || en.o[i] || "") });
+    const q = { id: String(c.id), m: +c.m || 1, a: +c.a || 0, en: lang(en), hi: lang(c.hi), mr: lang(c.mr), custom: true };
+    if (c.code) q.code = c.code;
+    if (c.img) q.img = c.img;
+    const xe = c.x && c.x.en;
+    if (xe || (c.x && (c.x.hi || c.x.mr))) q.x = { en: xe || "", hi: (c.x.hi || xe || ""), mr: (c.x.mr || xe || "") };
+    return q;
+  }
+  const QUESTIONS = (function () {
+    const base = (window.COPA_QUESTIONS || []).slice();
+    const idx = {}; base.forEach((q, i) => (idx[q.id] = i));
+    readCache("questions", []).forEach((c) => {
+      if (!c || !c.id) return;
+      if (c.hidden) { if (idx[c.id] != null) base[idx[c.id]] = null; return; }
+      const q = normQ(c);
+      if (idx[c.id] != null) base[idx[c.id]] = q; else base.push(q);
+    });
+    return base.filter(Boolean);
+  })();
+  const NOTES = readCache("notes", []).filter((n) => n && !n.hidden).sort((a, b) => (a.m - b.m) || ((a.order || 0) - (b.order || 0)) || ((a.created || 0) - (b.created || 0)));
   const byModule = (m) => QUESTIONS.filter((q) => q.m === m);
   const qById = {}; QUESTIONS.forEach((q) => (qById[q.id] = q));
   const modulePage = (id) => ROOT + "modules/module-" + pad(id) + ".html";
@@ -262,6 +285,22 @@
     return h;
   }
   const optText = (q, l, i) => ((q[l] || q.en).o[i]);
+  /* admin study notes → HTML cards (plain text, **bold**, links, line breaks) */
+  function noteBody(txt) {
+    let h = esc(txt || "");
+    h = h.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+    h = h.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+    return h.replace(/\n/g, "<br>");
+  }
+  function renderNotes(list) {
+    if (!list.length) return "";
+    return '<div class="notes-grid">' + list.map((n) => '<article class="card note-card"><div class="nc-head"><span class="chip ' + (n.m ? "" : "purple") + '">' + (n.m ? "M" + n.m : "COPA") + "</span><h3>" + esc(n.title || "") + "</h3></div>" +
+      '<div class="nc-body">' + noteBody(n.body) + "</div>" +
+      (n.link ? '<a class="btn btn-ghost btn-sm" href="' + esc(n.link) + '" target="_blank" rel="noopener"><i class="fa-solid fa-' + (/\.pdf($|\?)/i.test(n.link) ? "file-pdf" : "link") + '"></i> ' + esc(n.linkLabel || "Open") + "</a>" : "") +
+      "</article>").join("") + "</div>";
+  }
+  const notesFor = (m) => NOTES.filter((n) => !m || +n.m === +m || !+n.m);
+
   /* one-line explanation of the correct answer */
   const explain = (q, l) => (q.x ? '<div class="explain"><i class="fa-solid fa-lightbulb"></i><div><b>' + t("whyAns") + ":</b> " + esc(q.x[l] || q.x.en) + "</div></div>" : "");
 
@@ -294,6 +333,8 @@
     users[uid].lastLogin = Date.now();
     users[uid].logins = (users[uid].logins || 0) + 1;
     raw.set("users", users); raw.set("current", uid);
+    const u = users[uid];
+    if (window.COPA_DB) window.COPA_DB.upsertStudent({ uid, name: u.name, roll: u.roll, batch: u.batch || "", created: u.created, lastLogin: u.lastLogin, logins: u.logins });
   }
   function logout() { raw.del("current"); location.href = ROOT + "index.html"; }
 
@@ -384,8 +425,9 @@
     const foot = document.getElementById("app-footer");
     if (foot) {
       foot.outerHTML =
-        '<footer class="site-footer"><div>© ' + new Date().getFullYear() + " <b>COPA MCQ</b>. " + t("footerRights") + "</div>" +
-        '<div class="tag">ITI ' + t("maharashtra") + " &nbsp;|&nbsp; " + t("footerTag") + "</div>" +
+        '<footer class="site-footer"><div class="f-copy">© 2019 - ' + Math.max(2026, new Date().getFullYear()) + " <b>COPA MCQ</b>. " + t("footerRights") +
+        '<br><span class="f-dev">Developed &amp; Designed by : <b>Sanjay Rathod</b> (CI - COPA)</span></div>' +
+        '<nav class="f-links" aria-label="Footer"><a href="' + ROOT + 'about.html">' + t("about") + '</a><a href="' + ROOT + 'privacy.html">Privacy Policy</a><a href="' + ROOT + 'terms.html">Terms</a><a href="' + ROOT + 'about.html#contact">' + t("contact") + "</a></nav>" +
         '<div class="socials"><a class="yt" href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>' +
         '<a class="tg" href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>' +
         '<a class="wa" href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></footer>';
@@ -442,9 +484,9 @@
   document.body.setAttribute("data-lang", lang);
 
   window.COPA = {
-    ROOT, MODULES, I18N, QUESTIONS, qById, byModule, modulePage, iconCls,
+    ROOT, MODULES, I18N, QUESTIONS, NOTES, normQ, qById, byModule, modulePage, iconCls,
     get lang() { return lang; },
     t, modName, esc, fmtTime, shuffle, pad, store, toast, modal,
-    PASS, explain, renderShell, setLang, onLang, applyStatic, getProfile, openLogin, logout, getStats, moduleProgress, qBlock, optText
+    PASS, explain, renderNotes, notesFor, renderShell, setLang, onLang, applyStatic, getProfile, openLogin, logout, getStats, moduleProgress, qBlock, optText
   };
 })();

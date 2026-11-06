@@ -146,7 +146,7 @@
     history.replaceState(null, "", "exam.html?stage=exam");
     runExam();
   }
-  const persist = () => C.store.set(SESSION, sess);
+  const persist = () => { C.store.set(SESSION, sess); liveUpdate(); };
 
   function runExam() {
     showShell(false);
@@ -157,6 +157,20 @@
     timerId = setInterval(tick, 1000);
     tick();
     window.addEventListener("beforeunload", beforeUnload);
+    liveStart();
+  }
+  /* live tracking for the Admin Panel */
+  function liveStart() {
+    if (!window.COPA_DB || !sess) return;
+    const p = C.getProfile() || {};
+    if (!sess.sid) { sess.sid = (p.uid || "guest") + "-" + sess.startAt; persist(); }
+    window.COPA_DB.live.start({ sid: sess.sid, uid: p.uid || "", name: sess.cfg.name, roll: sess.cfg.roll, batch: p.batch || "",
+      title: sess.title, mods: sess.cfg.mods, preset: sess.cfg.preset, total: sess.qids.length, startAt: sess.startAt, endAt: sess.endAt,
+      answered: sess.ans.filter((a, i) => a != null && (sess.status[i] === "ans" || sess.status[i] === "amr")).length, cur: sess.cur + 1 });
+  }
+  function liveUpdate() {
+    if (!window.COPA_DB || !sess) return;
+    window.COPA_DB.live.update({ cur: sess.cur + 1, answered: sess.ans.filter((a, i) => a != null && (sess.status[i] === "ans" || sess.status[i] === "amr")).length });
   }
   function beforeUnload(e) { if (sess) { e.preventDefault(); e.returnValue = ""; } }
 
@@ -281,8 +295,17 @@
     C.store.del(SESSION);
     sess = null;
     document.body.classList.remove("palette-open");
-    if (auto) alert(t("timeUp"));
-    location.replace("exam.html?result=" + rec.id);
+    let send = Promise.resolve();
+    if (window.COPA_DB) {
+      const p = C.getProfile() || {};
+      window.COPA_DB.live.end();
+      // summary for the Admin Panel (answer rows stay on the student's device)
+      send = window.COPA_DB.saveResult({ id: rec.id, date: rec.date, title: rec.title, uid: p.uid || "", name: rec.name, roll: rec.roll, batch: p.batch || "",
+        preset: rec.cfg.preset, mods: rec.cfg.mods, total: rec.total, correct: rec.correct, wrong: rec.wrong, un: rec.un, pct: rec.pct,
+        pass: rec.pct >= C.PASS, timeTaken: rec.timeTaken, per: rec.per, auto: !!auto });
+    }
+    const go = () => { if (auto) alert(t("timeUp")); location.replace("exam.html?result=" + rec.id); };
+    Promise.race([send, new Promise((r) => setTimeout(r, 4000))]).then(go, go);
   }
 
   function showShell(on) {

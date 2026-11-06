@@ -155,6 +155,7 @@
         '<span class="lp-pill" style="background:' + f.tc + '">' + f.tag + "</span></div></div></a>";
     }).join("") + "</div></div></section>" +
 
+    '<div class="lp-wrap"><div class="ad-slot" data-slot="middle"></div></div>' +
     /* CATEGORIES */
     '<section class="lp-sec"><div class="lp-wrap" style="position:relative"><span class="lp-deco dot" style="right:22%;top:24px"></span>' +
     '<div class="lp-head center rv"><h2>' + X.catT + ' <span class="hl-p">' + X.catH + "</span></h2><p>" + X.catP + "</p></div>" +
@@ -170,6 +171,7 @@
     '<div class="lp-stats rv"><div><b>15</b><span>' + X.st[0] + "</span></div><div><b>" + C.QUESTIONS.length + "+</b><span>" + X.st[1] + "</span></div><div><b>3</b><span>" + X.st[2] + "</span></div><div><b>0</b><span>" + X.st[3] + "</span></div></div>" +
     "</div></section>" +
 
+    '<div class="lp-wrap"><div class="ad-slot" data-slot="bottom"></div></div>' +
     /* CTA BAND */
     '<section class="lp-sec" style="padding-bottom:0"><div class="lp-wrap"><div class="lp-band rv"><div><h2>' + X.bandH + "</h2><p>" + X.bandP + "</p>" +
     '<div class="cta"><a class="lp-btn o" href="exam.html"><i class="fa-solid fa-play"></i> ' + X.bandB + '</a><a class="lp-btn w" href="study.html"><i class="fa-solid fa-book-open"></i> ' + X.bandB2 + "</a></div></div>" +
@@ -182,8 +184,8 @@
     '<div class="lp-soc"><a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a><a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></div>' +
     "<div><h5>" + X.fh[0] + "</h5><ul>" + [["modules.html", 0], ["study.html", 1], [C.modulePage(15), 2], [C.modulePage(11), 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl1[a[1]] + "</a></li>").join("") + "</ul></div>" +
     "<div><h5>" + X.fh[1] + "</h5><ul>" + [["exam.html", 0], ["exam.html", 1], ["dashboard.html", 2], ["dashboard.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl2[a[1]] + "</a></li>").join("") + "</ul></div>" +
-    "<div><h5>" + X.fh[2] + "</h5><ul>" + [["about.html", 0], ["about.html#contact", 1], ["about.html", 2], ["about.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl3[a[1]] + "</a></li>").join("") + "</ul></div></div>" +
-    '<div class="bot"><span>© ' + new Date().getFullYear() + " COPA MCQ. " + t("footerRights") + "</span><span>" + t("footerTag") + "</span></div></div></footer>";
+    "<div><h5>" + X.fh[2] + "</h5><ul>" + [["about.html", X.fl3[0]], ["about.html#contact", X.fl3[1]], ["privacy.html", "Privacy Policy"], ["terms.html", "Terms & Conditions"]].map((a) => '<li><a href="' + a[0] + '">' + a[1] + "</a></li>").join("") + "</ul></div></div>" +
+    '<div class="bot"><span>© 2019 - ' + Math.max(2026, new Date().getFullYear()) + " COPA MCQ. " + t("footerRights") + '</span><span>Developed &amp; Designed by : <b style="color:#fff">Sanjay Rathod</b> (CI - COPA)</span></div></div></footer>';
 
   /* ---------- behaviour ---------- */
   const els = document.querySelectorAll(".rv");

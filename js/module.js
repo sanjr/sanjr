@@ -79,7 +79,9 @@
   function studyView(filter) {
     filter = (filter || "").toLowerCase();
     const items = all.filter((q) => !filter || [q.en.q, q[L()].q].concat(q.en.o, q[L()].o).join(" ").toLowerCase().indexOf(filter) > -1);
-    return '<div class="toolbar no-print"><input class="input" id="sSearch" placeholder="' + t("search") + '" value="' + esc(filter) + '">' +
+    const nl = C.notesFor(mid);
+    return (nl.length ? '<div class="section-title" style="margin-top:0"><h2 style="border-color:var(--purple)"><i class="fa-solid fa-note-sticky" style="color:var(--purple)"></i> ' + t("qNotes") + " (" + nl.length + ")</h2></div>" + C.renderNotes(nl) : "") +
+      '<div class="toolbar no-print"><input class="input" id="sSearch" placeholder="' + t("search") + '" value="' + esc(filter) + '">' +
       '<button class="btn btn-ghost btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> ' + t("print") + "</button>" +
       '<span style="color:var(--ink-3);font-size:13.5px">' + t("showing") + " " + items.length + "/" + all.length + "</span></div>" +
       (items.length ? items.map((q) => studyItem(q)).join("") : '<div class="card empty"><i class="fa-solid fa-magnifying-glass"></i><p>' + t("noMatch") + "</p></div>");
@@ -95,7 +97,7 @@
   }
 
   function render() {
-    root.innerHTML = header() + '<div id="view">' + (tab === "practice" ? practiceView() : studyView("")) + "</div>";
+    root.innerHTML = header() + '<div id="view">' + (tab === "practice" ? practiceView() : studyView("")) + "</div>" + '<div class="ad-slot" data-slot="middle"></div>';
     bind();
   }
   function rerenderView(keepFocus) {

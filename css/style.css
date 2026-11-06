@@ -646,3 +646,33 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 .explain b { color: #3d2c00; font-family: var(--font-head); font-weight: 600; }
 .study-item .explain { margin-top: 10px; font-size: 13.5px; padding: 10px 14px; }
 .review-item .explain { font-size: 13.5px; }
+
+/* ---------- Study notes ---------- */
+.notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 26px; }
+.note-card { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; border-top: 4px solid var(--purple); }
+.nc-head { display: flex; gap: 10px; align-items: center; }
+.nc-head h3 { margin: 0; font-size: 16.5px; }
+.nc-body { color: var(--ink-2); font-size: 14.5px; line-height: 1.7; }
+.nc-body a { word-break: break-all; }
+.note-card .btn { align-self: flex-start; }
+
+/* ---------- Ad slots ---------- */
+.ad-slot { margin: 20px 0; text-align: center; }
+.ad-slot:not(.on) { display: none; }
+.ad-label { display: block; font-size: 11px; color: var(--ink-3); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 4px; }
+
+/* ---------- Footer (developer credit + links) ---------- */
+.site-footer .f-copy { line-height: 1.7; }
+.site-footer .f-dev { color: #c7d2ee; font-size: 13px; }
+.site-footer .f-dev b { color: var(--yellow); }
+.f-links { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13.5px; }
+.f-links a { color: #c7d2ee; }
+.f-links a:hover { color: #fff; }
+
+/* ---------- Legal pages ---------- */
+.legal { max-width: 900px; }
+.legal h1 { font-size: 30px; margin-bottom: 4px; }
+.legal .upd { color: var(--ink-3); font-size: 13px; margin: 0 0 16px; }
+.legal h2 { font-size: 18px; margin: 22px 0 8px; }
+.legal p, .legal li { color: var(--ink-2); line-height: 1.75; font-size: 15px; }
+.legal ul { padding-left: 20px; }
