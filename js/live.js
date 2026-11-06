@@ -19,7 +19,8 @@
       noMine: "No saved programs yet. Write a program and click Save.", loginMine: "Login to save and see your programs here.", del: "Delete this program?", untitled: "Untitled program",
       code: "Code", out: "Output", full: "Full screen", exitFull: "Exit full screen", needTitle: "Please enter a program title.", runFirst: "Program finished", copy: "Copy code", copied: "Code copied",
       tip1: ["Live preview", "HTML, CSS and JS output updates while you type."], tip2: ["Ctrl + Enter", "Runs the program (Python and web)."], tip3: ["Save to dashboard", "Login and save – your program and its output appear in your dashboard."],
-      cats: { html: "HTML", css: "CSS", js: "JavaScript", py: "Python" }, pyErr: "Error", emptyOut: "Click ▶ Run to see the output." },
+      cats: { html: "HTML", css: "CSS", js: "JavaScript", py: "Python" }, pyErr: "Error",
+      pyFile: "Python needs internet when the website is opened directly from a folder (file://). Connect to the internet, or open the website from a web server / hosting.", pyNet: "Python could not load. Please check the internet connection and refresh the page.", emptyOut: "Click ▶ Run to see the output." },
     hi: { title: "लाइव प्रैक्टिस लैब", sub: "HTML, CSS, JavaScript या Python लिखें और तुरंत आउटपुट देखें – बिलकुल COPA प्रैक्टिकल लैब जैसा।",
       web: "HTML / CSS / JS", python: "Python", run: "चलाएँ", auto: "लाइव प्रीव्यू", save: "सेव", newP: "नया", download: "डाउनलोड", reset: "रीसेट",
       titlePh: "प्रोग्राम का शीर्षक, जैसे Student Registration Form", templates: "प्रैक्टिकल", mine: "मेरे प्रोग्राम", search: "प्रोग्राम खोजें…",
@@ -28,7 +29,8 @@
       noMine: "अभी कोई सेव प्रोग्राम नहीं। प्रोग्राम लिखकर Save दबाएँ।", loginMine: "अपने प्रोग्राम सेव करने और यहाँ देखने के लिए लॉगिन करें।", del: "यह प्रोग्राम हटाएँ?", untitled: "बिना शीर्षक प्रोग्राम",
       code: "कोड", out: "आउटपुट", full: "फुल स्क्रीन", exitFull: "फुल स्क्रीन बंद", needTitle: "कृपया प्रोग्राम का शीर्षक लिखें।", runFirst: "प्रोग्राम पूरा हुआ", copy: "कोड कॉपी", copied: "कोड कॉपी हुआ",
       tip1: ["लाइव प्रीव्यू", "टाइप करते समय HTML, CSS, JS का आउटपुट बदलता है।"], tip2: ["Ctrl + Enter", "प्रोग्राम चलाता है (Python और वेब)।"], tip3: ["डैशबोर्ड में सेव", "लॉगिन करके सेव करें – प्रोग्राम और आउटपुट डैशबोर्ड में दिखेंगे।"],
-      cats: { html: "HTML", css: "CSS", js: "JavaScript", py: "Python" }, pyErr: "त्रुटि", emptyOut: "आउटपुट देखने के लिए ▶ चलाएँ दबाएँ।" },
+      cats: { html: "HTML", css: "CSS", js: "JavaScript", py: "Python" }, pyErr: "त्रुटि",
+      pyFile: "वेबसाइट सीधे फ़ोल्डर (file://) से खोलने पर Python के लिए इंटरनेट चाहिए। इंटरनेट चालू करें या वेबसाइट सर्वर/होस्टिंग से खोलें।", pyNet: "Python लोड नहीं हुआ। इंटरनेट कनेक्शन जाँचें और पेज रिफ्रेश करें।", emptyOut: "आउटपुट देखने के लिए ▶ चलाएँ दबाएँ।" },
     mr: { title: "लाइव्ह प्रॅक्टिस लॅब", sub: "HTML, CSS, JavaScript किंवा Python लिहा आणि लगेच आउटपुट पहा – अगदी COPA प्रॅक्टिकल लॅबसारखे.",
       web: "HTML / CSS / JS", python: "Python", run: "चालवा", auto: "लाइव्ह प्रिव्ह्यू", save: "सेव्ह", newP: "नवीन", download: "डाउनलोड", reset: "रीसेट",
       titlePh: "प्रोग्रामचे शीर्षक, उदा. Student Registration Form", templates: "प्रॅक्टिकल", mine: "माझे प्रोग्राम", search: "प्रोग्राम शोधा…",
@@ -37,7 +39,8 @@
       noMine: "अजून एकही सेव्ह केलेला प्रोग्राम नाही. प्रोग्राम लिहून Save दाबा.", loginMine: "तुमचे प्रोग्राम सेव्ह करण्यासाठी व इथे पाहण्यासाठी लॉगिन करा.", del: "हा प्रोग्राम काढायचा?", untitled: "शीर्षक नसलेला प्रोग्राम",
       code: "कोड", out: "आउटपुट", full: "फुल स्क्रीन", exitFull: "फुल स्क्रीन बंद", needTitle: "कृपया प्रोग्रामचे शीर्षक लिहा.", runFirst: "प्रोग्राम पूर्ण झाला", copy: "कोड कॉपी", copied: "कोड कॉपी झाला",
       tip1: ["लाइव्ह प्रिव्ह्यू", "टाइप करताना HTML, CSS, JS चे आउटपुट बदलते."], tip2: ["Ctrl + Enter", "प्रोग्राम चालवते (Python आणि वेब)."], tip3: ["डॅशबोर्डमध्ये सेव्ह", "लॉगिन करून सेव्ह करा – प्रोग्राम आणि आउटपुट डॅशबोर्डमध्ये दिसेल."],
-      cats: { html: "HTML", css: "CSS", js: "JavaScript", py: "Python" }, pyErr: "त्रुटी", emptyOut: "आउटपुट पाहण्यासाठी ▶ चालवा दाबा." }
+      cats: { html: "HTML", css: "CSS", js: "JavaScript", py: "Python" }, pyErr: "त्रुटी",
+      pyFile: "वेबसाइट थेट फोल्डरमधून (file://) उघडल्यावर Python साठी इंटरनेट लागते. इंटरनेट चालू करा किंवा वेबसाइट सर्व्हर/होस्टिंगवरून उघडा.", pyNet: "Python लोड झाले नाही. इंटरनेट कनेक्शन तपासा आणि पेज रिफ्रेश करा.", emptyOut: "आउटपुट पाहण्यासाठी ▶ चालवा दाबा." }
   };
   const X = TX[LANG] || TX.en;
   const ICON = { html: ["fa-brands fa-html5", "#e44d26"], css: ["fa-brands fa-css3-alt", "#264de4"], js: ["fa-brands fa-js", "#c9a100"], py: ["fa-brands fa-python", "#3572a5"] };
@@ -145,7 +148,7 @@
       $("fsBtn").addEventListener("click", toggleFs);
       $("autoWrap").hidden = true;
       drawPy();
-      loadPy().then(() => setPyStat("ready")).catch((e) => setPyStat("err", e.message));
+      loadPy().then(() => setPyStat("ready")).catch((e) => { setPyStat("err", X.pyErr); if (!S.pyOut.some((l) => l.m === e.message)) pyLine(e.message, "err"); });
       if (py) setPyStat("ready");
     }
   }
@@ -200,13 +203,29 @@
   }
   function loadPy() {
     if (pyP) return pyP;
-    const dir = new URL("assets/vendor/pyodide/", location.href).href;
-    pyP = new Promise((res, rej) => {
-      const s = document.createElement("script"); s.src = dir + "pyodide.js";
-      s.onload = () => window.loadPyodide({ indexURL: dir }).then(res, rej);
-      s.onerror = () => rej(new Error("Python engine not found"));
+    // Local copy first (works offline when the site is served over http/https).
+    // Browsers block the engine from file:// (double-clicked index.html) → use the CDN there,
+    // and also as a fallback if the local copy fails.
+    const LOCAL = new URL("assets/vendor/pyodide/", location.href).href;
+    const CDN = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
+    const sources = location.protocol === "file:" ? [CDN] : [LOCAL, CDN];
+    const loadScriptOnce = (src) => new Promise((res, rej) => {
+      if (window.loadPyodide) return res();
+      const s = document.createElement("script"); s.src = src;
+      s.onload = () => res(); s.onerror = () => { s.remove(); rej(new Error("not found: " + src)); };
       document.head.appendChild(s);
-    }).then((p) => {
+    });
+    const tryFrom = (i) => {
+      const dir = sources[i];
+      return loadScriptOnce(dir + "pyodide.js")
+        .then(() => window.loadPyodide({ indexURL: dir }))
+        .catch((e) => {
+          if (i + 1 < sources.length) { try { delete window.loadPyodide; } catch (x) { window.loadPyodide = undefined; } return tryFrom(i + 1); }
+          const fileMode = location.protocol === "file:";
+          throw new Error(fileMode ? X.pyFile : X.pyNet);
+        });
+    };
+    pyP = tryFrom(0).then((p) => {
       py = p;
       window.__copa_input = (prompt) => {
         prompt = String(prompt || "");
@@ -220,7 +239,7 @@
       p.setStderr({ batched: (s) => pyLine(s, "err") });
       return p;
     });
-    pyP.catch(() => { pyP = null; });
+    pyP.catch(() => { pyP = null; }); // allow a retry on the next Run
     return pyP;
   }
   function pyLine(s, k) { S.pyOut.push({ k, m: s }); if (S.pyOut.length > 1000) S.pyOut.shift(); drawPy(); }

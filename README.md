@@ -21,6 +21,8 @@ An online MCQ practice and CBT mock-test website for the ITI **COPA** (Computer 
 - An online code editor (CodeMirror) with a **live output** panel beside it.
   - HTML / CSS / JavaScript: the preview updates while you type, and a console shows `console.log()` output and errors.
   - Python: runs in the browser using Pyodide (bundled in `assets/vendor/pyodide`, about 14 MB, loaded only when Python is first used). `input()` reads from the Input box, or shows a pop-up if the box is empty.
+  - When the site is opened from a web server or hosting, the bundled copy is used and works offline.
+  - When `index.html` is opened directly from a folder (`file://`), browsers block the bundled engine, so Python is loaded from the internet (jsDelivr CDN) instead. Internet is needed in that case.
 - 24 ready COPA practicals: 5 HTML, 2 CSS, 5 JavaScript and 12 Python (`js/practicals.js`).
 - Logged-in students can save a program with a title. Saved programs, with their output, appear in **Dashboard → My Live Practicals**.
 - Shortcuts: Ctrl + Enter = Run, Ctrl + S = Save. You can also download a program as `.html` / `.py`.
