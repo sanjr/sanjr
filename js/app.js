@@ -28,6 +28,8 @@
   /* ---------- UI strings ---------- */
   const I18N = {
     en: {
+      noPrograms: "No practicals saved yet. Open Live Practice, write a program and click Save.", 
+      livePractice: "Live Practice", myPracticals: "My Live Practicals", 
       whyAns: "Explanation", 
       pin: "4-digit PIN", pinNote: "Remember your Roll No. and PIN – you need them to log in again on this computer.", createAcc: "Create Account", pinErr: "PIN must be exactly 4 digits.", rollExists: "This Roll No. is already registered. Please login.", noAccount: "No account found for this Roll No. Please register first.", wrongPin: "Wrong PIN. Please try again.",
       myDash: "My Dashboard", hello: "Hello", memberSince: "Member since", lastLogin: "Last login", passed: "Passed", failed: "Failed", passRate: "Pass Rate", lastScore: "Last Score",
@@ -92,6 +94,8 @@
       selectOneModule: "Please select at least one module.", progress: "Progress", accuracy: "Accuracy"
     },
     hi: {
+      noPrograms: "अभी कोई प्रैक्टिकल सेव नहीं। लाइव प्रैक्टिस खोलें, प्रोग्राम लिखें और Save दबाएँ।", 
+      livePractice: "लाइव प्रैक्टिस", myPracticals: "मेरे लाइव प्रैक्टिकल", 
       whyAns: "व्याख्या", 
       pin: "4 अंकों का PIN", pinNote: "अपना रोल नं. और PIN याद रखें – इस कंप्यूटर पर दोबारा लॉगिन के लिए इनकी ज़रूरत होगी।", createAcc: "अकाउंट बनाएँ", pinErr: "PIN ठीक 4 अंकों का होना चाहिए।", rollExists: "यह रोल नं. पहले से रजिस्टर है। कृपया लॉगिन करें।", noAccount: "इस रोल नं. का कोई अकाउंट नहीं मिला। पहले रजिस्टर करें।", wrongPin: "गलत PIN। फिर से कोशिश करें।",
       myDash: "मेरा डैशबोर्ड", hello: "नमस्ते", memberSince: "सदस्य बने", lastLogin: "पिछला लॉगिन", passed: "उत्तीर्ण", failed: "अनुत्तीर्ण", passRate: "उत्तीर्ण दर", lastScore: "पिछला स्कोर",
@@ -156,6 +160,8 @@
       selectOneModule: "कृपया कम से कम एक मॉड्यूल चुनें।", progress: "प्रगति", accuracy: "सटीकता"
     },
     mr: {
+      noPrograms: "अजून एकही प्रॅक्टिकल सेव्ह नाही. लाइव्ह प्रॅक्टिस उघडा, प्रोग्राम लिहा आणि Save दाबा.", 
+      livePractice: "लाइव्ह प्रॅक्टिस", myPracticals: "माझे लाइव्ह प्रॅक्टिकल", 
       whyAns: "स्पष्टीकरण", 
       pin: "4 अंकी PIN", pinNote: "तुमचा रोल नं. आणि PIN लक्षात ठेवा – या संगणकावर पुन्हा लॉगिनसाठी ते लागतील.", createAcc: "अकाउंट तयार करा", pinErr: "PIN बरोबर 4 अंकांचा असावा.", rollExists: "हा रोल नं. आधीच नोंदणीकृत आहे. कृपया लॉगिन करा.", noAccount: "या रोल नं. चे अकाउंट सापडले नाही. आधी नोंदणी करा.", wrongPin: "चुकीचा PIN. पुन्हा प्रयत्न करा.",
       myDash: "माझा डॅशबोर्ड", hello: "नमस्कार", memberSince: "सदस्य झाल्यापासून", lastLogin: "शेवटचे लॉगिन", passed: "उत्तीर्ण", failed: "अनुत्तीर्ण", passRate: "उत्तीर्ण दर", lastScore: "शेवटचे गुण",
@@ -395,6 +401,7 @@
     { k: "home", href: "index.html", icon: "fa-house" },
     { k: "practice", href: "modules.html", icon: "fa-pen-to-square" },
     { k: "mock", href: "exam.html", icon: "fa-trophy" },
+    { k: "livePractice", href: "live-practice.html", icon: "fa-laptop-code" },
     { k: "study", href: "study.html", icon: "fa-book-open" },
     { k: "dashboard", href: "dashboard.html", icon: "fa-gauge-high" },
     { k: "about", href: "about.html", icon: "fa-circle-info" }

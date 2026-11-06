@@ -398,7 +398,7 @@
     v.querySelector("#dMap").addEventListener("click", () => {
       let u = read().siteUrl; if (!/^https?:\/\//.test(u)) return toast("Enter the full website address (https://…)");
       if (!u.endsWith("/")) u += "/";
-      const pages = ["", "modules.html", "exam.html", "study.html", "about.html", "privacy.html", "terms.html"].concat(C.MODULES.map((m) => "modules/module-" + C.pad(m.id) + ".html"));
+      const pages = ["", "modules.html", "exam.html", "live-practice.html", "study.html", "about.html", "privacy.html", "terms.html"].concat(C.MODULES.map((m) => "modules/module-" + C.pad(m.id) + ".html"));
       download("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + pages.map((p) => "  <url><loc>" + u + p + "</loc></url>").join("\n") + "\n</urlset>\n", "application/xml");
     });
     const cp = v.querySelector("#cPw");

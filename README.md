@@ -17,6 +17,14 @@ An online MCQ practice and CBT mock-test website for the ITI **COPA** (Computer 
 - Fully responsive (mobile, tablet and desktop). Icons and fonts (Poppins for headings, Roboto for text, Noto Sans Devanagari for Hindi/Marathi) are bundled, so the site also works offline.
 - Each module has its own image (`assets/img/modules/m01.jpg` … `m15.jpg`, 960×540). They are generated from `tools/module-images.html`. You can replace any of them with your own photo using the same file name.
 
+## Live Practice (`live-practice.html`)
+- An online code editor (CodeMirror) with a **live output** panel beside it.
+  - HTML / CSS / JavaScript: the preview updates while you type, and a console shows `console.log()` output and errors.
+  - Python: runs in the browser using Pyodide (bundled in `assets/vendor/pyodide`, about 14 MB, loaded only when Python is first used). `input()` reads from the Input box, or shows a pop-up if the box is empty.
+- 24 ready COPA practicals: 5 HTML, 2 CSS, 5 JavaScript and 12 Python (`js/practicals.js`).
+- Logged-in students can save a program with a title. Saved programs, with their output, appear in **Dashboard → My Live Practicals**.
+- Shortcuts: Ctrl + Enter = Run, Ctrl + S = Save. You can also download a program as `.html` / `.py`.
+
 ## Admin Panel (`admin.html`)
 Open `admin.html` in the browser. The link is not shown in the site menu, so only you know it.
 - **Live Dashboard:** students taking an exam right now (name, roll no., test, progress, time left), registered students, exams taken, exams today, pass/fail, pass rate, average score, exams per module, latest results.

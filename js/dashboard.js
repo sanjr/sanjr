@@ -35,6 +35,27 @@
   hist.forEach((r) => (r.per || []).forEach((p) => { agg[p.m] = agg[p.m] || { m: p.m, total: 0, c: 0 }; agg[p.m].total += p.total; agg[p.m].c += p.c; }));
   const modRows = Object.values(agg).sort((a, b) => a.m - b.m);
 
+  /* ---------- saved Live Practice programs ---------- */
+  const progs = C.store.get("programs", []);
+  function webDoc(p) {
+    const base = location.href.replace(/[^/]*([?#].*)?$/, "");
+    return "<!doctype html><html><head><meta charset=utf-8><base href=\"" + base + "\"><script>window.alert=window.confirm=window.prompt=function(){return ''};<\/script><style>" + (p.css || "") + "</style></head><body>" + (p.html || "") +
+      (p.js ? "<script>" + p.js.replace(/<\/script/gi, "<\\/script") + "<\/script>" : "") + "</body></html>";
+  }
+  function progCards() {
+    if (!progs.length) return '<div class="empty"><i class="fa-solid fa-laptop-code"></i><p>' + (t("noPrograms") || "") + '</p><a class="btn btn-yellow" href="live-practice.html"><i class="fa-solid fa-play"></i> ' + t("livePractice") + "</a></div>";
+    return '<div class="prog-grid">' + progs.map((p, i) => {
+      const py = p.lang === "python";
+      const out = py ? (p.output || []).filter((l) => l.k !== "info") : [];
+      return '<article class="prog-card"><div class="pc-out ' + (py ? "py" : "web") + '">' +
+        (py ? '<pre>' + (out.length ? out.slice(0, 14).map((l) => '<span class="cl ' + l.k + '">' + esc(l.m) + "</span>").join("\n") : '<span class="cl info">—</span>') + "</pre>"
+          : '<iframe sandbox="allow-scripts" tabindex="-1" loading="lazy" title="' + esc(p.title) + '" data-i="' + i + '"></iframe>') + "</div>" +
+        '<div class="pc-bd"><span class="pc-lang ' + (py ? "py" : "web") + '"><i class="fa-brands fa-' + (py ? "python" : "html5") + '"></i> ' + (py ? "Python" : "HTML / CSS / JS") + "</span>" +
+        "<h4>" + esc(p.title) + '</h4><small><i class="fa-regular fa-clock"></i> ' + fmtDT(p.updated || p.created) + "</small>" +
+        '<a class="btn btn-ghost btn-sm" href="live-practice.html?p=' + esc(p.id) + '"><i class="fa-solid fa-code"></i> ' + t("view") + "</a></div></article>";
+    }).join("") + "</div>";
+  }
+
   const stat = (v, l, ic, c, sub) => '<div class="card stat"><span class="ic" style="background:' + c + '"><i class="fa-solid ' + ic + '"></i></span><div><b>' + v + "</b><span>" + l + "</span>" + (sub ? '<small class="stat-sub">' + sub + "</small>" : "") + "</div></div>";
 
   root.innerHTML =
@@ -73,6 +94,8 @@
     '<div class="mode-tabs" style="margin:0" id="hTabs"><button class="active" data-f="all">' + t("all") + " (" + n + ')</button><button data-f="p">' + t("pass") + " (" + passed + ')</button><button data-f="f">' + t("fail") + " (" + (n - passed) + ")</button></div></div>" +
     '<div id="hList"></div></section>' +
 
+    '<section class="card card-pad" style="margin-top:22px" id="myCode"><div class="d-head"><div><h3><i class="fa-solid fa-laptop-code" style="color:var(--purple)"></i> ' + t("myPracticals") + ' <span class="chip purple">' + progs.length + '</span></h3><p>' + t("livePractice") + ' – HTML, CSS, JavaScript, Python</p></div>' +
+    '<a class="btn btn-primary btn-sm" href="live-practice.html"><i class="fa-solid fa-plus"></i> ' + t("livePractice") + '</a></div>' + progCards() + "</section>" +
     '<section class="card card-pad" style="margin-top:22px"><div class="d-head"><div><h3><i class="fa-solid fa-pen-to-square" style="color:var(--green)"></i> ' + t("practiceProgress") + "</h3><p>" + t("questionsPracticed") + ": <b>" + st.practiced + "</b></p></div></div>" +
     '<div class="prac-grid">' + C.MODULES.map((m) => {
       const p = C.moduleProgress(m.id);
@@ -81,6 +104,7 @@
     }).join("") + "</div></section>";
 
   document.getElementById("dOut").addEventListener("click", () => C.logout());
+  root.querySelectorAll(".prog-card iframe[data-i]").forEach((f) => { f.srcdoc = webDoc(progs[+f.getAttribute("data-i")]); });
 
   /* ---------- history table ---------- */
   function drawHist(f) {

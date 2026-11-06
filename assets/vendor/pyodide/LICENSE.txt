@@ -1,0 +1,2 @@
+Apache-2.0
+Pyodide 0.26.4 – Mozilla Public License 2.0 – https://github.com/pyodide/pyodide

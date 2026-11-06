@@ -676,3 +676,23 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 .legal h2 { font-size: 18px; margin: 22px 0 8px; }
 .legal p, .legal li { color: var(--ink-2); line-height: 1.75; font-size: 15px; }
 .legal ul { padding-left: 20px; }
+
+/* ---------- Dashboard: saved live practicals ---------- */
+.prog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.prog-card { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #fff; display: flex; flex-direction: column; transition: box-shadow .2s, transform .2s; }
+.prog-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.pc-out { height: 170px; position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
+.pc-out.web { background: #fff; }
+.pc-out.web iframe { width: 200%; height: 340px; border: 0; transform: scale(.5); transform-origin: 0 0; pointer-events: none; }
+.pc-out.py { background: #0d1326; }
+.pc-out pre { margin: 0; padding: 12px 14px; font: 12.5px/1.55 Consolas, monospace; color: #e6edff; white-space: pre-wrap; word-break: break-word; height: 100%; overflow: hidden; }
+.pc-out .cl.err { color: #ff7b7b; } .pc-out .cl.in { color: #c3a6ff; } .pc-out .cl.ok { color: #3ddc84; } .pc-out .cl.info { color: #7fa8ff; }
+.pc-bd { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.pc-bd h4 { margin: 0; font-size: 15px; }
+.pc-bd small { color: var(--ink-3); font-size: 12px; }
+.pc-bd .btn { align-self: flex-start; margin-top: auto; }
+.pc-lang { align-self: flex-start; font: 600 11px var(--font-head); padding: 3px 9px; border-radius: 999px; }
+.pc-lang.web { background: #fdeae4; color: #e44d26; }
+.pc-lang.py { background: #e5eef7; color: #3572a5; }
+
+.brand-text .b2, .brand-text .b1 { white-space: nowrap; }

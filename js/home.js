@@ -15,7 +15,7 @@
       popT: "Our Most", popH: "Popular Modules", popP: "Start with the modules every COPA trainee must master",
       explore: "Explore Modules", lessons: "Questions",
       catT: "Explore", catH: "All Modules", catP: "Choose a module and practise topic-wise",
-      whyT: "Why", whyH: "COPA MCQ?", whyP: "Everything you need to clear the ITI COPA exam",
+      lpT: "Live", lpH: "Coding Practice", lpP: "Do your COPA practicals online – write HTML, CSS, JavaScript or Python and see the output instantly.", lpB: "Start Live Practice", lpB2: "Try Python", lpF: ["Live preview while you type", "Python runs in the browser – no install", "24 ready COPA practicals", "Save programs to your dashboard"], whyT: "Why", whyH: "COPA MCQ?", whyP: "Everything you need to clear the ITI COPA exam",
       f: [["Real CBT Exam", "Timer, question palette, mark for review and auto-submit – exactly like the ITI online exam."],
           ["3 Languages", "Read every question in English, हिंदी or मराठी and switch anytime."],
           ["Instant Feedback", "Practise module-wise and see the right answer immediately."],
@@ -40,7 +40,7 @@
       popT: "हमारे सबसे", popH: "लोकप्रिय मॉड्यूल", popP: "वे मॉड्यूल जिनमें हर COPA प्रशिक्षु को निपुण होना चाहिए",
       explore: "मॉड्यूल देखें", lessons: "प्रश्न",
       catT: "देखें", catH: "सभी मॉड्यूल", catP: "मॉड्यूल चुनें और विषयवार अभ्यास करें",
-      whyT: "क्यों", whyH: "COPA MCQ?", whyP: "ITI COPA परीक्षा पास करने के लिए सब कुछ",
+      lpT: "लाइव", lpH: "कोडिंग प्रैक्टिस", lpP: "अपने COPA प्रैक्टिकल ऑनलाइन करें – HTML, CSS, JavaScript या Python लिखें और तुरंत आउटपुट देखें।", lpB: "लाइव प्रैक्टिस शुरू करें", lpB2: "Python आज़माएँ", lpF: ["टाइप करते समय लाइव प्रीव्यू", "Python ब्राउज़र में चलता है – इंस्टॉल की ज़रूरत नहीं", "24 तैयार COPA प्रैक्टिकल", "प्रोग्राम डैशबोर्ड में सेव करें"], whyT: "क्यों", whyH: "COPA MCQ?", whyP: "ITI COPA परीक्षा पास करने के लिए सब कुछ",
       f: [["वास्तविक CBT परीक्षा", "टाइमर, प्रश्न पैलेट, रिव्यू मार्क और ऑटो-सबमिट – बिलकुल ITI ऑनलाइन परीक्षा जैसा।"],
           ["3 भाषाएँ", "हर प्रश्न English, हिंदी या मराठी में पढ़ें और कभी भी बदलें।"],
           ["तुरंत फीडबैक", "मॉड्यूलवार अभ्यास करें और तुरंत सही उत्तर देखें।"],
@@ -65,7 +65,7 @@
       popT: "आमचे सर्वात", popH: "लोकप्रिय मॉड्युल्स", popP: "प्रत्येक COPA प्रशिक्षणार्थ्याने आत्मसात करावीत अशी मॉड्युल्स",
       explore: "मॉड्युल्स पहा", lessons: "प्रश्न",
       catT: "पहा", catH: "सर्व मॉड्युल्स", catP: "मॉड्युल निवडा आणि विषयनिहाय सराव करा",
-      whyT: "का", whyH: "COPA MCQ?", whyP: "ITI COPA परीक्षा उत्तीर्ण होण्यासाठी आवश्यक सर्व काही",
+      lpT: "लाइव्ह", lpH: "कोडिंग प्रॅक्टिस", lpP: "तुमचे COPA प्रॅक्टिकल ऑनलाइन करा – HTML, CSS, JavaScript किंवा Python लिहा आणि लगेच आउटपुट पहा.", lpB: "लाइव्ह प्रॅक्टिस सुरू करा", lpB2: "Python वापरून पहा", lpF: ["टाइप करताना लाइव्ह प्रिव्ह्यू", "Python ब्राउझरमध्ये चालते – इन्स्टॉलची गरज नाही", "24 तयार COPA प्रॅक्टिकल", "प्रोग्राम डॅशबोर्डमध्ये सेव्ह करा"], whyT: "का", whyH: "COPA MCQ?", whyP: "ITI COPA परीक्षा उत्तीर्ण होण्यासाठी आवश्यक सर्व काही",
       f: [["प्रत्यक्ष CBT परीक्षा", "टायमर, प्रश्न पॅलेट, रिव्ह्यू मार्क आणि ऑटो-सबमिट – अगदी ITI ऑनलाइन परीक्षेसारखे."],
           ["3 भाषा", "प्रत्येक प्रश्न English, हिंदी किंवा मराठीत वाचा आणि कधीही बदला."],
           ["लगेच फीडबॅक", "मॉड्युलनिहाय सराव करा आणि लगेच बरोबर उत्तर पहा."],
@@ -162,6 +162,14 @@
     '<div class="lp-cats">' + C.MODULES.map((m, i) => '<a class="lp-cat rv" href="' + C.modulePage(m.id) + '" style="transition-delay:' + (i % 5) * 50 + 'ms"><span class="ci" style="background:' + CAT_COLORS[i] + ";--sh:" + CAT_COLORS[i] + '55"><i class="' + C.iconCls(m) + '"></i></span><b>' + esc(C.modName(m)) + "</b><small>M" + m.id + " • " + C.byModule(m.id).length + " " + X.lessons + "</small></a>").join("") +
     "</div></div></section>" +
 
+    /* LIVE PRACTICE */
+    '<section class="lp-sec"><div class="lp-wrap"><div class="lp-live rv"><div class="ll-txt"><span class="ll-badge"><i class="fa-solid fa-circle"></i> LIVE</span><h2>' + X.lpT + ' <span class="hl-o">' + X.lpH + "</span></h2><p>" + X.lpP + "</p>" +
+    '<ul>' + X.lpF.map((f) => '<li><i class="fa-solid fa-circle-check"></i>' + f + "</li>").join("") + "</ul>" +
+    '<div class="ll-cta"><a class="lp-btn p" href="live-practice.html"><i class="fa-solid fa-laptop-code"></i> ' + X.lpB + '</a><a class="lp-btn ghost" href="live-practice.html?lang=python"><i class="fa-brands fa-python"></i> ' + X.lpB2 + "</a></div></div>" +
+    '<a class="ll-demo" href="live-practice.html" aria-label="' + esc(X.lpB) + '"><div class="ll-code"><div class="ll-bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span>index.html</span><span>style.css</span><span>script.js</span></div>' +
+    '<pre><span class="t">&lt;h1&gt;</span>Hello COPA<span class="t">&lt;/h1&gt;</span>\n<span class="t">&lt;button</span> <span class="a">onclick</span>=<span class="s">"hi()"</span><span class="t">&gt;</span>Click<span class="t">&lt;/button&gt;</span>\n\n<span class="k">function</span> <span class="f">hi</span>() {\n  <span class="f">alert</span>(<span class="s">"Welcome!"</span>);\n}</pre></div>' +
+    '<div class="ll-out"><div class="ll-ob"><span class="ll-dot"></span>Live Output</div><div class="ll-page"><b>Hello COPA</b><span class="ll-btn">Click</span></div></div>' +
+    '<div class="ll-py"><span class="ll-pyb"><i class="fa-brands fa-python"></i> main.py</span><code>print("PASS")</code><code class="o">PASS</code></div></a></div></div></section>' +
     /* WHY */
     '<section class="lp-sec tint"><div class="lp-wrap"><div class="lp-head center rv"><h2>' + X.whyT + ' <span class="hl-p">' + X.whyH + "</span></h2><p>" + X.whyP + "</p></div>" +
     '<div class="lp-feat">' + X.f.map((f, i) => {

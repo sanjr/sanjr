@@ -33,6 +33,7 @@
       '<button data-tab="practice" class="' + (tab === "practice" ? "active" : "") + '"><i class="fa-solid fa-pen-to-square"></i> ' + t("practiceMode") + "</button>" +
       '<button data-tab="study" class="' + (tab === "study" ? "active" : "") + '"><i class="fa-solid fa-book-open"></i> ' + t("studyMode") + "</button>" +
       '<a class="btn btn-yellow" href="' + C.ROOT + "exam.html?module=" + mid + '"><i class="fa-solid fa-stopwatch"></i> ' + t("testMode") + " (CBT)</a>" +
+      ([10, 11, 15].indexOf(mid) > -1 ? '<a class="btn btn-primary" href="' + C.ROOT + "live-practice.html?t=" + ({ 10: "w1", 11: "w9", 15: "p1" })[mid] + '"><i class="fa-solid fa-laptop-code"></i> ' + t("livePractice") + "</a>" : "") +
       nav() + "</div>";
   }
   function nav() {
