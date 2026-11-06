@@ -1,4 +1,4 @@
-# MHNJE ITI – COPA MCQ Website
+# COPA MCQ Website
 
 An online MCQ practice and CBT mock-test website for the ITI **COPA** (Computer Operator & Programming Assistant) trade, built with plain **HTML, CSS and JavaScript**. It has no build step and no server code.
 

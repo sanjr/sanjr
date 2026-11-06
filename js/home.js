@@ -27,7 +27,7 @@
       progT: "Your Progress", tests: "Tests attempted", avg: "Average score", prac: "Questions practised",
       footP: "Free online learning platform for ITI Computer Operator & Programming Assistant (COPA) trainees.",
       fh: ["Learn", "Practice", "Institute"], fl1: ["All Modules", "Study Material", "Python", "JavaScript"],
-      fl2: ["Mock Test (CBT)", "Quick Test", "My Results", "Dashboard"], fl3: ["About", "Contact", "MHNJE ITI", "Maharashtra"],
+      fl2: ["Mock Test (CBT)", "Quick Test", "My Results", "Dashboard"], fl3: ["About", "Contact", "COPA MCQ", "Maharashtra"],
       by: "COPA MCQ", byR: "ITI COPA"
     },
     hi: {
@@ -52,7 +52,7 @@
       progT: "आपकी प्रगति", tests: "दिए गए टेस्ट", avg: "औसत स्कोर", prac: "अभ्यास किए प्रश्न",
       footP: "ITI कंप्यूटर ऑपरेटर एवं प्रोग्रामिंग असिस्टेंट (COPA) प्रशिक्षुओं के लिए निःशुल्क ऑनलाइन लर्निंग प्लेटफ़ॉर्म।",
       fh: ["सीखें", "अभ्यास", "संस्थान"], fl1: ["सभी मॉड्यूल", "अध्ययन सामग्री", "पायथन", "जावास्क्रिप्ट"],
-      fl2: ["मॉक टेस्ट (CBT)", "क्विक टेस्ट", "मेरे परिणाम", "डैशबोर्ड"], fl3: ["परिचय", "संपर्क", "MHNJE ITI", "महाराष्ट्र"],
+      fl2: ["मॉक टेस्ट (CBT)", "क्विक टेस्ट", "मेरे परिणाम", "डैशबोर्ड"], fl3: ["परिचय", "संपर्क", "COPA MCQ", "महाराष्ट्र"],
       by: "COPA MCQ", byR: "ITI COPA"
     },
     mr: {
@@ -77,7 +77,7 @@
       progT: "तुमची प्रगती", tests: "दिलेल्या टेस्ट", avg: "सरासरी गुण", prac: "सराव केलेले प्रश्न",
       footP: "ITI कॉम्प्युटर ऑपरेटर अँड प्रोग्रामिंग असिस्टंट (COPA) प्रशिक्षणार्थ्यांसाठी मोफत ऑनलाइन लर्निंग प्लॅटफॉर्म.",
       fh: ["शिका", "सराव", "संस्था"], fl1: ["सर्व मॉड्युल्स", "अभ्यास साहित्य", "पायथन", "जावास्क्रिप्ट"],
-      fl2: ["मॉक टेस्ट (CBT)", "क्विक टेस्ट", "माझे निकाल", "डॅशबोर्ड"], fl3: ["माहिती", "संपर्क", "MHNJE ITI", "महाराष्ट्र"],
+      fl2: ["मॉक टेस्ट (CBT)", "क्विक टेस्ट", "माझे निकाल", "डॅशबोर्ड"], fl3: ["माहिती", "संपर्क", "COPA MCQ", "महाराष्ट्र"],
       by: "COPA MCQ", byR: "ITI COPA"
     }
   };
