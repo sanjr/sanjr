@@ -92,7 +92,7 @@
       Object.keys(FILES).forEach((m) => FILES[m].forEach((f) => { docs[f[0]] = window.CodeMirror.Doc(S.buf[f[0]], f[3]); }));
       cm.swapDoc(docs[S.file]);
       cm.on("change", () => { S.buf[S.file] = cm.getValue(); onEdit(); });
-      if (window.COPA_HINTS) window.COPA_HINTS.attach(cm);
+      if (window.COPA_HINTS) window.COPA_HINTS.attach(cm, { html: () => S.buf.html });
     } else {
       const ta = document.createElement("textarea"); ta.className = "fallback"; ta.spellcheck = false; $("edHost").appendChild(ta);
       cm = { _ta: ta, getValue: () => ta.value, setValue: (v) => (ta.value = v), refresh() {}, focus: () => ta.focus() };

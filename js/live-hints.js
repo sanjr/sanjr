@@ -167,18 +167,90 @@
     list = rank(list, w.word);
     return list.length ? { list, from: w.from, to: w.to } : null;
   }
-  function cssHint(cm) {
-    const r = CM.hint.css && CM.hint.css(cm);
-    const w = wordAt(cm, /[\w-]/);
-    let list = [];
-    if (r && r.list) {
-      const line = cm.getLine(cm.getCursor().line).slice(0, cm.getCursor().ch);
-      const isVal = /:\s*[\w-]*$/.test(line);
-      r.list.forEach((x) => { const t = typeof x === "string" ? x : x.text; list.push(item(t, isVal ? "val" : "prop", isVal ? "value" : "property", isVal ? {} : { hint: (c, d) => { c.replaceRange(t + ": ;", d.from, d.to, "complete"); const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); } })); });
-      list = rank(list, w.word);
-      return list.length ? { list, from: r.from, to: r.to } : null;
+  /* ---------- CSS ---------- */
+  const COLORS = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "black", "white", "gray", "grey", "brown", "navy", "maroon", "teal", "lime", "aqua", "olive", "gold", "silver", "violet", "indigo", "crimson", "skyblue", "lightblue", "lightgreen", "lightgray", "darkblue", "darkgreen", "darkred", "transparent", "#ffffff", "#000000", "rgb(0, 0, 0)", "rgba(0, 0, 0, 0.5)"];
+  const SIZES = ["10px", "12px", "14px", "16px", "18px", "20px", "24px", "30px", "50%", "100%", "auto", "1em", "1.5em", "2em", "1rem", "0"];
+  const CSS_VALUES = {
+    color: COLORS, "background-color": COLORS, background: COLORS.concat(["url(\"image.jpg\")", "linear-gradient(to right, red, blue)", "none"]), "border-color": COLORS, "outline-color": COLORS,
+    "text-align": ["left", "center", "right", "justify"], display: ["block", "inline", "inline-block", "flex", "grid", "none", "table"],
+    position: ["static", "relative", "absolute", "fixed", "sticky"], "font-weight": ["normal", "bold", "bolder", "lighter", "100", "300", "400", "500", "600", "700", "900"],
+    "font-style": ["normal", "italic", "oblique"], "font-family": ["Arial, sans-serif", "\"Times New Roman\", serif", "Verdana, sans-serif", "Georgia, serif", "\"Courier New\", monospace", "Tahoma, sans-serif", "sans-serif", "serif", "monospace"],
+    "font-size": SIZES, width: SIZES, height: SIZES, "max-width": SIZES, "min-height": SIZES, margin: SIZES.concat(["0 auto", "10px 20px"]), padding: SIZES.concat(["10px 20px"]), "border-radius": ["4px", "8px", "10px", "50%"], "line-height": ["1.5", "normal", "20px"],
+    "text-decoration": ["none", "underline", "overline", "line-through"], "text-transform": ["uppercase", "lowercase", "capitalize", "none"],
+    border: ["1px solid black", "2px dashed red", "3px dotted blue", "none"], "border-style": ["solid", "dashed", "dotted", "double", "groove", "ridge", "none"], "border-collapse": ["collapse", "separate"],
+    float: ["left", "right", "none"], clear: ["both", "left", "right", "none"], cursor: ["pointer", "default", "text", "move", "not-allowed", "help"],
+    "justify-content": ["center", "space-between", "space-around", "space-evenly", "flex-start", "flex-end"], "align-items": ["center", "flex-start", "flex-end", "stretch", "baseline"],
+    "flex-direction": ["row", "column", "row-reverse", "column-reverse"], "flex-wrap": ["wrap", "nowrap"], overflow: ["hidden", "auto", "scroll", "visible"],
+    "list-style-type": ["none", "disc", "circle", "square", "decimal", "lower-alpha", "upper-roman"], "list-style": ["none", "disc", "square", "decimal"],
+    visibility: ["visible", "hidden"], "white-space": ["nowrap", "normal", "pre"], "vertical-align": ["middle", "top", "bottom", "baseline"],
+    "background-repeat": ["no-repeat", "repeat", "repeat-x", "repeat-y"], "background-size": ["cover", "contain", "auto", "100% 100%"], "background-position": ["center", "top", "bottom", "left", "right"],
+    "background-image": ["url(\"image.jpg\")", "linear-gradient(to right, red, blue)", "none"], "box-shadow": ["0 4px 10px rgba(0, 0, 0, 0.2)", "none"], "text-shadow": ["2px 2px 4px gray", "none"],
+    opacity: ["0", "0.5", "1"], "z-index": ["1", "10", "100", "-1"], transition: ["all 0.3s", "background 0.5s ease", "none"], "box-sizing": ["border-box", "content-box"]
+  };
+  const PSEUDO = [":hover", ":active", ":focus", ":first-child", ":last-child", ":nth-child(2)", ":nth-child(even)", ":visited", ":link", "::before", "::after", "::first-letter", "::first-line", ":checked"];
+  function cssContext(cm) {
+    const cur = cm.getCursor();
+    let txt = cm.getRange(CM.Pos(0, 0), cur);
+    if (cm.getMode().name !== "css") { const i = txt.toLowerCase().lastIndexOf("<style"); if (i > -1) txt = txt.slice(txt.indexOf(">", i) + 1); }
+    txt = txt.replace(/\/\*[\s\S]*?(\*\/|$)/g, "");
+    let depth = 0; for (const ch of txt) { if (ch === "{") depth++; else if (ch === "}") depth = Math.max(0, depth - 1); }
+    if (depth === 0) return { kind: "selector" };
+    const stmt = txt.slice(Math.max(txt.lastIndexOf("{"), txt.lastIndexOf(";"), txt.lastIndexOf("}")) + 1);
+    const c = stmt.indexOf(":");
+    return c > -1 ? { kind: "value", prop: stmt.slice(0, c).trim().toLowerCase() } : { kind: "prop" };
+  }
+  function cssHint(cm, opts) {
+    const ctx = cssContext(cm);
+    if (ctx.kind === "selector") {
+      const w = wordAt(cm, /[\w.#:@-]/);
+      if (!w.word) return null;
+      let list = [];
+      const ci = w.word.indexOf(":");
+      if (ci > -1) {                     // a:hover, li:nth-child(…), p::before
+        const ps = w.word.slice(ci);
+        PSEUDO.forEach((x) => { if (starts(x, ps)) list.push(item(x, "kw", "pseudo-class")); });
+        return list.length ? { list, from: CM.Pos(w.from.line, w.from.ch + ci), to: w.to } : null;
+      }
+      else {
+        const html = (opts && opts.html && opts.html()) || cm.getValue();
+        const seen = {}; let m;
+        const re = /\b(class|id)\s*=\s*["']([^"']+)["']/gi;
+        while ((m = re.exec(html))) m[2].split(/\s+/).forEach((n) => { if (!n) return; const sel = (m[1].toLowerCase() === "id" ? "#" : ".") + n; if (!seen[sel]) { seen[sel] = 1; if (starts(sel, w.word) || starts(n, w.word)) list.push(item(sel, "prop", m[1].toLowerCase() === "id" ? "id in your HTML" : "class in your HTML")); } });
+        if (!/^[.#]/.test(w.word)) {
+          ["*", "body", "html"].concat(Object.keys(HTML_TAGS)).forEach((k) => { if (starts(k, w.word) && !seen[k]) { seen[k] = 1; list.push(item(k, "tag", "<" + k + "> " + (HTML_TAGS[k] || "selector"))); } });
+          if (starts("@media", w.word) || w.word === "@") list.push(snipItem("@media", ["mobile screens", "@media (max-width: 600px) {\n  $0\n}"]));
+        }
+      }
+      list = rank(list, w.word.replace(/^[.#]/, ""));
+      return list.length ? { list, from: w.from, to: w.to } : null;
     }
-    return null;
+    const w = wordAt(cm, /[\w#().,%-]/);
+    if (ctx.kind === "value") {
+      const own = CSS_VALUES[ctx.prop] || [];
+      let base = [];
+      const r = CM.hint.css && CM.hint.css(cm);
+      if (r && r.list) base = r.list.map((x) => (typeof x === "string" ? x : x.text));
+      let list = own.filter((v) => !w.word || starts(v, w.word)).map((v, i) => item(v, "val", ctx.prop, { _o: i }));
+      if (/color|background|border/.test(ctx.prop)) COLORS.forEach((v) => { if ((!w.word || starts(v, w.word)) && own.indexOf(v) < 0) list.push(item(v, "val", "colour")); });
+      base.forEach((v) => { if ((!w.word || starts(v, w.word)) && own.indexOf(v) < 0) list.push(item(v, "val", "value")); });
+      const seen = {}; list = list.filter((x) => (seen[x.text] ? false : (seen[x.text] = 1)));
+      // property-specific values keep their natural order and come first
+      list.sort((a, b) => (a._o != null ? a._o : 999) - (b._o != null ? b._o : 999) || a.text.length - b.text.length);
+      list = list.slice(0, 60);
+      return list.length ? { list, from: w.from, to: w.to } : null;
+    }
+    // property name
+    const pw = wordAt(cm, /[\w-]/);
+    if (!pw.word) return null;
+    const r = CM.hint.css && CM.hint.css(cm);
+    const names = (r && r.list ? r.list.map((x) => (typeof x === "string" ? x : x.text)) : []).concat(Object.keys(CSS_VALUES));
+    let list = [];
+    const seen = {};
+    names.forEach((t) => { if (seen[t] || !starts(t, pw.word)) return; seen[t] = 1; list.push(item(t, "prop", "property", { _common: CSS_VALUES[t] ? 1 : 0, hint: (c, d) => { c.replaceRange(t + ": ;", d.from, d.to, "complete"); const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); setTimeout(() => c.showHint({ hint: copaHint, completeSingle: false }), 30); } })); });
+    // common properties first, then shortest
+    list.sort((a, b) => (b._common - a._common) || a.text.length - b.text.length);
+    list = list.slice(0, 60);
+    return list.length ? { list, from: pw.from, to: pw.to } : null;
   }
   function htmlHint(cm) {
     const cur = cm.getCursor(), lineBefore = cm.getLine(cur.line).slice(0, cur.ch);
@@ -199,11 +271,12 @@
     });
     return list.length ? { list: rank(list, w.word), from: w.from, to: w.to } : null;
   }
+  let OPTS = {};
   function copaHint(cm) {
     const mode = cm.getModeAt(cm.getCursor()).name;
     if (mode === "python") return pythonHint(cm);
     if (mode === "javascript") return jsHint(cm);
-    if (mode === "css") return cssHint(cm);
+    if (mode === "css") return cssHint(cm, OPTS);
     return htmlHint(cm);
   }
   copaHint.supportsSelection = false;
@@ -222,12 +295,16 @@
   }
 
   /* ---------- attach to an editor ---------- */
-  function attach(cm) {
+  function attach(cm, opts) {
+    OPTS = opts || {};
     let t;
     cm.on("inputRead", (c, ch) => {
       if (ch.origin !== "+input" || c.state.completionActive) return;
       const typed = ch.text[ch.text.length - 1];
-      if (!/[\w.<!:$-]$/.test(typed)) return;
+      const cssMode = c.getModeAt(c.getCursor()).name === "css";
+      const cur = c.getCursor(), before = c.getLine(cur.line).slice(0, cur.ch);
+      const cssValueStart = cssMode && /:\s?$/.test(before) && cssContext(c).kind === "value";   // "color:" or "color: " → show values
+      if (!cssValueStart && !/[\w.<!:#@$-]$/.test(typed)) return;
       const tok = c.getTokenAt(c.getCursor());
       if (tok.type && /comment/.test(tok.type)) return;
       if (tok.type === "string" && !/css/.test(c.getModeAt(c.getCursor()).name)) return;
