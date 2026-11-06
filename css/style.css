@@ -460,8 +460,6 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
   .brand-sep, .brand-iti { display: none; }
 }
 @media (max-width: 1024px) {
-  .main-nav { display: none; }
-  .menu-toggle { display: grid; place-items: center; }
   .header-actions { margin-left: auto; }
   .top-drop { display: flex; }
   body.nav-open .top-drop { transform: none; opacity: 1; visibility: visible; }
@@ -697,16 +695,22 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 
 .brand-text .b2, .brand-text .b1 { white-space: nowrap; }
 
-/* 7 menu items need ~1320px; below that use the drop-down menu */
-@media (max-width: 1320px) {
-  .main-nav { display: none; }
-  .menu-toggle { display: grid; place-items: center; }
-  .header-actions { margin-left: auto; }
-  .top-drop { display: flex; }
-  body.nav-open .top-drop { transform: none; opacity: 1; visibility: visible; }
-  body.nav-open .sidebar-backdrop { display: block; position: fixed; inset: var(--header-h) 0 0 0; background: rgba(7,21,56,.45); z-index: 55; }
-}
-@media (min-width: 1321px) and (max-width: 1500px) {
-  .main-nav a { padding: 9px 10px; font-size: 13.5px; gap: 6px; }
+/* menu collapses to the ☰ drop-down only when it really does not fit (measured in app.js) */
+.site-header.collapsed .main-nav { display: none; }
+.site-header.collapsed .menu-toggle { display: grid; place-items: center; }
+.site-header.collapsed .header-actions { margin-left: auto; }
+.site-header.collapsed .top-drop { display: flex; }
+body.nav-open .site-header.collapsed .top-drop { transform: none; opacity: 1; visibility: visible; }
+body.nav-open .site-header.collapsed ~ .sidebar-backdrop { display: block; position: fixed; inset: var(--header-h) 0 0 0; background: rgba(7,21,56,.45); z-index: 55; }
+@media (max-width: 1500px) {
+  .site-header { gap: 12px; padding: 0 16px; }
+  .main-nav { gap: 2px; }
+  .main-nav a { padding: 8px 10px; font-size: 13.5px; gap: 6px; }
   .brand-text .b3 { display: none; }
+}
+@media (max-width: 1240px) {
+  .main-nav a { padding: 8px 8px; font-size: 13px; gap: 5px; }
+  .brand-text .b2 { font-size: 22px; }
+  .lang-select { padding: 7px 26px 7px 11px; font-size: 13px; }
+  .btn-login { padding: 8px 14px; font-size: 13.5px; }
 }

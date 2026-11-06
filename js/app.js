@@ -439,6 +439,7 @@
         '<a class="tg" href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>' +
         '<a class="wa" href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></footer>';
     }
+    fitHeader();
     const sel = document.getElementById("langSel");
     if (sel) { sel.value = lang; sel.addEventListener("change", () => setLang(sel.value)); }
     const lb = document.getElementById("loginBtn");
@@ -451,6 +452,23 @@
     });
     const sb = document.getElementById("sideBack");
     if (sb) sb.addEventListener("click", () => document.body.classList.remove("nav-open", "palette-open"));
+  }
+
+  /* show the full menu whenever it fits; otherwise collapse to the ☰ drop-down */
+  function fitHeader() {
+    const h = document.querySelector(".site-header"); if (!h) return;
+    const check = () => {
+      h.classList.remove("collapsed");
+      const nav = h.querySelector(".main-nav"), brand = h.querySelector(".brand"), act = h.querySelector(".header-actions");
+      if (!nav || !brand || !act) return;
+      const b = brand.getBoundingClientRect(), n = nav.getBoundingClientRect(), a = act.getBoundingClientRect();
+      const tooNarrow = window.innerWidth < 760 || n.left < b.right + 8 || n.right > a.left - 8 || h.scrollWidth > h.clientWidth + 1 || n.height > 56;
+      h.classList.toggle("collapsed", tooNarrow);
+      if (!tooNarrow) document.body.classList.remove("nav-open");
+    };
+    check();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(check);
+    let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(check, 80); });
   }
 
   const langListeners = [];
