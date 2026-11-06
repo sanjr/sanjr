@@ -161,7 +161,7 @@
   document.getElementById("lp").innerHTML =
     /* NAV */
     '<header class="lp-nav" id="lpNav"><div class="lp-wrap">' +
-    '<a class="lp-logo" href="index.html"><span class="mk"></span><span>COPA<b> MCQ</b>.<small>MHNJE ITI • Maharashtra</small></span></a>' +
+    '<a class="lp-logo" href="index.html"><span class="mk"></span><span>COPA<b> MCQ</b>.<small>ITI • Learn • Practice • Excel</small></span></a>' +
     '<nav class="lp-links" aria-label="Main">' + X.nav.map((n, i) => '<a href="' + href[i] + '" class="' + (i === 0 ? "on" : "") + '">' + n + "</a>").join("") + "</nav>" +
     '<div class="lp-acts"><label class="sr-only" for="lpLang">Language</label><select class="lp-lang" id="lpLang"><option value="en">English</option><option value="hi">हिंदी</option><option value="mr">मराठी</option></select>' +
     '<button class="lp-signin" id="lpSign"><i class="fa-regular fa-user"></i> ' + (prof ? esc(prof.name.split(" ")[0]) : X.signin) + "</button>" +
@@ -228,7 +228,7 @@
     "<div><h5>" + X.fh[0] + "</h5><ul>" + [["modules.html", 0], ["study.html", 1], [C.modulePage(15), 2], [C.modulePage(11), 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl1[a[1]] + "</a></li>").join("") + "</ul></div>" +
     "<div><h5>" + X.fh[1] + "</h5><ul>" + [["exam.html", 0], ["exam.html", 1], ["results.html", 2], ["results.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl2[a[1]] + "</a></li>").join("") + "</ul></div>" +
     "<div><h5>" + X.fh[2] + "</h5><ul>" + [["about.html", 0], ["about.html#contact", 1], ["about.html", 2], ["about.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl3[a[1]] + "</a></li>").join("") + "</ul></div></div>" +
-    '<div class="bot"><span>© ' + new Date().getFullYear() + " MHNJE ITI COPA MCQ. " + t("footerRights") + "</span><span>" + t("footerTag") + "</span></div></div></footer>";
+    '<div class="bot"><span>© ' + new Date().getFullYear() + " COPA MCQ. " + t("footerRights") + "</span><span>" + t("footerTag") + "</span></div></div></footer>";
 
   /* ---------- behaviour ---------- */
   const sel = document.getElementById("lpLang");

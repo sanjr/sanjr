@@ -1,5 +1,5 @@
 /* =========================================================
-   MHNJE ITI – COPA MCQ  |  Core: i18n, layout, storage
+   COPA MCQ  |  Core: i18n, layout, storage
    ========================================================= */
 (function () {
   "use strict";
@@ -294,48 +294,33 @@
     { k: "results", href: "results.html", icon: "fa-chart-simple" },
     { k: "about", href: "about.html", icon: "fa-circle-info" }
   ];
-  const SIDE = [
-    { k: "home", href: "index.html", icon: "fa-house" },
-    { k: "dashboard", href: "results.html", icon: "fa-table-cells-large", match: "dashboard" },
-    { k: "practice", href: "modules.html", icon: "fa-pen-to-square" },
-    { k: "onlineTest", href: "exam.html", icon: "fa-clock", match: "mock" },
-    { k: "subjects", href: "modules.html", icon: "fa-book", match: "subjects" },
-    { k: "study", href: "study.html", icon: "fa-folder-open" },
-    { k: "results", href: "results.html", icon: "fa-chart-simple" },
-    { k: "contact", href: "about.html#contact", icon: "fa-envelope", match: "contact" }
-  ];
-
   function renderShell(active) {
+    if (active === "dashboard") active = "results";
+    if (active === "contact") active = "about";
     const prof = getProfile();
+    const links = (cls) => NAV.map((n) => '<a href="' + ROOT + n.href + '" class="' + (active === n.k ? "active" : "") + '"><i class="fa-solid ' + n.icon + '"></i><span class="lbl">' + t(n.k) + "</span></a>").join("");
     const header = document.getElementById("app-header");
     if (header) {
       header.outerHTML =
         '<header class="site-header">' +
-        '<button class="menu-toggle" id="menuToggle" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>' +
         '<a class="brand" href="' + ROOT + 'index.html">' + LOGO +
-        '<span class="brand-text"><span class="b1">MHNJE ITI</span><span class="b2">COPA MCQ</span><span class="b3">' + t("tagline") + "</span></span></a>" +
-        '<span class="brand-sep"></span><span class="brand-iti"><b>ITI</b>' + t("iti") + "<br>" + t("maharashtra") + "</span>" +
-        '<nav class="main-nav" aria-label="Main">' +
-        NAV.map((n) => '<a href="' + ROOT + n.href + '" class="' + (active === n.k ? "active" : "") + '"><i class="fa-solid ' + n.icon + '"></i><span class="lbl">' + t(n.k) + "</span></a>").join("") +
-        "</nav>" +
+        '<span class="brand-text"><span class="b2">COPA MCQ</span><span class="b3">' + t("tagline") + "</span></span></a>" +
+        '<nav class="main-nav" aria-label="Main">' + links() + "</nav>" +
         '<div class="header-actions">' +
         '<label class="sr-only" for="langSel">Language</label><select class="lang-select" id="langSel">' +
         '<option value="en">English</option><option value="hi">हिंदी</option><option value="mr">मराठी</option></select>' +
         '<button class="btn-login" id="loginBtn"><i class="fa-solid fa-user"></i><span class="lbl">' + (prof ? esc(prof.name.split(" ")[0]) : t("login")) + "</span></button>" +
-        "</div></header>";
-    }
-    const side = document.getElementById("app-sidebar");
-    if (side) {
-      side.outerHTML =
-        '<aside class="sidebar" id="sidebar"><nav class="side-nav" aria-label="Sidebar">' +
-        SIDE.map((n) => '<a href="' + ROOT + n.href + '" class="' + (active === (n.match || n.k) ? "active" : "") + '"><i class="fa-solid ' + n.icon + '"></i>' + t(n.k) + "</a>").join("") +
-        '</nav><div class="side-promo"><div class="trophy"><i class="fa-solid fa-trophy"></i></div><p>' + t("dream") + "<br><span>" + t("getSuccess") + "</span></p></div></aside>" +
+        '<button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>' +
+        "</div>" +
+        '<nav class="top-drop" id="topDrop" aria-label="Mobile">' + links() + "</nav></header>" +
         '<div class="sidebar-backdrop" id="sideBack"></div>';
     }
+    const side = document.getElementById("app-sidebar");
+    if (side) side.remove();
     const foot = document.getElementById("app-footer");
     if (foot) {
       foot.outerHTML =
-        '<footer class="site-footer"><div>© ' + new Date().getFullYear() + " <b>MHNJE ITI COPA MCQ</b>. " + t("footerRights") + "</div>" +
+        '<footer class="site-footer"><div>© ' + new Date().getFullYear() + " <b>COPA MCQ</b>. " + t("footerRights") + "</div>" +
         '<div class="tag">ITI ' + t("maharashtra") + " &nbsp;|&nbsp; " + t("footerTag") + "</div>" +
         '<div class="socials"><a class="yt" href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>' +
         '<a class="tg" href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>' +
@@ -346,7 +331,11 @@
     const lb = document.getElementById("loginBtn");
     if (lb) lb.addEventListener("click", () => openLogin());
     const mt = document.getElementById("menuToggle");
-    if (mt) mt.addEventListener("click", () => document.body.classList.toggle("nav-open"));
+    if (mt) mt.addEventListener("click", () => {
+      const o = document.body.classList.toggle("nav-open");
+      mt.setAttribute("aria-expanded", o);
+      mt.innerHTML = '<i class="fa-solid ' + (o ? "fa-xmark" : "fa-bars") + '"></i>';
+    });
     const sb = document.getElementById("sideBack");
     if (sb) sb.addEventListener("click", () => document.body.classList.remove("nav-open", "palette-open"));
   }

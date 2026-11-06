@@ -5,7 +5,7 @@
   const mid = parseInt(document.body.getAttribute("data-module"), 10);
   const mod = C.MODULES[mid - 1];
   C.renderShell("practice");
-  document.title = "Module " + mid + ": " + mod.en + " – COPA MCQ | MHNJE ITI";
+  document.title = "Module " + mid + ": " + mod.en + " – COPA MCQ";
 
   const all = C.byModule(mid);
   const KEY = "practice";

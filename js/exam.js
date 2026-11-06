@@ -170,7 +170,7 @@
     const prof = sess.cfg;
     const l = C.lang;
     cbtEl.innerHTML =
-      '<div class="cbt-top"><div class="title">' + esc(sess.title) + "<small>MHNJE ITI • COPA • CBT</small></div><span class=\"spacer\"></span>" +
+      '<div class="cbt-top"><div class="title">' + esc(sess.title) + "<small>COPA • CBT</small></div><span class=\"spacer\"></span>" +
       '<label style="font-size:13px;display:flex;gap:6px;align-items:center">' + t("viewIn") + ' <select class="lang-select" id="cbtLang"><option value="en">English</option><option value="hi">हिंदी</option><option value="mr">मराठी</option></select></label>' +
       '<div class="timer" id="timer" title="' + t("timeLeft") + '"><i class="fa-regular fa-clock"></i><span>--:--</span></div>' +
       '<button class="btn btn-yellow btn-sm palette-toggle" id="palT"><i class="fa-solid fa-table-cells"></i></button></div>' +
