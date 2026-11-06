@@ -3,7 +3,7 @@
 An online MCQ practice and CBT mock-test website for the ITI **COPA** (Computer Operator & Programming Assistant) trade, built with plain **HTML, CSS and JavaScript**. It has no build step and no server code.
 
 ## Features
-- **355 MCQs from 15 modules**, taken from the *COPA Question Bank (P. R. Gaikwad)* PDF.
+- **355 MCQs from 15 modules**, taken from the COPA question bank PDF (DGT – CTS, NSQF Level 3.5). Each question has a one-line explanation of the correct answer in all three languages (`tools/explain/`, merged into `data/questions.js` by `tools/explain/merge.py`).
 - **3 languages**: English, हिंदी, मराठी. You can switch language anywhere, even during an exam.
 - **A separate page for each module** (`modules/module-01.html` … `module-15.html`), with:
   - Practice mode: instant right/wrong feedback, a question palette, shuffle and saved progress

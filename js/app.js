@@ -28,6 +28,7 @@
   /* ---------- UI strings ---------- */
   const I18N = {
     en: {
+      whyAns: "Explanation", 
       pin: "4-digit PIN", pinNote: "Remember your Roll No. and PIN – you need them to log in again on this computer.", createAcc: "Create Account", pinErr: "PIN must be exactly 4 digits.", rollExists: "This Roll No. is already registered. Please login.", noAccount: "No account found for this Roll No. Please register first.", wrongPin: "Wrong PIN. Please try again.",
       myDash: "My Dashboard", hello: "Hello", memberSince: "Member since", lastLogin: "Last login", passed: "Passed", failed: "Failed", passRate: "Pass Rate", lastScore: "Last Score",
       scoreTrend: "Score Trend", scoreTrendDesc: "Percentage in each test (dashed line = 40% pass mark)", testHistory: "Test History", allTests: "All tests saved for this student",
@@ -91,6 +92,7 @@
       selectOneModule: "Please select at least one module.", progress: "Progress", accuracy: "Accuracy"
     },
     hi: {
+      whyAns: "व्याख्या", 
       pin: "4 अंकों का PIN", pinNote: "अपना रोल नं. और PIN याद रखें – इस कंप्यूटर पर दोबारा लॉगिन के लिए इनकी ज़रूरत होगी।", createAcc: "अकाउंट बनाएँ", pinErr: "PIN ठीक 4 अंकों का होना चाहिए।", rollExists: "यह रोल नं. पहले से रजिस्टर है। कृपया लॉगिन करें।", noAccount: "इस रोल नं. का कोई अकाउंट नहीं मिला। पहले रजिस्टर करें।", wrongPin: "गलत PIN। फिर से कोशिश करें।",
       myDash: "मेरा डैशबोर्ड", hello: "नमस्ते", memberSince: "सदस्य बने", lastLogin: "पिछला लॉगिन", passed: "उत्तीर्ण", failed: "अनुत्तीर्ण", passRate: "उत्तीर्ण दर", lastScore: "पिछला स्कोर",
       scoreTrend: "स्कोर ट्रेंड", scoreTrendDesc: "हर टेस्ट का प्रतिशत (डैश रेखा = 40% उत्तीर्ण अंक)", testHistory: "टेस्ट इतिहास", allTests: "इस छात्र के सभी सेव किए गए टेस्ट",
@@ -154,6 +156,7 @@
       selectOneModule: "कृपया कम से कम एक मॉड्यूल चुनें।", progress: "प्रगति", accuracy: "सटीकता"
     },
     mr: {
+      whyAns: "स्पष्टीकरण", 
       pin: "4 अंकी PIN", pinNote: "तुमचा रोल नं. आणि PIN लक्षात ठेवा – या संगणकावर पुन्हा लॉगिनसाठी ते लागतील.", createAcc: "अकाउंट तयार करा", pinErr: "PIN बरोबर 4 अंकांचा असावा.", rollExists: "हा रोल नं. आधीच नोंदणीकृत आहे. कृपया लॉगिन करा.", noAccount: "या रोल नं. चे अकाउंट सापडले नाही. आधी नोंदणी करा.", wrongPin: "चुकीचा PIN. पुन्हा प्रयत्न करा.",
       myDash: "माझा डॅशबोर्ड", hello: "नमस्कार", memberSince: "सदस्य झाल्यापासून", lastLogin: "शेवटचे लॉगिन", passed: "उत्तीर्ण", failed: "अनुत्तीर्ण", passRate: "उत्तीर्ण दर", lastScore: "शेवटचे गुण",
       scoreTrend: "गुणांचा ट्रेंड", scoreTrendDesc: "प्रत्येक टेस्टची टक्केवारी (डॅश रेषा = 40% उत्तीर्ण गुण)", testHistory: "टेस्ट इतिहास", allTests: "या विद्यार्थ्याच्या सर्व सेव्ह केलेल्या टेस्ट",
@@ -259,6 +262,8 @@
     return h;
   }
   const optText = (q, l, i) => ((q[l] || q.en).o[i]);
+  /* one-line explanation of the correct answer */
+  const explain = (q, l) => (q.x ? '<div class="explain"><i class="fa-solid fa-lightbulb"></i><div><b>' + t("whyAns") + ":</b> " + esc(q.x[l] || q.x.en) + "</div></div>" : "");
 
   /* ---------- Toast & modal ---------- */
   function toast(msg) {
@@ -440,6 +445,6 @@
     ROOT, MODULES, I18N, QUESTIONS, qById, byModule, modulePage, iconCls,
     get lang() { return lang; },
     t, modName, esc, fmtTime, shuffle, pad, store, toast, modal,
-    PASS, renderShell, setLang, onLang, applyStatic, getProfile, openLogin, logout, getStats, moduleProgress, qBlock, optText
+    PASS, explain, renderShell, setLang, onLang, applyStatic, getProfile, openLogin, logout, getStats, moduleProgress, qBlock, optText
   };
 })();

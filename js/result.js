@@ -78,7 +78,7 @@
             let cls = "opt";
             if (i === q.a) cls += " correct"; else if (i === r.sel) cls += " wrong";
             return '<div class="' + cls + '"><span class="k">' + "ABCD"[i] + '</span><span class="ot">' + esc(C.optText(q, l, i)) + (i === r.sel ? ' <small>(' + t("yourAns") + ")</small>" : "") + "</span></div>";
-          }).join("") + "</div></article>";
+          }).join("") + "</div>" + C.explain(q, l) + "</article>";
       }).join("") : '<div class="card empty"><i class="fa-regular fa-face-smile"></i><p>—</p></div>';
     }
     draw("all");

@@ -51,8 +51,9 @@
         (L() !== "en" && C.optText(q, L(), i) !== q.en.o[i] ? '<br><small style="color:var(--ink-3)">' + esc(q.en.o[i]) + "</small>" : "") + "</span></button>";
     }).join("");
     let fb = "";
-    if (a) fb = a.ok ? '<div class="feedback ok"><i class="fa-solid fa-circle-check"></i> ' + t("wellDone") + "</div>"
-      : '<div class="feedback no"><i class="fa-solid fa-circle-xmark"></i> ' + t("oops") + " " + t("correctAns") + ": <b>" + "ABCD"[q.a] + ". " + esc(C.optText(q, L(), q.a)) + "</b></div>";
+    if (a) fb = a.ok ? '<div class="feedback ok"><i class="fa-solid fa-circle-check"></i><span>' + t("wellDone") + "</span></div>"
+      : '<div class="feedback no"><i class="fa-solid fa-circle-xmark"></i><span>' + t("oops") + " " + t("correctAns") + ": <b>" + "ABCD"[q.a] + ". " + esc(C.optText(q, L(), q.a)) + "</b></span></div>";
+    if (a) fb += C.explain(q, L());
 
     const p = C.moduleProgress(mid);
     const pal = order.map((id, i) => {
@@ -90,7 +91,7 @@
       (q.code ? '<pre class="code">' + esc(q.code) + "</pre>" : "") +
       (q.img ? '<img class="q-img" src="' + C.ROOT + q.img + '" alt="" loading="lazy">' : "") +
       "<ol>" + [0, 1, 2, 3].map((i) => '<li class="' + (i === q.a ? "ans" : "") + '">(' + "ABCD"[i] + ") " + esc(q[l].o[i]) + (i === q.a ? ' <i class="fa-solid fa-check"></i>' : "") + "</li>").join("") + "</ol>" +
-      '<span class="chip green"><i class="fa-solid fa-key"></i> ' + t("correctAns") + ": " + "ABCD"[q.a] + "</span></article>";
+      '<span class="chip green"><i class="fa-solid fa-key"></i> ' + t("correctAns") + ": " + "ABCD"[q.a] + "</span>" + C.explain(q, l) + "</article>";
   }
 
   function render() {

@@ -50,7 +50,7 @@
       var items = C.QUESTIONS.filter(function (q) {
         if (m && q.m !== m) return false;
         if (!s) return true;
-        return [q.en.q, q[l].q].concat(q.en.o, q[l].o, q.code || "").join(" ").toLowerCase().indexOf(s) > -1;
+        return [q.en.q, q[l].q].concat(q.en.o, q[l].o, q.code || "", q.x ? q.x[l] : "").join(" ").toLowerCase().indexOf(s) > -1;
       });
       document.getElementById("fCount").textContent = t("showing") + " " + items.length;
       var html = "", lastM = 0;
@@ -65,7 +65,7 @@
           (q.code ? '<pre class="code">' + esc(q.code) + '</pre>' : "") +
           (q.img ? '<img class="q-img" src="' + q.img + '" alt="" loading="lazy">' : "") +
           '<ol>' + [0, 1, 2, 3].map(function (i) { return '<li class="' + (show && i === q.a ? "ans" : "") + '">(' + "ABCD"[i] + ') ' + esc(q[l].o[i]) + (show && i === q.a ? ' <i class="fa-solid fa-check"></i>' : "") + '</li>'; }).join("") + '</ol>' +
-          (show ? '<span class="chip green"><i class="fa-solid fa-key"></i> ' + t("correctAns") + ': ' + "ABCD"[q.a] + '</span>' : "") + '</article>';
+          (show ? '<span class="chip green"><i class="fa-solid fa-key"></i> ' + t("correctAns") + ': ' + "ABCD"[q.a] + '</span>' + C.explain(q, l) : "") + '</article>';
       });
       document.getElementById("list").innerHTML = html || '<div class="card empty"><i class="fa-solid fa-magnifying-glass"></i><p>' + t("noMatch") + '</p></div>';
     }

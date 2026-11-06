@@ -639,3 +639,10 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 .module-hero .m-stats { margin-left: 0; }
 @media (max-width: 1100px) { .m-shot { display: none; } .module-hero .m-stats { margin-left: auto; } }
 @media (max-width: 720px) { .module-hero .m-stats { margin-left: 0; } }
+
+/* ---------- Answer explanation ---------- */
+.explain { display: flex; gap: 12px; align-items: flex-start; margin-top: 12px; padding: 13px 16px; border-radius: 12px; background: #fff8e6; border: 1px solid #ffe3a3; border-left: 4px solid var(--yellow-600); color: #5b4300; font-size: 14.5px; line-height: 1.6; }
+.explain > i { color: var(--yellow-600); font-size: 17px; margin-top: 3px; }
+.explain b { color: #3d2c00; font-family: var(--font-head); font-weight: 600; }
+.study-item .explain { margin-top: 10px; font-size: 13.5px; padding: 10px 14px; }
+.review-item .explain { font-size: 13.5px; }

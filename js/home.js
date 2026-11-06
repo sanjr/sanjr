@@ -28,7 +28,7 @@
       footP: "Free online learning platform for ITI Computer Operator & Programming Assistant (COPA) trainees.",
       fh: ["Learn", "Practice", "Institute"], fl1: ["All Modules", "Study Material", "Python", "JavaScript"],
       fl2: ["Mock Test (CBT)", "Quick Test", "My Results", "Dashboard"], fl3: ["About", "Contact", "MHNJE ITI", "Maharashtra"],
-      by: "P. R. Gaikwad", byR: "COPA Instructor"
+      by: "COPA MCQ", byR: "ITI COPA"
     },
     hi: {
       nav: ["होम", "मॉड्यूल", "मॉक टेस्ट", "अध्ययन", "परिणाम", "परिचय"],
@@ -53,7 +53,7 @@
       footP: "ITI कंप्यूटर ऑपरेटर एवं प्रोग्रामिंग असिस्टेंट (COPA) प्रशिक्षुओं के लिए निःशुल्क ऑनलाइन लर्निंग प्लेटफ़ॉर्म।",
       fh: ["सीखें", "अभ्यास", "संस्थान"], fl1: ["सभी मॉड्यूल", "अध्ययन सामग्री", "पायथन", "जावास्क्रिप्ट"],
       fl2: ["मॉक टेस्ट (CBT)", "क्विक टेस्ट", "मेरे परिणाम", "डैशबोर्ड"], fl3: ["परिचय", "संपर्क", "MHNJE ITI", "महाराष्ट्र"],
-      by: "पी. आर. गायकवाड", byR: "COPA अनुदेशक"
+      by: "COPA MCQ", byR: "ITI COPA"
     },
     mr: {
       nav: ["होम", "मॉड्युल्स", "मॉक टेस्ट", "अभ्यास", "निकाल", "माहिती"],
@@ -78,7 +78,7 @@
       footP: "ITI कॉम्प्युटर ऑपरेटर अँड प्रोग्रामिंग असिस्टंट (COPA) प्रशिक्षणार्थ्यांसाठी मोफत ऑनलाइन लर्निंग प्लॅटफॉर्म.",
       fh: ["शिका", "सराव", "संस्था"], fl1: ["सर्व मॉड्युल्स", "अभ्यास साहित्य", "पायथन", "जावास्क्रिप्ट"],
       fl2: ["मॉक टेस्ट (CBT)", "क्विक टेस्ट", "माझे निकाल", "डॅशबोर्ड"], fl3: ["माहिती", "संपर्क", "MHNJE ITI", "महाराष्ट्र"],
-      by: "पी. आर. गायकवाड", byR: "COPA निदेशक"
+      by: "COPA MCQ", byR: "ITI COPA"
     }
   };
   const X = TX[L] || TX.en;
