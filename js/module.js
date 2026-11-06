@@ -26,7 +26,7 @@
       '<section class="module-hero" style="background:linear-gradient(115deg,' + mod.color + ' 0%, #0b1f4d 85%)">' +
       '<span class="m-ic"><i class="' + C.iconCls(mod) + '"></i></span>' +
       "<div><p>" + t("module") + " " + mid + "</p><h1>" + esc(C.modName(mod)) + "</h1><p>" + esc(L() === "en" ? mod.mr : mod.en) + "</p></div>" +
-      '<div class="m-stats"><div><b>' + all.length + "</b><span>" + t("questions") + "</span></div>" +
+      '<img class="m-shot" src="' + C.ROOT + 'assets/img/modules/m' + C.pad(mid) + '.jpg" alt="" width="960" height="540">' + '<div class="m-stats"><div><b>' + all.length + "</b><span>" + t("questions") + "</span></div>" +
       "<div><b>" + p.done + "</b><span>" + t("attempted") + "</span></div>" +
       "<div><b>" + accuracy + "%</b><span>" + t("accuracy") + "</span></div></div></section>" +
       '<div class="mode-tabs no-print">' +

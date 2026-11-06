@@ -7,9 +7,7 @@
   <meta name="description" content="All 15 ITI COPA modules – practise MCQs module-wise in English, Hindi and Marathi.">
   <meta name="theme-color" content="#0b1f4d">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -39,6 +37,7 @@
       var p = C.moduleProgress(m.id);
       var alt = C.lang === "en" ? m.mr : m.en;
       return '<article class="card module-card">' +
+        '<a class="mc-img" href="' + C.modulePage(m.id) + '"><img src="assets/img/modules/m' + C.pad(m.id) + '.jpg" alt="' + esc(C.modName(m)) + '" loading="lazy" width="960" height="540"><span class="mc-no">M' + m.id + '</span></a>' +
         '<div class="top"><span class="s-ic" style="background:' + m.bg + ';color:' + m.color + '"><i class="' + C.iconCls(m) + '"></i></span>' +
         '<div><div class="sub">' + t("module") + ' ' + m.id + ' • ' + p.total + ' ' + t("questions") + '</div><h3>' + esc(C.modName(m)) + '</h3><div class="sub">' + esc(alt) + '</div></div></div>' +
         '<div><div class="score-line"><span>' + t("progress") + '</span><b>' + p.done + '/' + p.total + '</b></div><div class="mini-bar"><i style="width:' + p.pct + '%"></i></div></div>' +

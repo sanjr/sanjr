@@ -107,42 +107,7 @@
       '<path d="M57 90c5 5 13 5 18 0" stroke="' + (inst ? "#fff" : "#4a2a1a") + '" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>';
   }
 
-  // scene artwork for course cards (purple / blue / pink themes)
-  function art(type, theme) {
-    const th = {
-      blue: ["#1b6fb8", "#0b3f75", "#7fd3ff"], lav: ["#e9e6ff", "#cfc6ff", "#7c5cff"], vio: ["#8b6cff", "#5b3df5", "#ffd166"],
-      pink: ["#f3d6f2", "#d9b7ff", "#ff6bb0"], indigo: ["#6c5ce7", "#3d2fb3", "#a29bfe"], teal: ["#c8f1ee", "#9ad9f5", "#0fa3b1"]
-    }[theme];
-    let g = '<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="g' + type + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + th[0] + '"/><stop offset="1" stop-color="' + th[1] + '"/></linearGradient></defs>' +
-      '<rect width="320" height="180" fill="url(#g' + type + ')"/><circle cx="270" cy="30" r="60" fill="#fff" opacity=".12"/><circle cx="40" cy="170" r="50" fill="#fff" opacity=".1"/>';
-    const a = th[2];
-    if (type === "computer") {
-      g += '<g transform="translate(70 30)"><rect width="180" height="110" rx="10" fill="#0e1a36"/><rect x="8" y="8" width="164" height="94" rx="6" fill="' + a + '" opacity=".85"/>' +
-        '<path d="M8 80c40-30 90-40 164-30v52H8z" fill="#fff" opacity=".15"/><rect x="74" y="110" width="32" height="18" fill="#0e1a36"/><rect x="44" y="126" width="92" height="8" rx="4" fill="#0e1a36"/>' +
-        '<g fill="#fff"><rect x="22" y="22" width="60" height="8" rx="4"/><rect x="22" y="38" width="90" height="6" rx="3" opacity=".7"/><rect x="22" y="50" width="70" height="6" rx="3" opacity=".7"/></g></g>';
-    } else if (type === "doc") {
-      g += '<g transform="translate(105 24)"><rect x="18" y="8" width="96" height="124" rx="8" fill="' + th[1] + '"/><rect width="96" height="124" rx="8" fill="#fff"/>' +
-        '<g fill="' + a + '"><rect x="14" y="16" width="50" height="8" rx="4"/></g><g fill="#d6d3f0"><rect x="14" y="34" width="68" height="6" rx="3"/><rect x="14" y="46" width="60" height="6" rx="3"/><rect x="14" y="58" width="68" height="6" rx="3"/><rect x="14" y="70" width="44" height="6" rx="3"/></g>' +
-        '<rect x="14" y="86" width="40" height="26" rx="4" fill="#ffe2b8"/><circle cx="96" cy="112" r="20" fill="#3ccf91"/><path d="M87 112l6 6 12-12" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/></g>';
-    } else if (type === "db") {
-      g += '<g transform="translate(160 40)">' + [0, 1, 2].map((i) => '<g transform="translate(0 ' + (i * 26) + ')"><path d="M-70 0l70-26 70 26-70 26z" fill="#a99bff"/><path d="M-70 0v14l70 26V26z" fill="#6c56e8"/><path d="M70 0v14L0 40V26z" fill="#5440d6"/></g>').reverse().join("") +
-        '<g transform="translate(-48 84)"><ellipse rx="20" ry="9" fill="' + a + '"/><ellipse cy="-5" rx="20" ry="9" fill="#ffe08a"/></g><g transform="translate(48 84)"><ellipse rx="20" ry="9" fill="' + a + '"/><ellipse cy="-5" rx="20" ry="9" fill="#ffe08a"/></g></g>';
-    } else if (type === "code") {
-      g += '<g transform="translate(70 30)"><rect width="180" height="118" rx="10" fill="#fff" opacity=".95"/><rect width="180" height="22" rx="10" fill="#eceaff"/><circle cx="14" cy="11" r="4" fill="#ff6b6b"/><circle cx="28" cy="11" r="4" fill="#ffd166"/><circle cx="42" cy="11" r="4" fill="#3ccf91"/>' +
-        '<text x="16" y="58" font-family="monospace" font-size="24" font-weight="700" fill="' + th[1] + '">&lt;/&gt;</text>' +
-        '<g fill="#cfc8ff"><rect x="76" y="38" width="86" height="7" rx="3.5"/><rect x="76" y="52" width="60" height="7" rx="3.5"/></g><g fill="#ffcf9e"><rect x="16" y="76" width="120" height="7" rx="3.5"/><rect x="16" y="90" width="80" height="7" rx="3.5"/></g></g>' +
-        '<circle cx="46" cy="50" r="16" fill="#ffd166"/><text x="46" y="55" text-anchor="middle" font-size="13" font-weight="800" fill="#5b3df5" font-family="sans-serif">JS</text>' +
-        '<circle cx="280" cy="140" r="16" fill="#ff8a65"/><text x="280" y="145" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="sans-serif">HTML</text>';
-    } else if (type === "python") {
-      g += '<g transform="translate(40 34)"><path d="M10 112L120 92l110 20-110 22z" fill="#2e1f9e" opacity=".6"/><rect x="40" y="0" width="160" height="96" rx="8" fill="#1d1270" transform="skewX(-8)"/>' +
-        '<text x="118" y="44" text-anchor="middle" font-family="monospace" font-size="22" font-weight="700" fill="#fff">10:00 AM</text><text x="118" y="64" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#cfc8ff">print("Hello COPA")</text></g>' +
-        '<g transform="translate(262 46)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#3572a5"/><rect x="-6" y="-6" width="36" height="36" rx="10" fill="#ffd43b"/></g>';
-    } else if (type === "chart") {
-      g += '<g transform="translate(86 26)"><rect width="150" height="104" rx="10" fill="#fff"/><g fill="' + a + '"><rect x="18" y="62" width="18" height="28" rx="3"/><rect x="46" y="44" width="18" height="46" rx="3" opacity=".8"/><rect x="74" y="28" width="18" height="62" rx="3"/><rect x="102" y="50" width="18" height="40" rx="3" opacity=".8"/></g><path d="M18 40l30-14 28 10 46-24" stroke="#ff8a65" stroke-width="3" fill="none"/></g>' +
-        '<g transform="translate(250 120) rotate(-12)"><rect width="46" height="34" rx="6" fill="#ffd166"/><path d="M8 8h30M8 16h22" stroke="#fff" stroke-width="3"/></g><circle cx="58" cy="44" r="12" fill="#3ccf91"/>';
-    }
-    return g + "</svg>";
-  }
+  const modImg = (m) => C.ROOT + "assets/img/modules/m" + C.pad(m) + ".jpg";
 
   const FEATURED = [
     { m: 1, art: "computer", th: "blue", tag: "Basics", tc: "#16b364" },
@@ -183,7 +148,7 @@
     '<div class="lp-courses">' + FEATURED.map((f, i) => {
       const md = C.MODULES[f.m - 1];
       const n = C.byModule(f.m).length;
-      return '<a class="lp-card rv" href="' + C.modulePage(f.m) + '" style="transition-delay:' + (i % 3) * 80 + 'ms"><div class="art">' + art(f.art, f.th) + "</div>" +
+      return '<a class="lp-card rv" href="' + C.modulePage(f.m) + '" style="transition-delay:' + (i % 3) * 80 + 'ms"><div class="art"><img src="' + modImg(f.m) + '" alt="' + esc(C.modName(md)) + '" loading="lazy" width="960" height="540"></div>' +
         '<div class="bd"><div class="meta"><span class="ls"><i style="background:' + f.tc + '" class="fa-solid fa-circle-play"></i>' + n + " " + X.lessons + '</span><span class="stars">' + stars + "</span></div>" +
         "<h3>" + esc(C.modName(md)) + "</h3>" +
         '<div class="ft"><span class="who"><span class="av">' + X.by.charAt(0) + "</span><span>" + esc(X.by) + "<small>" + X.byR + " • M" + f.m + "</small></span></span>" +

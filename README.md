@@ -14,7 +14,8 @@ An online MCQ practice and CBT mock-test website for the ITI **COPA** (Computer 
 - **Results**: score, percentage, Pass/Fail (**pass mark 40%**), module-wise analysis and an answer review.
 - **Study Material** page listing every question with its answer, with search and print/PDF.
 - All data is stored in the browser (`localStorage`) on that computer. There is no server, so a teacher cannot see every student's results in one place.
-- Fully responsive (mobile, tablet and desktop). Icons are bundled, so the site also works offline.
+- Fully responsive (mobile, tablet and desktop). Icons and fonts (Poppins for headings, Roboto for text, Noto Sans Devanagari for Hindi/Marathi) are bundled, so the site also works offline.
+- Each module has its own image (`assets/img/modules/m01.jpg` … `m15.jpg`, 960×540). They are generated from `tools/module-images.html`. You can replace any of them with your own photo using the same file name.
 
 ## Run
 Open `index.html` in a browser, or serve the folder:

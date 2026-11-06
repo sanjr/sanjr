@@ -1,0 +1,359 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../assets/fonts/fonts.css"><link rel="stylesheet" href="../assets/vendor/fontawesome/css/all.min.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#888;font-family:Roboto,Arial,sans-serif}
+.s{width:960px;height:540px;position:relative;overflow:hidden;margin:0 0 20px}
+.win{position:absolute;background:#fff;border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.35);overflow:hidden}
+.tb{height:34px;display:flex;align-items:center;gap:8px;padding:0 12px;font:500 13px Roboto;color:#fff}
+.dots i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}
+.mono{font-family:Consolas,"DejaVu Sans Mono","Courier New",monospace}
+.k{color:#c678dd}.f{color:#61afef}.st{color:#98c379}.n{color:#d19a66}.c{color:#7f848e;font-style:italic}.t{color:#e06c75}.a{color:#d19a66}
+.grid{border-collapse:collapse;font:13px Roboto}
+.grid td,.grid th{border:1px solid #d6d6d6;padding:5px 8px;height:26px}
+.grid th{background:#f1f1f1;font-weight:500;color:#555}
+</style></head><body>
+
+<!-- 1 Computer system -->
+<div class="s" id="m1" style="background:linear-gradient(135deg,#0f3b7a,#1b6fd1 60%,#5ab0ff)">
+ <svg width="960" height="540" viewBox="0 0 960 540" style="position:absolute;inset:0">
+  <defs><linearGradient id="sc1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b7cff"/><stop offset="1" stop-color="#0a2c6b"/></linearGradient>
+  <linearGradient id="tw" x1="0" x2="1"><stop offset="0" stop-color="#2a2f3a"/><stop offset="1" stop-color="#151922"/></linearGradient></defs>
+  <ellipse cx="480" cy="470" rx="400" ry="30" fill="#000" opacity=".25"/>
+  <rect x="80" y="420" width="800" height="18" rx="6" fill="#d9c3a5"/><rect x="80" y="436" width="800" height="12" fill="#b99f7d"/>
+  <rect x="250" y="80" width="420" height="270" rx="14" fill="#111"/><rect x="264" y="94" width="392" height="232" rx="6" fill="url(#sc1)"/>
+  <rect x="264" y="300" width="392" height="26" fill="#0b2250"/><g fill="#fff" opacity=".9"><rect x="440" y="306" width="14" height="14" rx="3"/><rect x="462" y="306" width="14" height="14" rx="3" opacity=".6"/><rect x="484" y="306" width="14" height="14" rx="3" opacity=".6"/></g>
+  <g font-family="Poppins" fill="#fff"><text x="460" y="190" text-anchor="middle" font-size="40" font-weight="800">INPUT → PROCESS</text><text x="460" y="236" text-anchor="middle" font-size="40" font-weight="800">→ OUTPUT</text></g>
+  <rect x="440" y="350" width="40" height="48" fill="#222"/><path d="M380 420l20-24h120l20 24z" fill="#2b2b2b"/>
+  <rect x="700" y="150" width="120" height="270" rx="10" fill="url(#tw)"/><rect x="716" y="172" width="88" height="10" rx="3" fill="#3a404d"/><rect x="716" y="190" width="88" height="10" rx="3" fill="#3a404d"/>
+  <circle cx="760" cy="240" r="12" fill="#1f2530" stroke="#5ab0ff" stroke-width="3"/><rect x="730" y="380" width="60" height="6" rx="3" fill="#5ab0ff" opacity=".8"/>
+  <g transform="translate(250 390)"><rect width="300" height="34" rx="6" fill="#e8e8e8"/><g fill="#cfcfcf">
+   <rect x="10" y="6" width="22" height="9" rx="2"/><rect x="36" y="6" width="22" height="9" rx="2"/><rect x="62" y="6" width="22" height="9" rx="2"/><rect x="88" y="6" width="22" height="9" rx="2"/><rect x="114" y="6" width="22" height="9" rx="2"/><rect x="140" y="6" width="22" height="9" rx="2"/><rect x="166" y="6" width="22" height="9" rx="2"/><rect x="192" y="6" width="22" height="9" rx="2"/><rect x="218" y="6" width="22" height="9" rx="2"/><rect x="244" y="6" width="46" height="9" rx="2"/>
+   <rect x="10" y="19" width="48" height="9" rx="2"/><rect x="62" y="19" width="150" height="9" rx="2"/><rect x="216" y="19" width="74" height="9" rx="2"/></g></g>
+  <ellipse cx="600" cy="406" rx="20" ry="13" fill="#e8e8e8"/><path d="M600 393v12" stroke="#bbb" stroke-width="2"/>
+  <g transform="translate(120 200)"><rect width="96" height="70" rx="8" fill="#fff" opacity=".95"/><rect x="10" y="12" width="76" height="40" rx="4" fill="#1e88e5"/><text x="48" y="64" text-anchor="middle" font-size="10" font-family="Poppins" font-weight="600" fill="#0a2c6b">CPU • RAM • ROM</text>
+   <g fill="#fff"><rect x="18" y="20" width="18" height="24" rx="2"/><rect x="42" y="20" width="36" height="6" rx="2"/><rect x="42" y="30" width="36" height="6" rx="2"/><rect x="42" y="40" width="20" height="4" rx="2"/></g></g>
+ </svg>
+</div>
+
+<!-- 2 Windows -->
+<div class="s" id="m2" style="background:radial-gradient(circle at 30% 30%,#5aa9ff,#0a3e9c 55%,#061d4f)">
+ <svg width="960" height="540" style="position:absolute;inset:0"><path d="M420 120c120 40 220 140 260 300H160c40-150 140-260 260-300z" fill="#7fc0ff" opacity=".25"/><path d="M500 60c160 80 240 220 240 380" stroke="#9fd0ff" stroke-width="40" fill="none" opacity=".18"/></svg>
+ <div class="win" style="left:90px;top:50px;width:520px;height:360px">
+  <div class="tb" style="background:#f3f3f3;color:#222"><i class="fa-solid fa-folder" style="color:#f4b400"></i> File Explorer <span style="margin-left:auto;color:#666">— ☐ ✕</span></div>
+  <div style="display:flex;height:326px;font-size:13px;color:#222">
+   <div style="width:150px;background:#f7f9fc;padding:10px;line-height:2.1;border-right:1px solid #e5e5e5"><div><i class="fa-solid fa-house" style="color:#0078d4"></i> Home</div><div><i class="fa-solid fa-desktop" style="color:#0078d4"></i> Desktop</div><div><i class="fa-solid fa-download" style="color:#0078d4"></i> Downloads</div><div><i class="fa-solid fa-file" style="color:#0078d4"></i> Documents</div><div><i class="fa-solid fa-image" style="color:#0078d4"></i> Pictures</div><div><i class="fa-solid fa-hard-drive" style="color:#555"></i> This PC</div><div><i class="fa-solid fa-trash" style="color:#555"></i> Recycle Bin</div></div>
+   <div style="flex:1;padding:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-content:start;text-align:center">
+    <div><i class="fa-solid fa-folder fa-3x" style="color:#f4c542"></i><br>COPA</div><div><i class="fa-solid fa-folder fa-3x" style="color:#f4c542"></i><br>Notes</div><div><i class="fa-solid fa-file-word fa-3x" style="color:#2b579a"></i><br>Resume.docx</div><div><i class="fa-solid fa-file-excel fa-3x" style="color:#107c41"></i><br>Marks.xlsx</div>
+    <div><i class="fa-solid fa-file-image fa-3x" style="color:#e44d26"></i><br>scan.jpg</div><div><i class="fa-solid fa-file-lines fa-3x" style="color:#666"></i><br>notes.txt</div><div><i class="fa-solid fa-file-powerpoint fa-3x" style="color:#d24726"></i><br>Slides.pptx</div><div><i class="fa-solid fa-file-pdf fa-3x" style="color:#d93025"></i><br>COPA.pdf</div></div></div></div>
+ <div class="win" style="left:560px;top:110px;width:330px;height:330px;background:rgba(243,243,243,.97)">
+  <div style="padding:16px"><div style="background:#fff;border-radius:16px;padding:8px 12px;color:#888;font-size:13px;border:1px solid #ddd"><i class="fa-solid fa-magnifying-glass"></i> Type here to search</div>
+  <div style="font:600 13px Poppins;margin:14px 0 10px;color:#222">Pinned</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;text-align:center;font-size:11px;color:#333">
+   <div><i class="fa-brands fa-edge fa-2x" style="color:#0f8bd6"></i><br>Edge</div><div><i class="fa-solid fa-file-word fa-2x" style="color:#2b579a"></i><br>Word</div><div><i class="fa-solid fa-file-excel fa-2x" style="color:#107c41"></i><br>Excel</div><div><i class="fa-solid fa-gear fa-2x" style="color:#555"></i><br>Settings</div>
+   <div><i class="fa-solid fa-calculator fa-2x" style="color:#444"></i><br>Calculator</div><div><i class="fa-solid fa-pen-nib fa-2x" style="color:#2b88d8"></i><br>Paint</div><div><i class="fa-solid fa-sliders fa-2x" style="color:#0078d4"></i><br>Control Panel</div><div><i class="fa-solid fa-terminal fa-2x" style="color:#222"></i><br>CMD</div></div>
+  <div style="margin-top:22px;border-top:1px solid #ddd;padding-top:12px;display:flex;align-items:center;gap:10px;font-size:13px"><span style="width:30px;height:30px;border-radius:50%;background:#0078d4;color:#fff;display:grid;place-items:center">S</span> Student <i class="fa-solid fa-power-off" style="margin-left:auto"></i></div></div></div>
+ <div style="position:absolute;left:0;right:0;bottom:0;height:52px;background:rgba(240,243,250,.88);display:flex;justify-content:center;align-items:center;gap:22px;font-size:24px">
+  <i class="fa-brands fa-windows" style="color:#0078d4"></i><i class="fa-solid fa-magnifying-glass" style="color:#333;font-size:19px"></i><i class="fa-solid fa-folder" style="color:#f4b400"></i><i class="fa-brands fa-edge" style="color:#0f8bd6"></i><i class="fa-solid fa-file-word" style="color:#2b579a"></i><i class="fa-solid fa-file-excel" style="color:#107c41"></i>
+  <span style="position:absolute;right:18px;font-size:12px;color:#222;text-align:right">10:30 AM<br>06-11-2026</span></div>
+</div>
+
+<!-- 3 Booting / BIOS -->
+<div class="s" id="m3" style="background:#00008b">
+ <div class="mono" style="position:absolute;inset:0;padding:26px 34px;color:#e8e8e8;font-size:17px;line-height:1.6">
+  <div style="display:flex;justify-content:space-between;background:#aaa;color:#00008b;padding:2px 10px;font-weight:700"><span>BIOS SETUP UTILITY</span><span>Main &nbsp; Advanced &nbsp; <span style="background:#00008b;color:#fff;padding:0 6px">Boot</span> &nbsp; Security &nbsp; Exit</span></div>
+  <div style="display:flex;gap:30px;margin-top:16px">
+   <div style="flex:1;border:2px solid #aaa;padding:12px 16px">
+    <div style="color:#ffff55">Boot Device Priority</div><br>
+    <div>1st Boot Device &nbsp;&nbsp;&nbsp;[<span style="color:#fff">SATA: SSD 512GB</span>]</div>
+    <div>2nd Boot Device &nbsp;&nbsp;&nbsp;[USB: Pen Drive]</div>
+    <div>3rd Boot Device &nbsp;&nbsp;&nbsp;[CD/DVD-ROM]</div><br>
+    <div style="color:#ffff55">POST - Power On Self Test</div>
+    <div>CPU &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Intel(R) Core(TM) i5 @ 3.20GHz <span style="color:#55ff55">OK</span></div>
+    <div>Memory &nbsp;&nbsp;: 8192 MB DDR4 <span style="color:#55ff55">OK</span></div>
+    <div>CMOS &nbsp;&nbsp;&nbsp;&nbsp;: Battery Good <span style="color:#55ff55">OK</span></div>
+    <div>Keyboard : Detected <span style="color:#55ff55">OK</span></div>
+   </div>
+   <div style="width:270px;border:2px solid #aaa;padding:12px 16px;color:#ccc;font-size:15px">
+    <div style="color:#ffff55">Item Help</div><br>Specifies the boot sequence from the available devices.<br><br>
+    <span style="color:#fff">←→</span> Select Screen<br><span style="color:#fff">↑↓</span> Select Item<br><span style="color:#fff">+/-</span> Change Option<br><span style="color:#fff">F10</span> Save and Exit<br><span style="color:#fff">ESC</span> Exit</div></div>
+  <div style="position:absolute;left:34px;right:34px;bottom:22px;text-align:center;background:#aaa;color:#00008b;font-weight:700">Press DEL to enter SETUP &nbsp;•&nbsp; F12 Boot Menu &nbsp;•&nbsp; Loading Operating System...</div>
+ </div>
+</div>
+
+<!-- 4 DOS & Linux -->
+<div class="s" id="m4" style="background:linear-gradient(135deg,#2c001e,#5e2750 50%,#e95420)">
+ <div class="win" style="left:40px;top:40px;width:470px;height:330px;background:#0c0c0c">
+  <div class="tb" style="background:#1f1f1f"><i class="fa-solid fa-terminal"></i> Command Prompt</div>
+  <div class="mono" style="color:#cccccc;font-size:14px;padding:12px;line-height:1.5;white-space:pre">Microsoft Windows [Version 10.0.22631]
+
+C:\COPA&gt;<span style="color:#fff">dir *.txt</span>
+ Volume in drive C has no label.
+ Directory of C:\COPA
+
+06-11-2026  10:20      1,024 notes.txt
+06-11-2026  10:25        512 marks.txt
+               2 File(s)      1,536 bytes
+
+C:\COPA&gt;<span style="color:#fff">md PRACTICE</span>
+C:\COPA&gt;<span style="color:#fff">cd PRACTICE</span>_</div></div>
+ <div class="win" style="left:430px;top:150px;width:490px;height:340px;background:#300a24">
+  <div class="tb" style="background:#3c3b37"><span class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span> student@copa-lab: ~</div>
+  <div class="mono" style="color:#eee;font-size:14px;padding:12px;line-height:1.5;white-space:pre"><span style="color:#8ae234">student@copa-lab</span>:<span style="color:#729fcf">~</span>$ ls -l
+-rw-r--r-- 1 student  2048 Nov  6 notes.txt
+drwxr-xr-x 2 student  4096 Nov  6 python
+<span style="color:#8ae234">student@copa-lab</span>:<span style="color:#729fcf">~</span>$ sort -r network
+<span style="color:#8ae234">student@copa-lab</span>:<span style="color:#729fcf">~</span>$ cp notes.txt backup.txt
+<span style="color:#8ae234">student@copa-lab</span>:<span style="color:#729fcf">~</span>$ cd ..
+<span style="color:#8ae234">student@copa-lab</span>:<span style="color:#729fcf">/home</span>$ cat /etc/passwd | head -2
+root:x:0:0:root:/root:/bin/bash
+student:x:1000:1000::/home/student
+<span style="color:#8ae234">student@copa-lab</span>:<span style="color:#729fcf">/home</span>$ █</div></div>
+ <i class="fa-brands fa-linux" style="position:absolute;right:40px;top:30px;font-size:80px;color:#fff;opacity:.9"></i>
+</div>
+
+<!-- 5 Word -->
+<div class="s" id="m5" style="background:linear-gradient(135deg,#dfe8f7,#b9cdee)">
+ <div class="win" style="left:40px;top:30px;width:880px;height:480px;background:#f3f3f3">
+  <div class="tb" style="background:#2b579a"><i class="fa-solid fa-file-word"></i> COPA_Notes.docx - Word <span style="margin-left:auto;opacity:.8">Student</span></div>
+  <div style="background:#2b579a;color:#dde6f5;font:13px Roboto;display:flex;gap:22px;padding:0 16px 6px"><span>File</span><span style="color:#fff;border-bottom:3px solid #fff">Home</span><span>Insert</span><span>Design</span><span>Layout</span><span>References</span><span>Mailings</span><span>Review</span><span>View</span></div>
+  <div style="background:#fff;border-bottom:1px solid #ddd;display:flex;gap:18px;align-items:center;padding:8px 16px;font-size:13px;color:#333">
+   <span style="border:1px solid #ccc;padding:3px 8px;border-radius:3px;width:120px">Calibri (Body)</span><span style="border:1px solid #ccc;padding:3px 8px;border-radius:3px">11</span>
+   <b style="font-size:16px">B</b><i style="font-size:16px;font-family:serif">I</i><u style="font-size:16px">U</u><span style="color:#d00;font-weight:700">A</span>
+   <span style="width:1px;height:26px;background:#ddd"></span><i class="fa-solid fa-align-left"></i><i class="fa-solid fa-align-center" style="background:#cfe0f7;padding:4px"></i><i class="fa-solid fa-align-right"></i><i class="fa-solid fa-align-justify"></i>
+   <span style="width:1px;height:26px;background:#ddd"></span><i class="fa-solid fa-list-ul"></i><i class="fa-solid fa-list-ol"></i>
+   <span style="margin-left:auto;display:flex;gap:10px"><span style="border:1px solid #ccc;padding:4px 10px;font-weight:700;color:#2b579a">Heading 1</span><span style="border:1px solid #ccc;padding:4px 10px">Normal</span></span></div>
+  <div style="background:#e6e6e6;height:376px;display:flex;justify-content:center;padding-top:18px">
+   <div style="width:520px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);padding:40px 54px;font-family:Roboto">
+    <div style="font:700 24px Poppins;color:#2b579a;text-align:center">Word Processing</div>
+    <div style="height:2px;background:#2b579a;margin:10px 0 16px"></div>
+    <p style="font-size:13px;line-height:1.7;color:#333;margin:0 0 10px">Mail merge combines a <b>main document</b> with a <b>data source</b> to create personalised letters, labels and envelopes.</p>
+    <ul style="font-size:13px;line-height:1.8;color:#333;margin:0;padding-left:20px"><li>Ctrl + E – Center align</li><li>Ctrl + P – Print document</li><li>Insert → Object → Audio file</li></ul>
+    <table class="grid" style="margin-top:14px;width:100%;font-size:12px"><tr><th>Shortcut</th><th>Action</th></tr><tr><td>Ctrl + B</td><td>Bold</td></tr><tr><td>Ctrl + S</td><td>Save</td></tr></table></div></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:22px;background:#2b579a;color:#fff;font-size:11px;padding:4px 14px">Page 1 of 3 &nbsp;&nbsp; 245 words &nbsp;&nbsp; English (India)</div></div>
+</div>
+
+<!-- 6 Excel -->
+<div class="s" id="m6" style="background:linear-gradient(135deg,#d9f2e3,#a8dcbc)">
+ <div class="win" style="left:40px;top:30px;width:880px;height:480px">
+  <div class="tb" style="background:#107c41"><i class="fa-solid fa-file-excel"></i> Student_Marks.xlsx - Excel</div>
+  <div style="background:#107c41;color:#d8f0e2;font:13px Roboto;display:flex;gap:22px;padding:0 16px 6px"><span>File</span><span style="color:#fff;border-bottom:3px solid #fff">Home</span><span>Insert</span><span>Page Layout</span><span>Formulas</span><span>Data</span><span>Review</span><span>View</span></div>
+  <div style="display:flex;gap:10px;align-items:center;padding:6px 10px;border-bottom:1px solid #ddd;font-size:13px"><span style="border:1px solid #ccc;padding:2px 10px;width:70px">E2</span><i class="fa-solid fa-xmark" style="color:#999"></i><i class="fa-solid fa-check" style="color:#999"></i><b style="font-style:italic;font-family:serif">fx</b><span class="mono" style="flex:1;border:1px solid #ccc;padding:2px 10px">=SUM(B2:D2)</span></div>
+  <table class="grid" style="width:100%">
+   <tr><th style="width:36px"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th></tr>
+   <tr><th>1</th><td style="background:#107c41;color:#fff;font-weight:700">Name</td><td style="background:#107c41;color:#fff;font-weight:700">Theory</td><td style="background:#107c41;color:#fff;font-weight:700">Practical</td><td style="background:#107c41;color:#fff;font-weight:700">Project</td><td style="background:#107c41;color:#fff;font-weight:700">Total</td><td style="background:#107c41;color:#fff;font-weight:700">Result</td><td></td></tr>
+   <tr><th>2</th><td>Ram</td><td>87</td><td>90</td><td>45</td><td style="outline:2px solid #107c41;font-weight:700">222</td><td style="color:#107c41">PASS</td><td></td></tr>
+   <tr><th>3</th><td>Sham</td><td>68</td><td>88</td><td>40</td><td>196</td><td style="color:#107c41">PASS</td><td></td></tr>
+   <tr><th>4</th><td>Vijay</td><td>90</td><td>98</td><td>48</td><td>236</td><td style="color:#107c41">PASS</td><td></td></tr>
+   <tr><th>5</th><td>Sneha</td><td>45</td><td>52</td><td>30</td><td>127</td><td style="color:#107c41">PASS</td><td></td></tr>
+   <tr><th>6</th><td>Amit</td><td>30</td><td>35</td><td>20</td><td>85</td><td style="color:#d00">FAIL</td><td></td></tr>
+   <tr><th>7</th><td><b>Average</b></td><td>64</td><td>72.6</td><td>36.6</td><td>173.2</td><td></td><td></td></tr>
+   <tr><th>8</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><th>9</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><th>10</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><th>11</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <div style="position:absolute;right:30px;top:200px;width:300px;height:200px;background:#fff;border:1px solid #ccc;box-shadow:0 4px 14px rgba(0,0,0,.15);padding:10px">
+   <div style="font:600 13px Poppins;text-align:center;color:#333">Total Marks</div>
+   <svg width="280" height="160"><line x1="30" y1="140" x2="270" y2="140" stroke="#ccc"/><g fill="#107c41"><rect x="45" y="40" width="30" height="100" rx="3"/><rect x="90" y="54" width="30" height="86" rx="3"/><rect x="135" y="32" width="30" height="108" rx="3"/><rect x="180" y="84" width="30" height="56" rx="3"/></g><rect x="225" y="102" width="30" height="38" rx="3" fill="#e5383b"/><g font-size="10" fill="#555" text-anchor="middle"><text x="60" y="154">Ram</text><text x="105" y="154">Sham</text><text x="150" y="154">Vijay</text><text x="195" y="154">Sneha</text><text x="240" y="154">Amit</text></g></svg></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:26px;background:#f3f3f3;border-top:1px solid #ddd;font-size:12px;display:flex;align-items:center;gap:2px;padding-left:40px"><span style="background:#fff;padding:4px 14px;border-bottom:2px solid #107c41;color:#107c41;font-weight:500">Sheet1</span><span style="padding:4px 14px">Sheet2</span><span style="margin-left:auto;padding-right:14px">Sum: 222 &nbsp; Average: 74</span></div></div>
+</div>
+
+<!-- 7 PowerPoint -->
+<div class="s" id="m7" style="background:linear-gradient(135deg,#fbe3d9,#f2b8a2)">
+ <div class="win" style="left:40px;top:30px;width:880px;height:480px;background:#e9e9e9">
+  <div class="tb" style="background:#c43e1c"><i class="fa-solid fa-file-powerpoint"></i> COPA_Presentation.pptx - PowerPoint</div>
+  <div style="background:#c43e1c;color:#f8d9cf;font:13px Roboto;display:flex;gap:22px;padding:0 16px 6px"><span>File</span><span>Home</span><span>Insert</span><span style="color:#fff;border-bottom:3px solid #fff">Design</span><span>Transitions</span><span>Animations</span><span>Slide Show</span><span>View</span></div>
+  <div style="display:flex;height:404px">
+   <div style="width:170px;background:#f3f3f3;padding:12px;display:flex;flex-direction:column;gap:12px;font-size:11px;color:#555">
+    <div style="display:flex;gap:6px"><span>1</span><div style="flex:1;height:72px;background:linear-gradient(135deg,#c43e1c,#ff8a3d);outline:3px solid #c43e1c;border-radius:2px"></div></div>
+    <div style="display:flex;gap:6px"><span>2</span><div style="flex:1;height:72px;background:#fff;border:1px solid #ccc;padding:8px"><div style="height:6px;background:#c43e1c;width:60%;margin-bottom:6px"></div><div style="height:4px;background:#ccc;margin-bottom:4px"></div><div style="height:4px;background:#ccc;width:80%"></div></div></div>
+    <div style="display:flex;gap:6px"><span>3</span><div style="flex:1;height:72px;background:#fff;border:1px solid #ccc;padding:8px"><div style="height:6px;background:#c43e1c;width:50%;margin-bottom:8px"></div><div style="display:flex;gap:4px;align-items:flex-end;height:36px"><i style="flex:1;height:40%;background:#ff8a3d"></i><i style="flex:1;height:80%;background:#c43e1c"></i><i style="flex:1;height:60%;background:#ff8a3d"></i></div></div></div>
+   </div>
+   <div style="flex:1;display:flex;align-items:center;justify-content:center">
+    <div style="width:600px;height:338px;background:linear-gradient(135deg,#c43e1c,#ff8a3d);box-shadow:0 6px 20px rgba(0,0,0,.25);position:relative;color:#fff;padding:50px">
+     <div style="position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.15)"></div>
+     <div style="border:2px dashed rgba(255,255,255,.6);padding:14px 18px;font:800 40px Poppins">ITI COPA Trade</div>
+     <div style="border:2px dashed rgba(255,255,255,.4);margin-top:16px;padding:10px 18px;font-size:18px;line-height:1.7">• Slide Master &amp; Themes<br>• Transitions &amp; Animations<br>• Slide Show – F5</div></div></div></div></div>
+</div>
+
+<!-- 8 Database -->
+<div class="s" id="m8" style="background:linear-gradient(135deg,#0b2a4a,#145a9c)">
+ <div class="win" style="left:40px;top:30px;width:880px;height:480px;background:#1e1e1e">
+  <div class="tb" style="background:#2d2d30"><i class="fa-solid fa-database" style="color:#4fc3f7"></i> MySQL Workbench – copa_db</div>
+  <div style="display:flex;height:446px">
+   <div style="width:190px;background:#252526;color:#ccc;font-size:13px;padding:12px;line-height:2">
+    <div style="color:#888;font-size:11px">SCHEMAS</div><div><i class="fa-solid fa-database" style="color:#4fc3f7"></i> copa_db</div>
+    <div style="padding-left:16px"><i class="fa-solid fa-table" style="color:#ffb74d"></i> student</div><div style="padding-left:16px"><i class="fa-solid fa-table" style="color:#ffb74d"></i> instructor</div><div style="padding-left:16px"><i class="fa-solid fa-table" style="color:#ffb74d"></i> result</div><div style="padding-left:16px"><i class="fa-solid fa-gears" style="color:#81c784"></i> procedures</div></div>
+   <div style="flex:1;display:flex;flex-direction:column">
+    <div class="mono" style="padding:14px 18px;color:#d4d4d4;font-size:15px;line-height:1.6;white-space:pre;background:#1e1e1e"><span class="c">-- DDL, DML and TCL commands</span>
+<span class="k">CREATE TABLE</span> student (roll <span class="f">INT</span>, name <span class="f">VARCHAR</span>(<span class="n">30</span>), marks <span class="f">INT</span>);
+<span class="k">INSERT INTO</span> student <span class="k">VALUES</span> (<span class="n">101</span>, <span class="st">'Ram'</span>, <span class="n">87</span>);
+<span class="k">SELECT</span> name, marks <span class="k">FROM</span> student <span class="k">WHERE</span> marks &gt;= <span class="n">40</span> <span class="k">ORDER BY</span> marks <span class="k">DESC</span>;
+<span class="k">COMMIT</span>;</div>
+    <div style="background:#f3f3f3;flex:1;padding:10px">
+     <div style="font-size:12px;color:#555;margin-bottom:6px">Result Grid &nbsp;|&nbsp; 4 rows returned</div>
+     <table class="grid" style="width:100%;background:#fff"><tr><th>roll</th><th>name</th><th>marks</th><th>status</th></tr><tr><td>103</td><td>Vijay</td><td>90</td><td>PASS</td></tr><tr><td>101</td><td>Ram</td><td>87</td><td>PASS</td></tr><tr><td>102</td><td>Sham</td><td>68</td><td>PASS</td></tr><tr><td>104</td><td>Sneha</td><td>45</td><td>PASS</td></tr></table></div></div></div></div>
+</div>
+
+<!-- 9 Network -->
+<div class="s" id="m9" style="background:radial-gradient(circle at 50% 40%,#3b2a8f,#150f3f)">
+ <svg width="960" height="540" style="position:absolute;inset:0" font-family="Poppins">
+  <g stroke="#7fdcff" stroke-width="3" opacity=".85"><line x1="480" y1="120" x2="480" y2="250"/><line x1="480" y1="270" x2="230" y2="400"/><line x1="480" y1="270" x2="400" y2="420"/><line x1="480" y1="270" x2="560" y2="420"/><line x1="480" y1="270" x2="730" y2="400"/><line x1="480" y1="270" x2="820" y2="250" stroke-dasharray="8 6" stroke="#ffd166"/></g>
+  <g fill="#fff"><path d="M410 110c-30 0-40-40-10-50 0-35 50-45 65-20 20-25 75-15 75 25 30 5 30 45 0 45z" opacity=".95"/></g>
+  <text x="480" y="98" text-anchor="middle" font-size="15" font-weight="700" fill="#3b2a8f">INTERNET (WAN)</text>
+  <g transform="translate(430 240)"><rect width="100" height="40" rx="8" fill="#ffd166"/><g fill="#3b2a8f"><circle cx="18" cy="20" r="4"/><circle cx="32" cy="20" r="4"/><circle cx="46" cy="20" r="4"/><rect x="60" y="14" width="30" height="12" rx="3"/></g></g>
+  <text x="480" y="300" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">Router / Switch • 192.168.1.1</text>
+  <g font-size="12" fill="#cfe9ff" text-anchor="middle">
+   <g transform="translate(190 380)"><rect width="80" height="54" rx="6" fill="#4fc3f7"/><rect x="6" y="6" width="68" height="38" rx="3" fill="#0d2a5c"/><rect x="30" y="54" width="20" height="10" fill="#4fc3f7"/></g><text x="230" y="462">PC-1 • 192.168.1.10</text>
+   <g transform="translate(360 400)"><rect width="80" height="54" rx="6" fill="#4fc3f7"/><rect x="6" y="6" width="68" height="38" rx="3" fill="#0d2a5c"/><rect x="30" y="54" width="20" height="10" fill="#4fc3f7"/></g><text x="400" y="484">PC-2</text>
+   <g transform="translate(520 400)"><rect width="80" height="54" rx="6" fill="#4fc3f7"/><rect x="6" y="6" width="68" height="38" rx="3" fill="#0d2a5c"/><rect x="30" y="54" width="20" height="10" fill="#4fc3f7"/></g><text x="560" y="484">PC-3</text>
+   <g transform="translate(700 370)"><rect width="60" height="80" rx="6" fill="#81c784"/><rect x="8" y="10" width="44" height="8" rx="2" fill="#1b5e20"/><rect x="8" y="24" width="44" height="8" rx="2" fill="#1b5e20"/><rect x="8" y="38" width="44" height="8" rx="2" fill="#1b5e20"/></g><text x="730" y="468">Server</text>
+   <g transform="translate(800 220)"><rect width="40" height="64" rx="8" fill="#ff8a65"/><rect x="5" y="8" width="30" height="44" rx="3" fill="#3b2a8f"/></g><text x="820" y="302">Wi-Fi</text></g>
+  <text x="40" y="50" font-size="26" font-weight="800" fill="#fff">LAN • MAN • WAN</text><text x="40" y="78" font-size="14" fill="#cfe9ff">TCP/IP • HTTP • UTP Cat-5 • Optical Fibre</text>
+ </svg>
+</div>
+
+<!-- 10 Web design -->
+<div class="s" id="m10" style="background:linear-gradient(135deg,#ff7a45,#e44d26 40%,#264de4)">
+ <div class="win" style="left:30px;top:40px;width:470px;height:450px;background:#1e1e1e">
+  <div class="tb" style="background:#323233"><span class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span> index.html — VS Code</div>
+  <div class="mono" style="color:#abb2bf;font-size:14px;padding:12px 14px;line-height:1.65;white-space:pre"><span class="c">&lt;!DOCTYPE html&gt;</span>
+<span class="t">&lt;html&gt;</span>
+<span class="t">&lt;head&gt;</span>
+  <span class="t">&lt;title&gt;</span>COPA Web<span class="t">&lt;/title&gt;</span>
+  <span class="t">&lt;style&gt;</span> h1 { <span class="f">color</span>: <span class="n">#e44d26</span>; } <span class="t">&lt;/style&gt;</span>
+<span class="t">&lt;/head&gt;</span>
+<span class="t">&lt;body</span> <span class="a">bgcolor</span>=<span class="st">"#fff8f0"</span><span class="t">&gt;</span>
+  <span class="t">&lt;h1&gt;</span>Hello COPA<span class="t">&lt;/h1&gt;</span>
+  <span class="t">&lt;p&gt;</span>(A+B)<span class="t">&lt;sup&gt;</span>2<span class="t">&lt;/sup&gt;</span><span class="t">&lt;/p&gt;</span>
+  <span class="t">&lt;img</span> <span class="a">src</span>=<span class="st">"boat.gif"</span> <span class="a">alt</span>=<span class="st">"big boat"</span><span class="t">/&gt;</span>
+  <span class="t">&lt;a</span> <span class="a">href</span>=<span class="st">"https://nimi.gov.in"</span><span class="t">&gt;</span>NIMI<span class="t">&lt;/a&gt;</span>
+  <span class="t">&lt;input</span> <span class="a">type</span>=<span class="st">"checkbox"</span><span class="t">&gt;</span>
+<span class="t">&lt;/body&gt;</span>
+<span class="t">&lt;/html&gt;</span></div></div>
+ <div class="win" style="left:470px;top:90px;width:460px;height:400px;background:#fff8f0">
+  <div class="tb" style="background:#dee1e6;color:#333"><span class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span style="background:#fff;padding:4px 12px;border-radius:8px 8px 0 0;font-size:12px">COPA Web</span></div>
+  <div style="background:#fff;padding:6px 10px;border-bottom:1px solid #ddd;font-size:12px;color:#555"><i class="fa-solid fa-lock" style="color:#188038"></i> file:///C:/COPA/index.html</div>
+  <div style="padding:22px 26px;font-family:'Times New Roman',serif;color:#222">
+   <div style="font:700 34px 'Times New Roman',serif;color:#e44d26">Hello COPA</div>
+   <p style="font-size:20px;margin:10px 0">(A+B)<sup>2</sup></p>
+   <div style="width:200px;height:90px;background:linear-gradient(#7ec8ff,#2a7fd4);border-radius:6px;position:relative"><svg width="200" height="90"><path d="M40 60h120l-20 18H60z" fill="#fff"/><path d="M98 20v38h-40z" fill="#ffd166"/></svg></div>
+   <p style="margin:12px 0 6px"><a href="#" style="color:#1a0dab">NIMI</a></p>
+   <label style="font-size:16px"><input type="checkbox" checked> I agree</label></div>
+  <div style="position:absolute;right:16px;bottom:14px;display:flex;gap:10px;font-size:34px"><i class="fa-brands fa-html5" style="color:#e44d26"></i><i class="fa-brands fa-css3-alt" style="color:#264de4"></i></div></div>
+</div>
+
+<!-- 11 JavaScript -->
+<div class="s" id="m11" style="background:linear-gradient(135deg,#f7df1e,#f0b400)">
+ <div class="win" style="left:30px;top:30px;width:560px;height:480px;background:#282c34">
+  <div class="tb" style="background:#21252b"><span class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span> script.js</div>
+  <div class="mono" style="color:#abb2bf;font-size:15px;padding:14px 16px;line-height:1.65;white-space:pre"><span class="c">// JavaScript – client side scripting</span>
+<span class="k">var</span> trade = [<span class="st">"COPA"</span>, <span class="st">"Fitter"</span>, <span class="st">"Electrician"</span>];
+trade.<span class="f">sort</span>();
+<span class="k">var</span> total = <span class="f">eval</span>(<span class="st">"10*10+5"</span>);   <span class="c">// 105</span>
+
+<span class="k">function</span> <span class="f">checkResult</span>(marks) {
+  <span class="k">try</span> {
+    <span class="k">if</span> (marks &gt;= <span class="n">40</span>) <span class="k">return</span> <span class="st">"PASS"</span>;
+    <span class="k">else</span> <span class="k">throw</span> <span class="st">"FAIL"</span>;
+  } <span class="k">catch</span> (e) { <span class="k">return</span> e; }
+}
+<span class="k">var</span> name = <span class="f">prompt</span>(<span class="st">"Enter your name"</span>);
+<span class="f">alert</span>(name + <span class="st">" : "</span> + <span class="f">checkResult</span>(<span class="n">75</span>));</div></div>
+ <div class="win" style="left:540px;top:150px;width:390px;height:250px;background:#fff">
+  <div class="tb" style="background:#dee1e6;color:#333;font-size:12px">localhost says</div>
+  <div style="padding:24px;font-size:17px;color:#222">Rahul : PASS</div>
+  <div style="position:absolute;right:20px;bottom:20px;background:#1a73e8;color:#fff;padding:8px 22px;border-radius:6px;font:500 14px Roboto">OK</div>
+  <div style="position:absolute;left:20px;bottom:24px;font-size:12px;color:#888"><i class="fa-solid fa-code"></i> Console: ["COPA","Electrician","Fitter"]</div></div>
+ <div style="position:absolute;right:40px;top:40px;width:96px;height:96px;background:#323330;color:#f7df1e;font:800 46px Poppins;display:grid;place-items:end;padding:6px 10px;border-radius:8px">JS</div>
+</div>
+
+<!-- 12 Advance Excel / Power BI -->
+<div class="s" id="m12" style="background:linear-gradient(135deg,#f2c811,#e8a400)">
+ <div class="win" style="left:30px;top:30px;width:900px;height:480px;background:#f4f5f7">
+  <div class="tb" style="background:#252423"><i class="fa-solid fa-chart-column" style="color:#f2c811"></i> Power BI Desktop – COPA Results Dashboard</div>
+  <div style="padding:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+   <div style="background:#fff;border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:12px;color:#666">Total Students</div><div style="font:800 30px Poppins;color:#252423">120</div></div>
+   <div style="background:#fff;border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:12px;color:#666">Pass %</div><div style="font:800 30px Poppins;color:#107c41">86%</div></div>
+   <div style="background:#fff;border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:12px;color:#666">Average Marks</div><div style="font:800 30px Poppins;color:#252423">68.4</div></div>
+   <div style="background:#fff;border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:12px;color:#666">Top Score</div><div style="font:800 30px Poppins;color:#e8a400">98</div></div>
+   <div style="grid-column:span 2;background:#fff;border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font:600 13px Poppins;color:#333;margin-bottom:6px">Marks by Module</div>
+    <svg width="380" height="200"><g stroke="#eee"><line x1="30" y1="20" x2="380" y2="20"/><line x1="30" y1="70" x2="380" y2="70"/><line x1="30" y1="120" x2="380" y2="120"/></g><line x1="30" y1="170" x2="380" y2="170" stroke="#bbb"/>
+     <g fill="#118dff"><rect x="45" y="50" width="34" height="120" rx="3"/><rect x="105" y="80" width="34" height="90" rx="3"/><rect x="165" y="30" width="34" height="140" rx="3"/><rect x="225" y="95" width="34" height="75" rx="3"/><rect x="285" y="60" width="34" height="110" rx="3"/></g>
+     <path d="M62 60L122 90 182 40 242 104 302 70" stroke="#e66c37" stroke-width="3" fill="none"/>
+     <g font-size="11" fill="#666" text-anchor="middle"><text x="62" y="188">Word</text><text x="122" y="188">Excel</text><text x="182" y="188">HTML</text><text x="242" y="188">SQL</text><text x="302" y="188">Python</text></g></svg></div>
+   <div style="background:#fff;border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font:600 13px Poppins;color:#333">Pass vs Fail</div>
+    <svg width="180" height="180" viewBox="0 0 42 42"><circle cx="21" cy="21" r="15.9" fill="none" stroke="#e5383b" stroke-width="7"/><circle cx="21" cy="21" r="15.9" fill="none" stroke="#107c41" stroke-width="7" stroke-dasharray="86 14" stroke-dashoffset="25"/><text x="21" y="24" text-anchor="middle" font-size="7" font-weight="700" font-family="Poppins">86%</text></svg></div>
+   <div style="background:#fff;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);font-size:12px"><div style="font:600 13px Poppins;color:#333;margin-bottom:6px">PivotTable Fields</div>
+    <div style="border:1px solid #ddd;padding:6px;margin-bottom:6px"><i class="fa-regular fa-square-check" style="color:#107c41"></i> Module<br><i class="fa-regular fa-square-check" style="color:#107c41"></i> Marks<br><i class="fa-regular fa-square"></i> Batch</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;color:#555"><div style="border:1px solid #ddd;padding:4px">Filters</div><div style="border:1px solid #ddd;padding:4px">Columns</div><div style="border:1px solid #ddd;padding:4px">Rows</div><div style="border:1px solid #ddd;padding:4px">Σ Values</div></div></div>
+  </div></div>
+</div>
+
+<!-- 13 E-commerce -->
+<div class="s" id="m13" style="background:linear-gradient(135deg,#ffe0c2,#ffb36b)">
+ <div class="win" style="left:30px;top:30px;width:900px;height:480px;background:#f1f3f6">
+  <div style="background:#2874f0;height:58px;display:flex;align-items:center;gap:18px;padding:0 20px;color:#fff">
+   <b style="font:800 22px Poppins;font-style:italic">ShopKart</b><div style="flex:1;background:#fff;border-radius:4px;padding:8px 12px;color:#888;font-size:14px"><i class="fa-solid fa-magnifying-glass" style="color:#2874f0"></i> Search for products, brands and more</div>
+   <span style="font-size:14px"><i class="fa-regular fa-user"></i> Login</span><span style="font-size:14px;position:relative"><i class="fa-solid fa-cart-shopping"></i> Cart <b style="position:absolute;top:-10px;left:8px;background:#ff6161;border-radius:50%;width:18px;height:18px;font-size:11px;display:grid;place-items:center">3</b></span></div>
+  <div style="display:flex;gap:16px;padding:16px">
+   <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+    <div style="background:#fff;padding:14px;text-align:center;border-radius:6px"><i class="fa-solid fa-laptop" style="font-size:72px;color:#455a64;margin:10px 0"></i><div style="font:500 14px Roboto">Laptop i5, 8GB</div><div style="font:700 18px Roboto">₹45,999</div><div style="background:#ff9f00;color:#fff;margin-top:8px;padding:8px;font:600 13px Poppins;border-radius:3px">ADD TO CART</div></div>
+    <div style="background:#fff;padding:14px;text-align:center;border-radius:6px"><i class="fa-solid fa-mobile-screen" style="font-size:72px;color:#263238;margin:10px 0"></i><div style="font:500 14px Roboto">Smartphone 5G</div><div style="font:700 18px Roboto">₹15,499</div><div style="background:#ff9f00;color:#fff;margin-top:8px;padding:8px;font:600 13px Poppins;border-radius:3px">ADD TO CART</div></div>
+    <div style="background:#fff;padding:14px;text-align:center;border-radius:6px"><i class="fa-solid fa-headphones" style="font-size:72px;color:#6a1b9a;margin:10px 0"></i><div style="font:500 14px Roboto">Headphones</div><div style="font:700 18px Roboto">₹1,299</div><div style="background:#ff9f00;color:#fff;margin-top:8px;padding:8px;font:600 13px Poppins;border-radius:3px">ADD TO CART</div></div>
+    <div style="grid-column:span 3;background:#fff;padding:12px 14px;border-radius:6px;font-size:13px;color:#555;display:flex;gap:24px"><span><i class="fa-solid fa-truck" style="color:#2874f0"></i> Cash on Delivery</span><span><i class="fa-solid fa-rotate-left" style="color:#2874f0"></i> Easy Return &amp; Refund</span><span><i class="fa-solid fa-shield" style="color:#2874f0"></i> Secure Payment Gateway</span></div></div>
+   <div style="width:250px;background:#fff;border-radius:6px;padding:14px;font-size:14px">
+    <div style="font:600 14px Poppins;color:#878787;border-bottom:1px solid #eee;padding-bottom:8px">PRICE DETAILS</div>
+    <div style="display:flex;justify-content:space-between;margin:10px 0">Price (3 items)<span>₹62,797</span></div><div style="display:flex;justify-content:space-between;color:#388e3c">Discount<span>− ₹2,000</span></div>
+    <div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px dashed #ddd;margin-top:10px;padding-top:10px">Total<span>₹60,797</span></div>
+    <div style="margin-top:14px;font:600 12px Poppins;color:#555">PAY USING</div>
+    <div style="display:flex;gap:6px;margin-top:6px;font-size:11px;flex-wrap:wrap"><span style="border:1px solid #ddd;padding:4px 6px;border-radius:4px"><b style="color:#097939">UPI</b> BHIM</span><span style="border:1px solid #ddd;padding:4px 6px;border-radius:4px"><i class="fa-regular fa-credit-card"></i> Card</span><span style="border:1px solid #ddd;padding:4px 6px;border-radius:4px">Net Banking</span></div>
+    <div style="background:#fb641b;color:#fff;margin-top:14px;padding:10px;text-align:center;font:600 14px Poppins;border-radius:3px">PLACE ORDER</div></div></div></div>
+</div>
+
+<!-- 14 Cloud -->
+<div class="s" id="m14" style="background:linear-gradient(135deg,#0fa3b1,#0b6a8f 60%,#08345a)">
+ <svg width="960" height="540" style="position:absolute;inset:0" font-family="Poppins">
+  <path d="M300 250c-70 0-90-90-25-110 0-80 110-100 145-45 45-60 170-35 170 55 70 10 70 100 0 100z" fill="#fff"/>
+  <text x="450" y="210" text-anchor="middle" font-size="34" font-weight="800" fill="#0b6a8f">CLOUD</text>
+  <g font-size="14" font-weight="700" text-anchor="middle"><rect x="320" y="222" width="80" height="26" rx="13" fill="#0fa3b1"/><text x="360" y="240" fill="#fff">IaaS</text><rect x="410" y="222" width="80" height="26" rx="13" fill="#f58a07"/><text x="450" y="240" fill="#fff">PaaS</text><rect x="500" y="222" width="80" height="26" rx="13" fill="#7b3fe4"/><text x="540" y="240" fill="#fff">SaaS</text></g>
+  <g stroke="#bff3f7" stroke-width="3" stroke-dasharray="7 6"><line x1="300" y1="270" x2="160" y2="380"/><line x1="450" y1="280" x2="450" y2="390"/><line x1="600" y1="270" x2="750" y2="380"/></g>
+  <g transform="translate(110 380)"><rect width="100" height="64" rx="6" fill="#e0f7fa"/><rect x="8" y="8" width="84" height="44" rx="3" fill="#0b345a"/><rect x="-10" y="64" width="120" height="8" rx="4" fill="#e0f7fa"/></g>
+  <g transform="translate(415 390)"><rect width="70" height="100" rx="8" fill="#e0f7fa"/><g fill="#0b6a8f"><rect x="10" y="12" width="50" height="10" rx="2"/><rect x="10" y="30" width="50" height="10" rx="2"/><rect x="10" y="48" width="50" height="10" rx="2"/></g><circle cx="22" cy="80" r="5" fill="#4caf50"/></g>
+  <g transform="translate(720 380)"><rect width="56" height="90" rx="10" fill="#e0f7fa"/><rect x="6" y="10" width="44" height="64" rx="4" fill="#0b345a"/></g>
+  <g font-size="14" fill="#e0f7fa" text-anchor="middle"><text x="160" y="470">Client / Laptop</text><text x="450" y="510">Cloud Server (EC2)</text><text x="748" y="492">Mobile</text></g>
+  <text x="40" y="56" font-size="24" font-weight="800" fill="#fff">Public • Private • Hybrid Cloud</text>
+  <text x="40" y="84" font-size="14" fill="#bff3f7">Web Hosting • SDLC • Debugging • Testing</text>
+ </svg>
+</div>
+
+<!-- 15 Python -->
+<div class="s" id="m15" style="background:linear-gradient(135deg,#3572a5,#1e3f66 60%,#ffd43b 160%)">
+ <div class="win" style="left:30px;top:30px;width:600px;height:480px;background:#1e1e1e">
+  <div class="tb" style="background:#323233"><span class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span> result.py — Python 3</div>
+  <div class="mono" style="color:#d4d4d4;font-size:15px;padding:14px 16px;line-height:1.62;white-space:pre"><span class="c"># COPA – Python basics</span>
+<span class="k">def</span> <span class="f">grade</span>(marks):
+    <span class="k">if</span> marks &gt;= <span class="n">40</span>:
+        <span class="k">return</span> <span class="st">"PASS"</span>
+    <span class="k">else</span>:
+        <span class="k">return</span> <span class="st">"FAIL"</span>
+
+students = {<span class="st">"Ram"</span>: <span class="n">87</span>, <span class="st">"Sham"</span>: <span class="n">35</span>}
+<span class="k">for</span> name, m <span class="k">in</span> students.<span class="f">items</span>():
+    <span class="f">print</span>(name, <span class="f">grade</span>(m))
+
+lst = [<span class="st">'Python'</span>, <span class="st">'Java'</span>]
+lst.<span class="f">append</span>(<span class="st">'SQL'</span>)
+<span class="f">print</span>(lst, <span class="n">2</span> ** <span class="n">3</span>)</div></div>
+ <div class="win" style="left:560px;top:250px;width:370px;height:230px;background:#0c0c0c">
+  <div class="tb" style="background:#1f1f1f;font-size:12px">TERMINAL</div>
+  <div class="mono" style="color:#cccccc;font-size:14px;padding:12px;line-height:1.6;white-space:pre"><span style="color:#4ec9b0">PS C:\COPA&gt;</span> python result.py
+Ram PASS
+Sham FAIL
+['Python', 'Java', 'SQL'] 8
+<span style="color:#4ec9b0">PS C:\COPA&gt;</span> █</div></div>
+ <svg width="140" height="140" viewBox="0 0 110 110" style="position:absolute;right:50px;top:50px"><path d="M54 6c-24 0-22 10-22 10v11h23v3H23S8 28 8 53s13 24 13 24h8V65s-1-13 13-13h23s13 0 13-12V18S80 6 54 6zm-13 7a4 4 0 110 8 4 4 0 010-8z" fill="#3572a5"/><path d="M56 104c24 0 22-10 22-10V83H55v-3h32s15 2 15-23-13-24-13-24h-8v12s1 13-13 13H45s-13 0-13 12v22s-2 12 24 12zm13-7a4 4 0 110-8 4 4 0 010 8z" fill="#ffd43b"/></svg>
+</div>
+
+</body></html>
