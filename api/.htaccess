@@ -1,6 +1,6 @@
 # COPA MCQ API – protect the config and internal files
 Options -Indexes
-<FilesMatch "^(config\.php|config\.local\.php|\.schema-v1.*|.*\.sqlite)$">
+<FilesMatch "^(config\.php|config\.local\.php|\.schema-v.*|.*\.sqlite)$">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>

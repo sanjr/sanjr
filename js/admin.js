@@ -14,7 +14,7 @@
   const toast = C.toast;
 
   let tab = (location.hash || "#overview").slice(1);
-  let state = { results: [], students: [], live: [], custom: [], notes: [], settings: null };
+  let state = { results: [], students: [], live: [], custom: [], notes: [], settings: null, online: [] };
   let unwatch = null, liveTimer = null;
 
   /* ================= AUTH ================= */
@@ -78,6 +78,7 @@
   /* ================= SHELL ================= */
   const TABS = [
     ["overview", "fa-gauge-high", "Live Dashboard"],
+    ["visitors", "fa-earth-asia", "Visitors"],
     ["results", "fa-square-poll-vertical", "Exam Results"],
     ["students", "fa-user-graduate", "Students"],
     ["questions", "fa-circle-question", "Questions"],
@@ -109,13 +110,79 @@
   }
   function draw() {
     const v = document.getElementById("view");
-    ({ overview, results, students, questions, notes, settings }[tab] || overview)(v);
+    ({ overview, visitors, results, students, questions, notes, settings }[tab] || overview)(v);
   }
   function setLive(list) {
     state.live = (list || []).filter(DB.isLive).sort((a, b) => b.startAt - a.startAt);
     const c = document.getElementById("liveCnt");
     if (c) { c.textContent = state.live.length; c.hidden = !state.live.length; }
     if (tab === "overview") { const el = document.getElementById("liveBox"); if (el) el.innerHTML = liveTable(); const k = document.getElementById("liveKpi"); if (k) k.textContent = state.live.length; }
+  }
+
+
+  /* ================= VISITORS (MySQL mode) ================= */
+  const flag = (cc) => (/^[A-Z]{2}$/.test(cc || "") ? String.fromCodePoint(...cc.split("").map((c) => 127397 + c.charCodeAt(0))) + " " : "");
+  const place = (r) => { const p = [r.city, r.region, r.country].filter(Boolean); return p.length ? flag(r.cc) + esc(p.join(", ")) : '<span class="sub">Finding location…</span>'; };
+  const devIc = (d) => '<i class="fa-solid fa-' + (d === "Mobile" ? "mobile-screen" : d === "Tablet" ? "tablet-screen-button" : "desktop") + '"></i>';
+  const ago = (ts) => { const s = Math.max(0, Math.round((Date.now() - ts) / 1000)); return s < 60 ? s + " s" : s < 3600 ? Math.floor(s / 60) + " min" : Math.floor(s / 3600) + " h " + Math.floor((s % 3600) / 60) + " min"; };
+  const pageName = (pg) => esc(String(pg || "/").replace(/^\/+/, "").replace(/\.html$/, "") || "home");
+  function onlineTable(max) {
+    const list = state.online.slice(0, max || 500);
+    if (!list.length) return '<p class="empty" style="padding:16px"><i class="fa-solid fa-moon"></i> Nobody is on the website right now.</p>';
+    return '<div class="table-wrap"><table class="tbl"><thead><tr><th>Location</th><th>Now on page</th><th>Student</th><th>Device</th><th>On site for</th></tr></thead><tbody>' +
+      list.map((u) => "<tr><td>" + place(u) + "</td><td><b>" + pageName(u.page) + '</b><span class="sub">' + esc(u.title || "") + "</span></td><td>" +
+        (u.name ? "<b>" + esc(u.name) + '</b><span class="sub">Roll ' + esc(u.roll || "") + "</span>" : '<span class="sub">Guest</span>') + "</td><td>" + devIc(u.device) + " " + esc(u.device || "") +
+        '<span class="sub">' + esc([u.os, u.browser].filter(Boolean).join(" • ")) + "</span></td><td>" + ago(u.since) + "</td></tr>").join("") +
+      (state.online.length > list.length ? '<tr><td colspan="5" class="sub">+ ' + (state.online.length - list.length) + " more…</td></tr>" : "") + "</tbody></table></div>";
+  }
+  let onlineTimer = null;
+  function pollOnline() {
+    if (DB.mode !== "mysql" || !D.adminOnline) return;
+    D.adminOnline().then((list) => {
+      state.online = list || [];
+      const c = document.getElementById("onCnt"); if (c) c.textContent = state.online.length;
+      const b = document.getElementById("onBox"); if (b) b.innerHTML = onlineTable(tab === "overview" ? 8 : 500);
+      const k = document.getElementById("vzOn"); if (k) k.innerHTML = '<span class="pulse"></span>' + state.online.length;
+    }).catch(() => {});
+  }
+  let vzDays = 7;
+  function visitors(v) {
+    if (DB.mode !== "mysql") {
+      v.innerHTML = '<div class="adm-h"><div><h2>Visitors</h2><p>Where students visit from and who is online now</p></div></div><div class="card adm-card"><p><i class="fa-solid fa-circle-info"></i> The visitors report works with the <b>MySQL</b> backend. Set <code>backend: "mysql"</code> in <code>js/site-config.js</code> and fill in <code>api/config.php</code>.</p></div>';
+      return;
+    }
+    const ranges = [[1, "Today"], [7, "7 days"], [30, "30 days"], [90, "90 days"]];
+    v.innerHTML = '<div class="adm-h"><div><h2>Visitors</h2><p>Approximate location from the visitor\'s internet connection (city / state / country) • users online update every 10 s</p></div>' +
+      '<div class="vz-range">' + ranges.map((r) => '<button class="btn btn-sm ' + (r[0] === vzDays ? "btn-primary" : "btn-ghost") + '" data-days="' + r[0] + '">' + r[1] + "</button>").join("") + "</div></div>" +
+      '<div id="vzBody"><p class="empty"><i class="fa-solid fa-spinner fa-spin"></i> Loading…</p></div>';
+    v.querySelectorAll("[data-days]").forEach((b) => b.addEventListener("click", () => { vzDays = +b.dataset.days; visitors(v); }));
+    D.adminVisitors(vzDays).then((d) => {
+      state.online = state.online.length ? state.online : [];
+      const S = d.summary, R = ranges.find((r) => r[0] === d.days), rl = R ? R[1] : d.days + " days";
+      const top = (rows, label, fmt) => {
+        const max = Math.max(1, ...rows.map((r) => +r.visitors));
+        return '<section class="card adm-card"><h3>' + label + "</h3>" + (rows.length ? '<div class="vz-list">' + rows.map((r) => '<div class="vz-row"><span class="nm">' + fmt(r) + '</span><span class="tr"><i style="width:' + (r.visitors / max) * 100 + '%"></i></span><b>' + r.visitors + '</b><span class="sub">' + r.views + " views</span></div>").join("") + "</div>" : '<p class="sub">No data yet.</p>') + "</section>";
+      };
+      const dmax = Math.max(1, ...d.daily.map((x) => +x.visitors));
+      document.getElementById("vzBody").innerHTML =
+        '<div class="adm-grid4">' + kpi('<span class="pulse"></span>' + d.online, "Users online now", "fa-users", "", "live", "vzOn") +
+        kpi(S.visitors, "Visitors (" + rl + ")", "fa-user-group", "#1554e0") + kpi(S.views, "Page views (" + rl + ")", "fa-eye", "#7b3fe4") + kpi(S.students, "Logged-in students (" + rl + ")", "fa-user-graduate", "#18a957") + "</div>" +
+        '<section class="card adm-card" style="margin-bottom:18px"><h3><i class="fa-solid fa-users" style="color:#0fa3b1"></i> Users on the website now <span class="vz-count" id="onCnt">' + d.online + '</span></h3><div id="onBox">' + onlineTable(500) + "</div></section>" +
+        '<section class="card adm-card" style="margin-bottom:18px"><h3><i class="fa-solid fa-chart-column" style="color:var(--blue-600)"></i> Visitors per day <span class="sub" style="margin-left:8px">today: ' + S.todayVisitors + " visitors • " + S.todayViews + ' views</span></h3>' +
+        '<div class="vz-days">' + d.daily.map((x) => '<div class="d" title="' + esc(x.day) + ": " + x.visitors + " visitors, " + x.views + ' views"><b>' + x.visitors + '</b><i style="height:' + Math.max(4, (x.visitors / dmax) * 100) + '%"></i><span>' + esc(x.day.slice(8)) + "/" + esc(x.day.slice(5, 7)) + "</span></div>").join("") + "</div></section>" +
+        '<div class="adm-grid2">' + top(d.cities, '<i class="fa-solid fa-city" style="color:var(--orange)"></i> Top cities', (r) => place(r)) +
+        top(d.states, '<i class="fa-solid fa-map-location-dot" style="color:var(--purple)"></i> States', (r) => (r.region || r.country ? flag(r.cc) + esc([r.region, r.country].filter(Boolean).join(", ")) : '<span class="sub">Unknown</span>')) +
+        top(d.countries, '<i class="fa-solid fa-earth-asia" style="color:#0fa3b1"></i> Countries', (r) => (r.country ? flag(r.cc) + esc(r.country) : '<span class="sub">Unknown</span>')) +
+        top(d.pages, '<i class="fa-solid fa-file-lines" style="color:var(--blue-600)"></i> Pages', (r) => pageName(r.page)) +
+        top(d.devices, '<i class="fa-solid fa-mobile-screen" style="color:var(--green)"></i> Devices', (r) => devIc(r.device) + " " + esc(r.device)) +
+        top(d.refs, '<i class="fa-solid fa-link" style="color:var(--orange)"></i> Came from (other websites)', (r) => esc(r.ref)) +
+        top(d.os, '<i class="fa-brands fa-android" style="color:#3ddc84"></i> Operating system', (r) => esc(r.os)) +
+        top(d.browsers, '<i class="fa-brands fa-chrome" style="color:#4285f4"></i> Browser', (r) => esc(r.browser)) + "</div>" +
+        '<section class="card adm-card" style="margin-top:18px"><h3><i class="fa-solid fa-clock-rotate-left" style="color:var(--orange)"></i> Latest visits</h3><div class="table-wrap"><table class="tbl"><thead><tr><th>Time</th><th>Location</th><th>Page</th><th>Student</th><th>Device</th><th>From</th></tr></thead><tbody>' +
+        (d.recent.length ? d.recent.map((r) => "<tr><td>" + fmtDT(+r.ts) + "</td><td>" + place(r) + "</td><td>" + pageName(r.page) + "</td><td>" + (r.name ? esc(r.name) : '<span class="sub">Guest</span>') + "</td><td>" + devIc(r.device) + " " + esc(r.device) + '<span class="sub">' + esc(r.os + " • " + r.browser) + "</span></td><td>" + (r.ref ? esc(r.ref) : '<span class="sub">direct</span>') + "</td></tr>").join("")
+          : '<tr class="empty-row"><td colspan="6">No visits yet.</td></tr>') + "</tbody></table></div></section>";
+      pollOnline();
+    }).catch((er) => { document.getElementById("vzBody").innerHTML = '<div class="card adm-card"><p>Could not load visitors: ' + esc(er.message) + "</p></div>"; });
   }
 
   /* ================= OVERVIEW ================= */
@@ -154,6 +221,8 @@
       kpi(n - pass, "Failed", "fa-circle-xmark", "#e5383b") +
       kpi((n ? Math.round((pass / n) * 100) : 0) + "%", "Pass rate", "fa-flag-checkered", "#0fa3b1") +
       kpi(avg + "%", "Average score", "fa-percent", "#0b1f4d") + "</div>" +
+      (DB.mode === "mysql" ? '<section class="card adm-card" style="margin-bottom:18px"><h3><i class="fa-solid fa-users" style="color:#0fa3b1"></i> Users on the website now <span class="vz-count" id="onCnt">' + state.online.length + '</span>' +
+        '<button class="btn btn-ghost btn-sm" data-go="visitors" style="margin-left:auto">Visitors report <i class="fa-solid fa-arrow-right"></i></button></h3><div id="onBox">' + onlineTable(8) + "</div></section>" : "") +
       '<section class="card adm-card" style="margin-bottom:18px"><h3><span class="pulse" style="background:var(--green)"></span> Live exams</h3><div id="liveBox">' + liveTable() + "</div></section>" +
       '<div class="adm-grid2"><section class="card adm-card"><h3><i class="fa-solid fa-layer-group" style="color:var(--purple)"></i> Exams by module</h3>' +
       '<div class="adm-legend"><span style="--c:var(--blue-600)">Module tests</span><span style="--c:#9bb7ff">Included in mock tests</span></div><div class="bars">' +
@@ -225,11 +294,18 @@
     const render = () => {
       const s = v.querySelector("#sS").value.trim().toLowerCase();
       const list = rows.filter((r) => !s || (r.name + " " + r.roll + " " + (r.batch || "")).toLowerCase().indexOf(s) > -1);
-      v.querySelector("#sT").innerHTML = '<div class="table-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Batch</th><th>Registered</th><th>Last login</th><th>Tests</th><th>Passed</th><th>Average</th><th>Best</th></tr></thead><tbody>' +
-        (list.length ? list.map((r) => "<tr><td><b>" + esc(r.name || "—") + '</b><span class="sub">Roll ' + esc(r.roll || "—") + "</span></td><td>" + esc(r.batch || "—") + "</td><td>" + fmtD(r.created) + "</td><td>" + fmtDT(r.lastLogin) + "</td><td><b>" + r.tests + '</b></td><td style="color:var(--green);font-weight:600">' + r.pass + "</td><td>" + r.avg + "%</td><td>" + r.best + "%</td></tr>").join("")
-          : '<tr class="empty-row"><td colspan="8">No students yet.</td></tr>') + "</tbody></table></div>";
+      v.querySelector("#sT").innerHTML = '<div class="table-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Batch</th><th>Registered</th><th>Last login</th><th>Tests</th><th>Passed</th><th>Average</th><th>Best</th>' + (DB.mode === "mysql" ? "<th>PIN</th>" : "") + "</tr></thead><tbody>" +
+        (list.length ? list.map((r) => "<tr><td><b>" + esc(r.name || "—") + '</b><span class="sub">Roll ' + esc(r.roll || "—") + "</span></td><td>" + esc(r.batch || "—") + "</td><td>" + fmtD(r.created) + "</td><td>" + fmtDT(r.lastLogin) + "</td><td><b>" + r.tests + '</b></td><td style="color:var(--green);font-weight:600">' + r.pass + "</td><td>" + r.avg + "%</td><td>" + r.best + "%</td>" + (DB.mode === "mysql" ? '<td><button class="btn btn-ghost btn-sm" data-pin="' + esc(r.uid) + '" data-nm="' + esc(r.name || r.roll || "") + '" title="Student forgot the PIN"><i class="fa-solid fa-key"></i> Reset</button></td>' : "") + "</tr>").join("")
+          : '<tr class="empty-row"><td colspan="9">No students yet.</td></tr>') + "</tbody></table></div>";
     };
     v.querySelector("#sS").addEventListener("input", render);
+    v.querySelector("#sT").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-pin]"); if (!b) return;
+      const pin = prompt("New 4-digit PIN for " + b.dataset.nm + " (tell it to the student):", String(Math.floor(1000 + Math.random() * 9000)));
+      if (pin == null) return;
+      if (!/^\d{4}$/.test(pin)) return toast("PIN must be 4 digits");
+      D.adminStudentPin(b.dataset.pin, pin).then(() => toast("PIN changed – the student is logged out on all devices")).catch((er) => toast("Error: " + er.message));
+    });
     v.querySelector("#csvS").addEventListener("click", () => csv("copa-students.csv", ["Name", "Roll", "Batch", "Registered", "Last login", "Tests", "Passed", "Average %", "Best %"],
       rows.map((r) => [r.name, r.roll, r.batch, fmtD(r.created), fmtDT(r.lastLogin), r.tests, r.pass, r.avg, r.best])));
     render();
@@ -458,6 +534,8 @@
       shell(); draw();
       if (unwatch) unwatch();
       unwatch = D.watchLive(setLive);
+      clearInterval(onlineTimer);
+      if (DB.mode === "mysql") { pollOnline(); onlineTimer = setInterval(() => { if (!document.hidden && (tab === "overview" || tab === "visitors")) pollOnline(); }, 10000); }
       clearInterval(liveTimer);
       liveTimer = setInterval(() => { setLive(state.live.concat()); }, 15000); // refresh "time left"
       // new results arrive while live sessions end → reload results quietly

@@ -302,7 +302,9 @@
       // summary for the Admin Panel (answer rows stay on the student's device)
       send = window.COPA_DB.saveResult({ id: rec.id, date: rec.date, title: rec.title, uid: p.uid || "", name: rec.name, roll: rec.roll, batch: p.batch || "",
         preset: rec.cfg.preset, mods: rec.cfg.mods, total: rec.total, correct: rec.correct, wrong: rec.wrong, un: rec.un, pct: rec.pct,
-        pass: rec.pct >= C.PASS, timeTaken: rec.timeTaken, per: rec.per, auto: !!auto });
+        pass: rec.pct >= C.PASS, timeTaken: rec.timeTaken, per: rec.per, auto: !!auto,
+        // MySQL mode: the full record (with answers) so the student can see it on any device
+        ...(window.COPA_DB.mode === "mysql" ? { cfg: rec.cfg, rows: rec.rows, token: p.token || "" } : {}) });
     }
     const go = () => { if (auto) alert(t("timeUp")); location.replace("exam.html?result=" + rec.id); };
     Promise.race([send, new Promise((r) => setTimeout(r, 4000))]).then(go, go);

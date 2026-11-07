@@ -28,7 +28,7 @@
   /* ---------- UI strings ---------- */
   const I18N = {
     en: {
-      readNotes: "Read full notes", printNotes: "Print",
+      readNotes: "Read full notes", printNotes: "Print", netErr: "Could not connect to the server. Check your internet and try again.", sessionEnded: "Please log in again.",
       noPrograms: "No practicals saved yet. Open Live Practice, write a program and click Save.", 
       livePractice: "Live Practice", myPracticals: "My Live Practicals", 
       whyAns: "Explanation", 
@@ -95,7 +95,7 @@
       selectOneModule: "Please select at least one module.", progress: "Progress", accuracy: "Accuracy"
     },
     hi: {
-      readNotes: "पूरे नोट्स पढ़ें", printNotes: "प्रिंट",
+      readNotes: "पूरे नोट्स पढ़ें", printNotes: "प्रिंट", netErr: "सर्वर से कनेक्ट नहीं हो सका। इंटरनेट जाँचें और फिर कोशिश करें।", sessionEnded: "कृपया फिर से लॉगिन करें।",
       noPrograms: "अभी कोई प्रैक्टिकल सेव नहीं। लाइव प्रैक्टिस खोलें, प्रोग्राम लिखें और Save दबाएँ।", 
       livePractice: "लाइव प्रैक्टिस", myPracticals: "मेरे लाइव प्रैक्टिकल", 
       whyAns: "व्याख्या", 
@@ -162,7 +162,7 @@
       selectOneModule: "कृपया कम से कम एक मॉड्यूल चुनें।", progress: "प्रगति", accuracy: "सटीकता"
     },
     mr: {
-      readNotes: "संपूर्ण नोट्स वाचा", printNotes: "प्रिंट",
+      readNotes: "संपूर्ण नोट्स वाचा", printNotes: "प्रिंट", netErr: "सर्व्हरशी कनेक्ट होऊ शकले नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.", sessionEnded: "कृपया पुन्हा लॉगिन करा.",
       noPrograms: "अजून एकही प्रॅक्टिकल सेव्ह नाही. लाइव्ह प्रॅक्टिस उघडा, प्रोग्राम लिहा आणि Save दाबा.", 
       livePractice: "लाइव्ह प्रॅक्टिस", myPracticals: "माझे लाइव्ह प्रॅक्टिकल", 
       whyAns: "स्पष्टीकरण", 
@@ -407,18 +407,41 @@
   const uidOf = (roll) => String(roll || "").trim().toLowerCase().replace(/\s+/g, "");
   const getUsers = () => raw.get("users", {});
   const getProfile = () => { const u = raw.get("current", null); const users = getUsers(); return u && users[u] ? Object.assign({ uid: u }, users[u]) : null; };
+  /* MySQL mode: accounts and result history live on the server, so a student can log in on any device */
+  const SRV = window.COPA_DB && window.COPA_DB.mode === "mysql" ? window.COPA_DB.driver : null;
+  const studentToken = () => { const p = getProfile(); return (p && p.token) || ""; };
+  function mergeResults(uid, list) {   // server history → this device (returns how many were new)
+    const key = "results__" + uid, have = raw.get(key, []), ids = {};
+    have.forEach((r) => (ids[r.id] = 1));
+    let added = 0;
+    (list || []).forEach((r) => { if (r && r.id && !ids[r.id]) { const c = Object.assign({}, r); delete c.token; have.push(c); ids[r.id] = 1; added++; } });
+    if (added) { have.sort((a, b) => (b.date || 0) - (a.date || 0)); raw.set(key, have.slice(0, 500)); }
+    return added;
+  }
+  function uploadResults(uid, token, list, serverIds) {   // results only on this device → server
+    const known = {}; (serverIds || []).forEach((id) => (known[id] = 1));
+    (list || []).filter((r) => r && r.id && !known[r.id]).slice(0, 200).forEach((r) => {
+      const d = Object.assign({}, r, { uid, token, pass: r.pct >= PASS, preset: r.cfg && r.cfg.preset, mods: r.cfg && r.cfg.mods });
+      window.COPA_DB.saveResult(d);
+    });
+  }
   function signIn(uid) {
     const users = getUsers();
     users[uid].lastLogin = Date.now();
     users[uid].logins = (users[uid].logins || 0) + 1;
     raw.set("users", users); raw.set("current", uid);
     const u = users[uid];
-    if (window.COPA_DB) window.COPA_DB.upsertStudent({ uid, name: u.name, roll: u.roll, batch: u.batch || "", created: u.created, lastLogin: u.lastLogin, logins: u.logins });
+    if (window.COPA_DB && !SRV) window.COPA_DB.upsertStudent({ uid, name: u.name, roll: u.roll, batch: u.batch || "", created: u.created, lastLogin: u.lastLogin, logins: u.logins });
   }
-  function logout() { raw.del("current"); location.href = ROOT + "index.html"; }
+  function logout() {
+    const p = getProfile();
+    if (SRV && p && p.token) { SRV.studentLogout(p.token).catch(() => {}); const users = getUsers(); if (users[p.uid]) { delete users[p.uid].token; raw.set("users", users); } }
+    raw.del("current"); location.href = ROOT + "index.html";
+  }
 
   function openLogin(onDone, startTab) {
-    let tab = startTab || (Object.keys(getUsers()).length ? "login" : "register");
+    // with the MySQL login an account made on another phone works here too → start on "Login"
+    let tab = startTab || (SRV || Object.keys(getUsers()).length ? "login" : "register");
     const m = modal('<div id="authBox"></div>');
     const box = m.el.querySelector("#authBox");
     const done = () => { m.close(); toast(t("loggedIn")); if (onDone) onDone(); else location.href = ROOT + "dashboard.html"; };
@@ -444,6 +467,7 @@
         const roll = box.querySelector("#af-roll").value.trim(), uid = uidOf(roll), pin = box.querySelector("#af-pin").value.trim();
         if (!/^\d{4}$/.test(pin)) return draw(t("pinErr"));
         const users = getUsers();
+        if (SRV) return serverAuth(reg, uid, roll, pin, users);
         if (reg) {
           if (users[uid]) return draw(t("rollExists"));
           const guestRes = raw.get("results", []), guestPrac = raw.get("practice", {});
@@ -459,6 +483,44 @@
           signIn(uid); done();
         }
       });
+    }
+    function serverAuth(reg, uid, roll, pin, users) {
+      const btn = box.querySelector("#authForm button[type=submit]");
+      btn.disabled = true; btn.insertAdjacentHTML("afterbegin", '<i class="fa-solid fa-spinner fa-spin"></i> ');
+      const keep = (d) => {   // save the account on this device too (works offline next time)
+        const p = d.profile || {};
+        users[uid] = Object.assign({}, users[uid] || {}, { name: p.name || (users[uid] && users[uid].name) || "", roll: p.roll || roll, batch: p.batch || "", created: p.created || Date.now(), pin: hashPin(pin), token: d.token });
+        raw.set("users", users);
+        const server = d.results || [];
+        mergeResults(uid, server);
+        uploadResults(uid, d.token, raw.get("results__" + uid, []), server.map((r) => r.id));
+        signIn(uid); done();
+      };
+      const register = (name, batch, created) => SRV.studentRegister({ uid, roll, name, batch, pin, created: created || Date.now() });
+      const fail = (er) => {
+        const msg = (er && er.message) || "";
+        if (msg === "exists") return draw(t("rollExists"));
+        if (msg === "wrongpin") return draw(t("wrongPin"));
+        if (msg === "noaccount") return draw(t("noAccount"));
+        // server not reachable: allow an account that already exists on this device
+        if (!reg && users[uid] && users[uid].pin === hashPin(pin)) { signIn(uid); return done(); }
+        draw(/^(PIN|Please|Invalid|Too many)/.test(msg) ? esc(msg) : t("netErr"));
+      };
+      if (reg) {
+        const name = box.querySelector("#af-name").value.trim(), batch = box.querySelector("#af-batch").value.trim();
+        const guestRes = raw.get("results", []), guestPrac = raw.get("practice", {});
+        register(name, batch).then((d) => {
+          if (guestRes.length) { raw.set("results__" + uid, guestRes); raw.del("results"); }
+          if (Object.keys(guestPrac).length) { raw.set("practice__" + uid, guestPrac); raw.del("practice"); }
+          keep(d);
+        }).catch(fail);
+      } else {
+        SRV.studentLogin(uid, pin).then(keep).catch((er) => {
+          // an older account that exists only on this device → create it on the server with the same PIN
+          if (er && er.message === "noaccount" && users[uid] && users[uid].pin === hashPin(pin)) return register(users[uid].name, users[uid].batch || "", users[uid].created).then(keep).catch(fail);
+          fail(er);
+        });
+      }
     }
     draw();
   }
@@ -588,6 +650,25 @@
      Pages read this content from a local cache at load. Refresh it in the background (max every 10 min,
      at once when the cache was never filled) and reload once if something changed – but never in the
      middle of an exam, in Live Practice or in the admin panel. */
+  /* ---------- MySQL mode: users online, visitors and the student's history from other devices ---------- */
+  window.addEventListener("load", () => {
+    if (!SRV || /admin\.html/.test(location.pathname)) return;
+    let vid = ""; try { vid = localStorage.getItem("copa_vid") || ""; if (!vid) { vid = "v" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10); localStorage.setItem("copa_vid", vid); } } catch (e) { vid = "v" + Math.random().toString(36).slice(2, 12); }
+    const info = () => ({ vid, page: location.pathname, title: document.title.split(" – ")[0].slice(0, 150), token: studentToken() });
+    SRV.hit(Object.assign(info(), { ref: document.referrer })).catch(() => {});
+    setInterval(() => { if (!document.hidden) SRV.ping(info()).catch(() => {}); }, 30000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) SRV.ping(info()).catch(() => {}); });
+    window.addEventListener("pagehide", () => SRV.bye(vid));
+    // results taken on another phone / computer
+    const p = getProfile();
+    if (p && p.token) SRV.studentResults(p.token).then((d) => {
+      const added = mergeResults(p.uid, d.results);
+      if (added && /dashboard\.html|results\.html/.test(location.pathname)) location.reload();
+    }).catch((er) => {
+      if (er && /log in again/i.test(er.message)) { const users = getUsers(); if (users[p.uid]) { delete users[p.uid].token; raw.set("users", users); } raw.del("current"); toast(t("sessionEnded")); }
+    });
+  });
+
   window.addEventListener("load", () => {
     const D = window.COPA_DB; if (!D || D.mode === "local") return;
     const path = location.pathname;

@@ -201,10 +201,23 @@
     adminLogin: (username, pw) => call("admin_login", { username, password: pw }).then((d) => { adminState.user = d.user; return true; }),
     adminLogout: () => call("admin_logout", {}),
     adminChangePassword: (old, password) => call("admin_password", { old, password }),
-    adminCheck: () => call("admin_status").then((s) => { adminState = s; return !!s.user; })
+    adminCheck: () => call("admin_status").then((s) => { adminState = s; return !!s.user; }),
+    /* students: login from any device (PIN checked on the server) */
+    studentRegister: (d) => call("student_register", d),
+    studentLogin: (uid, pin) => call("student_login", { uid, pin }),
+    studentResults: (token) => call("student_results", { token }),
+    studentLogout: (token) => call("student_logout", { token }),
+    /* visitors & users online */
+    hit: (d) => call("hit", d),
+    ping: (d) => call("ping", d),
+    bye(vid) { try { if (navigator.sendBeacon) navigator.sendBeacon(apiBase() + "index.php?a=bye&vid=" + encodeURIComponent(vid)); } catch (e) { /* ignore */ } },
+    adminOnline: () => call("online"),
+    adminVisitors: (days) => call("visitors&days=" + (+days || 7)),
+    adminStudentPin: (uid, pin) => call("student_pin", { uid, pin })
   };
 
-  const driver = CFG.backend === "mysql" ? my : CFG.firebase && CFG.firebase.projectId ? fb : local;
+  // opened as a file from the computer (no PHP) → local mode
+  const driver = CFG.backend === "mysql" && location.protocol !== "file:" ? my : CFG.firebase && CFG.firebase.projectId ? fb : local;
   const safe = (p) => Promise.resolve(p).catch((e) => { if (window.console) console.warn("[COPA_DB]", e && e.message); });
 
   /* refresh public content cache in the background (firebase / mysql), max every 10 min */

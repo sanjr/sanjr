@@ -153,3 +153,20 @@ textarea.input { min-height: 70px; resize: vertical; font-family: var(--font); }
   .rte-grid { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
   .rte-foot span:last-child { display: none; }
 }
+
+/* ---------- Visitors ---------- */
+.vz-count { display: inline-grid; place-items: center; min-width: 28px; height: 24px; padding: 0 8px; border-radius: 999px; background: #0fa3b1; color: #fff; font-size: 13px; margin-left: 8px; }
+.adm-card h3 { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.vz-range { display: flex; gap: 6px; flex-wrap: wrap; }
+.vz-list { display: grid; gap: 8px; }
+.vz-row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(60px, 1fr) auto auto; gap: 10px; align-items: center; font-size: 13.5px; }
+.vz-row .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vz-row .tr { height: 8px; border-radius: 6px; background: #eef1f8; overflow: hidden; }
+.vz-row .tr i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, #1554e0, #7b3fe4); }
+.vz-row .sub { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
+.vz-days { display: flex; align-items: flex-end; gap: 6px; height: 170px; padding-top: 18px; overflow-x: auto; }
+.vz-days .d { flex: 1 0 26px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; font-size: 11px; color: var(--ink-3); }
+.vz-days .d i { width: 70%; max-width: 34px; border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, #7b3fe4, #1554e0); }
+.vz-days .d b { font-size: 11.5px; color: var(--ink); }
+.tbl td .sub { display: block; font-size: 12px; color: var(--ink-3); }
+@media (max-width: 720px) { .vz-row { grid-template-columns: minmax(0, 1fr) 60px auto; } .vz-row .sub { display: none; } }

@@ -1,4 +1,4 @@
 COPA_MCQ_Website.zip
 api/config.local.php
-api/.schema-v1*
+api/.schema-v*
 *.sqlite

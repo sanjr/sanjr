@@ -108,6 +108,12 @@ The site can store everything centrally in MySQL through a small PHP API (`api/i
 4. Open `https://copamcq.com/admin.html` → create the admin username + password (needs the setup key, or the
    MySQL password when `setup_key` is empty). Tables (`copa_*`) are created automatically on the first request.
 
-Stored in MySQL: students, exam results (summary), live exams, admin-added questions, study material, site/ad
-settings, admin accounts (password_hash) and a login rate-limit table. Students' detailed answer review stays on
-their own device. When uploading a newer version later, do not overwrite `api/config.php`.
+Students log in with Roll No + 4-digit PIN checked on the server (PIN stored with password_hash), so they can use any
+device and see their full result history and answer review. The admin can reset a forgotten PIN (Students tab).
+The **Visitors** tab shows users online now (page, location, device) and visits by city / state / country, pages,
+devices and referrers. Location is approximate, from the IP address (`geo_provider` in `api/config.php`); the IP
+itself is not stored.
+
+Stored in MySQL: students + login PIN hashes, exam results (with answers), live exams, visits, users online, admin-added questions, study material, site/ad
+settings, admin accounts (password_hash) and a login rate-limit table. When uploading a newer version later, do not
+overwrite `api/config.php`.
