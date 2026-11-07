@@ -67,7 +67,8 @@ h1, h2, h3, h4, h5 { margin: 0 0 .5em; line-height: 1.25; font-family: var(--fon
   box-shadow: 0 4px 18px rgba(0,0,0,.18);
 }
 .brand { display: flex; align-items: center; gap: 12px; color: #fff; flex: none; }
-.brand-logo { width: 52px; height: 52px; flex: none; }
+.brand-logo { height: 60px; width: auto; flex: none; object-fit: contain; filter: drop-shadow(0 0 6px rgba(120,180,255,.45)) drop-shadow(0 3px 5px rgba(0,0,0,.35)); transition: transform .3s; }
+.brand:hover .brand-logo { transform: rotate(-4deg) scale(1.06); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.05; min-width: 0; }
 .brand-text .b1 { font-weight: 800; font-size: 15px; letter-spacing: .5px; }
 .brand-text .b2 { font-weight: 900; font-size: 26px; color: var(--yellow); letter-spacing: .5px; }
@@ -477,7 +478,7 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 @media (max-width: 720px) {
   :root { --header-h: 64px; }
   .site-header { padding: 0 12px; gap: 8px; }
-  .brand-logo { width: 40px; height: 40px; }
+  .brand-logo { height: 36px; width: auto; }
   .brand-text .b1 { font-size: 11px; }
   .brand-text .b2 { font-size: 19px; }
   .brand-text .b3 { display: none; }
@@ -717,3 +718,5 @@ body.nav-open .site-header.collapsed ~ .sidebar-backdrop { display: block; posit
 @media (max-width: 720px) {
   .site-header { padding: 0 12px; gap: 8px; }
 }
+.cbt-top .cbt-logo { height: 38px; width: auto; flex: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
+@media (max-width: 400px) { .brand { gap: 8px; } .brand-logo { height: 32px; } }

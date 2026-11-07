@@ -22,7 +22,7 @@
     const fbMode = DB.mode === "firebase";
     const first = !fbMode && !D.adminHasPassword();
     root.innerHTML =
-      '<div class="card adm-login"><div class="ic"><i class="fa-solid fa-user-shield"></i></div><h2 style="margin:0">Admin Panel</h2>' +
+      '<div class="card adm-login"><img src="assets/img/logo.webp" alt="COPA MCQ logo" style="height:90px;width:auto;margin:0 auto 6px;display:block"><h2 style="margin:0">Admin Panel</h2>' +
       '<p style="color:var(--ink-3);margin:6px 0 0">COPA MCQ • ' + (fbMode ? "Online (Firebase)" : "Local mode") + "</p>" +
       (err ? '<div class="auth-err" style="margin-top:14px"><i class="fa-solid fa-circle-exclamation"></i> ' + esc(err) + "</div>" : "") +
       '<form id="aLogin">' +
@@ -80,7 +80,7 @@
   ];
   function shell() {
     root.innerHTML =
-      '<header class="adm-top"><div class="bar"><a class="brand" href="index.html" style="color:#fff"><svg class="brand-logo" viewBox="0 0 64 64" style="width:40px;height:40px" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#ffc21a"/><text x="32" y="40" text-anchor="middle" font-family="Poppins" font-weight="800" font-size="20" fill="#0b1f4d">CO</text></svg>' +
+      '<header class="adm-top"><div class="bar"><a class="brand" href="index.html" style="color:#fff"><img class="brand-logo" src="assets/img/logo.webp" width="256" height="205" alt="COPA MCQ logo">' +
       '<span class="brand-text"><span class="b2">COPA MCQ</span><span class="b3">Admin Panel</span></span></a><span class="adm-badge">ADMIN</span>' +
       '<span class="adm-mode ' + (DB.mode === "firebase" ? "fb" : "") + '"><span class="dot"></span>' + (DB.mode === "firebase" ? "Online • Firebase" : "Local mode • this computer") + "</span>" +
       '<span class="sp"></span><a class="view" href="index.html" target="_blank"><i class="fa-solid fa-up-right-from-square"></i><span>View site</span></a>' +

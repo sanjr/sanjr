@@ -194,7 +194,7 @@
     '<a class="lp-btn w sm" style="margin-top:16px;width:100%" href="dashboard.html">' + t("viewReport") + ' <i class="fa-solid fa-arrow-right"></i></a></div></div></div></section>' +
 
     /* FOOTER */
-    '<footer class="lp-foot"><div class="lp-wrap"><div class="cols"><div><a class="lp-logo" href="index.html"><span class="mk"></span><span>COPA<b> MCQ</b>.</span></a><p>' + X.footP + "</p>" +
+    '<footer class="lp-foot"><div class="lp-wrap"><div class="cols"><div><a class="lp-logo" href="index.html"><img class="mk-img" src="assets/img/logo.webp" width="256" height="205" alt="COPA MCQ logo"><span>COPA<b> MCQ</b>.</span></a><p>' + X.footP + "</p>" +
     '<div class="lp-soc"><a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a><a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></div>' +
     "<div><h5>" + X.fh[0] + "</h5><ul>" + [["modules.html", 0], ["study.html", 1], [C.modulePage(15), 2], [C.modulePage(11), 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl1[a[1]] + "</a></li>").join("") + "</ul></div>" +
     "<div><h5>" + X.fh[1] + "</h5><ul>" + [["exam.html", 0], ["exam.html", 1], ["dashboard.html", 2], ["dashboard.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl2[a[1]] + "</a></li>").join("") + "</ul></div>" +

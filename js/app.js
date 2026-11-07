@@ -391,11 +391,7 @@
   }
 
   /* ---------- Layout ---------- */
-  const LOGO = '<svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd451"/><stop offset="1" stop-color="#f5a800"/></linearGradient></defs>' +
-    '<path fill="#fff" d="M32 2l5 6 7-2 2 7 7 2-2 7 6 5-6 5 2 7-7 2-2 7-7-2-5 6-5-6-7 2-2-7-7-2 2-7-6-5 6-5-2-7 7-2 2-7 7 2z"/>' +
-    '<circle cx="32" cy="29" r="17" fill="#0b1f4d"/><circle cx="32" cy="29" r="13" fill="url(#lg1)"/>' +
-    '<path fill="#0b1f4d" d="M24 25h16v10H24z" opacity=".9"/><path fill="#ffd451" d="M27 28h10v4H27z"/>' +
-    '<path fill="#fff" d="M10 46c7-3 15-3 22 1 7-4 15-4 22-1v8c-7-3-15-3-22 1-7-4-15-4-22-1z"/><path stroke="#0b1f4d" stroke-width="1.5" d="M32 47v8"/></svg>';
+  const LOGO = '<img class="brand-logo" src="' + ROOT + 'assets/img/logo.webp" width="256" height="205" alt="COPA MCQ logo">';
 
   const NAV = [
     { k: "home", href: "index.html", icon: "fa-house" },
