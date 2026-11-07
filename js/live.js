@@ -75,7 +75,7 @@
     '<div class="lib-search"><input class="input" id="libQ" placeholder="' + esc(X.search) + '"></div><div class="lib-list" id="libList"></div></aside>' +
     '<section class="pane pane-ed"><div class="pane-bar" id="fileTabs"></div><div class="editor-host" id="edHost"></div></section>' +
     '<section class="pane pane-out" id="outPane"></section></div>' +
-    '<div class="lab-tips">' + [X.tip1, X.tip2, X.tip3].map((tp, i) => '<div class="lab-tip"><i class="fa-solid fa-' + ["bolt", "keyboard", "cloud-arrow-up"][i] + '"></i><div><b>' + tp[0] + "</b>" + tp[1] + "</div></div>").join("") + "</div>" +
+    '<div class="lab-tips">' + [X.tip1, X.tip2, X.tip3].map((tp, i) => '<div class="lab-tip"><i class="fa-solid fa-' + ["bolt", "keyboard", "cloud-arrow-up"][i] + '"></i><div><b>' + tp[0] + "</b>" + esc(tp[1]) + "</div></div>").join("") + "</div>" +
     '<div class="ad-slot" data-slot="bottom"></div>';
 
   const $ = (id) => document.getElementById(id);

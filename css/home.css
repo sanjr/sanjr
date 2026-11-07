@@ -321,3 +321,14 @@
 .lp-caret::after { content: ""; position: absolute; left: 2px; bottom: -.12em; width: .08em; min-width: 3px; height: 1.02em; border-radius: 3px; background: linear-gradient(180deg, var(--o), var(--p)); animation: lpBlink 1s steps(1) infinite; }
 .lp-hero h1.lp-h1.typing .lp-caret::after { animation: none; }
 @keyframes lpBlink { 50% { opacity: 0; } }
+
+/* FAQ */
+.lp-faq .lp-head { display: block; text-align: center; }
+.faq-list { max-width: 900px; margin: 0 auto; display: grid; gap: 12px; }
+.faq-item { background: #fff; border: 1px solid #e6e1ff; border-radius: 16px; box-shadow: 0 6px 18px rgba(60,40,160,.06); overflow: hidden; }
+.faq-item summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 14px; justify-content: space-between; padding: 16px 20px; font-weight: 600; font-size: 15.5px; color: var(--ink); }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary i { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: #f1edff; color: var(--p); transition: transform .3s, background .3s; font-size: 13px; }
+.faq-item[open] summary i { transform: rotate(45deg); background: var(--p); color: #fff; }
+.faq-item p { margin: 0; padding: 0 20px 18px; color: var(--ink-2); font-size: 14.5px; line-height: 1.75; }
+@media (max-width: 720px) { .faq-item summary { padding: 14px 16px; font-size: 14.5px; } .faq-item p { padding: 0 16px 16px; font-size: 14px; } }

@@ -9,6 +9,13 @@
       nav: ["Home", "Modules", "Mock Test", "Study", "Results", "About"],
       signin: "Sign in", start: "Start Mock Test",
       tg: [["Explore Technology, Master", "Computer Skills,", "Shape Your Future."], ["The Digital World Never Stops Evolving, So Keep", "Learning", "and Growing."], ["Every Click, Every Code, Every Skill Takes You Closer to the", "Digital", "Future."]],
+      faqH: "Frequently asked questions about ITI COPA", faqS: "Everything you need to know about the COPA trade and COPA MCQ.",
+      faq: [["What is the COPA trade in ITI?", "COPA (Computer Operator and Programming Assistant) is a one-year ITI trade under the Craftsmen Training Scheme. It covers computer fundamentals, Windows and Linux, MS Office, databases, networking, web design with HTML, CSS and JavaScript, e-commerce, cloud computing and Python."],
+        ["How many COPA MCQ questions are available on COPA MCQ?", "COPA MCQ has 355 multiple-choice questions with correct answers and a one-line explanation, divided into 15 modules, in English, Hindi and Marathi."],
+        ["Is the COPA online mock test free?", "Yes. All COPA MCQ practice, module tests and full CBT mock tests are completely free. The mock test works like the real CBT exam with a timer, question palette, mark for review and an instant result."],
+        ["What is the passing mark in the COPA MCQ mock test?", "COPA MCQ mock tests use a pass mark of 40%. Your dashboard keeps the full history of your results with pass or fail for every test."],
+        ["Can I practise COPA practicals online?", "Yes. The Live Practice lab lets you write HTML, CSS, JavaScript and Python programs in the browser, see the output instantly and save your programs to your dashboard."],
+        ["Can I study COPA in Hindi or Marathi?", "Yes. Every question, option and explanation is available in English, Hindi and Marathi. Change the language from the menu at any time."]],
       h1a: "Learning in the computer age means we must practise", h1b: "tomorrow’s", h1c: "skills today",
       sub: "The complete ITI COPA question bank – 355 MCQs in English, Hindi & Marathi with real CBT-style mock tests.",
       joinI: "Start Practice", joinS: "Take Mock Test", tagI: "COPA Instructor", tagS: "ITI Trainee",
@@ -35,6 +42,13 @@
       nav: ["होम", "मॉड्यूल", "मॉक टेस्ट", "अध्ययन", "परिणाम", "परिचय"],
       signin: "लॉगिन", start: "मॉक टेस्ट शुरू करें",
       tg: [["तकनीक को जानें,", "कंप्यूटर कौशल में", "महारत पाएँ, अपना भविष्य बनाएँ।"], ["डिजिटल दुनिया कभी रुकती नहीं, इसलिए", "सीखते रहें", "और आगे बढ़ते रहें।"], ["हर क्लिक, हर कोड, हर कौशल आपको", "डिजिटल भविष्य के", "और करीब ले जाता है।"]],
+      faqH: "ITI COPA के बारे में अक्सर पूछे जाने वाले प्रश्न", faqS: "COPA ट्रेड और COPA MCQ के बारे में ज़रूरी जानकारी।",
+      faq: [["ITI में COPA ट्रेड क्या है?", "COPA (कंप्यूटर ऑपरेटर एंड प्रोग्रामिंग असिस्टेंट) क्राफ्ट्समेन ट्रेनिंग स्कीम के अंतर्गत एक वर्ष का ITI ट्रेड है। इसमें कंप्यूटर की मूल बातें, Windows और Linux, MS Office, डेटाबेस, नेटवर्किंग, HTML, CSS और JavaScript से वेब डिज़ाइन, ई-कॉमर्स, क्लाउड कंप्यूटिंग और Python पढ़ाए जाते हैं।"],
+        ["COPA MCQ पर कितने प्रश्न उपलब्ध हैं?", "COPA MCQ पर 15 मॉड्यूल में 355 बहुविकल्पीय प्रश्न सही उत्तर और एक पंक्ति की व्याख्या के साथ अंग्रेज़ी, हिंदी और मराठी में उपलब्ध हैं।"],
+        ["क्या COPA ऑनलाइन मॉक टेस्ट मुफ़्त है?", "हाँ। सभी अभ्यास, मॉड्यूल टेस्ट और पूर्ण CBT मॉक टेस्ट पूरी तरह मुफ़्त हैं। मॉक टेस्ट असली CBT परीक्षा जैसा है – टाइमर, प्रश्न पैलेट, मार्क फॉर रिव्यू और तुरंत परिणाम।"],
+        ["COPA MCQ मॉक टेस्ट में पासिंग मार्क कितने हैं?", "COPA MCQ मॉक टेस्ट में पासिंग मार्क 40% है। आपके डैशबोर्ड में हर टेस्ट का पास/फेल सहित पूरा रिज़ल्ट इतिहास रहता है।"],
+        ["क्या मैं COPA प्रैक्टिकल ऑनलाइन कर सकता हूँ?", "हाँ। लाइव प्रैक्टिस लैब में आप ब्राउज़र में HTML, CSS, JavaScript और Python प्रोग्राम लिखकर तुरंत आउटपुट देख सकते हैं और प्रोग्राम डैशबोर्ड में सेव कर सकते हैं।"],
+        ["क्या मैं COPA हिंदी या मराठी में पढ़ सकता हूँ?", "हाँ। हर प्रश्न, विकल्प और व्याख्या अंग्रेज़ी, हिंदी और मराठी में है। मेनू से कभी भी भाषा बदलें।"]],
       h1a: "कंप्यूटर युग में सीखने का अर्थ है कि हम आज ही", h1b: "कल के", h1c: "कौशल का अभ्यास करें",
       sub: "पूरा ITI COPA प्रश्न बैंक – अंग्रेज़ी, हिंदी और मराठी में 355 MCQ, वास्तविक CBT जैसे मॉक टेस्ट के साथ।",
       joinI: "अभ्यास शुरू करें", joinS: "मॉक टेस्ट दें", tagI: "COPA अनुदेशक", tagS: "ITI प्रशिक्षु",
@@ -61,6 +75,13 @@
       nav: ["होम", "मॉड्युल्स", "मॉक टेस्ट", "अभ्यास", "निकाल", "माहिती"],
       signin: "लॉगिन", start: "मॉक टेस्ट सुरू करा",
       tg: [["तंत्रज्ञान जाणून घ्या,", "संगणक कौशल्यांवर", "प्रभुत्व मिळवा, तुमचे भविष्य घडवा."], ["डिजिटल जग कधीच थांबत नाही, म्हणून", "शिकत राहा", "आणि प्रगती करत राहा."], ["प्रत्येक क्लिक, प्रत्येक कोड, प्रत्येक कौशल्य तुम्हाला", "डिजिटल भविष्याच्या", "अधिक जवळ नेते."]],
+      faqH: "ITI COPA बद्दल वारंवार विचारले जाणारे प्रश्न", faqS: "COPA ट्रेड आणि COPA MCQ बद्दल आवश्यक माहिती.",
+      faq: [["ITI मधील COPA ट्रेड म्हणजे काय?", "COPA (कॉम्प्युटर ऑपरेटर अँड प्रोग्रामिंग असिस्टंट) हा क्राफ्ट्समन ट्रेनिंग स्कीम अंतर्गत एक वर्षाचा ITI ट्रेड आहे. यात संगणकाच्या मूलभूत गोष्टी, Windows आणि Linux, MS Office, डेटाबेस, नेटवर्किंग, HTML, CSS आणि JavaScript ने वेब डिझाइन, ई-कॉमर्स, क्लाउड कॉम्प्युटिंग आणि Python शिकवले जाते."],
+        ["COPA MCQ वर किती प्रश्न उपलब्ध आहेत?", "COPA MCQ वर 15 मॉड्यूल्समध्ये 355 बहुपर्यायी प्रश्न योग्य उत्तर आणि एका ओळीच्या स्पष्टीकरणासह इंग्रजी, हिंदी आणि मराठीमध्ये उपलब्ध आहेत."],
+        ["COPA ऑनलाइन मॉक टेस्ट मोफत आहे का?", "हो. सर्व सराव, मॉड्यूल टेस्ट आणि पूर्ण CBT मॉक टेस्ट पूर्णपणे मोफत आहेत. मॉक टेस्ट खऱ्या CBT परीक्षेसारखी आहे – टायमर, प्रश्न पॅलेट, मार्क फॉर रिव्ह्यू आणि लगेच निकाल."],
+        ["COPA MCQ मॉक टेस्टमध्ये पासिंग मार्क किती आहेत?", "COPA MCQ मॉक टेस्टमध्ये पासिंग मार्क 40% आहे. तुमच्या डॅशबोर्डमध्ये प्रत्येक टेस्टचा पास/नापास सह संपूर्ण निकाल इतिहास राहतो."],
+        ["मी COPA प्रॅक्टिकल ऑनलाइन करू शकतो का?", "हो. लाइव्ह प्रॅक्टिस लॅबमध्ये तुम्ही ब्राउझरमध्ये HTML, CSS, JavaScript आणि Python प्रोग्राम लिहून लगेच आउटपुट पाहू शकता आणि प्रोग्राम डॅशबोर्डमध्ये सेव्ह करू शकता."],
+        ["मी COPA हिंदी किंवा मराठीत शिकू शकतो का?", "हो. प्रत्येक प्रश्न, पर्याय आणि स्पष्टीकरण इंग्रजी, हिंदी आणि मराठीमध्ये आहे. मेनूमधून कधीही भाषा बदला."]],
       h1a: "संगणक युगात शिकणे म्हणजे आजच", h1b: "उद्याच्या", h1c: "कौशल्यांचा सराव करणे",
       sub: "संपूर्ण ITI COPA प्रश्नपेढी – इंग्रजी, हिंदी आणि मराठीमध्ये 355 MCQ, प्रत्यक्ष CBT सारख्या मॉक टेस्टसह.",
       joinI: "सराव सुरू करा", joinS: "मॉक टेस्ट द्या", tagI: "COPA निदेशक", tagS: "ITI प्रशिक्षणार्थी",
@@ -192,6 +213,10 @@
     '<div class="lp-prog"><h4><i class="fa-solid fa-chart-simple"></i> ' + X.progT + '</h4><div class="row"><div class="lp-ring" style="--v:' + ringV + '" data-l="' + ringV + '%"></div>' +
     "<ul><li>" + X.tests + ": <b>" + st.tests + "</b></li><li>" + X.avg + ": <b>" + st.avg + "%</b></li><li>" + X.prac + ": <b>" + st.practiced + "</b></li></ul></div>" +
     '<a class="lp-btn w sm" style="margin-top:16px;width:100%" href="dashboard.html">' + t("viewReport") + ' <i class="fa-solid fa-arrow-right"></i></a></div></div></div></section>' +
+
+    /* FAQ */
+    '<section class="lp-sec lp-faq" aria-labelledby="faqH"><div class="lp-wrap"><div class="lp-head rv"><h2 id="faqH">' + esc(X.faqH) + "</h2><p>" + esc(X.faqS) + "</p></div>" +
+    '<div class="faq-list">' + X.faq.map((f, i) => '<details class="faq-item rv"' + (i ? "" : " open") + '><summary><span>' + esc(f[0]) + '</span><i class="fa-solid fa-plus"></i></summary><p>' + esc(f[1]) + "</p></details>").join("") + "</div></div></section>" +
 
     /* FOOTER */
     '<footer class="lp-foot"><div class="lp-wrap"><div class="cols"><div><a class="lp-logo" href="index.html"><img class="mk-img" src="assets/img/logo.webp" width="256" height="205" alt="COPA MCQ logo"><span>COPA<b> MCQ</b>.</span></a><p>' + X.footP + "</p>" +

@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 Disallow: /tools/
+
+Sitemap: https://copamcq.com/sitemap.xml

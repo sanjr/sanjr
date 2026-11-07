@@ -36,7 +36,7 @@ window.COPA_CONFIG = {
   */
   adminEmails: [],
 
-  siteUrl: "",
+  siteUrl: "https://copamcq.com",
 
   adsense: {
     enabled: false,

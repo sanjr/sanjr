@@ -726,3 +726,16 @@ body.nav-open .site-header.collapsed ~ .sidebar-backdrop { display: block; posit
   .brand-text .b2 { font-size: 17px; }
   .header-actions { gap: 6px; }
 }
+
+/* crawlable question list on module pages */
+.seo-qa { margin-top: 26px; margin-bottom: 30px; }
+.seo-qa details { background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-sm, 0 4px 14px rgba(15,35,95,.06)); }
+.seo-qa summary { cursor: pointer; padding: 16px 20px; list-style: none; display: flex; align-items: center; gap: 10px; }
+.seo-qa summary::-webkit-details-marker { display: none; }
+.seo-qa summary::before { content: "\f0ca"; font-family: "Font Awesome 6 Free"; font-weight: 900; color: var(--blue-600); }
+.seo-qa summary h2 { font-size: 16px; margin: 0; }
+.seo-qa ol { margin: 0; padding: 4px 24px 18px 44px; display: grid; gap: 10px; }
+.seo-qa li p { margin: 0; line-height: 1.6; }
+.seo-qa .sq { font-weight: 600; color: var(--ink); }
+.seo-qa .sa { font-size: 14px; color: #157347; }
+.seo-qa .sa span { color: var(--ink-3); }
