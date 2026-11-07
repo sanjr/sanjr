@@ -308,16 +308,12 @@
 .lp-hero h1 .h1s.on .sw svg .draw { animation: lpDraw .9s ease-out 1.2s forwards; }
 .lp-hero h1 .h1s.on .sw svg .draw.d2 { animation-delay: 1.9s; }
 @keyframes lpDraw { to { stroke-dashoffset: 0; } }
-@media (prefers-reduced-motion: reduce) {
-  .lp-hero h1.lp-h1 .h1s .w, .lp-hero h1.lp-h1 .h1s.on .shine { opacity: 1; animation: none !important; }
-  .lp-hero h1.lp-h1 .h1s.out { visibility: hidden; }
-  .lp-hero h1 .sw svg .draw { stroke-dashoffset: 0; animation: none !important; }
-}
 
 /* typing effect on the hero headline */
 .lp-hero h1.lp-h1.typed .w, .lp-hero h1.lp-h1.typed .h1s.on .w { opacity: 1; animation: none; }
 .lp-hero h1.lp-h1.typed .h1s.on .shine { animation: lpShine 5s linear infinite; }
-.lp-hero h1.lp-h1 .c.hid { visibility: hidden; }
+.lp-hero h1.lp-h1.typed .h1s.on .c.hid, .lp-hero h1.lp-h1.typed .h1s.on .w.wait { display: none; }
+.lp-hero h1.lp-h1.typed .h1s { align-self: start; }
 .lp-hero h1.lp-h1.typed .h1s .sw svg .draw { animation: none; stroke-dashoffset: 90; }
 .lp-hero h1.lp-h1.typed .h1s.done .sw svg .draw { animation: lpDraw .9s ease-out .1s forwards; }
 .lp-hero h1.lp-h1.typed .h1s.done .sw svg .draw.d2 { animation-delay: .8s; }

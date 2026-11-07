@@ -212,10 +212,8 @@
   (function rotate() {
     const h1 = document.querySelector(".lp-h1"), sl = h1 ? h1.querySelectorAll(".h1s") : [];
     if (!sl.length) return;
-    const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     let i = 0;
     const show = (k) => sl.forEach((x, j) => { x.classList.toggle("on", j === k); if (j === k) x.removeAttribute("aria-hidden"); else x.setAttribute("aria-hidden", "true"); });
-    if (reduce) { if (sl.length > 1) setInterval(() => { if (!document.hidden) show((i = (i + 1) % sl.length)); }, 6500); return; }
     // split every word into letters (grapheme clusters keep हिंदी / मराठी letters whole)
     const seg = window.Intl && Intl.Segmenter ? new Intl.Segmenter(L, { granularity: "grapheme" }) : null;
     const split = (t) => (seg ? Array.from(seg.segment(t), (x) => x.segment) : Array.from(t));
@@ -223,36 +221,41 @@
       const list = [];
       x.querySelectorAll(".w").forEach((w, k, all) => {
         const parts = split(w.textContent); w.textContent = "";
+        w.classList.add("wait");
         parts.forEach((ch) => { const c = document.createElement("span"); c.className = "c hid"; c.textContent = ch; w.appendChild(c); list.push(c); });
         if (k < all.length - 1) list.push(null); // pause for the space between words
       });
       return list;
     });
     const caret = document.createElement("span"); caret.className = "lp-caret"; caret.setAttribute("aria-hidden", "true");
-    h1.classList.add("typed");
+    // keep the full height of the tallest sentence reserved, so nothing below moves while typing
+    const measure = () => { h1.style.minHeight = ""; h1.classList.remove("typed"); const hh = h1.offsetHeight; h1.classList.add("typed"); h1.style.minHeight = hh + "px"; };
+    measure();
+    let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(measure, 150); });
     const put = (list, n) => { // caret after the n-th letter
       let c = null; for (let k = n - 1; k >= 0 && !c; k--) c = list[k];
-      if (c) c.after(caret); else { const f = list.find(Boolean); if (f) f.before(caret); }
+      if (c) c.after(caret); else sl[i].prepend(caret);
     };
+    const reveal = (c, on) => { c.classList.toggle("hid", !on); const w = c.parentNode; w.classList.toggle("wait", !w.querySelector(".c:not(.hid)")); };
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     const visible = async () => { while (document.hidden) await wait(400); };
     (async function loop() {
       await wait(500);
       for (;;) {
         const x = sl[i], list = chars[i];
-        show(i); x.classList.remove("done"); list.forEach((c) => c && c.classList.add("hid"));
+        show(i); x.classList.remove("done"); list.forEach((c) => c && reveal(c, false));
         h1.classList.add("typing"); put(list, 0);
         for (let n = 1; n <= list.length; n++) {
           await visible();
-          if (list[n - 1]) list[n - 1].classList.remove("hid");
+          if (list[n - 1]) reveal(list[n - 1], true);
           put(list, n);
           await wait(list[n - 1] ? 45 + Math.random() * 45 : 90);
         }
         h1.classList.remove("typing"); x.classList.add("done");
         if (sl.length < 2) return;
-        await wait(3200);
+        await wait(3500); // next sentence after 3.5 seconds
         h1.classList.add("typing");
-        for (let n = list.length; n > 0; n--) { await visible(); if (list[n - 1]) list[n - 1].classList.add("hid"); put(list, n - 1); await wait(18); }
+        for (let n = list.length; n > 0; n--) { await visible(); if (list[n - 1]) reveal(list[n - 1], false); put(list, n - 1); await wait(16); }
         h1.classList.remove("typing");
         await wait(350);
         i = (i + 1) % sl.length;
