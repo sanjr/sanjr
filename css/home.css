@@ -307,3 +307,15 @@
   .lp-hero h1.lp-h1 .h1s.out { visibility: hidden; }
   .lp-hero h1 .sw svg .draw { stroke-dashoffset: 0; animation: none !important; }
 }
+
+/* typing effect on the hero headline */
+.lp-hero h1.lp-h1.typed .w, .lp-hero h1.lp-h1.typed .h1s.on .w { opacity: 1; animation: none; }
+.lp-hero h1.lp-h1.typed .h1s.on .shine { animation: lpShine 5s linear infinite; }
+.lp-hero h1.lp-h1 .c.hid { visibility: hidden; }
+.lp-hero h1.lp-h1.typed .h1s .sw svg .draw { animation: none; stroke-dashoffset: 90; }
+.lp-hero h1.lp-h1.typed .h1s.done .sw svg .draw { animation: lpDraw .9s ease-out .1s forwards; }
+.lp-hero h1.lp-h1.typed .h1s.done .sw svg .draw.d2 { animation-delay: .8s; }
+.lp-caret { display: inline-block; width: 0; height: 0; position: relative; vertical-align: baseline; }
+.lp-caret::after { content: ""; position: absolute; left: 2px; bottom: -.12em; width: .08em; min-width: 3px; height: 1.02em; border-radius: 3px; background: linear-gradient(180deg, var(--o), var(--p)); animation: lpBlink 1s steps(1) infinite; }
+.lp-hero h1.lp-h1.typing .lp-caret::after { animation: none; }
+@keyframes lpBlink { 50% { opacity: 0; } }

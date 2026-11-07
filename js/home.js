@@ -208,17 +208,55 @@
     els.forEach((el) => io.observe(el));
   } else els.forEach((el) => el.classList.add("in"));
 
-  /* headline: same design, the text changes in turn */
+  /* headline: same design – the text is typed, erased and the next one typed */
   (function rotate() {
-    const sl = document.querySelectorAll(".lp-h1 .h1s"); if (sl.length < 2) return;
+    const h1 = document.querySelector(".lp-h1"), sl = h1 ? h1.querySelectorAll(".h1s") : [];
+    if (!sl.length) return;
+    const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     let i = 0;
-    setInterval(() => {
-      if (document.hidden) return;
-      const cur = sl[i]; i = (i + 1) % sl.length; const nx = sl[i];
-      cur.classList.remove("on"); cur.classList.add("out"); cur.setAttribute("aria-hidden", "true");
-      setTimeout(() => cur.classList.remove("out"), 600);
-      nx.classList.add("on"); nx.removeAttribute("aria-hidden");
-    }, 6500);
+    const show = (k) => sl.forEach((x, j) => { x.classList.toggle("on", j === k); if (j === k) x.removeAttribute("aria-hidden"); else x.setAttribute("aria-hidden", "true"); });
+    if (reduce) { if (sl.length > 1) setInterval(() => { if (!document.hidden) show((i = (i + 1) % sl.length)); }, 6500); return; }
+    // split every word into letters (grapheme clusters keep हिंदी / मराठी letters whole)
+    const seg = window.Intl && Intl.Segmenter ? new Intl.Segmenter(L, { granularity: "grapheme" }) : null;
+    const split = (t) => (seg ? Array.from(seg.segment(t), (x) => x.segment) : Array.from(t));
+    const chars = Array.from(sl).map((x) => {
+      const list = [];
+      x.querySelectorAll(".w").forEach((w, k, all) => {
+        const parts = split(w.textContent); w.textContent = "";
+        parts.forEach((ch) => { const c = document.createElement("span"); c.className = "c hid"; c.textContent = ch; w.appendChild(c); list.push(c); });
+        if (k < all.length - 1) list.push(null); // pause for the space between words
+      });
+      return list;
+    });
+    const caret = document.createElement("span"); caret.className = "lp-caret"; caret.setAttribute("aria-hidden", "true");
+    h1.classList.add("typed");
+    const put = (list, n) => { // caret after the n-th letter
+      let c = null; for (let k = n - 1; k >= 0 && !c; k--) c = list[k];
+      if (c) c.after(caret); else { const f = list.find(Boolean); if (f) f.before(caret); }
+    };
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    const visible = async () => { while (document.hidden) await wait(400); };
+    (async function loop() {
+      await wait(500);
+      for (;;) {
+        const x = sl[i], list = chars[i];
+        show(i); x.classList.remove("done"); list.forEach((c) => c && c.classList.add("hid"));
+        h1.classList.add("typing"); put(list, 0);
+        for (let n = 1; n <= list.length; n++) {
+          await visible();
+          if (list[n - 1]) list[n - 1].classList.remove("hid");
+          put(list, n);
+          await wait(list[n - 1] ? 45 + Math.random() * 45 : 90);
+        }
+        h1.classList.remove("typing"); x.classList.add("done");
+        if (sl.length < 2) return;
+        await wait(3200);
+        h1.classList.add("typing");
+        for (let n = list.length; n > 0; n--) { await visible(); if (list[n - 1]) list[n - 1].classList.add("hid"); put(list, n - 1); await wait(18); }
+        h1.classList.remove("typing");
+        await wait(350);
+        i = (i + 1) % sl.length;
+      }
+    })();
   })();
-
 })();
