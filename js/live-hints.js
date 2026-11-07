@@ -41,7 +41,7 @@
     while: ["while loop", "while ($0) {\n  \n}"], dowhile: ["do…while loop", "do {\n  $0\n} while (condition);"],
     if: ["if", "if ($0) {\n  \n}"], ifelse: ["if…else", "if ($0) {\n  \n} else {\n  \n}"], switch: ["switch", 'switch ($0) {\n  case 1:\n    break;\n  default:\n    break;\n}'],
     try: ["try…catch", "try {\n  $0\n} catch (e) {\n  console.log(e.message);\n}"], throw: ["throw error", 'throw "$0";'],
-    getid: ["getElementById", 'document.getElementById("$0")'], qs: ["querySelector", 'document.querySelector("$0")'], inner: ["innerHTML", 'document.getElementById("$0").innerHTML = "";'],
+    getid: ["getElementById", 'document.getElementById("$0")'], qs: ["querySelector", 'document.querySelector("$0")'],
     onclick: ["click event", 'document.getElementById("$0").onclick = function () {\n  \n};'], ael: ["addEventListener", 'element.addEventListener("click", function () {\n  $0\n});'],
     settimeout: ["setTimeout", "setTimeout(function () {\n  $0\n}, 1000);"], arr: ["array", "var arr = [$0];"], obj: ["object", "var obj = {\n  $0\n};"], var: ["variable", "var $0 = ;"], let: ["variable", "let $0 = ;"], const: ["constant", "const $0 = ;"]
   };
@@ -148,25 +148,105 @@
     list = rank(list, w.word);
     return list.length ? { list, from: w.from, to: w.to } : null;
   }
+  /* ---------- JavaScript (type-aware members, like VS Code) ---------- */
+  const JS_TYPES = {
+    string: ["length", "toUpperCase()", "toLowerCase()", "charAt()", "indexOf()", "includes()", "slice()", "substring()", "split()", "replace()", "trim()", "concat()", "startsWith()", "endsWith()", "repeat()", "padStart()"],
+    array: ["length", "push()", "pop()", "shift()", "unshift()", "sort()", "reverse()", "join()", "slice()", "splice()", "indexOf()", "includes()", "forEach()", "map()", "filter()", "reduce()", "find()", "concat()", "toString()"],
+    number: ["toFixed()", "toString()", "toPrecision()"],
+    element: ["innerHTML", "innerText", "textContent", "value", "style", "className", "classList", "id", "onclick", "onchange", "onmouseover", "checked", "disabled", "src", "href", "children", "parentElement",
+      "addEventListener()", "setAttribute()", "getAttribute()", "appendChild()", "removeChild()", "remove()", "focus()", "click()", "querySelector()"],
+    style: ["color", "backgroundColor", "fontSize", "fontWeight", "fontFamily", "display", "width", "height", "margin", "padding", "border", "borderRadius", "textAlign", "visibility", "opacity", "backgroundImage", "transform"],
+    classList: ["add()", "remove()", "toggle()", "contains()"],
+    date: ["getFullYear()", "getMonth()", "getDate()", "getDay()", "getHours()", "getMinutes()", "getSeconds()", "getTime()", "toLocaleDateString()", "toLocaleTimeString()", "toDateString()"],
+    object: ["hasOwnProperty()", "toString()"]
+  };
+  const JS_FUNCS = { alert: "alert(message)", prompt: "prompt(text) → string", confirm: "confirm(text) → true/false", parseInt: "parseInt(text) → integer", parseFloat: "parseFloat(text) → decimal", isNaN: "isNaN(value)",
+    eval: "eval(code)", setTimeout: "setTimeout(fn, ms)", setInterval: "setInterval(fn, ms)", clearInterval: "clearInterval(id)", Number: "Number(value)", String: "String(value)", Boolean: "Boolean(value)" };
+  const JS_OBJECTS = { document: "web page (DOM)", window: "browser window", console: "developer console", Math: "maths functions", Date: "dates – new Date()", JSON: "JSON tools", Array: "Array", Object: "Object", localStorage: "saved data", screen: "screen size", navigator: "browser info", location: "page address" };
+  const JS_KEYWORDS = ["var", "let", "const", "function", "return", "if", "else", "for", "while", "do", "switch", "case", "break", "continue", "default", "try", "catch", "finally", "throw", "new", "this", "typeof", "instanceof", "in", "of", "true", "false", "null", "undefined", "NaN", "Infinity"];
+  function jsTypeOf(cm, recv) {
+    // recv = text just before the dot
+    if (/["'`]$/.test(recv)) return "string";
+    if (/\]$/.test(recv) && /\[[^\[\]]*\]$/.test(recv) && !/[\w$)]\[[^\[\]]*\]$/.test(recv)) return "array";      // [1,2].
+    if (/(getElementById|querySelector|createElement)\s*\([^()]*\)$/.test(recv)) return "element";
+    if (/querySelectorAll\s*\([^()]*\)$|getElementsBy\w+\s*\([^()]*\)$/.test(recv)) return "array";
+    if (/new\s+Date\s*\([^()]*\)$/.test(recv)) return "date";
+    if (/\.style$/.test(recv) || /^style$/.test(recv)) return "style";
+    if (/\.classList$/.test(recv)) return "classList";
+    if (/\.(innerHTML|innerText|textContent|value|id|className)$/.test(recv) || /\.(toUpperCase|toLowerCase|trim|slice|substring|replace|charAt|join|toString)\([^()]*\)$/.test(recv) || /\b(prompt|String)\s*\([^()]*\)$/.test(recv)) return "string";
+    if (/\.(split|map|filter|concat|sort|reverse)\([^()]*\)$/.test(recv)) return "array";
+    if (/\b(parseInt|parseFloat|Number)\s*\([^()]*\)$|\.length$/.test(recv)) return "number";
+    const m = /([A-Za-z_$][\w$]*)$/.exec(recv);
+    if (!m) return null;
+    const name = m[1];
+    if (JS_MEMBERS[name]) return "obj:" + name;
+    // look at how the variable was assigned:  name = "…" | [ | 12 | document.getElementById(…) | new Date()
+    const txt = cm.getValue();
+    const re = new RegExp("(?:^|[^\\w$.])" + name.replace(/\$/g, "\\$") + "\\s*=\\s*([^;\\n]+)", "g");
+    let last = null, mm; while ((mm = re.exec(txt))) last = mm[1].trim();
+    if (last == null) { if (new RegExp("function\\s*\\w*\\s*\\([^)]*\\b" + name + "\\b").test(txt)) return null; return null; }
+    if (/^["'`]/.test(last) || /^prompt\s*\(/.test(last) || /^String\s*\(/.test(last)) return "string";
+    if (/^\[/.test(last) || /\.split\(/.test(last)) return "array";
+    if (/^-?\d/.test(last) || /^(parseInt|parseFloat|Number)\s*\(/.test(last)) return "number";
+    if (/^document\.(getElementById|querySelector|createElement)\s*\(/.test(last)) return "element";
+    if (/^document\.(querySelectorAll|getElementsBy\w+)\s*\(/.test(last)) return "array";
+    if (/^new\s+Date/.test(last)) return "date";
+    if (/^\{/.test(last)) return "object";
+    return null;
+  }
+  const callItem = (name, kind, detail) => item(name + "()", kind, detail, { displayText: name, hint: (c, d) => { c.replaceRange(name + "()", d.from, d.to, "complete"); const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); } });
+  function memberItems(names, prefix, detail) {
+    const out = [];
+    names.forEach((x) => {
+      if (prefix && !starts(x, prefix)) return;
+      const isFn = x.endsWith("()");
+      out.push(isFn ? callItem(x.slice(0, -2), "m", detail || "method") : item(x, "prop", detail || "property"));
+    });
+    return out;
+  }
   function jsHint(cm) {
     const w = wordAt(cm, /[\w$]/);
-    const dot = /([A-Za-z_$][\w$]*)\.$/.exec(w.before);
+    const dotM = /\.\s*$/.exec(w.before);
     let list = [];
-    if (dot) {
-      (JS_MEMBERS[dot[1]] || JS_MEMBERS._any).forEach((x) => {
-        if (w.word && !starts(x, w.word)) return;
-        const isFn = x.endsWith("()");
-        list.push(item(x, isFn ? "m" : "prop", isFn ? "method" : "property", { displayText: x.replace(/\(\)$/, ""), hint: (c, d) => { c.replaceRange(x, d.from, d.to, "complete"); if (isFn) { const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); } } }));
-      });
-    } else {
-      if (!w.word) return null;
-      Object.keys(JS_SNIP).forEach((k) => { if (starts(k, w.word)) list.push(snipItem(k, JS_SNIP[k])); });
-      JS_WORDS.forEach((k) => { if (starts(k, w.word)) list.push(item(k, /^[a-z]+$/.test(k) && k.length < 11 && JS_WORDS.indexOf(k) < 29 ? "kw" : "fn", "")); });
-      docWords(cm, w.word, "[A-Za-z_$][\\w$]*").forEach((x) => { if (starts(x, w.word) && x !== w.word) list.push(item(x, "word")); });
+    if (dotM) {
+      const recv = w.before.slice(0, dotM.index).replace(/\s+$/, "");
+      if (/\d$/.test(recv) && !/[\w$]\d*$/.test(recv.replace(/\d+$/, ""))) return null;     // "3." is a decimal number
+      const ty = jsTypeOf(cm, recv);
+      if (ty && ty.indexOf("obj:") === 0) list = memberItems(JS_MEMBERS[ty.slice(4)], w.word, ty.slice(4) + " method").map((x) => { if (x.kind === "prop") x.detail = ty.slice(4) + " property"; return x; });
+      else if (ty) list = memberItems(JS_TYPES[ty], w.word, null).map((x) => { x.detail = ty + (x.kind === "m" ? " method" : " property"); return x; });
+      else {
+        // unknown type → common members of strings, arrays and HTML elements
+        const seen = {};
+        ["element", "string", "array"].forEach((t) => JS_TYPES[t].forEach((x) => { if (!seen[x]) { seen[x] = 1; } }));
+        list = memberItems(Object.keys(seen), w.word, null);
+      }
+      // properties/methods already used in this file
+      const used = {}; let m; const re = /\.([A-Za-z_$][\w$]*)/g; const txt = cm.getValue();
+      while ((m = re.exec(txt))) if (m[1] !== w.word && (!w.word || starts(m[1], w.word))) used[m[1]] = 1;
+      Object.keys(used).forEach((u) => { if (!list.some((x) => x.displayText === u)) list.push(item(u, "word", "used in this file")); });
+      list = list.slice(0, 60);
+      return list.length ? { list, from: w.from, to: w.to } : null;
     }
-    list = rank(list, w.word);
+    if (!w.word) return null;
+    if (/\d/.test(w.word[0])) return null;
+    Object.keys(JS_SNIP).forEach((k) => { if (starts(k, w.word)) list.push(snipItem(k, JS_SNIP[k])); });
+    JS_KEYWORDS.forEach((k) => { if (starts(k, w.word)) list.push(item(k, "kw", "keyword")); });
+    Object.keys(JS_OBJECTS).forEach((k) => { if (starts(k, w.word)) list.push(item(k, "mod", JS_OBJECTS[k])); });
+    Object.keys(JS_FUNCS).forEach((k) => { if (starts(k, w.word)) list.push(callItem(k, "fn", JS_FUNCS[k])); });
+    // your own functions and variables
+    const txt = cm.getValue(), own = {}; let m;
+    const fre = /function\s+([A-Za-z_$][\w$]*)/g; while ((m = fre.exec(txt))) own[m[1]] = "fn";
+    const vre = /(?:var|let|const)\s+([A-Za-z_$][\w$]*)/g; while ((m = vre.exec(txt))) if (!own[m[1]]) own[m[1]] = "var";
+    Object.keys(own).forEach((k) => { if (k !== w.word && starts(k, w.word)) list.push(own[k] === "fn" ? callItem(k, "fn", "your function") : item(k, "prop", "your variable")); });
+    docWords(cm, w.word, "[A-Za-z_$][\\w$]*").forEach((x) => { if (starts(x, w.word) && x !== w.word && !own[x]) list.push(item(x, "word")); });
+    // one entry per name: snippet > function/variable > keyword > text
+    const pri = { sn: 0, fn: 1, mod: 1, prop: 1, m: 1, kw: 2, word: 3 };
+    const best = {};
+    list.forEach((x) => { const k = x.displayText; if (x.kind === "sn") { best["sn|" + k] = x; return; } if (!best[k] || pri[x.kind] < pri[best[k].kind]) best[k] = x; });
+    list = rank(Object.keys(best).map((k) => best[k]), w.word);
     return list.length ? { list, from: w.from, to: w.to } : null;
   }
+
   /* ---------- CSS ---------- */
   const COLORS = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "black", "white", "gray", "grey", "brown", "navy", "maroon", "teal", "lime", "aqua", "olive", "gold", "silver", "violet", "indigo", "crimson", "skyblue", "lightblue", "lightgreen", "lightgray", "darkblue", "darkgreen", "darkred", "transparent", "#ffffff", "#000000", "rgb(0, 0, 0)", "rgba(0, 0, 0, 0.5)"];
   const SIZES = ["10px", "12px", "14px", "16px", "18px", "20px", "24px", "30px", "50%", "100%", "auto", "1em", "1.5em", "2em", "1rem", "0"];
