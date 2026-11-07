@@ -284,3 +284,34 @@
   .lp-foot .cols { grid-template-columns: 1fr; }
 }
 @media (min-width: 721px) { .lp-avas { display: contents; } }
+
+/* ---------- animated hero headline & taglines ---------- */
+.lp-hero h1.lp-h1 .w { display: inline-block; opacity: 0; transform: translateY(26px) rotateX(-60deg) scale(.96); filter: blur(4px); animation: lpWord .7s cubic-bezier(.2,.8,.25,1.2) forwards; animation-delay: var(--d, 0s); transform-origin: 50% 100%; }
+@keyframes lpWord { to { opacity: 1; transform: none; filter: none; } }
+.lp-hero h1 .shine { background: linear-gradient(100deg, var(--o) 0%, #ffb347 25%, #ff3d7f 50%, var(--p) 75%, var(--o) 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: lpWord .7s cubic-bezier(.2,.8,.25,1.2) forwards, lpShine 5s linear 1.6s infinite; animation-delay: var(--d, 0s), 1.6s; }
+.lp-hero h1 .hl-p.shine { background-image: linear-gradient(100deg, var(--p) 0%, #4f8bff 30%, #00c2ff 50%, #b06bff 70%, var(--p) 100%); }
+@keyframes lpShine { to { background-position: -250% 0; } }
+.lp-hero h1 .sw svg .draw { stroke-dasharray: 90; stroke-dashoffset: 90; animation: lpDraw .9s ease-out 1.7s forwards; }
+.lp-hero h1 .sw svg .draw.d2 { animation-delay: 2.4s; }
+@keyframes lpDraw { to { stroke-dashoffset: 0; } }
+
+.lp-tagline { display: inline-flex; align-items: center; gap: 12px; max-width: 760px; min-height: 58px; margin: 4px auto 10px; padding: 10px 22px 10px 10px; border-radius: 999px;
+  background: linear-gradient(135deg, #1b1060, #3d2bb8 60%, #5b45e0); color: #fff; font: 600 clamp(14px, 1.9vw, 18px)/1.45 "Poppins", sans-serif; text-align: left;
+  box-shadow: 0 4px 0 #2a1d8f, 0 16px 30px rgba(45, 28, 150, .3), inset 0 1px 0 rgba(255,255,255,.25); opacity: 0; animation: lpWord .8s ease forwards 1.3s; position: relative; overflow: hidden; }
+.lp-tagline::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.18) 50%, transparent 70%); transform: translateX(-100%); animation: lpSweep 4.5s ease-in-out 2s infinite; pointer-events: none; }
+@keyframes lpSweep { 0%, 60% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.lp-tagline .tl-ic { flex: 0 0 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #ffb347, #ff6b1a); color: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,.14); animation: lpPulse 2s ease-in-out infinite; }
+@keyframes lpPulse { 50% { box-shadow: 0 0 0 9px rgba(255,179,71,.0), 0 0 18px rgba(255,179,71,.65); transform: scale(1.06); } }
+.lp-tagline .tl-txt { min-height: 1.45em; }
+.lp-tagline .tl-caret { width: 3px; height: 1.25em; border-radius: 2px; background: #ffd166; margin-left: -8px; animation: lpBlink 1s steps(1) infinite; flex: 0 0 3px; }
+.lp-tagline.typing .tl-caret { animation: none; }
+@keyframes lpBlink { 50% { opacity: 0; } }
+.lp-tg-dots { display: flex; justify-content: center; gap: 7px; margin: 0 0 18px; }
+.lp-tg-dots span { width: 8px; height: 8px; border-radius: 99px; background: #cfc6ff; transition: width .35s, background .35s; }
+.lp-tg-dots span.on { width: 26px; background: linear-gradient(90deg, var(--o), var(--p)); }
+@media (max-width: 720px) { .lp-tagline { border-radius: 20px; padding: 10px 14px 10px 10px; min-height: 0; } .lp-tagline .tl-txt { min-height: 2.9em; display: flex; align-items: center; } }
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero h1 .w, .lp-tagline { opacity: 1; transform: none; filter: none; animation: none; }
+  .lp-hero h1 .shine, .lp-tagline::after, .lp-tagline .tl-ic, .lp-tagline .tl-caret { animation: none; }
+  .lp-hero h1 .sw svg .draw { stroke-dashoffset: 0; animation: none; }
+}

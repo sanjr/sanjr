@@ -8,6 +8,7 @@
     en: {
       nav: ["Home", "Modules", "Mock Test", "Study", "Results", "About"],
       signin: "Sign in", start: "Start Mock Test",
+      tg: ["Explore Technology, Master Computer Skills, Shape Your Future.", "The Digital World Never Stops Evolving, So Keep Learning and Growing.", "Every Click, Every Code, Every Skill Takes You Closer to the Digital Future."],
       h1a: "Learning in the computer age means we must practise", h1b: "tomorrow’s", h1c: "skills today",
       sub: "The complete ITI COPA question bank – 355 MCQs in English, Hindi & Marathi with real CBT-style mock tests.",
       joinI: "Start Practice", joinS: "Take Mock Test", tagI: "COPA Instructor", tagS: "ITI Trainee",
@@ -33,6 +34,7 @@
     hi: {
       nav: ["होम", "मॉड्यूल", "मॉक टेस्ट", "अध्ययन", "परिणाम", "परिचय"],
       signin: "लॉगिन", start: "मॉक टेस्ट शुरू करें",
+      tg: ["तकनीक को जानें, कंप्यूटर कौशल में महारत हासिल करें, अपना भविष्य बनाएँ।", "डिजिटल दुनिया कभी रुकती नहीं, इसलिए सीखते रहें और आगे बढ़ते रहें।", "हर क्लिक, हर कोड, हर कौशल आपको डिजिटल भविष्य के और करीब ले जाता है।"],
       h1a: "कंप्यूटर युग में सीखने का अर्थ है कि हम आज ही", h1b: "कल के", h1c: "कौशल का अभ्यास करें",
       sub: "पूरा ITI COPA प्रश्न बैंक – अंग्रेज़ी, हिंदी और मराठी में 355 MCQ, वास्तविक CBT जैसे मॉक टेस्ट के साथ।",
       joinI: "अभ्यास शुरू करें", joinS: "मॉक टेस्ट दें", tagI: "COPA अनुदेशक", tagS: "ITI प्रशिक्षु",
@@ -58,6 +60,7 @@
     mr: {
       nav: ["होम", "मॉड्युल्स", "मॉक टेस्ट", "अभ्यास", "निकाल", "माहिती"],
       signin: "लॉगिन", start: "मॉक टेस्ट सुरू करा",
+      tg: ["तंत्रज्ञान जाणून घ्या, संगणक कौशल्यांवर प्रभुत्व मिळवा, तुमचे भविष्य घडवा.", "डिजिटल जग कधीच थांबत नाही, म्हणून शिकत राहा आणि प्रगती करत राहा.", "प्रत्येक क्लिक, प्रत्येक कोड, प्रत्येक कौशल्य तुम्हाला डिजिटल भविष्याच्या अधिक जवळ नेते."],
       h1a: "संगणक युगात शिकणे म्हणजे आजच", h1b: "उद्याच्या", h1c: "कौशल्यांचा सराव करणे",
       sub: "संपूर्ण ITI COPA प्रश्नपेढी – इंग्रजी, हिंदी आणि मराठीमध्ये 355 MCQ, प्रत्यक्ष CBT सारख्या मॉक टेस्टसह.",
       joinI: "सराव सुरू करा", joinS: "मॉक टेस्ट द्या", tagI: "COPA निदेशक", tagS: "ITI प्रशिक्षणार्थी",
@@ -107,6 +110,8 @@
       '<path d="M57 90c5 5 13 5 18 0" stroke="' + (inst ? "#fff" : "#4a2a1a") + '" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>';
   }
 
+  let wi = 0;
+  const words = (txt, cls) => String(txt).split(/\s+/).filter(Boolean).map((w) => '<span class="w' + (cls ? " " + cls : "") + '" aria-hidden="true" style="--d:' + (0.15 + 0.09 * wi++).toFixed(2) + 's">' + esc(w) + "</span>").join(" ");
   const modImg = (m) => C.ROOT + "assets/img/modules/m" + C.pad(m) + ".jpg";
 
   const FEATURED = [
@@ -130,8 +135,10 @@
     '<span class="lp-deco q"></span><span class="lp-deco sq"></span>' +
     '<div class="lp-avas"><div class="lp-ava l"><div class="ph">' + avatar("i") + '</div><span class="tag"><i class="fa-solid fa-chalkboard-user"></i>' + X.tagI + "</span></div>" +
     '<div class="lp-ava r"><div class="ph">' + avatar("s") + '</div><span class="tag"><i class="fa-solid fa-graduation-cap"></i>' + X.tagS + "</span></div></div>" +
-    '<h1 class="rv">' + esc(X.h1a) + ' <span class="hl-o">' + esc(X.h1b) + '</span><br><span class="hl-p sw">' + esc(X.h1c) +
-    '<svg viewBox="0 0 70 40" aria-hidden="true"><path d="M66 6C50 30 26 34 6 26" stroke="#b9a8ff" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M14 18l-8 8 10 4" stroke="#b9a8ff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></h1>' +
+    '<h1 class="lp-h1" aria-label="' + esc(X.h1a + " " + X.h1b + " " + X.h1c) + '">' + words(X.h1a, "") + " " + words(X.h1b, "hl-o shine") + '<br><span class="hl-p sw">' + words(X.h1c, "hl-p shine") +
+    '<svg viewBox="0 0 70 40" aria-hidden="true"><path class="draw" d="M66 6C50 30 26 34 6 26" stroke="#b9a8ff" stroke-width="3" fill="none" stroke-linecap="round"/><path class="draw d2" d="M14 18l-8 8 10 4" stroke="#b9a8ff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></h1>' +
+    '<div class="lp-tagline" aria-live="polite"><span class="tl-ic"><i class="fa-solid fa-microchip"></i></span><span class="tl-txt" id="lpTag">' + esc(X.tg[0]) + '</span><span class="tl-caret" aria-hidden="true"></span></div>' +
+    '<div class="lp-tg-dots" aria-hidden="true">' + X.tg.map((x, i) => '<span' + (i ? "" : ' class="on"') + "></span>").join("") + "</div>" +
     '<p class="sub rv">' + esc(X.sub) + "</p>" +
     '<div class="lp-cta rv"><span class="lp-arrow l"></span><span class="lp-arrow r"></span>' +
     '<a class="lp-btn o" href="modules.html"><i class="fa-solid fa-pen-to-square"></i> ' + X.joinI + '</a><a class="lp-btn p" href="exam.html"><i class="fa-solid fa-stopwatch"></i> ' + X.joinS + "</a></div>" +
@@ -201,4 +208,32 @@
     const io = new IntersectionObserver((ents) => ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { threshold: 0.12 });
     els.forEach((el) => io.observe(el));
   } else els.forEach((el) => el.classList.add("in"));
+
+  /* animated taglines – typewriter, one after another */
+  (function tagline() {
+    const el = document.getElementById("lpTag"), dots = document.querySelectorAll(".lp-tg-dots span");
+    if (!el || !X.tg || !X.tg.length) return;
+    const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let i = 0;
+    const mark = () => dots.forEach((d, k) => d.classList.toggle("on", k === i));
+    if (reduce) { setInterval(() => { i = (i + 1) % X.tg.length; el.textContent = X.tg[i]; mark(); }, 5000); return; }
+    const chars = (str) => Array.from(str); // keeps Devanagari clusters reasonably intact
+    const type = () => {
+      const c = chars(X.tg[i]); let n = 0; el.textContent = ""; mark();
+      el.parentNode.classList.add("typing");
+      const step = () => {
+        if (document.hidden) return setTimeout(step, 400);
+        n++; el.textContent = c.slice(0, n).join("");
+        if (n < c.length) setTimeout(step, 38 + Math.random() * 30);
+        else { el.parentNode.classList.remove("typing"); setTimeout(erase, 2600); }
+      };
+      const erase = () => {
+        el.parentNode.classList.add("typing");
+        const back = () => { n -= 2; if (n > 0) { el.textContent = c.slice(0, n).join(""); setTimeout(back, 14); } else { i = (i + 1) % X.tg.length; setTimeout(type, 250); } };
+        back();
+      };
+      step();
+    };
+    setTimeout(type, 1800);
+  })();
 })();
