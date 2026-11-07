@@ -739,3 +739,38 @@ body.nav-open .site-header.collapsed ~ .sidebar-backdrop { display: block; posit
 .seo-qa .sq { font-weight: 600; color: var(--ink); }
 .seo-qa .sa { font-size: 14px; color: #157347; }
 .seo-qa .sa span { color: var(--ink-3); }
+
+/* ---------- formatted study material (Word-style notes) ---------- */
+.rte-content { font-family: var(--font-body, Roboto, sans-serif); font-size: 15px; line-height: 1.65; color: var(--ink); overflow-wrap: break-word; }
+.rte-content > :first-child { margin-top: 0; }
+.rte-content p { margin: 0 0 .6em; }
+.rte-content h1 { font-size: 1.8em; margin: .6em 0 .35em; line-height: 1.25; }
+.rte-content h2 { font-size: 1.45em; margin: .6em 0 .35em; line-height: 1.3; }
+.rte-content h3 { font-size: 1.2em; margin: .6em 0 .3em; }
+.rte-content h4 { font-size: 1.05em; margin: .6em 0 .3em; }
+.rte-content ul, .rte-content ol { margin: 0 0 .7em; padding-left: 1.6em; }
+.rte-content li { margin: .15em 0; }
+.rte-content blockquote { margin: .6em 0; padding: .5em 1em; border-left: 4px solid var(--purple, #7c5cff); background: #f6f3ff; border-radius: 0 10px 10px 0; color: var(--ink-2); }
+.rte-content pre { background: #0f1630; color: #e6edff; padding: 12px 14px; border-radius: 10px; overflow-x: auto; font: 13.5px/1.55 "JetBrains Mono", Consolas, monospace; white-space: pre-wrap; }
+.rte-content code { background: #eef2ff; border-radius: 5px; padding: 1px 5px; font-family: Consolas, monospace; }
+.rte-content pre code { background: none; padding: 0; }
+.rte-content a { color: var(--blue-600, #1a56db); text-decoration: underline; }
+.rte-content img { max-width: 100%; height: auto; border-radius: 8px; }
+.rte-content hr { border: 0; border-top: 2px solid var(--line, #e3e8f4); margin: 1em 0; }
+.rte-content table { border-collapse: collapse; width: 100%; margin: .6em 0 1em; font-size: .95em; display: table; }
+.rte-content th, .rte-content td { border: 1px solid #c9d3ea; padding: 7px 10px; vertical-align: top; text-align: left; min-width: 40px; }
+.rte-content th { background: #eef3ff; font-weight: 700; }
+.rte-content tr:nth-child(even) td { background-color: #fafbff; }
+.rte-content .rte-tscroll, .nc-body.rich { overflow-x: auto; }
+.nc-body.rich { max-height: 230px; overflow: hidden; position: relative; font-size: 14px; }
+.nc-body.rich::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 70px; background: linear-gradient(transparent, #fff); pointer-events: none; }
+.nc-body.rich table { font-size: 12.5px; }
+.note-card .nc-read { align-self: flex-start; }
+.modal.note-modal { max-width: 920px; padding: 22px 22px 26px; background: #eef1f8; }
+.note-view .nv-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 40px 14px 0; }
+.note-view .nv-head h2 { margin: 0; font-size: 21px; flex: 1; min-width: 200px; }
+.rte-page { background: #fff; border-radius: 6px; box-shadow: 0 6px 24px rgba(15,35,95,.12); border: 1px solid #e3e8f4; padding: 32px 40px; min-height: 200px; }
+.rte-page[data-margin="narrow"] { padding: 18px 20px; }
+.rte-page[data-margin="wide"] { padding: 48px 72px; }
+@media (max-width: 720px) { .rte-page, .rte-page[data-margin] { padding: 18px 16px; } .modal.note-modal { padding: 16px 10px 20px; } .rte-content table { display: block; overflow-x: auto; } }
+@media print { .rte-content tr:nth-child(even) td { background-color: transparent; } }

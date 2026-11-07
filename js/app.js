@@ -28,6 +28,7 @@
   /* ---------- UI strings ---------- */
   const I18N = {
     en: {
+      readNotes: "Read full notes", printNotes: "Print",
       noPrograms: "No practicals saved yet. Open Live Practice, write a program and click Save.", 
       livePractice: "Live Practice", myPracticals: "My Live Practicals", 
       whyAns: "Explanation", 
@@ -94,6 +95,7 @@
       selectOneModule: "Please select at least one module.", progress: "Progress", accuracy: "Accuracy"
     },
     hi: {
+      readNotes: "पूरे नोट्स पढ़ें", printNotes: "प्रिंट",
       noPrograms: "अभी कोई प्रैक्टिकल सेव नहीं। लाइव प्रैक्टिस खोलें, प्रोग्राम लिखें और Save दबाएँ।", 
       livePractice: "लाइव प्रैक्टिस", myPracticals: "मेरे लाइव प्रैक्टिकल", 
       whyAns: "व्याख्या", 
@@ -160,6 +162,7 @@
       selectOneModule: "कृपया कम से कम एक मॉड्यूल चुनें।", progress: "प्रगति", accuracy: "सटीकता"
     },
     mr: {
+      readNotes: "संपूर्ण नोट्स वाचा", printNotes: "प्रिंट",
       noPrograms: "अजून एकही प्रॅक्टिकल सेव्ह नाही. लाइव्ह प्रॅक्टिस उघडा, प्रोग्राम लिहा आणि Save दाबा.", 
       livePractice: "लाइव्ह प्रॅक्टिस", myPracticals: "माझे लाइव्ह प्रॅक्टिकल", 
       whyAns: "स्पष्टीकरण", 
@@ -292,19 +295,89 @@
   }
   const optText = (q, l, i) => ((q[l] || q.en).o[i]);
   /* admin study notes → HTML cards (plain text, **bold**, links, line breaks) */
+  /* ---------- safe HTML for formatted study material (only allowed tags & styles) ---------- */
+  const SAFE_TAGS = { P: 1, BR: 1, B: 1, STRONG: 1, I: 1, EM: 1, U: 1, S: 1, STRIKE: 1, DEL: 1, SUB: 1, SUP: 1, SPAN: 1, MARK: 1, SMALL: 1,
+    H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1, BLOCKQUOTE: 1, PRE: 1, CODE: 1, UL: 1, OL: 1, LI: 1, A: 1, IMG: 1, HR: 1, DIV: 1,
+    TABLE: 1, THEAD: 1, TBODY: 1, TFOOT: 1, TR: 1, TH: 1, TD: 1, CAPTION: 1, COLGROUP: 1, COL: 1 };
+  const DROP_TAGS = /^(SCRIPT|STYLE|IFRAME|OBJECT|EMBED|LINK|META|TITLE|HEAD|NOSCRIPT|TEMPLATE|SVG|MATH|FORM|INPUT|BUTTON|SELECT|TEXTAREA|XML|O:P)$/;
+  const SAFE_CSS = ["color", "background-color", "font-family", "font-size", "font-weight", "font-style", "text-decoration", "text-decoration-line", "text-align",
+    "line-height", "margin-left", "margin-right", "padding-left", "text-indent", "vertical-align", "width", "height", "border", "border-collapse", "display", "float", "list-style-type"];
+  const FONT_SIZES = ["", "10px", "13px", "16px", "18px", "24px", "32px", "48px"];
+  function sanitizeHTML(html) {
+    const tpl = document.createElement("template");
+    tpl.innerHTML = String(html || "").replace(/<!--[\s\S]*?-->/g, "").replace(/<\/?o:p>/gi, "");
+    const safeUrl = (u, img) => { u = String(u || "").trim(); return /^(https?:|mailto:)/i.test(u) || (img && /^data:image\/(png|jpe?g|gif|webp);base64,/i.test(u)) ? u : ""; };
+    const walk = (parent) => {
+      Array.from(parent.childNodes).forEach((n) => {
+        if (n.nodeType === 3) return;
+        if (n.nodeType !== 1) { n.remove(); return; }
+        let tag = n.tagName.toUpperCase();
+        if (DROP_TAGS.test(tag)) { n.remove(); return; }
+        if (tag === "FONT") { // old <font> → <span style>
+          const sp = document.createElement("span");
+          if (n.getAttribute("color")) sp.style.color = n.getAttribute("color");
+          if (n.getAttribute("face")) sp.style.fontFamily = n.getAttribute("face");
+          if (n.getAttribute("size")) sp.style.fontSize = FONT_SIZES[+n.getAttribute("size")] || "";
+          while (n.firstChild) sp.appendChild(n.firstChild);
+          n.replaceWith(sp); n = sp; tag = "SPAN";
+        }
+        if (!SAFE_TAGS[tag]) { walk(n); while (n.firstChild) n.parentNode.insertBefore(n.firstChild, n); n.remove(); return; }
+        const keep = {};
+        if (tag === "A") { const h = safeUrl(n.getAttribute("href")); if (h) { keep.href = h; keep.target = "_blank"; keep.rel = "noopener"; } }
+        if (tag === "IMG") { const src = safeUrl(n.getAttribute("src"), true); if (!src) { n.remove(); return; } keep.src = src; keep.alt = n.getAttribute("alt") || ""; keep.loading = "lazy"; }
+        if (tag === "TD" || tag === "TH") ["colspan", "rowspan"].forEach((a) => { const v = parseInt(n.getAttribute(a), 10); if (v > 1 && v < 50) keep[a] = String(v); });
+        if (tag === "OL") { const st = parseInt(n.getAttribute("start"), 10); if (st > 1) keep.start = String(st); }
+        if (tag === "TABLE") keep.class = "rte-table";
+        const css = [];
+        const st = n.style;
+        SAFE_CSS.forEach((p) => {
+          const v = st.getPropertyValue(p);
+          if (v && !/url\(|expression|javascript:|behavior/i.test(v)) css.push(p + ":" + v);
+        });
+        const al = n.getAttribute("align"); if (al && /^(left|right|center|justify)$/i.test(al) && !st.textAlign) css.push("text-align:" + al.toLowerCase());
+        Array.from(n.attributes).forEach((a) => n.removeAttribute(a.name));
+        Object.keys(keep).forEach((k) => n.setAttribute(k, keep[k]));
+        if (css.length) n.setAttribute("style", css.join(";"));
+        walk(n);
+      });
+    };
+    walk(tpl.content);
+    return tpl.innerHTML.trim();
+  }
   function noteBody(txt) {
     let h = esc(txt || "");
     h = h.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
     h = h.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
     return h.replace(/\n/g, "<br>");
   }
+  const noteHTML = (n) => (n.fmt === "html" ? sanitizeHTML(n.body) : noteBody(n.body));
+  const noteLink = (n) => (n.link ? '<a class="btn btn-ghost btn-sm" href="' + esc(n.link) + '" target="_blank" rel="noopener"><i class="fa-solid fa-' + (/\.pdf($|\?)/i.test(n.link) ? "file-pdf" : "link") + '"></i> ' + esc(n.linkLabel || "Open") + "</a>" : "");
   function renderNotes(list) {
     if (!list.length) return "";
     return '<div class="notes-grid">' + list.map((n) => '<article class="card note-card"><div class="nc-head"><span class="chip ' + (n.m ? "" : "purple") + '">' + (n.m ? "M" + n.m : "COPA") + "</span><h3>" + esc(n.title || "") + "</h3></div>" +
-      '<div class="nc-body">' + noteBody(n.body) + "</div>" +
-      (n.link ? '<a class="btn btn-ghost btn-sm" href="' + esc(n.link) + '" target="_blank" rel="noopener"><i class="fa-solid fa-' + (/\.pdf($|\?)/i.test(n.link) ? "file-pdf" : "link") + '"></i> ' + esc(n.linkLabel || "Open") + "</a>" : "") +
-      "</article>").join("") + "</div>";
+      (n.fmt === "html"
+        ? '<div class="nc-body rich rte-content">' + noteHTML(n) + '</div><button type="button" class="btn btn-primary btn-sm nc-read" data-note-open="' + esc(n.id) + '"><i class="fa-solid fa-book-open-reader"></i> ' + t("readNotes") + "</button>"
+        : '<div class="nc-body">' + noteHTML(n) + "</div>") +
+      noteLink(n) + "</article>").join("") + "</div>";
   }
+  function openNote(n) {
+    const m = modal('<button class="close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
+      '<div class="note-view"><div class="nv-head"><span class="chip ' + (n.m ? "" : "purple") + '">' + (n.m ? "M" + n.m : "COPA") + "</span><h2>" + esc(n.title || "") + "</h2>" +
+      '<button type="button" class="btn btn-ghost btn-sm" data-nprint><i class="fa-solid fa-print"></i> ' + t("printNotes") + "</button></div>" +
+      '<div class="rte-page rte-content" data-margin="' + esc(n.margin || "normal") + '">' + noteHTML(n) + "</div>" + (n.link ? '<div style="margin-top:14px">' + noteLink(n) + "</div>" : "") + "</div>", { wide: true });
+    m.el.querySelector(".modal").classList.add("note-modal");
+    m.el.querySelector("[data-nprint]").addEventListener("click", () => {
+      const w = window.open("", "_blank"); if (!w) return;
+      const css = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map((l) => '<link rel="stylesheet" href="' + l.href + '">').join("");
+      w.document.write("<!doctype html><html><head><meta charset='utf-8'><title>" + esc(n.title || "Notes") + "</title>" + css + "<style>body{background:#fff;padding:0;margin:0}.rte-page{box-shadow:none;border:0}</style></head><body><h1 style='font-family:Poppins,sans-serif;margin:20px 28px 0'>" + esc(n.title || "") +
+        "</h1><div class='rte-page rte-content' data-margin='" + esc(n.margin || "normal") + "'>" + noteHTML(n) + "</div><script>setTimeout(function(){print()},400)<\/script></body></html>");
+      w.document.close();
+    });
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest("[data-note-open]"); if (!b) return;
+    const n = NOTES.find((x) => x.id === b.getAttribute("data-note-open")); if (n) openNote(n);
+  });
   const notesFor = (m) => NOTES.filter((n) => !m || +n.m === +m || !+n.m);
 
   /* one-line explanation of the correct answer */
@@ -508,6 +581,6 @@
     ROOT, MODULES, I18N, QUESTIONS, NOTES, normQ, qById, byModule, modulePage, iconCls,
     get lang() { return lang; },
     t, modName, esc, fmtTime, shuffle, pad, store, toast, modal,
-    PASS, explain, renderNotes, notesFor, renderShell, setLang, onLang, applyStatic, getProfile, openLogin, logout, getStats, moduleProgress, qBlock, optText
+    PASS, explain, renderNotes, notesFor, sanitizeHTML, noteHTML, renderShell, setLang, onLang, applyStatic, getProfile, openLogin, logout, getStats, moduleProgress, qBlock, optText
   };
 })();

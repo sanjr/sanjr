@@ -310,7 +310,7 @@
     const list = state.notes.slice().sort((a, b) => (a.m - b.m) || ((a.order || 0) - (b.order || 0)));
     v.innerHTML = '<div class="adm-h"><div><h2>Study Material</h2><p>Notes and links (PDF, video, Google Drive) shown on the Study Material page and in each module.</p></div><button class="btn btn-primary btn-sm" id="nAdd"><i class="fa-solid fa-plus"></i> Add study material</button></div>' +
       '<div class="card">' + (list.length ? list.map((n) => '<div class="q-row"><div class="qi"><b>' + esc(n.title) + "</b>" + (n.hidden ? '<span class="badge hid">HIDDEN</span>' : "") + '<span class="sub" style="display:block;font-size:12.5px;color:var(--ink-3)">' + esc(modName(n.m)) + (n.link ? ' • <a href="' + esc(n.link) + '" target="_blank" rel="noopener">' + esc(n.linkLabel || n.link) + "</a>" : "") + "</span>" +
-        '<div style="margin-top:4px;font-size:13.5px;color:var(--ink-2)">' + esc((n.body || "").slice(0, 180)) + ((n.body || "").length > 180 ? "…" : "") + "</div></div>" +
+        '<div style="margin-top:4px;font-size:13.5px;color:var(--ink-2)">' + esc(plain(n).slice(0, 180)) + (plain(n).length > 180 ? "…" : "") + "</div></div>" +
         '<div class="acts"><button class="icon-btn" data-ned="' + esc(n.id) + '" title="Edit"><i class="fa-solid fa-pen"></i></button><button class="icon-btn del" data-ndel="' + esc(n.id) + '" title="Delete"><i class="fa-solid fa-trash"></i></button></div></div>').join("")
         : '<p class="empty"><i class="fa-solid fa-book-open" style="font-size:30px"></i><br>No study material yet. Click “Add study material”.</p>') + "</div>";
     const refresh = (msg) => { toast(msg); D.listNotes().then((n) => { state.notes = n || []; return DB.refreshCache(true); }).then(() => notes(v)); };
@@ -318,6 +318,7 @@
     v.querySelectorAll("[data-ned]").forEach((b) => b.addEventListener("click", () => nForm(state.notes.find((n) => n.id === b.getAttribute("data-ned")), refresh)));
     v.querySelectorAll("[data-ndel]").forEach((b) => b.addEventListener("click", () => { if (confirm("Delete this study material?")) D.deleteNote(b.getAttribute("data-ndel")).then(() => refresh("Deleted")); }));
   }
+  const plain = (n) => { if (n.fmt !== "html") return n.body || ""; const d = document.createElement("div"); d.innerHTML = C.sanitizeHTML(n.body); return (d.textContent || "").replace(/\s+/g, " ").trim(); };
   function nForm(n, done) {
     const isNew = !n;
     n = n || { id: "n-" + DB.uid(), m: 0, title: "", body: "", link: "", linkLabel: "", order: 0, created: Date.now() };
@@ -325,14 +326,18 @@
       '<form id="nf"><div class="form-grid"><div class="field"><label>Module</label><select class="input" id="nfM"><option value="0">General / All modules</option>' + C.MODULES.map((md) => '<option value="' + md.id + '"' + (md.id === +n.m ? " selected" : "") + ">M" + md.id + " " + esc(md.en) + "</option>").join("") + "</select></div>" +
       '<div class="field"><label>Order (small numbers first)</label><input class="input" id="nfO" type="number" value="' + (+n.order || 0) + '"></div>' +
       '<div class="field full"><label>Title *</label><input class="input" id="nfT" required maxlength="140" value="' + esc(n.title) + '"></div>' +
-      '<div class="field full"><label>Notes (any language). Use **text** for bold; links become clickable.</label><textarea class="input" id="nfB" style="min-height:180px">' + esc(n.body) + "</textarea></div>" +
+      '<div class="field full"><label>Notes (any language) – format like MS Word: fonts, size, colours, tables, pictures, margins…</label><div id="nfB"></div></div>' +
       '<div class="field"><label>Link (PDF / Google Drive / YouTube) – optional</label><input class="input" id="nfL" type="url" placeholder="https://…" value="' + esc(n.link) + '"></div>' +
       '<div class="field"><label>Link button text</label><input class="input" id="nfLL" maxlength="40" placeholder="Download PDF" value="' + esc(n.linkLabel) + '"></div>' +
       '<label class="switch full"><input type="checkbox" id="nfH"' + (n.hidden ? " checked" : "") + "> Hide from students</label></div>" +
       '<div class="modal-acts"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button></div></form>', { wide: true, sticky: true });
+    m.el.querySelector(".modal").classList.add("modal-xl");
+    const rte = window.COPA_RTE ? window.COPA_RTE.create(m.el.querySelector("#nfB"), { html: C.noteHTML(n), margin: n.margin }) : null;
     m.el.querySelector("#nf").addEventListener("submit", (e) => {
       e.preventDefault();
-      const out = { id: n.id, m: +m.el.querySelector("#nfM").value, order: +m.el.querySelector("#nfO").value || 0, title: m.el.querySelector("#nfT").value.trim(), body: m.el.querySelector("#nfB").value,
+      const body = rte ? rte.getHTML() : "";
+      if (body.length > 900000) { toast("Notes are too large (" + Math.round(body.length / 1024) + " KB). Use fewer or smaller pictures, or add a PDF link."); return; }
+      const out = { id: n.id, m: +m.el.querySelector("#nfM").value, order: +m.el.querySelector("#nfO").value || 0, title: m.el.querySelector("#nfT").value.trim(), body, fmt: "html", margin: rte ? rte.getMargin() : "normal",
         link: m.el.querySelector("#nfL").value.trim(), linkLabel: m.el.querySelector("#nfLL").value.trim(), hidden: m.el.querySelector("#nfH").checked, created: n.created || Date.now(), updated: Date.now() };
       D.saveNote(out).then(() => { m.close(); done(isNew ? "Study material added" : "Saved"); }).catch((er) => toast("Error: " + er.message));
     });
