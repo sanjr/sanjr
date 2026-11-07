@@ -282,6 +282,7 @@
   }
   function setMode(m) {
     S.mode = m;
+    if (m === "python" && window.COPA_HINTS && window.COPA_HINTS.preloadPython) window.COPA_HINTS.preloadPython();
     root.querySelectorAll("[data-mode]").forEach((b) => b.classList.toggle("on", b.getAttribute("data-mode") === m));
     showFile(FILES[m][0][0]);
     drawOut();

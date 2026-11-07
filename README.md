@@ -30,6 +30,7 @@ An online MCQ practice and CBT mock-test website for the ITI **COPA** (Computer 
   - CSS: all 539 properties supported by the browser, each property's valid values (checked with `CSS.supports`), 148 colours, units, functions, 53 pseudo-classes/elements and @-rules.
   - JavaScript: all keywords, global objects and functions, and every method/property of String, Array, Number, Date, Math, Object, JSON, Promise, Map/Set, `document`, `window`, `console`, `navigator`, HTML elements, `style`, `classList`, NodeList, events and `localStorage`. The lists are read from the browser itself.
   - To regenerate the data: `node tools/hints/build-hint-data.js` (the HTML table is in `tools/hints/html-data.js`).
+  - Python: complete data in `js/hint-data-py.js`, read from the browser's own Python (Pyodide, Python 3.12). It contains all 149 built-ins with signatures, all keywords and exceptions, every method of `str`/`list`/`dict`/`set`/`tuple`/`int`/`float`/`bytes`/files, and all 192 standard-library modules that work in the browser with their functions, classes and constants. Members of common classes (`date`, `datetime`, `Counter`, `deque`, `Path`, `Decimal`, `re.Match` …) are included too. The file is loaded only when Python is opened. Regenerate it with `node tools/hints/build-py-hint-data.js`.
   
   Suggestions appear while typing:
   - HTML: tags and attributes.

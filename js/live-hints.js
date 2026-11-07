@@ -142,6 +142,49 @@
     statistics: ["mean()", "median()", "mode()", "stdev()", "variance()"], calendar: ["month()", "calendar()", "isleap()", "monthrange()"],
     json: ["dumps()", "loads()", "dump()", "load()"], re: ["search()", "match()", "findall()", "sub()", "split()", "compile()"]
   });
+  /* ---------- complete Python data (js/hint-data-py.js, read from Pyodide) – loaded on first use ---------- */
+  const PY_EXC = ["Exception", "ValueError", "TypeError", "ZeroDivisionError", "IndexError", "KeyError", "NameError", "FileNotFoundError", "AttributeError", "ImportError", "RuntimeError"];
+  const PY_SIG = {}, PY_MOD_DOC = {}, PY_CLASS_MEMBERS = {};
+  const HINT_BASE = ((document.currentScript && document.currentScript.src) || "js/live-hints.js").replace(/[^/]*$/, "");
+  let pyMerged = false, pyLoading = false;
+  function ensurePy(cm) {
+    if (pyMerged) return;
+    const D = window.COPA_PY_HINT_DATA;
+    if (!D) {
+      if (!pyLoading) {
+        pyLoading = true;
+        const sc = document.createElement("script"); sc.src = HINT_BASE + "hint-data-py.js";
+        sc.onload = () => { ensurePy(); if (cm && cm.hasFocus() && cm.state.completionActive) cm.showHint({ hint: copaHint, completeSingle: false }); };
+        sc.onerror = () => { pyLoading = false; };
+        document.head.appendChild(sc);
+      }
+      return;
+    }
+    pyMerged = true;
+    const ml = (common, all) => { const seen = {}; common.forEach((x) => (seen[x] = 1)); return common.concat(all.filter((x) => !seen[x])); };
+    const unpack = (arr) => arr.map((x) => { const p = x.split("|"); return { n: p[0], k: p[1], sig: p.slice(2).join("|") }; });
+    const nm = (o) => (o.k === "f" ? o.n + "()" : o.n);
+    D.keywords.concat(D.softKeywords || []).forEach((k) => { if (PY_KW.indexOf(k) < 0 && k !== "_") PY_KW.push(k); });
+    D.builtins.forEach((b) => {
+      const n = b[0], k = b[1], sig = b[2], doc = b[3];
+      if (k === "e") { if (PY_EXC.indexOf(n) < 0) PY_EXC.push(n); return; }
+      if ((k === "f" || k === "c") && !PY_BUILTIN[n]) PY_BUILTIN[n] = sig || doc || n + "()";
+    });
+    Object.keys(D.types).forEach((t) => { PY_TYPES[t] = ml(PY_TYPES[t] || [], unpack(D.types[t]).map(nm)); });
+    Object.keys(D.modules).forEach((m) => {
+      const mem = unpack(D.modules[m][1]);
+      PY_MODULES[m] = ml(PY_MODULES[m] || [], mem.map(nm));
+      mem.forEach((o) => { PY_SIG[m + "." + o.n] = o.k === "c" ? "class " + (o.sig || o.n) : o.k === "m" ? "submodule" : o.sig ? (o.k === "v" ? o.n + " : " + o.sig : o.sig) : ""; });
+      PY_MOD_DOC[m] = D.modules[m][0];
+      if (PY_MOD_LIST.indexOf(m) < 0) PY_MOD_LIST.push(m);
+    });
+    Object.keys(D.classes || {}).forEach((c) => { PY_CLASS_MEMBERS[c] = unpack(D.classes[c]).map(nm); });
+    // instance types of common classes
+    const CT = { date: "datetime.date", datetime: "datetime.datetime", timedelta: "datetime.timedelta", Counter: "collections.Counter", deque: "collections.deque", defaultdict: "collections.defaultdict",
+      OrderedDict: "collections.OrderedDict", Path: "pathlib.Path", Decimal: "decimal.Decimal", Fraction: "fractions.Fraction", StringIO: "io.StringIO", Random: "random.Random", Pattern: "re.Pattern", Match: "re.Match", array: "array.array", Template: "string.Template" };
+    Object.keys(CT).forEach((t) => { if (PY_CLASS_MEMBERS[CT[t]]) PY_TYPES[t] = ml(PY_TYPES[t] || [], PY_CLASS_MEMBERS[CT[t]]); });
+  }
+
   function pyScan(txt) {
     // the student's own functions, classes, variables (with a guessed type) and class members
     const own = { fn: {}, cls: {}, vars: {}, clsMembers: {} };
@@ -156,12 +199,22 @@
     }
     const vre = /^[ \t]*([A-Za-z_]\w*)\s*=(?!=)\s*(.+)$/gm; while ((m = vre.exec(txt))) own.vars[m[1]] = m[2].trim();
     const forre = /for\s+([A-Za-z_]\w*)\s+in\b/g; while ((m = forre.exec(txt))) if (!own.vars[m[1]]) own.vars[m[1]] = "";
+    // import math, os.path as p   /   from datetime import date, datetime as dt
+    own.mods = {}; own.from = {};
+    const ire = /^[ \t]*import\s+([^\n#]+)/gm; while ((m = ire.exec(txt))) m[1].split(",").forEach((part) => { const q = /^\s*([\w.]+)(?:\s+as\s+(\w+))?/.exec(part); if (q) { own.mods[q[2] || q[1].split(".")[0]] = q[2] ? q[1] : q[1].split(".")[0]; if (!q[2]) own.mods[q[1]] = q[1]; } });
+    const fre2 = /^[ \t]*from\s+([\w.]+)\s+import\s+([^\n#]+)/gm; while ((m = fre2.exec(txt))) m[2].replace(/[()]/g, "").split(",").forEach((part) => { const q = /^\s*(\w+)(?:\s+as\s+(\w+))?/.exec(part); if (q) own.from[q[2] || q[1]] = m[1] + "." + q[1]; });
     return own;
   }
   function pyTypeOfExpr(expr, own, depth) {
     expr = String(expr || "").trim();
     if (depth > 3) return null;
-    if (/^[fFrRbB]?["']/.test(expr) || /^(str|input)\s*\(/.test(expr) || /\.(upper|lower|title|strip|replace|join|format|capitalize)\(.*\)$/.test(expr) || /\+\s*["']/.test(expr)) return "str";
+    if (/^([bB][rR]?|[rR][bB])["']/.test(expr) || /^bytes\s*\(/.test(expr)) return "bytes";
+    if (/^bytearray\s*\(/.test(expr)) return "bytearray";
+    if (/^frozenset\s*\(/.test(expr)) return "frozenset";
+    if (/^complex\s*\(/.test(expr) || /^-?\d+(\.\d+)?j$/.test(expr)) return "complex";
+    if (/^range\s*\(/.test(expr)) return "range";
+    if (/^(True|False|bool\s*\()/.test(expr)) return "bool";
+    if (/^[fFrRuU]?["']/.test(expr) || /^(str|input)\s*\(/.test(expr) || /\.(upper|lower|title|strip|replace|join|format|capitalize)\(.*\)$/.test(expr) || /\+\s*["']/.test(expr)) return "str";
     if (/^\[/.test(expr) || /^(list|sorted)\s*\(/.test(expr) || /\.split\(.*\)$/.test(expr) || /\.(keys|values|items)\(\)$/.test(expr) && false) return "list";
     if (/^\{\s*\}$/.test(expr) || /^\{[^}]*:/.test(expr) || /^dict\s*\(/.test(expr)) return "dict";
     if (/^\{/.test(expr) || /^set\s*\(/.test(expr)) return "set";
@@ -171,6 +224,10 @@
     if (/^open\s*\(/.test(expr)) return "file";
     if (/datetime\.date\.today\(\)|date\.today\(\)/.test(expr)) return "date";
     if (/datetime\.(datetime\.)?now\(\)/.test(expr)) return "datetime";
+    const CTOR = [[/(^|\.)Counter\s*\(/, "Counter"], [/(^|\.)deque\s*\(/, "deque"], [/(^|\.)defaultdict\s*\(/, "defaultdict"], [/(^|\.)OrderedDict\s*\(/, "OrderedDict"], [/(^|\.)Path\s*\(/, "Path"],
+      [/(^|\.)Decimal\s*\(/, "Decimal"], [/(^|\.)Fraction\s*\(/, "Fraction"], [/(^|\.)StringIO\s*\(/, "StringIO"], [/(^|\.)Random\s*\(/, "Random"], [/(^|\.)timedelta\s*\(/, "timedelta"], [/re\.compile\s*\(/, "Pattern"],
+      [/re\.(match|search|fullmatch)\s*\(/, "Match"], [/array\.array\s*\(/, "array"], [/(^|[^.\w])date\.today\(\)|(^|\.)date\s*\(/, "date"], [/(^|[^.\w])datetime\.(now|today|strptime|fromisoformat)\(|(^|[^.])datetime\s*\(\s*\d/, "datetime"]];
+    for (const c of CTOR) if (c[0].test(expr) && PY_TYPES[c[1]]) return c[1];
     const cm = /^([A-Za-z_]\w*)\s*\(/.exec(expr); if (cm && own.cls[cm[1]]) return "cls:" + cm[1];
     const vm = /^([A-Za-z_]\w*)$/.exec(expr); if (vm && own.vars[vm[1]] != null) return pyTypeOfExpr(own.vars[vm[1]], own, depth + 1);
     return null;
@@ -185,21 +242,31 @@
     return out;
   }
   function pythonHint(cm) {
+    ensurePy(cm);
     const w = wordAt(cm, /[\w]/);
     const cur = cm.getCursor(), lineBefore = cm.getLine(cur.line).slice(0, cur.ch);
     const txt = cm.getValue(), own = pyScan(txt);
     let list = [];
     /* import …  /  from x import … */
-    let im = /^\s*(import|from)\s+([\w.]*)$/.exec(lineBefore);
+    let im = /^\s*(?:import\s+(?:[\w.]+\s*,\s*)*|from\s+)([\w.]*)$/.exec(lineBefore);
     if (im) {
-      PY_MOD_LIST.forEach((k) => { if (starts(k, w.word)) list.push(item(k, "mod", "module")); });
-      return list.length ? { list, from: w.from, to: w.to } : null;
+      const full = im[1];
+      PY_MOD_LIST.forEach((k) => { if (starts(k, full)) list.push(item(k, "mod", PY_MOD_DOC[k] || "module")); });
+      list.sort((a, b) => (a.text.split(".").length - b.text.split(".").length) || (PY_MOD_LIST.indexOf(a.text) - PY_MOD_LIST.indexOf(b.text)));
+      return list.length ? { list: list.slice(0, 80), from: CM.Pos(cur.line, cur.ch - full.length), to: cur } : null;
     }
-    im = /^\s*from\s+(\w+)\s+import\s+(?:[\w, ]*,\s*)?(\w*)$/.exec(lineBefore);
+    im = /^\s*from\s+([\w.]+)\s+import\s+(?:[\w, ()]*,\s*)?\(?\s*(\w*)$/.exec(lineBefore);
     if (im) {
-      (PY_MODULES[im[1]] || []).forEach((x) => { const n = x.replace(/\(\)$/, ""); if (starts(n, w.word)) list.push(item(n, x.endsWith("()") ? "fn" : "prop", im[1] + "." + x)); });
+      (PY_MODULES[im[1]] || []).forEach((x) => { const n = x.replace(/\(\)$/, ""); if (starts(n, w.word)) list.push(item(n, /^class /.test(PY_SIG[im[1] + "." + n] || "") ? "mod" : x.endsWith("()") ? "fn" : "prop", PY_SIG[im[1] + "." + n] || im[1] + "." + x)); });
       if (starts("*", w.word) || !w.word) list.push(item("*", "kw", "everything"));
       return list.length ? { list, from: w.from, to: w.to } : null;
+    }
+    /* except ValueError / raise TypeError */
+    if (/^\s*(except|raise)\b[\w\s,(]*$/.test(lineBefore) && !/\bas\s+\w*$/.test(lineBefore)) {
+      PY_EXC.forEach((e) => { if (starts(e, w.word)) list.push(item(e, "mod", "exception")); });
+      if (/except/.test(lineBefore) && starts("as", w.word) && w.word) list.push(item("as", "kw", "keyword"));
+      list.sort((a, b) => a.text.length - b.text.length);
+      return list.length ? { list: list.slice(0, 60), from: w.from, to: w.to } : null;
     }
     /* member access:  something.  */
     const dot = /\.\s*$/.exec(w.before);
@@ -207,8 +274,15 @@
       const recv = w.before.slice(0, dot.index).replace(/\s+$/, "");
       if (/(^|[^\w])\d+$/.test(recv)) return null;                                   // 5. is a decimal number
       const name = (/([A-Za-z_]\w*)$/.exec(recv) || [])[1];
-      if (name && PY_MODULES[name] && (new RegExp("import\\s+[\\w, ]*\\b" + name + "\\b").test(txt) || PY_MOD_LIST.indexOf(name) > -1)) {
-        list = pyMembers(PY_MODULES[name], w.word, (x, f) => name + "." + x + (f ? "" : ""));
+      const dotted = (/([A-Za-z_][\w.]*)$/.exec(recv) || [])[1] || "";
+      // resolve  alias.x  (import numpy as np)  and  from-imported names (from datetime import datetime)
+      const head = dotted.split(".")[0], tail = dotted.slice(head.length);
+      const modName = own.mods[head] ? own.mods[head] + tail : own.from[head] ? own.from[head] + tail : dotted;
+      if (modName && PY_MODULES[modName] && (own.mods[head] || own.from[head] || PY_MOD_LIST.indexOf(modName) > -1)) {
+        list = pyMembers(PY_MODULES[modName], w.word, (x) => PY_SIG[modName + "." + x.replace(/\(\)$/, "")] || modName + "." + x);
+        list.forEach((x) => { if (/^class /.test(x.detail)) x.kind = "mod"; });
+      } else if (PY_CLASS_MEMBERS[modName]) {
+        list = pyMembers(PY_CLASS_MEMBERS[modName], w.word, (x, f) => modName.split(".").pop() + (f ? " method" : " attribute"));
       } else if (name === "self") {
         // inside a class: its methods and self.attributes
         const before = txt.slice(0, cm.indexFromPos(cur)); const cls = (/^class\s+([A-Za-z_]\w*)/gm.exec ? (before.match(/^class\s+([A-Za-z_]\w*)/gm) || []).pop() : null);
@@ -233,7 +307,9 @@
     Object.keys(PY_SNIP).forEach((k) => { if (starts(k, w.word) && (lineStart || ["lambda", "listcomp", "inputint", "printf"].indexOf(k) > -1)) list.push(snipItem(k, PY_SNIP[k])); });
     PY_KW.forEach((k) => { if (starts(k, w.word)) list.push(item(k, "kw", "keyword")); });
     Object.keys(PY_BUILTIN).forEach((k) => { if (starts(k, w.word)) list.push(pyCall(k, "fn", PY_BUILTIN[k])); });
-    PY_MOD_LIST.forEach((k) => { if (starts(k, w.word) && new RegExp("import\\s+[\\w, ]*\\b" + k + "\\b").test(txt)) list.push(item(k, "mod", "module")); });
+    Object.keys(own.mods).forEach((k) => { if (k !== w.word && starts(k, w.word) && k.indexOf(".") < 0) list.push(item(k, "mod", "module " + own.mods[k])); });
+    Object.keys(own.from).forEach((k) => { if (k === w.word || !starts(k, w.word)) return; const sig = PY_SIG[own.from[k]] || own.from[k]; list.push(/^class /.test(sig) ? item(k, "mod", sig) : /\(/.test(sig) ? pyCall(k, "fn", sig) : item(k, "prop", sig)); });
+    PY_EXC.forEach((e) => { if (w.word.length > 1 && starts(e, w.word)) list.push(item(e, "mod", "exception")); });
     Object.keys(own.fn).forEach((k) => { if (k !== w.word && starts(k, w.word)) list.push(pyCall(k, "fn", "your function(" + own.fn[k] + ")")); });
     Object.keys(own.cls).forEach((k) => { if (k !== w.word && starts(k, w.word)) list.push(pyCall(k, "mod", "your class")); });
     Object.keys(own.vars).forEach((k) => { if (k !== w.word && starts(k, w.word) && !own.fn[k] && !own.cls[k]) { const ty = pyTypeOfExpr(k, own, 0); list.push(item(k, "prop", "your variable" + (ty ? " : " + ty.replace("cls:", "") : ""))); } });
@@ -607,5 +683,5 @@
     });
   }
 
-  window.COPA_HINTS = { attach, tab, hint: copaHint };
+  window.COPA_HINTS = { attach, tab, hint: copaHint, preloadPython: () => ensurePy() };
 })();
