@@ -19,29 +19,35 @@
 
   /* ================= AUTH ================= */
   function loginView(err) {
-    const fbMode = DB.mode === "firebase";
+    const fbMode = DB.mode === "firebase", myMode = DB.mode === "mysql";
     const first = !fbMode && !D.adminHasPassword();
+    const modeTxt = fbMode ? "Online (Firebase)" : myMode ? "Online (MySQL database)" : "Local mode";
+    const f1 = (id, label, type, extra) => '<div class="field"><label for="' + id + '">' + label + '</label><input class="input" id="' + id + '" type="' + type + '" required ' + (extra || "") + "></div>";
     root.innerHTML =
       '<div class="card adm-login"><img src="assets/img/logo.webp" alt="COPA MCQ logo" style="height:90px;width:auto;margin:0 auto 6px;display:block"><h2 style="margin:0">Admin Panel</h2>' +
-      '<p style="color:var(--ink-3);margin:6px 0 0">COPA MCQ • ' + (fbMode ? "Online (Firebase)" : "Local mode") + "</p>" +
+      '<p style="color:var(--ink-3);margin:6px 0 0">COPA MCQ • ' + modeTxt + "</p>" +
+      (first && myMode ? '<p style="font-size:13px;color:var(--ink-2);margin:12px 0 0;text-align:left"><i class="fa-solid fa-user-plus" style="color:var(--blue-600)"></i> First time: create the admin account. The <b>setup key</b> is the <code>setup_key</code> in <code>api/config.php</code> (or your MySQL password if it is empty).</p>' : "") +
       (err ? '<div class="auth-err" style="margin-top:14px"><i class="fa-solid fa-circle-exclamation"></i> ' + esc(err) + "</div>" : "") +
       '<form id="aLogin">' +
-      (fbMode ? '<div class="field"><label for="aEmail">Admin email</label><input class="input" id="aEmail" type="email" required autocomplete="username"></div>' : "") +
-      '<div class="field"><label for="aPw">' + (first ? "Create admin password (min 6 characters)" : "Password") + '</label><input class="input" id="aPw" type="password" required minlength="' + (first ? 6 : 1) + '" autocomplete="' + (first ? "new-password" : "current-password") + '"></div>' +
-      (first ? '<div class="field"><label for="aPw2">Confirm password</label><input class="input" id="aPw2" type="password" required minlength="6" autocomplete="new-password"></div>' : "") +
-      '<button class="btn btn-primary btn-block" type="submit"><i class="fa-solid fa-arrow-right-to-bracket"></i> ' + (first ? "Set password & enter" : "Login") + "</button></form>" +
-      (!fbMode ? '<p style="font-size:12.5px;color:var(--ink-3);margin:16px 0 0;text-align:left"><i class="fa-solid fa-circle-info"></i> Local mode: data is only from this computer. Add your Firebase config in <code>js/site-config.js</code> to see all students live.</p>' : "") +
+      (fbMode ? f1("aEmail", "Admin email", "email", 'autocomplete="username"') : "") +
+      (myMode ? f1("aUser", first ? "Choose admin username" : "Username", "text", 'autocomplete="username" minlength="3" maxlength="60" autocapitalize="off" spellcheck="false"') : "") +
+      f1("aPw", first ? "Create admin password (min " + (myMode ? 8 : 6) + " characters)" : "Password", "password", 'minlength="' + (first ? (myMode ? 8 : 6) : 1) + '" autocomplete="' + (first ? "new-password" : "current-password") + '"') +
+      (first ? f1("aPw2", "Confirm password", "password", 'minlength="' + (myMode ? 8 : 6) + '" autocomplete="new-password"') : "") +
+      (first && myMode ? f1("aKey", "Setup key", "password", 'autocomplete="off"') : "") +
+      '<button class="btn btn-primary btn-block" type="submit"><i class="fa-solid fa-arrow-right-to-bracket"></i> ' + (first ? (myMode ? "Create admin & enter" : "Set password & enter") : "Login") + "</button></form>" +
+      (DB.mode === "local" ? '<p style="font-size:12.5px;color:var(--ink-3);margin:16px 0 0;text-align:left"><i class="fa-solid fa-circle-info"></i> Local mode: data is only from this computer. Set <code>backend: "mysql"</code> (or add Firebase) in <code>js/site-config.js</code> to see all students live.</p>' : "") +
       '<p style="margin:14px 0 0"><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to website</a></p></div>';
     const f = document.getElementById("aLogin");
     f.querySelector("input").focus();
     f.addEventListener("submit", (e) => {
       e.preventDefault();
       const pw = document.getElementById("aPw").value;
+      const btn = f.querySelector("button[type=submit]"); btn.disabled = true;
       let p;
       if (first) {
         if (pw !== document.getElementById("aPw2").value) return loginView("Passwords do not match.");
-        p = D.adminSetPassword(pw);
-      } else p = D.adminLogin(fbMode ? document.getElementById("aEmail").value.trim() : "", pw);
+        p = myMode ? D.adminSetup(document.getElementById("aUser").value.trim(), pw, document.getElementById("aKey").value) : D.adminSetPassword(pw);
+      } else p = D.adminLogin(fbMode ? document.getElementById("aEmail").value.trim() : myMode ? document.getElementById("aUser").value.trim() : "", pw);
       Promise.resolve(p).then(() => start()).catch((er) => loginView(er.message || "Login failed"));
     });
   }
@@ -82,13 +88,24 @@
     root.innerHTML =
       '<header class="adm-top"><div class="bar"><a class="brand" href="index.html" style="color:#fff"><img class="brand-logo" src="assets/img/logo.webp" width="256" height="205" alt="COPA MCQ logo">' +
       '<span class="brand-text"><span class="b2">COPA MCQ</span><span class="b3">Admin Panel</span></span></a><span class="adm-badge">ADMIN</span>' +
-      '<span class="adm-mode ' + (DB.mode === "firebase" ? "fb" : "") + '"><span class="dot"></span>' + (DB.mode === "firebase" ? "Online • Firebase" : "Local mode • this computer") + "</span>" +
+      '<span class="adm-mode ' + (DB.mode !== "local" ? "fb" : "") + '"><span class="dot"></span>' + (DB.mode === "firebase" ? "Online • Firebase" : DB.mode === "mysql" ? "Online • MySQL" : "Local mode • this computer") + "</span>" +
       '<span class="sp"></span><a class="view" href="index.html" target="_blank"><i class="fa-solid fa-up-right-from-square"></i><span>View site</span></a>' +
       '<button class="out" id="aOut"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button></div>' +
       '<nav class="adm-tabs">' + TABS.map((x) => '<button data-tab="' + x[0] + '" class="' + (tab === x[0] ? "on" : "") + '"><i class="fa-solid ' + x[1] + '"></i>' + x[2] + (x[0] === "overview" ? ' <span class="cnt" id="liveCnt" hidden>0</span>' : "") + "</button>").join("") + "</nav></header>" +
       '<main class="adm-main" id="view"></main>';
     document.getElementById("aOut").addEventListener("click", () => D.adminLogout().then(() => location.reload()));
-    root.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => { tab = b.getAttribute("data-tab"); history.replaceState(null, "", "#" + tab); shell(); draw(); }));
+    root.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => {
+      tab = b.getAttribute("data-tab"); history.replaceState(null, "", "#" + tab); shell(); draw();
+      // online modes: fetch the newest results / students from the database when the tab is opened
+      if (DB.mode !== "local" && (tab === "results" || tab === "students" || tab === "overview")) {
+        const t0 = tab;
+        Promise.all([D.listResults(), D.listStudents()]).then(([r, s]) => {
+          const before = JSON.stringify([state.results.length, state.students.length]);
+          state.results = (r || []).sort((a, b2) => b2.date - a.date); state.students = s || [];
+          if (tab === t0 && before !== JSON.stringify([state.results.length, state.students.length])) draw();
+        }).catch(() => {});
+      }
+    }));
   }
   function draw() {
     const v = document.getElementById("view");
@@ -379,7 +396,9 @@
       '<p style="font-size:12.5px;color:var(--ink-3)">ads.txt and sitemap.xml go in the main (root) folder of the website.</p>' +
       (pub ? '<div class="codebox">google.com, ' + esc(pub) + ", DIRECT, f08c47fec0942fa0</div>" : "") +
       '<h3 style="margin-top:18px"><i class="fa-solid fa-database" style="color:var(--purple)"></i> Data mode</h3>' +
-      (DB.mode === "firebase" ? "<p>Online (Firebase project <b>" + esc(CFG.firebase.projectId) + "</b>) – all students on all devices are visible live.</p>"
+      (DB.mode === "mysql" ? '<p style="font-size:14px">Online – <b>MySQL database</b> on your hosting (PHP API in <code>/api</code>). All students on all devices are visible live; questions, study material and ad settings are saved in the database.</p>' +
+          '<button class="btn btn-ghost btn-sm" id="cPw"><i class="fa-solid fa-key"></i> Change admin password</button>'
+        : DB.mode === "firebase" ? "<p>Online (Firebase project <b>" + esc(CFG.firebase.projectId) + "</b>) – all students on all devices are visible live.</p>"
         : '<p style="font-size:14px">Local mode – the admin panel shows only students who used <b>this</b> computer. To see every student live, add a free Firebase project in <code>js/site-config.js</code> (steps are written at the top of that file) and paste <code>firestore.rules</code> into Firestore → Rules.</p>' +
           '<button class="btn btn-ghost btn-sm" id="cPw"><i class="fa-solid fa-key"></i> Change admin password</button>') +
       "</section></div>";
@@ -407,7 +426,13 @@
       download("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + pages.map((p) => "  <url><loc>" + u + p + "</loc></url>").join("\n") + "\n</urlset>\n", "application/xml");
     });
     const cp = v.querySelector("#cPw");
-    if (cp) cp.addEventListener("click", () => {
+    if (cp && DB.mode === "mysql") cp.addEventListener("click", () => {
+      const old = prompt("Current admin password:"); if (!old) return;
+      const pw = prompt("New admin password (min 8 characters):"); if (!pw) return;
+      if (pw.length < 8) return toast("Password too short (min 8)");
+      D.adminChangePassword(old, pw).then(() => toast("Password changed")).catch((er) => toast("Error: " + er.message));
+    });
+    else if (cp) cp.addEventListener("click", () => {
       const pw = prompt("New admin password (min 6 characters):");
       if (!pw) return; if (pw.length < 6) return toast("Password too short");
       D.adminSetPassword(pw).then(() => toast("Password changed"));

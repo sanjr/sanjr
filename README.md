@@ -97,3 +97,17 @@ python3 tools/seo/apply-seo.py
 Edit the texts in `tools/seo/apply-seo.py` (not the generated `<!-- SEO:start -->` blocks) and run it again,
 e.g. after adding questions. The domain is set in `SITE` (https://copamcq.com). The share image
 `assets/img/og-cover.jpg` is a screenshot of `tools/seo/og-cover.html` (1200×630).
+
+## MySQL database (Hostinger / cPanel)
+
+The site can store everything centrally in MySQL through a small PHP API (`api/index.php`, PHP 7.4+ with PDO MySQL).
+
+1. `js/site-config.js` → `backend: "mysql"` (already set).
+2. `api/config.php` → fill in `db_pass` (database name and user are pre-filled). Optionally set `setup_key`.
+3. Upload the whole website (including the `api` folder and `api/.htaccess`) to `public_html`.
+4. Open `https://copamcq.com/admin.html` → create the admin username + password (needs the setup key, or the
+   MySQL password when `setup_key` is empty). Tables (`copa_*`) are created automatically on the first request.
+
+Stored in MySQL: students, exam results (summary), live exams, admin-added questions, study material, site/ad
+settings, admin accounts (password_hash) and a login rate-limit table. Students' detailed answer review stays on
+their own device. When uploading a newer version later, do not overwrite `api/config.php`.

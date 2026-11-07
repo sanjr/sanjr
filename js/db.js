@@ -2,6 +2,8 @@
    COPA MCQ – Data layer for Admin Panel & live tracking
    Two drivers with the same API:
      • firebase – online Firestore (all devices, real-time)
+     • mysql    – your own MySQL database through the PHP API in /api
+                  (js/site-config.js → backend: "mysql")
      • local    – this browser only (localStorage), used when
                   js/site-config.js has no firebase config
    Admin-managed content (custom questions, study notes, site
@@ -144,12 +146,70 @@
     }
   };
 
-  const driver = CFG.firebase && CFG.firebase.projectId ? fb : local;
+  /* =========================================================
+     MYSQL DRIVER (PHP API in /api – see api/index.php and api/config.php)
+     ========================================================= */
+  const apiBase = () => CFG.apiUrl || (((document.body && document.body.getAttribute("data-root")) || "") + "api/");
+  const call = (a, body) => fetch(apiBase() + "index.php?a=" + a, body === undefined
+      ? { credentials: "same-origin", cache: "no-store" }
+      : { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json", "X-COPA": "1" }, body: JSON.stringify(body) })
+    .then((r) => r.text().then((t) => {
+      let j = null; try { j = JSON.parse(t); } catch (e) { /* not JSON (PHP missing / 404) */ }
+      if (!j) throw new Error(r.status === 404 ? "API not found – upload the api folder to the website." : "Server error (" + r.status + ")");
+      if (!j.ok) throw new Error(j.error || "Server error");
+      return j.data;
+    }));
+  let adminState = { hasAdmin: true, user: null }, contentP = null;
+  const content = (force) => {
+    if (!contentP || force) contentP = call("content").then((c) => {
+      cache.setQuestions(c.questions || []); cache.setNotes(c.notes || []); cache.setSettings(c.settings || null); return c;
+    });
+    return contentP;
+  };
+  const my = {
+    mode: "mysql",
+    init: () => Promise.resolve(),
+    listQuestions: () => content(true).then((c) => c.questions || []),
+    saveQuestion: (q) => call("question_save", { item: q }),
+    deleteQuestion: (id) => call("question_del", { id }),
+    listNotes: () => content(true).then((c) => c.notes || []),
+    saveNote: (n) => call("note_save", { item: n }),
+    deleteNote: (id) => call("note_del", { id }),
+    getSettings: () => content(true).then((c) => c.settings || null),
+    saveSettings: (s) => call("settings_save", { settings: s }).then((v) => { cache.setSettings(s); return v; }),
+    upsertStudent(p) { const d = Object.assign({}, p, { updated: Date.now() }); delete d.pin; return call("student", d); },
+    saveResult: (r) => call("result", r),
+    liveSet: (id, data) => call("live_set", { id, data }),
+    liveDel(id) {
+      // keep working while the page is closing
+      try { if (navigator.sendBeacon && document.visibilityState === "hidden") { /* beacon cannot send the custom header → normal call */ } } catch (e) { /* ignore */ }
+      return call("live_del", { id });
+    },
+    listResults: () => call("results"),
+    listStudents: () => call("students"),
+    deleteResult: (id) => call("result_del", { id }),
+    watchLive(cb) {
+      let stop = false;
+      const tick = () => { if (stop) return; call("live").then((v) => { if (!stop) cb(v || []); }).catch(() => {}); };
+      tick(); const t = setInterval(tick, 4000);
+      return () => { stop = true; clearInterval(t); };
+    },
+    /* admin: real username + password, checked on the server (PHP session cookie) */
+    adminHasPassword: () => adminState.hasAdmin,
+    adminSetup: (username, password, key) => call("admin_setup", { username, password, key }).then((d) => { adminState = { hasAdmin: true, user: d.user }; return true; }),
+    adminSetPassword: () => Promise.reject(new Error("Use the setup form.")),
+    adminLogin: (username, pw) => call("admin_login", { username, password: pw }).then((d) => { adminState.user = d.user; return true; }),
+    adminLogout: () => call("admin_logout", {}),
+    adminChangePassword: (old, password) => call("admin_password", { old, password }),
+    adminCheck: () => call("admin_status").then((s) => { adminState = s; return !!s.user; })
+  };
+
+  const driver = CFG.backend === "mysql" ? my : CFG.firebase && CFG.firebase.projectId ? fb : local;
   const safe = (p) => Promise.resolve(p).catch((e) => { if (window.console) console.warn("[COPA_DB]", e && e.message); });
 
-  /* refresh public content cache in the background (firebase mode), max every 10 min */
+  /* refresh public content cache in the background (firebase / mysql), max every 10 min */
   function refreshCache(force) {
-    if (driver.mode !== "firebase") return Promise.resolve(false);
+    if (driver.mode === "local") return Promise.resolve(false);
     const last = ls.get("refreshed", 0);
     if (!force && Date.now() - last < 10 * 60 * 1000) return Promise.resolve(false);
     const before = JSON.stringify([cache.questions(), cache.notes(), cache.settings()]);

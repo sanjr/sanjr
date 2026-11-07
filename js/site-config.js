@@ -1,6 +1,10 @@
 /* =========================================================
    COPA MCQ – Site configuration
    ---------------------------------------------------------
+   0) MYSQL (recommended on Hostinger / cPanel hosting)
+      backend: "mysql" below + your MySQL password in api/config.php.
+      Then open admin.html and create the admin username & password.
+
    1) FIREBASE (online database for the Admin Panel)
       Without Firebase the site works in "local mode": data is
       saved only in the browser of each computer, so the admin
@@ -23,6 +27,12 @@
       "Download site-config.js" button and upload the new file.
    ========================================================= */
 window.COPA_CONFIG = {
+  /* "mysql" = use your own MySQL database through the PHP API in the /api folder
+     (Hostinger: put the MySQL password in api/config.php). Remove this line to use
+     Firebase (below) or local mode. */
+  backend: "mysql",
+  apiUrl: "",          // leave empty → "api/" next to the pages (e.g. https://copamcq.com/api/)
+
   firebase: null,
   /* example:
   firebase: {

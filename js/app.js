@@ -583,4 +583,23 @@
     t, modName, esc, fmtTime, shuffle, pad, store, toast, modal,
     PASS, explain, renderNotes, notesFor, sanitizeHTML, noteHTML, renderShell, setLang, onLang, applyStatic, getProfile, openLogin, logout, getStats, moduleProgress, qBlock, optText
   };
+
+  /* ---------- online mode (MySQL / Firebase): get the admin's questions, notes and settings ----------
+     Pages read this content from a local cache at load. Refresh it in the background (max every 10 min,
+     at once when the cache was never filled) and reload once if something changed – but never in the
+     middle of an exam, in Live Practice or in the admin panel. */
+  window.addEventListener("load", () => {
+    const D = window.COPA_DB; if (!D || D.mode === "local") return;
+    const path = location.pathname;
+    const busy = /admin\.html|live-practice\.html/.test(path) || document.body.classList.contains("cbt") || /[?&](stage|result)=/.test(location.search);
+    let first = false; try { first = !localStorage.getItem("copa_db_refreshed"); } catch (e) { /* ignore */ }
+    D.refreshCache(first).then((changed) => {
+      if (!changed || busy) return;
+      let last = 0; try { last = +sessionStorage.getItem("copa_reloaded") || 0; } catch (e) { /* ignore */ }
+      if (Date.now() - last < 60000) return;
+      try { sessionStorage.setItem("copa_reloaded", String(Date.now())); } catch (e) { /* ignore */ }
+      if (document.body.classList.contains("cbt") || document.querySelector(".cbt-top")) return; // exam started meanwhile
+      location.reload();
+    });
+  });
 })();
