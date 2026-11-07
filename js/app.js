@@ -430,7 +430,7 @@
       foot.outerHTML =
         '<footer class="site-footer"><div class="f-copy">© 2019 - ' + Math.max(2026, new Date().getFullYear()) + " <b>COPA MCQ</b>. " + t("footerRights") +
         '<br><span class="f-dev">Developed &amp; Designed by : <b>Sanjay Rathod</b> (CI - COPA)</span></div>' +
-        '<nav class="f-links" aria-label="Footer"><a href="' + ROOT + 'about.html">' + t("about") + '</a><a href="' + ROOT + 'privacy.html">Privacy Policy</a><a href="' + ROOT + 'terms.html">Terms</a><a href="' + ROOT + 'about.html#contact">' + t("contact") + "</a></nav>" +
+        '<nav class="f-links" aria-label="Footer"><a href="' + ROOT + 'about.html">' + t("about") + '</a><a href="' + ROOT + 'privacy.html">Privacy Policy</a><a href="' + ROOT + 'terms.html">Terms</a><a href="' + ROOT + 'admin.html"><i class="fa-solid fa-user-shield"></i> Admin</a><a href="' + ROOT + 'about.html#contact">' + t("contact") + "</a></nav>" +
         '<div class="socials"><a class="yt" href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>' +
         '<a class="tg" href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>' +
         '<a class="wa" href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></footer>';
