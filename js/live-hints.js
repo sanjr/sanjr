@@ -125,27 +125,127 @@
   }
 
   /* ---------- per-language hint functions ---------- */
+  /* ---------- Python (type-aware, like VS Code / Pylance) ---------- */
+  const PY_TYPES = {
+    str: ["upper()", "lower()", "title()", "capitalize()", "strip()", "lstrip()", "rstrip()", "split()", "join()", "replace()", "find()", "index()", "count()", "startswith()", "endswith()", "isdigit()", "isalpha()", "isalnum()", "isupper()", "islower()", "isspace()", "format()", "center()", "zfill()", "swapcase()", "encode()"],
+    list: ["append()", "extend()", "insert()", "remove()", "pop()", "clear()", "index()", "count()", "sort()", "reverse()", "copy()"],
+    dict: ["keys()", "values()", "items()", "get()", "update()", "pop()", "popitem()", "setdefault()", "clear()", "copy()"],
+    set: ["add()", "remove()", "discard()", "pop()", "clear()", "union()", "intersection()", "difference()", "issubset()", "issuperset()", "update()"],
+    tuple: ["count()", "index()"],
+    int: ["bit_length()", "to_bytes()", "real", "imag"], float: ["is_integer()", "as_integer_ratio()", "real", "imag"],
+    file: ["read()", "readline()", "readlines()", "write()", "writelines()", "close()", "seek()", "tell()", "name", "mode"],
+    date: ["year", "month", "day", "weekday()", "isoformat()", "strftime()", "today()"], datetime: ["year", "month", "day", "hour", "minute", "second", "strftime()", "date()", "time()", "now()", "today()"]
+  };
+  const PY_MOD_LIST = ["math", "random", "datetime", "time", "os", "sys", "string", "statistics", "collections", "calendar", "turtle", "json", "re"];
+  Object.assign(PY_MODULES, {
+    string: ["ascii_letters", "ascii_lowercase", "ascii_uppercase", "digits", "punctuation", "whitespace"],
+    statistics: ["mean()", "median()", "mode()", "stdev()", "variance()"], calendar: ["month()", "calendar()", "isleap()", "monthrange()"],
+    json: ["dumps()", "loads()", "dump()", "load()"], re: ["search()", "match()", "findall()", "sub()", "split()", "compile()"]
+  });
+  function pyScan(txt) {
+    // the student's own functions, classes, variables (with a guessed type) and class members
+    const own = { fn: {}, cls: {}, vars: {}, clsMembers: {} };
+    let m;
+    const fre = /^[ \t]*def\s+([A-Za-z_]\w*)\s*\(([^)]*)\)/gm; while ((m = fre.exec(txt))) own.fn[m[1]] = m[2].split(",").map((x) => x.trim()).filter((x) => x && x !== "self").join(", ");
+    const cre = /^class\s+([A-Za-z_]\w*)/gm; while ((m = cre.exec(txt))) {
+      const name = m[1], start = m.index + m[0].length, rest = txt.slice(start), end = rest.search(/\n(?=\S)/), body = end > -1 ? rest.slice(0, end) : rest;
+      const mem = {}; let k;
+      const mre = /def\s+([A-Za-z_]\w*)\s*\(\s*self\s*,?\s*([^)]*)\)/g; while ((k = mre.exec(body))) if (k[1] !== "__init__") mem[k[1] + "()"] = "method";
+      const are = /self\.([A-Za-z_]\w*)\s*=/g; while ((k = are.exec(body))) mem[k[1]] = "attribute";
+      own.cls[name] = 1; own.clsMembers[name] = mem;
+    }
+    const vre = /^[ \t]*([A-Za-z_]\w*)\s*=(?!=)\s*(.+)$/gm; while ((m = vre.exec(txt))) own.vars[m[1]] = m[2].trim();
+    const forre = /for\s+([A-Za-z_]\w*)\s+in\b/g; while ((m = forre.exec(txt))) if (!own.vars[m[1]]) own.vars[m[1]] = "";
+    return own;
+  }
+  function pyTypeOfExpr(expr, own, depth) {
+    expr = String(expr || "").trim();
+    if (depth > 3) return null;
+    if (/^[fFrRbB]?["']/.test(expr) || /^(str|input)\s*\(/.test(expr) || /\.(upper|lower|title|strip|replace|join|format|capitalize)\(.*\)$/.test(expr) || /\+\s*["']/.test(expr)) return "str";
+    if (/^\[/.test(expr) || /^(list|sorted)\s*\(/.test(expr) || /\.split\(.*\)$/.test(expr) || /\.(keys|values|items)\(\)$/.test(expr) && false) return "list";
+    if (/^\{\s*\}$/.test(expr) || /^\{[^}]*:/.test(expr) || /^dict\s*\(/.test(expr)) return "dict";
+    if (/^\{/.test(expr) || /^set\s*\(/.test(expr)) return "set";
+    if (/^\(/.test(expr) && /,/.test(expr) || /^tuple\s*\(/.test(expr)) return "tuple";
+    if (/^-?\d+\.\d*$/.test(expr) || /^float\s*\(/.test(expr)) return "float";
+    if (/^-?\d+$/.test(expr) || /^(int|len|round|sum|abs)\s*\(/.test(expr)) return "int";
+    if (/^open\s*\(/.test(expr)) return "file";
+    if (/datetime\.date\.today\(\)|date\.today\(\)/.test(expr)) return "date";
+    if (/datetime\.(datetime\.)?now\(\)/.test(expr)) return "datetime";
+    const cm = /^([A-Za-z_]\w*)\s*\(/.exec(expr); if (cm && own.cls[cm[1]]) return "cls:" + cm[1];
+    const vm = /^([A-Za-z_]\w*)$/.exec(expr); if (vm && own.vars[vm[1]] != null) return pyTypeOfExpr(own.vars[vm[1]], own, depth + 1);
+    return null;
+  }
+  const pyCall = (name, kind, detail) => item(name + "()", kind, detail, { displayText: name, hint: (c, d) => { c.replaceRange(name + "()", d.from, d.to, "complete"); const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); } });
+  function pyMembers(names, prefix, detailFn) {
+    const out = [];
+    names.forEach((x) => {
+      if (prefix && !starts(x, prefix)) return;
+      if (x.endsWith("()")) out.push(pyCall(x.slice(0, -2), "m", detailFn(x, true))); else out.push(item(x, "prop", detailFn(x, false)));
+    });
+    return out;
+  }
   function pythonHint(cm) {
     const w = wordAt(cm, /[\w]/);
-    const dot = /([A-Za-z_][\w]*)\.$/.exec(w.before);
+    const cur = cm.getCursor(), lineBefore = cm.getLine(cur.line).slice(0, cur.ch);
+    const txt = cm.getValue(), own = pyScan(txt);
     let list = [];
-    if (dot) {
-      const mod = PY_MODULES[dot[1]];
-      (mod || PY_METHODS).forEach((x) => {
-        if (w.word && !starts(x, w.word)) return;
-        const isFn = x.endsWith("()");
-        list.push(item(x, isFn ? (mod ? "fn" : "m") : "prop", (mod ? dot[1] + "." : ".") + x, { displayText: x.replace(/\(\)$/, ""),
-          hint: (c, d) => { c.replaceRange(x, d.from, d.to, "complete"); if (isFn) { const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); } } }));
-      });
-    } else {
-      if (!w.word) return null;
-      Object.keys(PY_SNIP).forEach((k) => { if (starts(k, w.word)) list.push(snipItem(k, PY_SNIP[k])); });
-      PY_KW.forEach((k) => { if (starts(k, w.word)) list.push(item(k, "kw", "keyword")); });
-      Object.keys(PY_BUILTIN).forEach((k) => { if (starts(k, w.word)) list.push(item(k + "()", "fn", PY_BUILTIN[k], { displayText: k, hint: (c, d) => { c.replaceRange(k + "()", d.from, d.to, "complete"); const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); } })); });
-      Object.keys(PY_MODULES).forEach((k) => { if (starts(k, w.word)) list.push(item(k, "mod", "module")); });
-      docWords(cm, w.word, "[A-Za-z_][\\w]*").forEach((x) => { if (starts(x, w.word) && x !== w.word) list.push(item(x, "word")); });
+    /* import …  /  from x import … */
+    let im = /^\s*(import|from)\s+([\w.]*)$/.exec(lineBefore);
+    if (im) {
+      PY_MOD_LIST.forEach((k) => { if (starts(k, w.word)) list.push(item(k, "mod", "module")); });
+      return list.length ? { list, from: w.from, to: w.to } : null;
     }
-    list = rank(list, w.word);
+    im = /^\s*from\s+(\w+)\s+import\s+(?:[\w, ]*,\s*)?(\w*)$/.exec(lineBefore);
+    if (im) {
+      (PY_MODULES[im[1]] || []).forEach((x) => { const n = x.replace(/\(\)$/, ""); if (starts(n, w.word)) list.push(item(n, x.endsWith("()") ? "fn" : "prop", im[1] + "." + x)); });
+      if (starts("*", w.word) || !w.word) list.push(item("*", "kw", "everything"));
+      return list.length ? { list, from: w.from, to: w.to } : null;
+    }
+    /* member access:  something.  */
+    const dot = /\.\s*$/.exec(w.before);
+    if (dot) {
+      const recv = w.before.slice(0, dot.index).replace(/\s+$/, "");
+      if (/(^|[^\w])\d+$/.test(recv)) return null;                                   // 5. is a decimal number
+      const name = (/([A-Za-z_]\w*)$/.exec(recv) || [])[1];
+      if (name && PY_MODULES[name] && (new RegExp("import\\s+[\\w, ]*\\b" + name + "\\b").test(txt) || PY_MOD_LIST.indexOf(name) > -1)) {
+        list = pyMembers(PY_MODULES[name], w.word, (x, f) => name + "." + x + (f ? "" : ""));
+      } else if (name === "self") {
+        // inside a class: its methods and self.attributes
+        const before = txt.slice(0, cm.indexFromPos(cur)); const cls = (/^class\s+([A-Za-z_]\w*)/gm.exec ? (before.match(/^class\s+([A-Za-z_]\w*)/gm) || []).pop() : null);
+        const cn = cls ? cls.replace(/^class\s+/, "") : null; const mem = (cn && own.clsMembers[cn]) || {};
+        list = pyMembers(Object.keys(mem), w.word, (x) => (cn || "class") + " " + mem[x]);
+      } else {
+        let ty = null;
+        if (/\)$/.test(recv) || /["'\]}]$/.test(recv)) {
+          // literal or call result:  "abc".   [1,2].   input().   name.upper().
+          const call = /([A-Za-z_][\w.]*)\s*\([^()]*\)$/.exec(recv);
+          if (/["']$/.test(recv)) ty = "str"; else if (/\]$/.test(recv) && /^\s*\[|[=(,\s]\[[^\[\]]*\]$/.test(recv)) ty = "list"; else if (/\}$/.test(recv)) ty = "dict";
+          else if (call) ty = pyTypeOfExpr(call[0], own, 0) || (own.cls[call[1]] ? "cls:" + call[1] : null);
+        } else if (name) ty = pyTypeOfExpr(name, own, 0);
+        if (ty && ty.indexOf("cls:") === 0) { const cn = ty.slice(4), mem = own.clsMembers[cn] || {}; list = pyMembers(Object.keys(mem), w.word, (x) => cn + " " + mem[x]); }
+        else if (ty) list = pyMembers(PY_TYPES[ty], w.word, (x, f) => ty + (f ? " method" : " attribute"));
+        else { const seen = {}; ["str", "list", "dict"].forEach((t) => PY_TYPES[t].forEach((x) => (seen[x] = 1))); list = pyMembers(Object.keys(seen), w.word, (x, f) => (f ? "method" : "attribute")); }
+      }
+      return list.length ? { list: list.slice(0, 60), from: w.from, to: w.to } : null;
+    }
+    if (!w.word || /^\d/.test(w.word)) return null;
+    const lineStart = /^\s*$/.test(w.before);
+    Object.keys(PY_SNIP).forEach((k) => { if (starts(k, w.word) && (lineStart || ["lambda", "listcomp", "inputint", "printf"].indexOf(k) > -1)) list.push(snipItem(k, PY_SNIP[k])); });
+    PY_KW.forEach((k) => { if (starts(k, w.word)) list.push(item(k, "kw", "keyword")); });
+    Object.keys(PY_BUILTIN).forEach((k) => { if (starts(k, w.word)) list.push(pyCall(k, "fn", PY_BUILTIN[k])); });
+    PY_MOD_LIST.forEach((k) => { if (starts(k, w.word) && new RegExp("import\\s+[\\w, ]*\\b" + k + "\\b").test(txt)) list.push(item(k, "mod", "module")); });
+    Object.keys(own.fn).forEach((k) => { if (k !== w.word && starts(k, w.word)) list.push(pyCall(k, "fn", "your function(" + own.fn[k] + ")")); });
+    Object.keys(own.cls).forEach((k) => { if (k !== w.word && starts(k, w.word)) list.push(pyCall(k, "mod", "your class")); });
+    Object.keys(own.vars).forEach((k) => { if (k !== w.word && starts(k, w.word) && !own.fn[k] && !own.cls[k]) { const ty = pyTypeOfExpr(k, own, 0); list.push(item(k, "prop", "your variable" + (ty ? " : " + ty.replace("cls:", "") : ""))); } });
+    docWords(cm, w.word, "[A-Za-z_]\\w*").forEach((x) => { if (starts(x, w.word) && x !== w.word) list.push(item(x, "word")); });
+    // one entry per name (snippets kept separately)
+    const pri = { sn: 0, fn: 1, mod: 1, prop: 1, m: 1, kw: 2, word: 3 }, best = {};
+    list.forEach((x) => { const k = x.displayText; if (x.kind === "sn") { best["sn|" + k] = x; return; } if (!best[k] || pri[x.kind] < pri[best[k].kind]) best[k] = x; });
+    list = Object.keys(best).map((k) => best[k]);
+    // at the start of a line keywords/snippets first (if, for, def…); inside an expression functions/variables first (range, len, total…)
+    const grp = (x) => (lineStart ? (x.kind === "sn" ? 0 : x.kind === "kw" ? 1 : x.kind === "word" ? 3 : 2) : (x.kind === "word" ? 3 : x.kind === "kw" ? 2 : x.kind === "sn" ? 1 : 0));
+    list.sort((a, b) => (starts(b.displayText, w.word) - starts(a.displayText, w.word)) || (a.displayText.length - b.displayText.length) || (grp(a) - grp(b)));
+    list = list.slice(0, 60);
     return list.length ? { list, from: w.from, to: w.to } : null;
   }
   /* ---------- JavaScript (type-aware members, like VS Code) ---------- */
@@ -384,7 +484,8 @@
       const cssMode = c.getModeAt(c.getCursor()).name === "css";
       const cur = c.getCursor(), before = c.getLine(cur.line).slice(0, cur.ch);
       const cssValueStart = cssMode && /:\s?$/.test(before) && cssContext(c).kind === "value";   // "color:" or "color: " → show values
-      if (!cssValueStart && !/[\w.<!:#@$-]$/.test(typed)) return;
+      const pyImport = c.getModeAt(cur).name === "python" && /^\s*(import|from\s+\w+\s+import)\s$/.test(before);   // "import " → module list
+      if (!cssValueStart && !pyImport && !/[\w.<!:#@$-]$/.test(typed)) return;
       const tok = c.getTokenAt(c.getCursor());
       if (tok.type && /comment/.test(tok.type)) return;
       if (tok.type === "string" && !/css/.test(c.getModeAt(c.getCursor()).name)) return;
