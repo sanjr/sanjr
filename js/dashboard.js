@@ -42,13 +42,17 @@
     return "<!doctype html><html><head><meta charset=utf-8><base href=\"" + base + "\"><script>window.alert=window.confirm=window.prompt=function(){return ''};<\/script><style>" + (p.css || "") + "</style></head><body>" + (p.html || "") +
       (p.js ? "<script>" + p.js.replace(/<\/script/gi, "<\\/script") + "<\/script>" : "") + "</body></html>";
   }
+  function pyTip(l) {
+    const r = l.e && window.COPA_PY_ERRORS && window.COPA_PY_ERRORS.explain(l.e.t, l.e.msg, C.lang);
+    return r ? "💡 " + r.title + " – " + r.fix : "💡 " + l.m;
+  }
   function progCards() {
     if (!progs.length) return '<div class="empty"><i class="fa-solid fa-laptop-code"></i><p>' + (t("noPrograms") || "") + '</p><a class="btn btn-yellow" href="live-practice.html"><i class="fa-solid fa-play"></i> ' + t("livePractice") + "</a></div>";
     return '<div class="prog-grid">' + progs.map((p, i) => {
       const py = p.lang === "python";
       const out = py ? (p.output || []).filter((l) => l.k !== "info") : [];
       return '<article class="prog-card"><div class="pc-out ' + (py ? "py" : "web") + '">' +
-        (py ? '<pre>' + (out.length ? out.slice(0, 14).map((l) => '<span class="cl ' + l.k + '">' + esc(l.m) + "</span>").join("\n") : '<span class="cl info">—</span>') + "</pre>"
+        (py ? '<pre>' + (out.length ? out.slice(0, 14).map((l) => '<span class="cl ' + l.k + '">' + esc(l.k === "explain" ? pyTip(l) : l.m) + "</span>").join("\n") : '<span class="cl info">—</span>') + "</pre>"
           : '<iframe sandbox="allow-scripts" tabindex="-1" loading="lazy" title="' + esc(p.title) + '" data-i="' + i + '"></iframe>') + "</div>" +
         '<div class="pc-bd"><span class="pc-lang ' + (py ? "py" : "web") + '"><i class="fa-brands fa-' + (py ? "python" : "html5") + '"></i> ' + (py ? "Python" : "HTML / CSS / JS") + "</span>" +
         "<h4>" + esc(p.title) + '</h4><small><i class="fa-regular fa-clock"></i> ' + fmtDT(p.updated || p.created) + "</small>" +

@@ -145,7 +145,11 @@
         '<div class="stdin-box"><label for="stdin"><i class="fa-solid fa-keyboard"></i> ' + X.stdin + " <small>– " + X.stdinHint + '</small></label><textarea id="stdin" spellcheck="false"></textarea></div>';
       $("stdin").value = S.buf.stdin || "";
       $("stdin").addEventListener("input", () => (S.buf.stdin = $("stdin").value));
-      $("pyClr").addEventListener("click", () => { S.pyOut = []; drawPy(); });
+      $("pyClr").addEventListener("click", () => { S.pyOut = []; drawPy(); markErrLine(0); });
+      $("pyBody").addEventListener("click", (ev) => {
+        const bt = ev.target.closest(".pe-line"); if (!bt || !cm || !cm.setCursor) return;
+        const n = +bt.dataset.line - 1; cm.focus(); cm.setCursor({ line: n, ch: 0 }); cm.scrollIntoView({ line: n, ch: 0 }, 80);
+      });
       $("fsBtn").addEventListener("click", toggleFs);
       $("autoWrap").hidden = true;
       drawPy();
@@ -246,12 +250,30 @@
   function pyLine(s, k) { S.pyOut.push({ k, m: s }); if (S.pyOut.length > 1000) S.pyOut.shift(); drawPy(); }
   function drawPy() {
     const b = $("pyBody"); if (!b) return;
-    b.innerHTML = S.pyOut.length ? S.pyOut.map((l) => '<div class="cl ' + l.k + '">' + esc(l.m) + "</div>").join("") : '<div class="console-empty">' + X.emptyOut + "</div>";
+    b.innerHTML = S.pyOut.length ? S.pyOut.map((l) => (l.k === "explain" && l.e ? explainHTML(l.e) : '<div class="cl ' + l.k + '">' + esc(l.m) + "</div>")).join("") : '<div class="console-empty">' + X.emptyOut + "</div>";
     b.scrollTop = b.scrollHeight;
+  }
+  function explainHTML(e) {
+    const E = window.COPA_PY_ERRORS; if (!E) return '<div class="cl err">' + esc(e.t + ": " + e.msg) + "</div>";
+    const r = E.explain(e.t, e.msg, LANG); if (!r) return "";
+    const L = r.labels;
+    return '<div class="py-explain"><div class="pe-hd"><i class="fa-solid fa-lightbulb"></i><b>' + esc(r.title) + "</b>" +
+      (e.line ? '<button type="button" class="pe-line" data-line="' + e.line + '">' + esc(L[0]) + " " + e.line + "</button>" : "") + "</div>" +
+      (e.code && e.code.trim() ? '<div class="pe-code"><span>' + esc(L[3]) + "</span><code>" + esc(e.code.trim()) + "</code></div>" : "") +
+      '<p><i class="fa-solid fa-circle-question"></i> <b>' + esc(L[1]) + ":</b> " + esc(r.what) + "</p>" +
+      '<p class="pe-fix"><i class="fa-solid fa-wrench"></i> <b>' + esc(L[2]) + ":</b> " + esc(r.fix) + "</p></div>";
+  }
+  let errMark = null;
+  function markErrLine(n) {
+    if (errMark != null && cm && cm.removeLineClass) { cm.removeLineClass(errMark, "background", "cm-err-line"); errMark = null; }
+    if (!n || !cm || !cm.addLineClass || S.file !== "py") return;
+    const h = cm.getLineHandle(n - 1); if (!h) return;
+    errMark = h; cm.addLineClass(h, "background", "cm-err-line");
   }
   function runPython() {
     if (pyBusy) return;
     pyBusy = true;
+    markErrLine(0);
     S.pyOut = [];
     pyLine("▶ " + (S.title || "main.py") + "  —  " + new Date().toLocaleTimeString(), "info");
     setPyStat("run");
@@ -265,10 +287,22 @@
     }).catch((e) => {
       const msg = String((e && e.message) || e);
       const all = msg.split("\n");
-      let i = -1; all.forEach((l, k) => { if (/File "<exec>"/.test(l)) i = k; });
-      let lines = (i > -1 ? all.slice(i) : all).filter((l) => l.trim() && !/^\s+\^+\s*$/.test(l));
-      lines = lines.map((l) => l.replace(/^\s*File "<exec>", line (\d+).*$/, "Line $1:"));
+      let i = -1, line = 0;
+      all.forEach((l, k) => { const m = /File "<exec>", line (\d+)/.exec(l); if (m) { i = k; line = +m[1]; } });
+      let lines = (i > -1 ? all.slice(i) : all).filter((l) => l.trim() && !/^\s+[\^~]+\s*$/.test(l));
+      const LN = (window.COPA_PY_ERRORS && window.COPA_PY_ERRORS.labels[LANG] || ["Line"])[0];
+      lines = lines.map((l) => l.replace(/^\s*File "<exec>", line (\d+).*$/, LN + " $1:"));
       pyLine(X.pyErr + " → " + lines.join("\n"), "err");
+      // friendly explanation in the selected language
+      const RX = /^([\w.]*?)(\w*(?:Error|Exception|Warning|Exit|Interrupt))(?::\s?(.*))?$/;
+      let tm = null;
+      for (let k = all.length - 1; k >= 0 && !tm; k--) { const l = all[k].trim(); if (!/^File /.test(l)) tm = RX.exec(l); }
+      if (tm) {
+        const code = line ? (S.buf.py.split("\n")[line - 1] || "") : "";
+        S.pyOut.push({ k: "explain", m: tm[2] + (tm[3] ? ": " + tm[3] : ""), e: { t: tm[2], msg: tm[3] || "", line, code: code.slice(0, 200) } });
+        drawPy();
+        markErrLine(line);
+      }
     }).finally(() => { pyBusy = false; setPyStat(py ? "ready" : "err"); });
   }
 

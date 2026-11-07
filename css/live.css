@@ -163,3 +163,19 @@ li.CodeMirror-hint-active { background: #04395e; color: #fff; }
 li.CodeMirror-hint-active .hd { color: #c8c8c8; }
 /* show >= != == exactly as typed (no font ligatures) */
 .editor-host .CodeMirror, .CodeMirror-hints, .console-body, .pc-out pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+
+/* ---------- Python error explained (selected language) ---------- */
+.py-explain { margin: 10px 0 4px; padding: 12px 14px; border-radius: 12px; background: linear-gradient(135deg, #2a1d10, #1e2236); border: 1px solid #ffb347; border-left: 5px solid #ffb347; color: #e6edff; font-family: "Poppins", "Roboto", sans-serif; font-size: 13.5px; line-height: 1.6; white-space: normal; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+.py-explain .pe-hd { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.py-explain .pe-hd i { color: #ffd166; font-size: 16px; }
+.py-explain .pe-hd b { color: #ffd166; font-size: 14.5px; flex: 1; min-width: 160px; }
+.py-explain .pe-line { background: #ff7b7b; color: #1a1020; border: 0; border-radius: 999px; padding: 2px 10px; font: 600 12px "Poppins", sans-serif; cursor: pointer; }
+.py-explain .pe-line:hover { background: #ffa0a0; }
+.py-explain .pe-code { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin: 4px 0 8px; }
+.py-explain .pe-code span { font-size: 12px; color: #9fb0d8; }
+.py-explain .pe-code code { background: #0d1224; border: 1px dashed #ff7b7b; border-radius: 6px; padding: 2px 8px; color: #ffb4b4; font-family: "JetBrains Mono", Consolas, monospace; font-size: 12.5px; white-space: pre-wrap; word-break: break-word; }
+.py-explain p { margin: 4px 0; }
+.py-explain p i { color: #7fa8ff; width: 16px; }
+.py-explain .pe-fix { color: #c9f7dc; }
+.py-explain .pe-fix i { color: #3ddc84; }
+.CodeMirror .cm-err-line { background: rgba(255, 90, 90, .22) !important; box-shadow: inset 3px 0 0 #ff5a5a; }
