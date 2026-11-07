@@ -245,7 +245,8 @@
   .lp-cats { grid-template-columns: repeat(3, 1fr); }
   .lp-band { grid-template-columns: 1fr; padding: 40px 32px; }
   .lp-live { grid-template-columns: 1fr; padding: 40px 32px; }
-  .lp-foot .cols { grid-template-columns: 1fr 1fr; }
+  .lp-foot .cols { grid-template-columns: repeat(3, 1fr); }
+  .lp-foot .cols > div:first-child { grid-column: 1 / -1; }
   .lp-stats { grid-template-columns: repeat(2, 1fr); row-gap: 28px; }
 }
 @media (max-width: 720px) {
@@ -282,7 +283,11 @@
   .ll-out { width: 62%; top: 120px; }
   .lp-band .cta .lp-btn { flex: 1 1 100%; }
   .lp-stats b { font-size: 36px; }
-  .lp-foot .cols { grid-template-columns: 1fr; }
+  .lp-foot .cols { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 12px; }
+  .lp-foot h5 { font-size: 14px; margin-bottom: 10px; }
+  .lp-foot ul { font-size: 12.5px; gap: 8px; }
+  .lp-foot ul a { overflow-wrap: anywhere; }
+  .lp-foot .bot { flex-direction: column; align-items: center; text-align: center; font-size: 12.5px; }
 }
 @media (min-width: 721px) { .lp-avas { display: contents; } }
 

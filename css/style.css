@@ -720,3 +720,9 @@ body.nav-open .site-header.collapsed ~ .sidebar-backdrop { display: block; posit
 }
 .cbt-top .cbt-logo { height: 38px; width: auto; flex: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
 @media (max-width: 400px) { .brand { gap: 8px; } .brand-logo { height: 32px; } }
+@media (max-width: 380px) {
+  .site-header { padding: 0 8px; gap: 6px; }
+  .brand { gap: 6px; } .brand-logo { height: 28px; }
+  .brand-text .b2 { font-size: 17px; }
+  .header-actions { gap: 6px; }
+}
