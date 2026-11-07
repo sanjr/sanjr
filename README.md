@@ -25,7 +25,13 @@ An online MCQ practice and CBT mock-test website for the ITI **COPA** (Computer 
   - When `index.html` is opened directly from a folder (`file://`), browsers block the bundled engine, so Python is loaded from the internet (jsDelivr CDN) instead. Internet is needed in that case.
 - 24 ready COPA practicals: 5 HTML, 2 CSS, 5 JavaScript and 12 Python (`js/practicals.js`).
 - Logged-in students can save a program with a title. Saved programs, with their output, appear in **Dashboard → My Live Practicals**.
-- **VS Code-style code suggestions** (`js/live-hints.js`). They appear while typing:
+- **VS Code-style code suggestions** (`js/live-hints.js`) with **complete** data in `js/hint-data.js`:
+  - HTML: all 131 elements (HTML5 plus older ones such as `marquee` and `font`), element-specific, global and event attributes, attribute values (e.g. every `input type`) and HTML entities (`&copy;`…).
+  - CSS: all 539 properties supported by the browser, each property's valid values (checked with `CSS.supports`), 148 colours, units, functions, 53 pseudo-classes/elements and @-rules.
+  - JavaScript: all keywords, global objects and functions, and every method/property of String, Array, Number, Date, Math, Object, JSON, Promise, Map/Set, `document`, `window`, `console`, `navigator`, HTML elements, `style`, `classList`, NodeList, events and `localStorage`. The lists are read from the browser itself.
+  - To regenerate the data: `node tools/hints/build-hint-data.js` (the HTML table is in `tools/hints/html-data.js`).
+  
+  Suggestions appear while typing:
   - HTML: tags and attributes.
   - CSS: properties and values.
   - JavaScript: keywords, `document.` / `console.` / `Math.` methods, and snippets such as `for`, `if`, `function`, `log`.

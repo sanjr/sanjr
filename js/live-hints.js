@@ -269,7 +269,12 @@
     if (/["'`]$/.test(recv)) return "string";
     if (/\]$/.test(recv) && /\[[^\[\]]*\]$/.test(recv) && !/[\w$)]\[[^\[\]]*\]$/.test(recv)) return "array";      // [1,2].
     if (/(getElementById|querySelector|createElement)\s*\([^()]*\)$/.test(recv)) return "element";
-    if (/querySelectorAll\s*\([^()]*\)$|getElementsBy\w+\s*\([^()]*\)$/.test(recv)) return "array";
+    if (/querySelectorAll\s*\([^()]*\)$|getElementsBy\w+\s*\([^()]*\)$/.test(recv)) return "nodelist";
+    if (/getContext\s*\([^()]*\)$/.test(recv)) return "canvas2d";
+    if (/new\s+Map\s*\([^()]*\)$/.test(recv)) return "map";
+    if (/new\s+Set\s*\([^()]*\)$/.test(recv)) return "set";
+    if (/(fetch|new\s+Promise|Promise\.\w+)\s*\([^()]*\)$|\.then\([^()]*\)$/.test(recv)) return "promise";
+    if (/\/[^/\s]+\/[gimsuy]*$/.test(recv)) return "regexp";
     if (/new\s+Date\s*\([^()]*\)$/.test(recv)) return "date";
     if (/\.style$/.test(recv) || /^style$/.test(recv)) return "style";
     if (/\.classList$/.test(recv)) return "classList";
@@ -284,12 +289,18 @@
     const txt = cm.getValue();
     const re = new RegExp("(?:^|[^\\w$.])" + name.replace(/\$/g, "\\$") + "\\s*=\\s*([^;\\n]+)", "g");
     let last = null, mm; while ((mm = re.exec(txt))) last = mm[1].trim();
-    if (last == null) { if (new RegExp("function\\s*\\w*\\s*\\([^)]*\\b" + name + "\\b").test(txt)) return null; return null; }
+    if (last == null) { if (/^(e|ev|evt|event)$/.test(name) && new RegExp("(function\\s*\\w*\\s*\\(|\\()\\s*" + name + "\\s*\\)|\\b" + name + "\\s*=>").test(txt)) return "event"; return null; }
     if (/^["'`]/.test(last) || /^prompt\s*\(/.test(last) || /^String\s*\(/.test(last)) return "string";
     if (/^\[/.test(last) || /\.split\(/.test(last)) return "array";
     if (/^-?\d/.test(last) || /^(parseInt|parseFloat|Number)\s*\(/.test(last)) return "number";
     if (/^document\.(getElementById|querySelector|createElement)\s*\(/.test(last)) return "element";
-    if (/^document\.(querySelectorAll|getElementsBy\w+)\s*\(/.test(last)) return "array";
+    if (/^document\.(querySelectorAll|getElementsBy\w+)\s*\(/.test(last)) return "nodelist";
+    if (/getContext\s*\(/.test(last)) return "canvas2d";
+    if (/^new\s+Map\b/.test(last)) return "map";
+    if (/^new\s+Set\b/.test(last)) return "set";
+    if (/^(new\s+Promise|fetch\s*\()/.test(last)) return "promise";
+    if (/^\/[^/]+\/[gimsuy]*$/.test(last) || /^new\s+RegExp/.test(last)) return "regexp";
+    if (/^(true|false)$/.test(last)) return "boolean";
     if (/^new\s+Date/.test(last)) return "date";
     if (/^\{/.test(last)) return "object";
     return null;
@@ -368,6 +379,25 @@
     opacity: ["0", "0.5", "1"], "z-index": ["1", "10", "100", "-1"], transition: ["all 0.3s", "background 0.5s ease", "none"], "box-sizing": ["border-box", "content-box"]
   };
   const PSEUDO = [":hover", ":active", ":focus", ":first-child", ":last-child", ":nth-child(2)", ":nth-child(even)", ":visited", ":link", "::before", "::after", "::first-letter", "::first-line", ":checked"];
+  /* ---------- complete data (js/hint-data.js, generated from the browser) ---------- */
+  const DATA = window.COPA_HINT_DATA || null;
+  const mergeList = (common, all) => { const seen = {}; common.forEach((x) => (seen[x] = 1)); return common.concat((all || []).filter((x) => !seen[x])); };
+  if (DATA) {
+    Object.keys(DATA.html.elements).forEach((t) => { HTML_TAGS[t] = DATA.html.elements[t][0]; });
+    DATA.html.void.forEach((t) => (VOID[t] = 1));
+    Object.keys(DATA.js.types).forEach((k) => { JS_TYPES[k] = mergeList(JS_TYPES[k] || [], DATA.js.types[k]); });
+    Object.keys(DATA.js.statics).forEach((k) => { JS_MEMBERS[k] = mergeList(JS_MEMBERS[k] || [], DATA.js.statics[k]); });
+    DATA.js.keywords.forEach((k) => { if (JS_KEYWORDS.indexOf(k) < 0) JS_KEYWORDS.push(k); });
+    Object.keys(DATA.js.globals).forEach((g) => {
+      if (JS_OBJECTS[g] || JS_FUNCS[g]) return;
+      const t = DATA.js.globals[g];
+      if (t === "f") JS_FUNCS[g] = "function"; else JS_OBJECTS[g] = t === "c" ? "class / constructor" : "object";
+    });
+    DATA.css.pseudo.forEach((x) => { if (PSEUDO.indexOf(x) < 0) PSEUDO.push(x); });
+  }
+  const cssPropInfo = (prop) => (DATA && DATA.css.props[prop]) || null;
+  const GLOBAL_CSS = { inherit: 1, initial: 1, unset: 1 };
+
   function cssContext(cm) {
     const cur = cm.getCursor();
     let txt = cm.getRange(CM.Pos(0, 0), cur);
@@ -398,7 +428,7 @@
         while ((m = re.exec(html))) m[2].split(/\s+/).forEach((n) => { if (!n) return; const sel = (m[1].toLowerCase() === "id" ? "#" : ".") + n; if (!seen[sel]) { seen[sel] = 1; if (starts(sel, w.word) || starts(n, w.word)) list.push(item(sel, "prop", m[1].toLowerCase() === "id" ? "id in your HTML" : "class in your HTML")); } });
         if (!/^[.#]/.test(w.word)) {
           ["*", "body", "html"].concat(Object.keys(HTML_TAGS)).forEach((k) => { if (starts(k, w.word) && !seen[k]) { seen[k] = 1; list.push(item(k, "tag", "<" + k + "> " + (HTML_TAGS[k] || "selector"))); } });
-          if (starts("@media", w.word) || w.word === "@") list.push(snipItem("@media", ["mobile screens", "@media (max-width: 600px) {\n  $0\n}"]));
+          if (/^@/.test(w.word)) (DATA ? DATA.css.atRules : [["@media", "@media (max-width: 600px) {\n  $0\n}"]]).forEach((a) => { if (starts(a[0], w.word)) list.push(snipItem(a[0], [a[0].slice(1) + " rule", a[1]])); });
         }
       }
       list = rank(list, w.word.replace(/^[.#]/, ""));
@@ -408,14 +438,33 @@
     if (ctx.kind === "value") {
       const own = CSS_VALUES[ctx.prop] || [];
       let base = [];
-      const r = CM.hint.css && CM.hint.css(cm);
-      if (r && r.list) base = r.list.map((x) => (typeof x === "string" ? x : x.text));
-      let list = own.filter((v) => !w.word || starts(v, w.word)).map((v, i) => item(v, "val", ctx.prop, { _o: i }));
+      const info = cssPropInfo(ctx.prop);
+      if (info) {
+        const fl = info[0];
+        base = info[1].map((i) => DATA.css.V[i]);
+        if (/c/.test(fl)) base = base.concat(COLORS, DATA.css.colors, ["rgb()", "rgba()", "hsl()", "hsla()", "currentcolor", "transparent"]);
+        if (/[lp]/.test(fl)) {
+          if (/^-?\d+(\.\d+)?$/.test(w.word)) base = DATA.css.units.filter((u) => !/^(s|ms|deg|rad|turn)$/.test(u) || /[ta]/.test(fl)).map((u) => w.word + u).concat(base);   // 10 → 10px, 10%, 10em …
+          else base = base.concat(SIZES, ["calc()", "min()", "max()", "clamp()", "var()"]);
+        }
+        if (/t/.test(fl)) base = base.concat(["0.3s", "0.5s", "1s", "200ms"]);
+        if (/a/.test(fl)) base = base.concat(["45deg", "90deg", "180deg", "360deg"]);
+        if (/u/.test(fl)) base = base.concat(['url("image.jpg")']);
+        if (/transform|filter|background|grid-template|transition|animation/.test(ctx.prop)) base = base.concat(DATA.css.functions);
+        base = base.concat(["inherit", "initial", "unset"]);
+        GLOBAL_CSS.inherit = GLOBAL_CSS.initial = GLOBAL_CSS.unset = 1;
+      } else {
+        const r = CM.hint.css && CM.hint.css(cm);
+        if (r && r.list) base = r.list.map((x) => (typeof x === "string" ? x : x.text));
+      }
+      const valItem = (v, detail, extra) => (/\(\)$/.test(v) ? item(v, "fn", "function", Object.assign({ hint: (c, d) => { c.replaceRange(v, d.from, d.to, "complete"); const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); } }, extra)) : item(v, "val", detail, extra));
+      let list = own.filter((v) => !w.word || starts(v, w.word)).map((v, i) => valItem(v, ctx.prop, { _o: i }));
       if (/color|background|border/.test(ctx.prop)) COLORS.forEach((v) => { if ((!w.word || starts(v, w.word)) && own.indexOf(v) < 0) list.push(item(v, "val", "colour")); });
-      base.forEach((v) => { if ((!w.word || starts(v, w.word)) && own.indexOf(v) < 0) list.push(item(v, "val", "value")); });
+      base.forEach((v) => { if ((!w.word || starts(v, w.word)) && own.indexOf(v) < 0) list.push(valItem(v, "value")); });
       const seen = {}; list = list.filter((x) => (seen[x.text] ? false : (seen[x.text] = 1)));
       // property-specific values keep their natural order and come first
-      list.sort((a, b) => (a._o != null ? a._o : 999) - (b._o != null ? b._o : 999) || a.text.length - b.text.length);
+      const ord = (x) => (x._o != null ? x._o : GLOBAL_CSS[x.text] ? 5000 : 999);   // property-specific first, inherit/initial/unset last
+      list.sort((a, b) => ord(a) - ord(b) || a.text.length - b.text.length);
       list = list.slice(0, 60);
       return list.length ? { list, from: w.from, to: w.to } : null;
     }
@@ -423,7 +472,7 @@
     const pw = wordAt(cm, /[\w-]/);
     if (!pw.word) return null;
     const r = CM.hint.css && CM.hint.css(cm);
-    const names = (r && r.list ? r.list.map((x) => (typeof x === "string" ? x : x.text)) : []).concat(Object.keys(CSS_VALUES));
+    const names = Object.keys(CSS_VALUES).concat(DATA ? Object.keys(DATA.css.props) : [], r && r.list ? r.list.map((x) => (typeof x === "string" ? x : x.text)) : []);
     let list = [];
     const seen = {};
     names.forEach((t) => { if (seen[t] || !starts(t, pw.word)) return; seen[t] = 1; list.push(item(t, "prop", "property", { _common: CSS_VALUES[t] ? 1 : 0, hint: (c, d) => { c.replaceRange(t + ": ;", d.from, d.to, "complete"); const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); setTimeout(() => c.showHint({ hint: copaHint, completeSingle: false }), 30); } })); });
@@ -432,18 +481,72 @@
     list = list.slice(0, 60);
     return list.length ? { list, from: pw.from, to: pw.to } : null;
   }
+  function htmlAttrsFor(tag) {
+    const own = (DATA && DATA.html.elements[tag] && DATA.html.elements[tag][1]) || [];
+    return { own, global: DATA ? DATA.html.global : ["id", "class", "style", "title"], events: DATA ? DATA.html.events : ["onclick", "onload", "onchange"], bool: DATA ? DATA.html.bool : [] };
+  }
   function htmlHint(cm) {
     const cur = cm.getCursor(), lineBefore = cm.getLine(cur.line).slice(0, cur.ch);
-    if (/<[^>]*$/.test(lineBefore)) {
+    let list = [];
+    /* &entities; */
+    const ent = /&[#\w]*$/.exec(lineBefore);
+    if (ent && DATA) {
+      DATA.html.entities.forEach((e) => { if (starts(e[0], ent[0])) list.push(item(e[0], "val", e[1])); });
+      return list.length ? { list: list.slice(0, 60), from: CM.Pos(cur.line, ent.index), to: cur } : null;
+    }
+    /* closing tag </… → let CodeMirror find the open tag */
+    if (/<\/[\w-]*$/.test(lineBefore)) {
       const r = CM.hint.html && CM.hint.html(cm);
       if (!r || !r.list || !r.list.length) return null;
-      const list = r.list.map((x) => { const t = typeof x === "string" ? x : x.text; const tag = /^</.test(t); const name = t.replace(/^<\/?/, "").replace(/[\s>="].*$/, ""); return item(t, tag ? "tag" : "prop", (tag && HTML_TAGS[name]) || (tag ? "tag" : "attribute")); });
-      return { list: list.slice(0, 60), from: r.from, to: r.to };
+      return { list: r.list.map((x) => { const t = typeof x === "string" ? x : x.text; return item(t, "tag", "closing tag"); }), from: r.from, to: r.to };
+    }
+    /* <tag  → all elements */
+    let m = /<([a-zA-Z][\w-]*)?$/.exec(lineBefore);
+    if (m) {
+      const word = m[1] || "";
+      Object.keys(HTML_TAGS).forEach((t) => { if (starts(t, word)) list.push(item(t, "tag", HTML_TAGS[t], { displayText: "<" + t + ">", _common: HTML_SNIP[t] || /^(h[1-6]|p|a|img|div|span|ul|ol|li|table|tr|td|th|form|input|button|br|hr|b|i|u|html|head|body|title|meta|link|style|script|select|option|textarea|label)$/.test(t) ? 1 : 0 })); });
+      list.sort((x, y) => (starts(y.text, word) - starts(x.text, word)) || (y._common - x._common) || x.text.length - y.text.length);
+      return list.length ? { list: list.slice(0, 80), from: CM.Pos(cur.line, m.index + 1), to: cur } : null;
+    }
+    /* inside a tag: attribute value  <input type="te…  */
+    const inTag = /<([a-zA-Z][\w-]*)\b([^<>]*)$/.exec(lineBefore);
+    if (inTag) {
+      const tag = inTag[1].toLowerCase(), rest = inTag[2];
+      const val = /([\w:-]+)\s*=\s*["']([^"']*)$/.exec(rest);
+      if (val) {
+        const attr = val[1].toLowerCase(), typed = val[2];
+        let opts = DATA ? DATA.html.values[attr] : null;
+        if (opts && !Array.isArray(opts)) opts = opts[tag] || null;
+        if (!opts && attr === "href") opts = ["#", "https://", "mailto:", "tel:", "index.html", "page2.html"];
+        if (!opts && /^on/.test(attr)) opts = ["alert('Hello')", "myFunction()", "this.style.color='red'"];
+        if (!opts && attr === "class") { const css = (OPTS.css && OPTS.css()) || ""; const seen = {}; opts = []; let k; const re = /\.([A-Za-z_][\w-]*)/g; while ((k = re.exec(css))) if (!seen[k[1]]) { seen[k[1]] = 1; opts.push(k[1]); } }
+        if (!opts || !opts.length) return null;
+        opts.forEach((o) => { if (!typed || starts(o, typed)) list.push(item(o, "val", attr + " value")); });
+        return list.length ? { list: list.slice(0, 60), from: CM.Pos(cur.line, cur.ch - typed.length), to: cur } : null;
+      }
+      // inside quotes of another attribute → nothing
+      if (((rest.match(/"/g) || []).length % 2) || ((rest.match(/'/g) || []).length % 2)) return null;
+      const an = /\s([\w:-]*)$/.exec(rest);
+      if (!an) return null;
+      const word = an[1];
+      const A = htmlAttrsFor(tag), used = {};
+      (rest.match(/[\w:-]+(?=\s*=|\s|$)/g) || []).forEach((u) => (used[u.toLowerCase()] = 1));
+      const add = (names, detail, pr) => names.forEach((n) => {
+        if (used[n] || !starts(n, word) || list.some((x) => x.text === n)) return;
+        const isBool = A.bool.indexOf(n) > -1, isData = n === "data-";
+        list.push(item(n, "prop", detail, { _p: pr, hint: (c, d) => {
+          const ins = isBool || isData ? n : n + '=""';
+          c.replaceRange(ins, d.from, d.to, "complete");
+          if (!isBool && !isData) { const p = c.getCursor(); c.setCursor(CM.Pos(p.line, p.ch - 1)); setTimeout(() => c.showHint({ hint: copaHint, completeSingle: false }), 30); }
+        } }));
+      });
+      add(A.own, "<" + tag + "> attribute", 0); add(A.global, "global attribute", 1); add(A.events, "event", 2);
+      list.sort((x, y) => (starts(y.text, word) - starts(x.text, word)) || (x._p - y._p) || x.text.length - y.text.length);
+      return list.length ? { list: list.slice(0, 80), from: CM.Pos(cur.line, cur.ch - word.length), to: cur } : null;
     }
     // typing a tag name without "<" → Emmet-style tag/snippet suggestions (Enter or Tab inserts <tag></tag>)
     const w = wordAt(cm, /[\w:!]/);
     if (!w.word) return null;
-    const list = [];
     Object.keys(HTML_SNIP).forEach((k) => { if (starts(k, w.word)) list.push(snipItem(k, HTML_SNIP[k])); });
     Object.keys(HTML_TAGS).forEach((k) => {
       if (!starts(k, w.word) || HTML_SNIP[k]) return;
@@ -485,14 +588,23 @@
       const cur = c.getCursor(), before = c.getLine(cur.line).slice(0, cur.ch);
       const cssValueStart = cssMode && /:\s?$/.test(before) && cssContext(c).kind === "value";   // "color:" or "color: " → show values
       const pyImport = c.getModeAt(cur).name === "python" && /^\s*(import|from\s+\w+\s+import)\s$/.test(before);   // "import " → module list
-      if (!cssValueStart && !pyImport && !/[\w.<!:#@$-]$/.test(typed)) return;
+      const htmlMode = /^(xml|htmlmixed)$/.test(c.getModeAt(cur).name);
+      const htmlAttrStart = htmlMode && (/<[a-zA-Z][\w-]*\b[^<>"']*\s$/.test(before) || /<[a-zA-Z][\w-]*\b[^<>]*=\s*["']$/.test(before));   // "<input " → attributes, type=" → values
+      if (!cssValueStart && !pyImport && !htmlAttrStart && !/[\w.<!:#@$&-]$/.test(typed)) return;
       const tok = c.getTokenAt(c.getCursor());
       if (tok.type && /comment/.test(tok.type)) return;
-      if (tok.type === "string" && !/css/.test(c.getModeAt(c.getCursor()).name)) return;
+      if (tok.type === "string" && !/css/.test(c.getModeAt(c.getCursor()).name) && !htmlMode) return;
       clearTimeout(t);
       t = setTimeout(() => c.showHint({ hint: copaHint, completeSingle: false, closeCharacters: /[\s()\[\]{};>,]/, alignWithWord: true }), 60);
     });
     cm.addKeyMap({ "Ctrl-Space": (c) => c.showHint({ hint: copaHint, completeSingle: false }) });
+    cm.on("keyup", (c, e) => {
+      if (e.key !== '"' && e.key !== "'") return;
+      if (c.state.completionActive) return;
+      const cur = c.getCursor(), before = c.getLine(cur.line).slice(0, cur.ch);
+      if (/^(xml|htmlmixed)$/.test(c.getModeAt(cur).name) && /<[a-zA-Z][\w-]*\b[^<>]*=\s*["']$/.test(before))
+        c.showHint({ hint: copaHint, completeSingle: false });
+    });
   }
 
   window.COPA_HINTS = { attach, tab, hint: copaHint };
