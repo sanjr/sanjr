@@ -240,6 +240,90 @@
     els.forEach((el) => io.observe(el));
   } else els.forEach((el) => el.classList.add("in"));
 
+  /* ---------- Diwali rockets behind the hero (until 11 Nov 2026, 00:00 IST – then it removes itself) ---------- */
+  (function diwali() {
+    const END = Date.parse("2026-11-11T00:00:00+05:30");
+    if (Date.now() >= END) return;
+    const frame = document.querySelector(".lp-frame"); if (!frame) return;
+    const cv = document.createElement("canvas"); cv.className = "lp-fw"; cv.setAttribute("aria-hidden", "true");
+    frame.prepend(cv); frame.classList.add("fw");
+    const cx = cv.getContext("2d");
+    const COLORS = ["#ffb300", "#ff6d00", "#ff1744", "#f50057", "#d500f9", "#651fff", "#2979ff", "#00c853", "#ffd600", "#ff3d00"];
+    let W = 0, H = 0, dpr = 1, rockets = [], sparks = [], flashes = [], last = 0, nextLaunch = 0, running = false, visible = true, raf = 0;
+    const mobile = () => W < 640;
+    const size = () => { dpr = Math.min(2, window.devicePixelRatio || 1); W = frame.clientWidth; H = frame.clientHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    function launch() {
+      const x = rnd(W * 0.06, W * 0.94);
+      const ty = rnd(H * 0.1, H * 0.5);                       // explode in the upper part
+      const vy = -Math.sqrt(2 * 0.12 * (H - ty)) * rnd(0.95, 1.05);
+      rockets.push({ x, y: H + 4, vx: rnd(-0.6, 0.6), vy, color: COLORS[(Math.random() * COLORS.length) | 0], trail: [] });
+    }
+    function burst(r) {
+      const n = mobile() ? 48 : 84, c2 = COLORS[(Math.random() * COLORS.length) | 0], ring = Math.random() < 0.35;
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + rnd(-0.05, 0.05), sp = (ring ? 4.4 : rnd(1.6, 5.4)) * (mobile() ? 0.75 : 1);
+        sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, decay: rnd(0.010, 0.018), color: Math.random() < 0.7 ? r.color : c2, trail: [], glitter: Math.random() < 0.25 });
+      }
+      // golden crackle in the middle
+      flashes.push({ x: r.x, y: r.y, life: 1, rad: mobile() ? 70 : 110, color: r.color });
+      for (let i = 0; i < 14; i++) sparks.push({ x: r.x, y: r.y, vx: rnd(-1.2, 1.2), vy: rnd(-1.2, 1.2), life: 1, decay: rnd(0.025, 0.04), color: "#ffd54f", trail: [], glitter: true });
+    }
+    function step(t) {
+      raf = 0;
+      if (!running) return;
+      if (Date.now() >= END) { stop(true); return; }
+      const dt = Math.min(2.5, last ? (t - last) / 16.67 : 1); last = t;
+      if (t > nextLaunch) { launch(); if (Math.random() < 0.3) launch(); nextLaunch = t + rnd(mobile() ? 900 : 600, mobile() ? 1800 : 1300); }
+      cx.clearRect(0, 0, W, H);
+      cx.globalCompositeOperation = "source-over";
+      // soft golden glow where a rocket bursts
+      for (let i = flashes.length - 1; i >= 0; i--) {
+        const f = flashes[i]; f.life -= 0.035 * dt; if (f.life <= 0) { flashes.splice(i, 1); continue; }
+        const g = cx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.rad * (1.3 - f.life * 0.3));
+        g.addColorStop(0, "rgba(255,214,102," + 0.45 * f.life + ")"); g.addColorStop(1, "rgba(255,214,102,0)");
+        cx.fillStyle = g; cx.beginPath(); cx.arc(f.x, f.y, f.rad * 1.3, 0, 7); cx.fill();
+      }
+      // rockets going up with a sparkling tail
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        r.trail.push([r.x, r.y]); if (r.trail.length > 10) r.trail.shift();
+        r.x += r.vx * dt; r.y += r.vy * dt; r.vy += 0.12 * dt;
+        cx.lineCap = "round";
+        for (let k = 1; k < r.trail.length; k++) {
+          cx.strokeStyle = "rgba(255,170,40," + (k / r.trail.length) * 0.9 + ")"; cx.lineWidth = 1 + (k / r.trail.length) * 2.2;
+          cx.beginPath(); cx.moveTo(r.trail[k - 1][0], r.trail[k - 1][1]); cx.lineTo(r.trail[k][0], r.trail[k][1]); cx.stroke();
+        }
+        cx.fillStyle = "#fff3c4"; cx.beginPath(); cx.arc(r.x, r.y, 2.4, 0, 7); cx.fill();
+        if (Math.random() < 0.5) sparks.push({ x: r.x, y: r.y, vx: rnd(-0.5, 0.5), vy: rnd(0.5, 1.5), life: 0.7, decay: 0.05, color: "#ffb300", trail: [], glitter: false });
+        if (r.vy >= -0.4) { burst(r); rockets.splice(i, 1); }
+      }
+      // explosion sparks
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i];
+        p.trail.push([p.x, p.y]); if (p.trail.length > 5) p.trail.shift();
+        p.vx *= 0.985; p.vy = p.vy * 0.985 + 0.045 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.life -= p.decay * dt;
+        if (p.life <= 0) { sparks.splice(i, 1); continue; }
+        const al = p.glitter ? p.life * (Math.random() < 0.5 ? 1 : 0.25) : p.life;
+        cx.globalAlpha = Math.max(0, al) * 0.95; cx.strokeStyle = p.color; cx.lineWidth = 2.6;
+        if (p.trail.length > 1) { cx.beginPath(); cx.moveTo(p.trail[0][0], p.trail[0][1]); for (const q of p.trail) cx.lineTo(q[0], q[1]); cx.stroke(); }
+        cx.fillStyle = p.color; cx.beginPath(); cx.arc(p.x, p.y, 2.3, 0, 7); cx.fill();
+      }
+      cx.globalAlpha = 1;
+      raf = requestAnimationFrame(step);
+    }
+    function start() { if (running || !visible || document.hidden) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(forever) {
+      running = false; if (raf) cancelAnimationFrame(raf); raf = 0;
+      if (forever) { cv.remove(); frame.classList.remove("fw"); window.removeEventListener("resize", size); }
+    }
+    size(); window.addEventListener("resize", size);
+    if ("IntersectionObserver" in window) new IntersectionObserver((e) => { visible = e[0].isIntersecting; visible ? start() : stop(false); }).observe(frame);
+    document.addEventListener("visibilitychange", () => (document.hidden ? stop(false) : start()));
+    setTimeout(() => { if (Date.now() >= END) stop(true); }, Math.max(0, Math.min(END - Date.now(), 2147483000)));   // page left open past the end time
+    start();
+  })();
+
   /* website rating + top reviews (MySQL mode) */
   (function reviews() {
     const SRV = C.server; if (!SRV || !SRV.reviews) return;
