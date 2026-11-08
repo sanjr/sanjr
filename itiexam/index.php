@@ -143,7 +143,7 @@ require __DIR__ . '/includes/header.php';
   <main id="main">
     <!-- ===== Hero ===== -->
     <section class="hero hero-live">
-      <div class="hero-fx" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="beam"></span></div>
+      <div class="hero-fx" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="beam"></span><?php require_once __DIR__ . '/includes/diwali-fx.php'; diwali_fx(); ?></div>
       <div class="container hero-grid">
         <div class="hero-copy">
           <h1><span class="h1-sm"><?= e($H('home_hero_small', 'Your Complete Platform for')) ?></span> <?= e($H('home_hero_title', 'ITI Exam')) ?> <?php
