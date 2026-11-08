@@ -147,12 +147,30 @@ page("exam.html", t, d, "COPA mock test, COPA CBT mock test, ITI COPA online exa
 
 t = f"COPA Question Bank with Answers – {TOTAL} ITI COPA MCQ | COPA MCQ"
 d = f"Complete ITI COPA question bank: all {TOTAL} COPA trade MCQs with answers & explanation, module-wise, searchable, printable, in English, Hindi, Marathi."
-page("study.html", t, d, "COPA question bank, COPA question bank with answers, ITI COPA study material, COPA notes, COPA important questions, " + COMMON_KW,
-     [webpage("study.html", t, d), crumbs(("Home", ""), ("Study Material", "study.html")),
+page("question-bank.html", t, d, "COPA question bank, COPA question bank with answers, COPA important questions, COPA MCQ with answers, " + COMMON_KW,
+     [webpage("question-bank.html", t, d), crumbs(("Home", ""), ("Study Material", "study.html"), ("Question Bank", "question-bank.html")),
       {"@type": "LearningResource", "name": "ITI COPA Question Bank with Answers", "learningResourceType": "Question bank",
        "educationalLevel": "ITI COPA", "isAccessibleForFree": True, "inLanguage": ["en", "hi", "mr"], "provider": {"@id": SITE + "/#org"},
        "teaches": [m[1] for m in MODULES]}],
      prio="0.9")
+
+t = "ITI COPA Study Material – Notes, PDF, Videos, Practicals | COPA MCQ"
+d = "ITI COPA study material in one place: theory notes, practicals & assignments, PDF notes, video lessons, question bank, shortcuts and previous papers."
+page("study.html", t, d, "ITI COPA study material, COPA notes, COPA notes PDF, COPA practical, COPA video lectures, COPA previous papers, COPA shortcut keys, " + COMMON_KW,
+     [webpage("study.html", t, d, "CollectionPage"), crumbs(("Home", ""), ("Study Material", "study.html")),
+      {"@type": "ItemList", "name": "ITI COPA study material", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": nm, "url": SITE + "/" + u} for i, (nm, u) in enumerate([
+          ("Theory Notes", "theory-notes.html"), ("Practical & Assignments", "practicals.html"), ("PDF Materials", "pdf-materials.html"), ("Video Tutorials", "video-tutorials.html"),
+          ("Question Bank", "question-bank.html"), ("Quick Reference", "quick-reference.html"), ("Previous Papers", "previous-papers.html")])]}],
+     prio="0.9")
+for u, nm, t, d, kw in [
+    ("theory-notes.html", "Theory Notes", "COPA Theory Notes – Chapter-wise ITI COPA Notes | COPA MCQ", "Chapter-wise ITI COPA theory notes for every module: computer basics, Windows, Linux, MS Office, DBMS, networking, HTML, JavaScript, Python.", "COPA theory notes, ITI COPA notes, COPA chapter wise notes, COPA notes in Hindi, COPA notes Marathi"),
+    ("practicals.html", "Practical & Assignments", "COPA Practical List & Assignments – HTML, JS, Python | COPA MCQ", f"ITI COPA practicals and assignments: ready-made HTML, CSS, JavaScript and Python programs you can run and edit online in the Live Practice Lab.", "COPA practical list, ITI COPA practical, COPA practical programs, HTML practical, Python practical, COPA assignments"),
+    ("pdf-materials.html", "PDF Materials", "COPA Notes PDF Download – ITI COPA Study Material | COPA MCQ", "Download ITI COPA notes and study material as PDF, module-wise – free for all COPA trainees.", "COPA notes PDF, ITI COPA PDF, COPA book PDF, COPA study material PDF download"),
+    ("video-tutorials.html", "Video Tutorials", "COPA Video Tutorials – ITI COPA Video Lessons | COPA MCQ", "Watch ITI COPA video lessons module-wise – MS Office, internet, HTML, JavaScript, Python and more.", "COPA video lectures, ITI COPA video, COPA YouTube classes, COPA tutorial"),
+    ("quick-reference.html", "Quick Reference", "Computer Shortcut Keys, DOS & Linux Commands – COPA Quick Reference", "Windows, MS Word, Excel and PowerPoint shortcut keys, DOS and Linux commands, Excel functions, Python and HTML basics, ports and full forms for ITI COPA.", "computer shortcut keys, MS Word shortcut keys, Excel shortcut keys, DOS commands, Linux commands, Excel functions, computer full forms"),
+    ("previous-papers.html", "Previous Papers", "COPA Previous Year Question Papers – ITI COPA Old Papers | COPA MCQ", "ITI COPA previous year and old question papers to download and practise for the CBT exam.", "COPA previous year question paper, ITI COPA old papers, COPA question paper PDF, COPA CBT paper"),
+]:
+    page(u, t, d, kw + ", " + COMMON_KW, [webpage(u, t, d), crumbs(("Home", ""), ("Study Material", "study.html"), (nm, u))], prio="0.8")
 
 t = "COPA Practical Online – HTML, CSS, JS & Python Editor | COPA MCQ"
 d = "Do ITI COPA practicals online: write HTML, CSS, JavaScript & Python code with VS Code-style suggestions, see live output and save your programs."
