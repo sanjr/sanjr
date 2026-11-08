@@ -49,7 +49,7 @@
   const REF = window.COPA_REFERENCE || [];
   const lessonKey = (no) => String(no).split(/[^0-9]+/).filter(Boolean).slice(0, 3).map(Number);
   const byLesson = (a, b) => { const x = lessonKey(a.no), y = lessonKey(b.no); for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); return 0; };
-  const TH = (window.COPA_THEORY || []).slice().sort((a, b) => (a.part - b.part) || byLesson(a, b));
+  const TH = (window.COPA_THEORY || []).slice().sort((a, b) => (a.part - b.part) || ((a.g || 0) - (b.g || 0)) || byLesson(a, b));
   const count = (k) => (k === "theory" ? TH.length + notesIn(k).length : k === "qbank" ? C.QUESTIONS.length : k === "practical" ? PR.length + notesIn(k).length : k === "reference" ? REF.reduce((a, g) => a + g.k.length, 0) : notesIn(k).length);
   const ytId = (u) => { const m = String(u || "").match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/); return m ? m[1] : ""; };
   const driveId = (u) => { const m = String(u || "").match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([A-Za-z0-9_-]{10,})/); return m ? m[1] : ""; };
@@ -109,15 +109,16 @@
       let html = "", lastPart = 0, lastMod = "";
       list.forEach((l) => {
         if (l.part !== lastPart) { lastPart = l.part; lastMod = ""; html += (html ? "</div></section>" : "") + '<h2 class="sh-part"><span>' + esc(X.part) + " " + l.part + "</span></h2>"; }
-        const mk = l.part + "-" + l.bm;
+        const mk = l.part + "-" + (l.g || 0) + "-" + (l.el ? "el" : l.bm);   // an elective = one section
         if (mk !== lastMod) {
           if (lastMod) html += "</div></section>";
           lastMod = mk;
-          const cnt = list.filter((x) => x.part === l.part && x.bm === l.bm).length;
-          html += '<section class="sh-mod"><header><span class="mno">' + esc(X.moduleW) + " " + l.bm + "</span><h3>" + esc(l.mt) + '</h3><span class="mc">' + cnt + " " + esc(cnt === 1 ? X.lesson : X.lessons) + '</span></header><div class="sh-lessons">';
+          const cnt = list.filter((x) => x.part === l.part && (x.g || 0) === (l.g || 0) && (l.el || x.bm === l.bm)).length;
+          const mods = l.el ? list.filter((x) => x.part === l.part && x.g === l.g).map((x) => x.bm) : [];
+          html += '<section class="sh-mod' + (l.el ? " el" : "") + '"><header>' + (l.el ? '<span class="elb"><i class="fa-brands fa-' + (/python/i.test(l.el) ? "python" : "java") + '"></i> ' + esc(l.el) + "</span>" : "") + '<span class="mno">' + esc(X.moduleW) + " " + (l.el ? Math.min.apply(null, mods) + "–" + Math.max.apply(null, mods) : l.bm) + "</span><h3>" + esc(l.mt) + '</h3><span class="mc">' + cnt + " " + esc(cnt === 1 ? X.lesson : X.lessons) + '</span></header><div class="sh-lessons">';
         }
         const i = TH.indexOf(l);
-        html += '<article class="sh-lesson" data-tl="' + i + '"><div class="top"><span class="lno"><i class="fa-solid fa-bookmark"></i> ' + esc(X.lesson) + " " + esc(l.no) + "</span></div>" +
+        html += '<article class="sh-lesson" data-tl="' + i + '"><div class="top"><span class="lno"><i class="fa-solid fa-bookmark"></i> ' + esc(X.lesson) + " " + esc(l.no) + "</span>" + (l.el ? '<span class="chip">' + esc(X.moduleW) + " " + l.bm + "</span>" : "") + "</div>" +
           "<h4>" + esc(l.title) + '</h4><div class="keys">' + l.keys.slice(0, 5).map((k) => "<span>" + esc(k) + "</span>").join("") + (l.keys.length > 5 ? "<span>+" + (l.keys.length - 5) + "</span>" : "") + "</div>" +
           '<button type="button" class="btn btn-primary btn-sm" data-tl-open="' + i + '"><i class="fa-solid fa-book-open-reader"></i> ' + esc(X.readNotes) + "</button></article>";
       });
@@ -137,7 +138,7 @@
     const nav = (j, lbl, ic) => (TH[j] ? '<button type="button" class="btn btn-ghost btn-sm" data-go="' + j + '">' + (ic === "l" ? '<i class="fa-solid fa-arrow-left"></i> ' : "") + esc(lbl) + (ic === "r" ? ' <i class="fa-solid fa-arrow-right"></i>' : "") + "</button>" : "<span></span>");
     const m = C.modal('<button class="close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
       '<div class="note-view"><div class="nv-head"><span class="chip">' + esc(X.lesson) + " " + esc(l.no) + "</span><h2>" + esc(l.title) + '</h2><button type="button" class="btn btn-ghost btn-sm" data-pr><i class="fa-solid fa-print"></i> ' + esc(X.print) + "</button></div>" +
-      '<p class="tl-meta">' + esc(X.part) + " " + l.part + " · " + esc(X.moduleW) + " " + l.bm + ": " + esc(l.mt) + "</p>" +
+      '<p class="tl-meta">' + esc(X.part) + " " + l.part + (l.el ? " · " + esc(l.el) : "") + " · " + esc(X.moduleW) + " " + l.bm + ": " + esc(l.mt) + "</p>" +
       '<div class="rte-page rte-content tl-body">' + l.html + "</div>" +
       '<div class="tl-nav">' + nav(i - 1, X.prev, "l") + nav(i + 1, X.next, "r") + "</div></div>", { wide: true });
     m.el.querySelector(".modal").classList.add("note-modal");
