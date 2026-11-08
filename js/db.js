@@ -155,7 +155,11 @@
       : { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json", "X-COPA": "1" }, body: JSON.stringify(body) })
     .then((r) => r.text().then((t) => {
       let j = null; try { j = JSON.parse(t); } catch (e) { /* not JSON (PHP missing / 404) */ }
-      if (!j) throw new Error(r.status === 404 ? "API not found – upload the api folder to the website." : "Server error (" + r.status + ")");
+      if (!j) {
+        if (r.status === 404) throw new Error("API not found (" + apiBase() + "index.php) – upload the api folder to the website.");
+        const hint = (t.match(/(Fatal error|Parse error|Warning)[^<]{0,160}/i) || [])[0];
+        throw new Error("Server error " + r.status + (hint ? ": " + hint.replace(/\s+/g, " ") : " – check api/config.php and PHP version (7.4+)."));
+      }
       if (!j.ok) throw new Error(j.error || "Server error");
       return j.data;
     }));

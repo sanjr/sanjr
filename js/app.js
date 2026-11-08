@@ -409,6 +409,8 @@
   const getProfile = () => { const u = raw.get("current", null); const users = getUsers(); return u && users[u] ? Object.assign({ uid: u }, users[u]) : null; };
   /* MySQL mode: accounts and result history live on the server, so a student can log in on any device */
   const SRV = window.COPA_DB && window.COPA_DB.mode === "mysql" ? window.COPA_DB.driver : null;
+  // real network problem → friendly text; any server message (database, API missing …) is shown as it is
+  const srvMsg = (er) => { const m = (er && er.message) || ""; return !m || /Failed to fetch|NetworkError|Load failed|network/i.test(m) ? t("netErr") : esc(m); };
   const studentToken = () => { const p = getProfile(); return (p && p.token) || ""; };
   /* "Sign in with Google" (needs the MySQL backend, a Client ID and https) */
   const GCID = (window.COPA_CONFIG && window.COPA_CONFIG.googleClientId) || "";
@@ -513,7 +515,7 @@
     }
     function googleCred(credential) {
       box.querySelectorAll("button, input").forEach((x) => (x.disabled = true));
-      SRV.studentGoogle(credential).then((d) => (d.need === "roll" ? rollStep(d) : finish(d.uid, d))).catch((er) => draw(esc((er && er.message) || t("netErr"))));
+      SRV.studentGoogle(credential).then((d) => (d.need === "roll" ? rollStep(d) : finish(d.uid, d))).catch((er) => draw(srvMsg(er)));
     }
     function rollStep(g, err, needPin) {
       box.innerHTML =
@@ -539,7 +541,7 @@
           g.roll = roll; g.batch = batch;
           if (msg === "pin_required") return rollStep(g, t("gLinkPin"), true);
           if (msg === "wrongpin") return rollStep(g, t("wrongPin"), true);
-          rollStep(g, /sign in with Google/i.test(msg) ? esc(msg) : t("netErr"), needPin);
+          rollStep(g, srvMsg(er), needPin);
         });
       });
     }
@@ -563,7 +565,7 @@
         if (msg === "noaccount") return draw(t("noAccount"));
         // server not reachable: allow an account that already exists on this device
         if (!reg && users[uid] && users[uid].pin === hashPin(pin)) { signIn(uid); return done(); }
-        draw(/^(PIN|Please|Invalid|Too many)/.test(msg) ? esc(msg) : t("netErr"));
+        draw(srvMsg(er));
       };
       if (reg) {
         const name = box.querySelector("#af-name").value.trim(), batch = box.querySelector("#af-batch").value.trim();
