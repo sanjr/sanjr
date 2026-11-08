@@ -30,15 +30,15 @@
     en: { hubT: "Study Material", hubS: "Everything you need for the ITI COPA trade – notes, practicals, PDFs, videos, question bank, shortcuts and old papers.", items: "items", item: "item", open: "Open",
       recent: "Recently added", all: "All modules", general: "General", search: "Search…", none: "Nothing here yet", noneS: "New material is added regularly. Meanwhile practise with the question bank.",
       goQ: "Open Question Bank", read: "Read", download: "Open / Download", watch: "Watch", openLive: "Open in Live Practice", assign: "Assignments from your instructor", ready: "Ready-made practicals (Live Practice Lab)",
-      web: "HTML · CSS · JavaScript", python: "Python", sections: "Study sections", back: "All study material", qs: "questions", modules: "modules", print: "Print", copy: "Copied!" },
+      web: "HTML · CSS · JavaScript", python: "Python", sections: "Study sections", back: "All study material", lesson: "Lesson", lessons: "lessons", part: "Part", readNotes: "Read notes", prev: "Previous", next: "Next", topics: "Topics", moduleW: "Module", fromAdmin: "More notes from your instructor", bookNote: "Study notes prepared lesson-wise as per the COPA Trade Theory syllabus (NSQF 2022).", qs: "questions", modules: "modules", print: "Print", copy: "Copied!" },
     hi: { hubT: "अध्ययन सामग्री", hubS: "ITI COPA ट्रेड के लिए सब कुछ – नोट्स, प्रैक्टिकल, PDF, वीडियो, प्रश्न बैंक, शॉर्टकट और पुराने प्रश्नपत्र।", items: "आइटम", item: "आइटम", open: "खोलें",
       recent: "हाल ही में जोड़ा गया", all: "सभी मॉड्यूल", general: "सामान्य", search: "खोजें…", none: "अभी यहाँ कुछ नहीं है", noneS: "नई सामग्री नियमित रूप से जोड़ी जाती है। तब तक प्रश्न बैंक से अभ्यास करें।",
       goQ: "प्रश्न बैंक खोलें", read: "पढ़ें", download: "खोलें / डाउनलोड", watch: "देखें", openLive: "लाइव प्रैक्टिस में खोलें", assign: "आपके प्रशिक्षक के असाइनमेंट", ready: "तैयार प्रैक्टिकल (लाइव प्रैक्टिस लैब)",
-      web: "HTML · CSS · JavaScript", python: "पायथन", sections: "अध्ययन विभाग", back: "सभी अध्ययन सामग्री", qs: "प्रश्न", modules: "मॉड्यूल", print: "प्रिंट", copy: "कॉपी हुआ!" },
+      web: "HTML · CSS · JavaScript", python: "पायथन", sections: "अध्ययन विभाग", back: "सभी अध्ययन सामग्री", lesson: "पाठ", lessons: "पाठ", part: "भाग", readNotes: "नोट्स पढ़ें", prev: "पिछला", next: "अगला", topics: "विषय", moduleW: "मॉड्यूल", fromAdmin: "आपके प्रशिक्षक के और नोट्स", bookNote: "COPA ट्रेड थ्योरी पाठ्यक्रम (NSQF 2022) के अनुसार पाठ-वार तैयार किए गए अध्ययन नोट्स।", qs: "प्रश्न", modules: "मॉड्यूल", print: "प्रिंट", copy: "कॉपी हुआ!" },
     mr: { hubT: "अभ्यास साहित्य", hubS: "ITI COPA ट्रेडसाठी सर्व काही – नोट्स, प्रॅक्टिकल, PDF, व्हिडिओ, प्रश्नपेढी, शॉर्टकट आणि जुन्या प्रश्नपत्रिका.", items: "आयटम", item: "आयटम", open: "उघडा",
       recent: "नुकतेच जोडलेले", all: "सर्व मॉड्यूल", general: "सामान्य", search: "शोधा…", none: "इथे अजून काही नाही", noneS: "नवीन साहित्य नियमितपणे जोडले जाते. तोपर्यंत प्रश्नपेढीतून सराव करा.",
       goQ: "प्रश्नपेढी उघडा", read: "वाचा", download: "उघडा / डाउनलोड", watch: "पहा", openLive: "लाइव्ह प्रॅक्टिसमध्ये उघडा", assign: "तुमच्या निदेशकांचे असाइनमेंट", ready: "तयार प्रॅक्टिकल (लाइव्ह प्रॅक्टिस लॅब)",
-      web: "HTML · CSS · JavaScript", python: "पायथन", sections: "अभ्यास विभाग", back: "सर्व अभ्यास साहित्य", qs: "प्रश्न", modules: "मॉड्यूल्स", print: "प्रिंट", copy: "कॉपी झाले!" }
+      web: "HTML · CSS · JavaScript", python: "पायथन", sections: "अभ्यास विभाग", back: "सर्व अभ्यास साहित्य", lesson: "पाठ", lessons: "पाठ", part: "भाग", readNotes: "नोट्स वाचा", prev: "मागील", next: "पुढील", topics: "विषय", moduleW: "मॉड्यूल", fromAdmin: "तुमच्या निदेशकांच्या आणखी नोट्स", bookNote: "COPA ट्रेड थिअरी अभ्यासक्रमानुसार (NSQF 2022) पाठनिहाय तयार केलेल्या अभ्यास नोट्स.", qs: "प्रश्न", modules: "मॉड्यूल्स", print: "प्रिंट", copy: "कॉपी झाले!" }
   };
   const X = TX[L] || TX.en;
   const tt = (s) => s.t[L] || s.t.en;
@@ -47,7 +47,10 @@
   const notesIn = (k) => C.NOTES.filter((n) => catOf(n) === k);
   const PR = window.COPA_PRACTICALS || [];
   const REF = window.COPA_REFERENCE || [];
-  const count = (k) => (k === "qbank" ? C.QUESTIONS.length : k === "practical" ? PR.length + notesIn(k).length : k === "reference" ? REF.reduce((a, g) => a + g.k.length, 0) : notesIn(k).length);
+  const lessonKey = (no) => String(no).split(/[^0-9]+/).filter(Boolean).slice(0, 3).map(Number);
+  const byLesson = (a, b) => { const x = lessonKey(a.no), y = lessonKey(b.no); for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); return 0; };
+  const TH = (window.COPA_THEORY || []).slice().sort((a, b) => (a.part - b.part) || byLesson(a, b));
+  const count = (k) => (k === "theory" ? TH.length + notesIn(k).length : k === "qbank" ? C.QUESTIONS.length : k === "practical" ? PR.length + notesIn(k).length : k === "reference" ? REF.reduce((a, g) => a + g.k.length, 0) : notesIn(k).length);
   const ytId = (u) => { const m = String(u || "").match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/); return m ? m[1] : ""; };
   const driveId = (u) => { const m = String(u || "").match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([A-Za-z0-9_-]{10,})/); return m ? m[1] : ""; };
   const modLabel = (m) => (+m ? "M" + m : X.general);
@@ -95,13 +98,56 @@
       }).join("") + "</div></section>" : "");
   }
 
-  /* ---------- THEORY NOTES (formatted notes from admin) ---------- */
+  /* ---------- THEORY NOTES: built-in lesson-wise notes (js/theory-data.js) + admin notes ---------- */
   function theory() {
-    root.innerHTML = head(sec("theory")) + toolbar("th") + '<div id="thL"></div>';
+    root.innerHTML = head(sec("theory")) + toolbar("th") + '<p class="sh-booknote"><i class="fa-solid fa-circle-info"></i> ' + esc(X.bookNote) + '</p><div id="thL"></div><div id="thA"></div>';
+    const txt = (l) => (l.no + " " + l.title + " " + l.mt + " " + l.keys.join(" ") + " " + l.html.replace(/<[^>]+>/g, " ")).toLowerCase();
     bindTools("th", (m, q) => {
-      const list = notesIn("theory").filter((n) => match(n, m, q));
-      setCount("th", list.length);
-      document.getElementById("thL").innerHTML = list.length ? C.renderNotes(list) : empty();
+      const list = TH.filter((l) => (!m || l.m === m) && (!q || txt(l).indexOf(q) > -1));
+      const extra = notesIn("theory").filter((n) => match(n, m, q));
+      setCount("th", list.length + extra.length);
+      let html = "", lastPart = 0, lastMod = "";
+      list.forEach((l) => {
+        if (l.part !== lastPart) { lastPart = l.part; lastMod = ""; html += (html ? "</div></section>" : "") + '<h2 class="sh-part"><span>' + esc(X.part) + " " + l.part + "</span></h2>"; }
+        const mk = l.part + "-" + l.bm;
+        if (mk !== lastMod) {
+          if (lastMod) html += "</div></section>";
+          lastMod = mk;
+          const cnt = list.filter((x) => x.part === l.part && x.bm === l.bm).length;
+          html += '<section class="sh-mod"><header><span class="mno">' + esc(X.moduleW) + " " + l.bm + "</span><h3>" + esc(l.mt) + '</h3><span class="mc">' + cnt + " " + esc(cnt === 1 ? X.lesson : X.lessons) + '</span></header><div class="sh-lessons">';
+        }
+        const i = TH.indexOf(l);
+        html += '<article class="sh-lesson" data-tl="' + i + '"><div class="top"><span class="lno"><i class="fa-solid fa-bookmark"></i> ' + esc(X.lesson) + " " + esc(l.no) + "</span></div>" +
+          "<h4>" + esc(l.title) + '</h4><div class="keys">' + l.keys.slice(0, 5).map((k) => "<span>" + esc(k) + "</span>").join("") + (l.keys.length > 5 ? "<span>+" + (l.keys.length - 5) + "</span>" : "") + "</div>" +
+          '<button type="button" class="btn btn-primary btn-sm" data-tl-open="' + i + '"><i class="fa-solid fa-book-open-reader"></i> ' + esc(X.readNotes) + "</button></article>";
+      });
+      if (lastMod) html += "</div></section>";
+      document.getElementById("thL").innerHTML = html || (extra.length ? "" : empty());
+      document.getElementById("thA").innerHTML = extra.length ? '<div class="sh-sub"><h2><i class="fa-solid fa-chalkboard-user"></i> ' + esc(X.fromAdmin) + "</h2></div>" + C.renderNotes(extra) : "";
+    });
+    document.getElementById("thL").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-tl-open], .sh-lesson"); if (!b) return;
+      openLesson(+(b.dataset.tlOpen != null ? b.dataset.tlOpen : b.dataset.tl));
+    });
+    const hl = new URLSearchParams(location.search).get("lesson");
+    if (hl) { const i = TH.findIndex((l) => l.no === hl); if (i > -1) openLesson(i); }
+  }
+  function openLesson(i) {
+    const l = TH[i]; if (!l) return;
+    const nav = (j, lbl, ic) => (TH[j] ? '<button type="button" class="btn btn-ghost btn-sm" data-go="' + j + '">' + (ic === "l" ? '<i class="fa-solid fa-arrow-left"></i> ' : "") + esc(lbl) + (ic === "r" ? ' <i class="fa-solid fa-arrow-right"></i>' : "") + "</button>" : "<span></span>");
+    const m = C.modal('<button class="close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
+      '<div class="note-view"><div class="nv-head"><span class="chip">' + esc(X.lesson) + " " + esc(l.no) + "</span><h2>" + esc(l.title) + '</h2><button type="button" class="btn btn-ghost btn-sm" data-pr><i class="fa-solid fa-print"></i> ' + esc(X.print) + "</button></div>" +
+      '<p class="tl-meta">' + esc(X.part) + " " + l.part + " · " + esc(X.moduleW) + " " + l.bm + ": " + esc(l.mt) + "</p>" +
+      '<div class="rte-page rte-content tl-body">' + l.html + "</div>" +
+      '<div class="tl-nav">' + nav(i - 1, X.prev, "l") + nav(i + 1, X.next, "r") + "</div></div>", { wide: true });
+    m.el.querySelector(".modal").classList.add("note-modal");
+    m.el.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => { m.close(); openLesson(+b.dataset.go); }));
+    m.el.querySelector("[data-pr]").addEventListener("click", () => {
+      const w = window.open("", "_blank"); if (!w) return;
+      const css = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map((x) => '<link rel="stylesheet" href="' + x.href + '">').join("");
+      w.document.write("<!doctype html><html><head><meta charset='utf-8'><title>" + esc(l.no + " " + l.title) + "</title>" + css + "<style>body{background:#fff;margin:0}.rte-page{box-shadow:none;border:0}</style></head><body><h1 style='font-family:Poppins,sans-serif;margin:20px 28px 0;font-size:24px'>" + esc(X.lesson + " " + l.no + " – " + l.title) +
+        "</h1><p style='margin:6px 28px 0;color:#555'>" + esc(X.moduleW + " " + l.bm + ": " + l.mt) + "</p><div class='rte-page rte-content'>" + l.html + "</div><script>setTimeout(function(){print()},400)<\/script></body></html>");
+      w.document.close();
     });
   }
 
