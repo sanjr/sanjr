@@ -782,3 +782,7 @@ body.nav-open .site-header.collapsed ~ .sidebar-backdrop { display: block; posit
 .g-who { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: #f7f9ff; margin: 6px 0 14px; }
 .g-who img, .g-who > i { width: 42px; height: 42px; border-radius: 50%; flex: none; font-size: 40px; color: #9aa6c4; }
 .g-who b { display: block; font-size: 15px; } .g-who span { font-size: 12.5px; color: var(--ink-3); word-break: break-all; }
+/* header: menu without icons when space is short (before falling back to the ☰ button) */
+.site-header.compact .main-nav { gap: 0; }
+.site-header.compact .main-nav a { padding: 8px 9px; gap: 0; }
+.site-header.compact .main-nav a > i { display: none; }

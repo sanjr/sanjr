@@ -113,6 +113,9 @@ device and see their full result history and answer review. The admin can reset 
 **Sign in with Google**: set `googleClientId` in `js/site-config.js` (Client ID only, never the secret; Authorized
 JavaScript origin `https://copamcq.com`). The ID token is verified in PHP with Google's public keys; on the first
 Google login the student adds the Roll No once (an existing Roll No needs its PIN to be linked).
+**Reviews** (`reviews.html`): anyone with a Google account can rate the website (1–5 ★) and write one review (edit or
+delete it later). The page shows the website rating, the 5★…1★ distribution, top 10 reviews and "Show more". The home
+page shows the rating badge and the top 3 reviews. Admin → Reviews: hide / show, reply, delete.
 The **Visitors** tab shows users online now (page, location, device) and visits by city / state / country, pages,
 devices and referrers. Location is approximate, from the IP address (`geo_provider` in `api/config.php`); the IP
 itself is not stored.

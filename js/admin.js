@@ -81,6 +81,7 @@
     ["visitors", "fa-earth-asia", "Visitors"],
     ["results", "fa-square-poll-vertical", "Exam Results"],
     ["students", "fa-user-graduate", "Students"],
+    ["reviews", "fa-star", "Reviews"],
     ["questions", "fa-circle-question", "Questions"],
     ["notes", "fa-book-open", "Study Material"],
     ["settings", "fa-rectangle-ad", "Ads & Settings"]
@@ -110,7 +111,7 @@
   }
   function draw() {
     const v = document.getElementById("view");
-    ({ overview, visitors, results, students, questions, notes, settings }[tab] || overview)(v);
+    ({ overview, visitors, results, students, reviews: reviewsAdmin, questions, notes, settings }[tab] || overview)(v);
   }
   function setLive(list) {
     state.live = (list || []).filter(DB.isLive).sort((a, b) => b.startAt - a.startAt);
@@ -119,6 +120,40 @@
     if (tab === "overview") { const el = document.getElementById("liveBox"); if (el) el.innerHTML = liveTable(); const k = document.getElementById("liveKpi"); if (k) k.textContent = state.live.length; }
   }
 
+
+
+  /* ================= REVIEWS ================= */
+  let rvFilter = "all";
+  function reviewsAdmin(v) {
+    if (DB.mode !== "mysql" || !D.adminReviews) { v.innerHTML = '<div class="adm-h"><div><h2>Reviews</h2></div></div><div class="card adm-card"><p>Reviews work with the <b>MySQL</b> backend.</p></div>'; return; }
+    v.innerHTML = '<div class="adm-h"><div><h2>Reviews</h2><p>Website reviews written with Google sign-in. Hide or delete abusive reviews; replies are shown under the review.</p></div><a class="btn btn-ghost btn-sm" href="reviews.html" target="_blank"><i class="fa-solid fa-up-right-from-square"></i> Open reviews page</a></div><div id="rvA"><p class="empty"><i class="fa-solid fa-spinner fa-spin"></i></p></div>';
+    const box = v.querySelector("#rvA");
+    const st = (n) => '<span class="rvs">' + "★".repeat(n) + '<span style="color:#dfe3ee">' + "★".repeat(5 - n) + "</span></span>";
+    const draw = (d) => {
+      const S = d.summary, list = d.items.filter((r) => rvFilter === "all" || (rvFilter === "hidden" ? r.status === "hidden" : rvFilter === "low" ? r.rating <= 2 : rvFilter === "noreply" ? !r.reply : true));
+      box.innerHTML = '<div class="adm-grid4">' + kpi(S.count ? S.avg.toFixed(1) + " ★" : "–", "Website rating", "fa-star", "#f5a800") + kpi(S.count, "Published reviews", "fa-comments", "#1554e0") +
+        kpi(d.items.filter((r) => r.status === "hidden").length, "Hidden", "fa-eye-slash", "#e5383b") + kpi(d.items.filter((r) => !r.reply).length, "Without reply", "fa-reply", "#7b3fe4") + "</div>" +
+        '<div class="adm-tools">' + [["all", "All"], ["low", "1–2 ★"], ["noreply", "No reply"], ["hidden", "Hidden"]].map((f) => '<button class="btn btn-sm ' + (rvFilter === f[0] ? "btn-primary" : "btn-ghost") + '" data-f="' + f[0] + '">' + f[1] + "</button>").join("") + "</div>" +
+        '<div class="card">' + (list.length ? list.map((r) => '<div class="q-row rv-adm' + (r.status === "hidden" ? " hid" : "") + '"><div class="qi">' +
+          '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>' + esc(r.name) + '</b><span class="sub">' + esc(r.email || "") + "</span>" + (r.student ? '<span class="badge">STUDENT</span>' : "") + (r.status === "hidden" ? '<span class="badge hid">HIDDEN</span>' : "") + '<span class="sub">' + fmtDT(r.updated) + "</span></div>" +
+          "<div>" + st(r.rating) + (r.title ? " <b>" + esc(r.title) + "</b>" : "") + "</div>" +
+          '<div style="font-size:14px;color:var(--ink-2);white-space:pre-wrap">' + esc(r.body) + "</div>" +
+          (r.reply ? '<div class="rv-adm-reply"><i class="fa-solid fa-reply"></i> ' + esc(r.reply) + "</div>" : "") + "</div>" +
+          '<div class="acts"><button class="icon-btn" data-a="reply" data-id="' + r.id + '" title="Reply"><i class="fa-solid fa-reply"></i></button>' +
+          '<button class="icon-btn" data-a="' + (r.status === "hidden" ? "show" : "hide") + '" data-id="' + r.id + '" title="' + (r.status === "hidden" ? "Show" : "Hide") + '"><i class="fa-solid fa-eye' + (r.status === "hidden" ? "" : "-slash") + '"></i></button>' +
+          '<button class="icon-btn del" data-a="delete" data-id="' + r.id + '" title="Delete"><i class="fa-solid fa-trash"></i></button></div></div>').join("")
+          : '<p class="empty"><i class="fa-regular fa-comments" style="font-size:30px"></i><br>No reviews here.</p>') + "</div>";
+      box.querySelectorAll("[data-f]").forEach((b) => b.addEventListener("click", () => { rvFilter = b.dataset.f; draw(d); }));
+      box.querySelectorAll("[data-a]").forEach((b) => b.addEventListener("click", () => {
+        const id = b.dataset.id, a = b.dataset.a, r = d.items.find((x) => x.id === id);
+        let reply;
+        if (a === "reply") { reply = prompt("Reply to " + r.name + " (empty = remove reply):", r.reply || ""); if (reply == null) return; }
+        if (a === "delete" && !confirm("Delete this review permanently?")) return;
+        D.adminReview(id, a, reply).then(() => { toast(a === "reply" ? "Reply saved" : a === "delete" ? "Review deleted" : a === "hide" ? "Review hidden" : "Review visible"); reviewsAdmin(v); }).catch((er) => toast("Error: " + er.message));
+      }));
+    };
+    D.adminReviews().then(draw).catch((er) => { box.innerHTML = '<div class="card adm-card"><p>Could not load reviews: ' + esc(er.message) + "</p></div>"; });
+  }
 
   /* ================= VISITORS (MySQL mode) ================= */
   const flag = (cc) => (/^[A-Z]{2}$/.test(cc || "") ? String.fromCodePoint(...cc.split("").map((c) => 127397 + c.charCodeAt(0))) + " " : "");

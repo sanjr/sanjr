@@ -64,7 +64,7 @@ function db_driver(): string { global $CFG; return !empty($CFG['dsn']) ? explode
 
 function schema(PDO $pdo): void {
     global $CFG;
-    $flag = __DIR__ . '/.schema-v3-' . substr(md5(($CFG['dsn'] ?? '') . '|' . ($CFG['db_host'] ?? '') . '|' . ($CFG['db_name'] ?? '')), 0, 10);
+    $flag = __DIR__ . '/.schema-v4-' . substr(md5(($CFG['dsn'] ?? '') . '|' . ($CFG['db_host'] ?? '') . '|' . ($CFG['db_name'] ?? '')), 0, 10);
     if (is_file($flag)) return;
     $my = db_driver() === 'mysql';
     $tail = $my ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' : '';
@@ -86,12 +86,14 @@ function schema(PDO $pdo): void {
         "CREATE TABLE IF NOT EXISTS copa_online (vid VARCHAR(40) NOT NULL PRIMARY KEY, ts BIGINT NOT NULL DEFAULT 0, since BIGINT NOT NULL DEFAULT 0, page VARCHAR(120) NOT NULL DEFAULT '', title VARCHAR(160) NOT NULL DEFAULT '', uid VARCHAR(80) NOT NULL DEFAULT '', name VARCHAR(80) NOT NULL DEFAULT '', roll VARCHAR(40) NOT NULL DEFAULT '', country VARCHAR(60) NOT NULL DEFAULT '', cc CHAR(2) NOT NULL DEFAULT '', region VARCHAR(80) NOT NULL DEFAULT '', city VARCHAR(80) NOT NULL DEFAULT '', device VARCHAR(10) NOT NULL DEFAULT '', os VARCHAR(20) NOT NULL DEFAULT '', browser VARCHAR(20) NOT NULL DEFAULT '', iph CHAR(16) NOT NULL DEFAULT '')$tail",
         // students who log in with Google (sub = Google's permanent user id)
         "CREATE TABLE IF NOT EXISTS copa_google (sub VARCHAR(64) NOT NULL PRIMARY KEY, uid VARCHAR(80) NOT NULL, email VARCHAR(160) NOT NULL DEFAULT '', name VARCHAR(80) NOT NULL DEFAULT '', picture VARCHAR(300) NOT NULL DEFAULT '', created BIGINT NOT NULL DEFAULT 0, last_login BIGINT NOT NULL DEFAULT 0)$tail",
+        // website reviews – one per Google account
+        "CREATE TABLE IF NOT EXISTS copa_reviews (sub VARCHAR(64) NOT NULL PRIMARY KEY, rid CHAR(16) NOT NULL, name VARCHAR(80) NOT NULL DEFAULT '', picture VARCHAR(300) NOT NULL DEFAULT '', email VARCHAR(160) NOT NULL DEFAULT '', rating TINYINT NOT NULL DEFAULT 5, title VARCHAR(100) NOT NULL DEFAULT '', body TEXT NOT NULL, lang VARCHAR(5) NOT NULL DEFAULT '', status VARCHAR(10) NOT NULL DEFAULT 'ok', reply TEXT NOT NULL, reply_at BIGINT NOT NULL DEFAULT 0, created BIGINT NOT NULL DEFAULT 0, updated BIGINT NOT NULL DEFAULT 0)$tail",
         "CREATE TABLE IF NOT EXISTS copa_geo (k CHAR(16) NOT NULL PRIMARY KEY, country VARCHAR(60) NOT NULL DEFAULT '', cc CHAR(2) NOT NULL DEFAULT '', region VARCHAR(80) NOT NULL DEFAULT '', city VARCHAR(80) NOT NULL DEFAULT '', ts BIGINT NOT NULL DEFAULT 0)$tail",
     ];
     foreach ($sql as $s) $pdo->exec($s);
     // indexes (ignore "already exists")
     foreach (['CREATE INDEX copa_results_date ON copa_results (date)', 'CREATE INDEX copa_results_uid ON copa_results (uid)', 'CREATE INDEX copa_live_ts ON copa_live (ts)',
-             'CREATE INDEX copa_visits_ts ON copa_visits (ts)', 'CREATE INDEX copa_visits_day ON copa_visits (day)', 'CREATE INDEX copa_online_ts ON copa_online (ts)', 'CREATE INDEX copa_tokens_uid ON copa_tokens (uid)', 'CREATE INDEX copa_google_uid ON copa_google (uid)'] as $s) {
+             'CREATE INDEX copa_visits_ts ON copa_visits (ts)', 'CREATE INDEX copa_visits_day ON copa_visits (day)', 'CREATE INDEX copa_online_ts ON copa_online (ts)', 'CREATE INDEX copa_tokens_uid ON copa_tokens (uid)', 'CREATE INDEX copa_google_uid ON copa_google (uid)', 'CREATE INDEX copa_reviews_rid ON copa_reviews (rid)', 'CREATE INDEX copa_reviews_rating ON copa_reviews (status, rating)'] as $s) {
         try { $pdo->exec($s); } catch (Throwable $e) { /* exists */ }
     }
     @file_put_contents($flag, date('c'));
@@ -157,8 +159,9 @@ function client_ip(): string {
     return substr($ip, 0, 60);
 }
 /* simple fixed-window rate limit stored in the database */
-function limit(string $bucket, int $max, int $windowSec): void {
-    $k = $bucket . ':' . client_ip();
+/* (one ITI lab often shares one internet IP, so the per-IP limits are generous) */
+function limit(string $bucket, int $max, int $windowSec, ?string $key = null): void {
+    $k = $bucket . ':' . ($key ?? client_ip());
     $now = now_ms();
     $r = q('SELECT n, reset_at FROM copa_hits WHERE k = ?', [$k])->fetch();
     if (!$r || (int) $r['reset_at'] < $now) { put('copa_hits', ['k' => $k, 'n' => 1, 'reset_at' => $now + $windowSec * 1000], 'k'); return; }
@@ -293,6 +296,28 @@ function google_done(string $uid, array $g): void {   // log the student in and 
     out(['token' => new_token($uid), 'uid' => $uid, 'profile' => student_profile($uid), 'results' => student_history($uid)]);
 }
 
+
+/* ---------- website reviews ---------- */
+function review_text($v, int $max): string {   // plain text only (shown escaped)
+    $v = is_scalar($v) ? (string) $v : '';
+    $v = strip_tags($v);
+    $v = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $v);
+    $v = preg_replace("/\n{3,}/", "\n\n", str_replace("\r", '', $v));
+    return trim(mb_substr($v, 0, $max));
+}
+function review_summary(): array {
+    $dist = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+    foreach (q("SELECT rating, COUNT(*) AS c FROM copa_reviews WHERE status = 'ok' GROUP BY rating")->fetchAll() as $r) { $k = (int) $r['rating']; if (isset($dist[$k])) $dist[$k] = (int) $r['c']; }
+    $n = array_sum($dist); $sum = 0; foreach ($dist as $k => $c) $sum += $k * $c;
+    return ['count' => $n, 'avg' => $n ? round($sum / $n, 1) : 0, 'dist' => $dist];
+}
+function review_public(array $r, bool $admin = false): array {
+    $o = ['id' => $r['rid'], 'name' => $r['name'], 'picture' => $r['picture'], 'rating' => (int) $r['rating'], 'title' => $r['title'], 'body' => $r['body'], 'lang' => $r['lang'],
+          'created' => (int) $r['created'], 'updated' => (int) $r['updated'], 'reply' => $r['reply'], 'replyAt' => (int) $r['reply_at'], 'student' => !empty($r['student'])];
+    if ($admin) { $o['email'] = $r['email']; $o['status'] = $r['status']; }
+    return $o;
+}
+
 /* ---------- visitors: device and approximate location ---------- */
 function ua_info(): array {
     $ua = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
@@ -380,7 +405,7 @@ switch ($action) {
     /* ---- written by students' browsers ---- */
     case 'student': {
         if ($method !== 'POST') fail('POST only', 405);
-        limit('w', 600, 3600);
+        limit('w', 6000, 3600);
         $uid = valid_uid($IN['uid'] ?? '');
         unset($IN['pin']);
         if (has_auth($uid) && token_uid($IN['token'] ?? null) !== $uid) fail('Please log in again.', 401);   // accounts with a server login can only be changed by their owner
@@ -392,7 +417,7 @@ switch ($action) {
     }
     case 'result': {
         if ($method !== 'POST') fail('POST only', 405);
-        limit('w', 600, 3600);
+        limit('w', 6000, 3600);
         $id = valid_id($IN['id'] ?? '');
         if (q('SELECT id FROM copa_results WHERE id = ?', [$id])->fetch()) out(true);   // results are never overwritten
         // the student is taken from the login token, never from the browser's word
@@ -407,7 +432,7 @@ switch ($action) {
     }
     case 'live_set': {
         if ($method !== 'POST') fail('POST only', 405);
-        limit('l', 1500, 3600);
+        limit('l', 60000, 3600);
         $id = valid_id($IN['id'] ?? '');
         $d = is_array($IN['data'] ?? null) ? $IN['data'] : [];
         $d['id'] = $id; $d['ts'] = now_ms();
@@ -425,7 +450,7 @@ switch ($action) {
     /* ---- student accounts (login from any device) ---- */
     case 'student_register': {
         if ($method !== 'POST') fail('POST only', 405);
-        limit('slog', 30, 900);
+        limit('slog', 300, 900);
         $uid = valid_uid($IN['uid'] ?? '');
         $pin = (string) ($IN['pin'] ?? '');
         if (!preg_match('/^\d{4}$/', $pin)) fail('PIN must be 4 digits.', 400);
@@ -439,10 +464,11 @@ switch ($action) {
     }
     case 'student_login': {
         if ($method !== 'POST') fail('POST only', 405);
-        limit('slog', 30, 900);
+        limit('slog', 300, 900);
         $uid = valid_uid($IN['uid'] ?? '');
         $r = q('SELECT pin_hash, logins FROM copa_auth WHERE uid = ?', [$uid])->fetch();
         if (!$r) fail('noaccount', 404);
+        limit('pinchk', 15, 3600, 'uid:' . $uid);   // max 15 PIN tries per Roll No per hour (any IP)
         if (!password_verify((string) ($IN['pin'] ?? ''), $r['pin_hash'])) { usleep(300000); fail('wrongpin', 401); }
         q('UPDATE copa_auth SET last_login = ?, logins = logins + 1 WHERE uid = ?', [now_ms(), $uid]);
         $p = student_profile($uid);
@@ -460,7 +486,7 @@ switch ($action) {
     /* ---- "Sign in with Google" ---- */
     case 'student_google': {
         if ($method !== 'POST') fail('POST only', 405);
-        limit('slog', 30, 900);
+        limit('slog', 300, 900);
         $g = google_verify((string) ($IN['credential'] ?? ''));
         $r = q('SELECT uid FROM copa_google WHERE sub = ?', [$g['sub']])->fetch();
         if ($r && has_auth($r['uid'])) google_done($r['uid'], $g);
@@ -469,13 +495,14 @@ switch ($action) {
     }
     case 'student_google_link': {
         if ($method !== 'POST') fail('POST only', 405);
-        limit('slog', 30, 900);
+        limit('slog', 300, 900);
         $g = ticket_read($IN['ticket'] ?? null);
         $uid = valid_uid($IN['uid'] ?? '');
         if (has_auth($uid)) {
             // this Roll No already has an account → only its owner (who knows the PIN) can link Google
             $pin = (string) ($IN['pin'] ?? '');
             if ($pin === '') fail('pin_required', 409);
+            limit('pinchk', 15, 3600, 'uid:' . $uid);
             $a = q('SELECT pin_hash FROM copa_auth WHERE uid = ?', [$uid])->fetch();
             if (!$a || !password_verify($pin, $a['pin_hash'])) { usleep(300000); fail('wrongpin', 401); }
         } else {
@@ -486,6 +513,50 @@ switch ($action) {
         google_done($uid, $g);
     }
 
+
+    /* ---- website reviews (public list, write with Google) ---- */
+    case 'reviews': {
+        $sort = (string) ($_GET['sort'] ?? 'top');
+        $star = (int) ($_GET['star'] ?? 0);
+        $off = max(0, min(5000, (int) ($_GET['offset'] ?? 0)));
+        $lim = max(1, min(30, (int) ($_GET['limit'] ?? 10)));
+        $order = $sort === 'new' ? 'r.updated DESC' : ($sort === 'low' ? 'r.rating ASC, r.updated DESC' : 'r.rating DESC, LENGTH(r.body) DESC, r.updated DESC');
+        $W = "r.status = 'ok'" . ($star >= 1 && $star <= 5 ? ' AND r.rating = ' . $star : '');
+        $rows = q("SELECT r.*, (SELECT COUNT(*) FROM copa_google g WHERE g.sub = r.sub) AS student FROM copa_reviews r WHERE $W ORDER BY $order LIMIT " . ($lim + 1) . " OFFSET $off")->fetchAll();
+        $more = count($rows) > $lim;
+        out(['summary' => review_summary(), 'items' => array_map('review_public', array_slice($rows, 0, $lim)), 'more' => $more, 'offset' => $off]);
+    }
+    case 'review_mine': {
+        if ($method !== 'POST') fail('POST only', 405);
+        limit('rvm', 1000, 3600);
+        $g = google_verify((string) ($IN['credential'] ?? ''));
+        $r = q('SELECT r.*, 0 AS student FROM copa_reviews r WHERE sub = ?', [$g['sub']])->fetch();
+        out(['me' => ['name' => $g['name'], 'picture' => $g['picture'], 'email' => $g['email']], 'review' => $r ? review_public($r) + ['status' => $r['status']] : null]);
+    }
+    case 'review_save': {
+        if ($method !== 'POST') fail('POST only', 405);
+        limit('rv', 300, 3600);
+        $g = google_verify((string) ($IN['credential'] ?? ''));
+        $rating = (int) ($IN['rating'] ?? 0);
+        if ($rating < 1 || $rating > 5) fail('rating', 400);
+        $title = review_text($IN['title'] ?? '', 100);
+        $body = review_text($IN['body'] ?? '', 1500);
+        if (mb_strlen($body) < 10) fail('short', 400);
+        $old = q('SELECT created, status, reply, reply_at FROM copa_reviews WHERE sub = ?', [$g['sub']])->fetch();
+        put('copa_reviews', ['sub' => $g['sub'], 'rid' => substr(hash('sha256', 'review|' . $g['sub'] . '|' . salt()), 0, 16), 'name' => $g['name'] ?: 'Google user', 'picture' => $g['picture'], 'email' => $g['email'],
+            'rating' => $rating, 'title' => $title, 'body' => $body, 'lang' => substr(preg_replace('/[^a-z]/', '', (string) ($IN['lang'] ?? '')), 0, 5),
+            'status' => $old ? ($old['status'] === 'hidden' ? 'hidden' : 'ok') : 'ok', 'reply' => $old ? $old['reply'] : '', 'reply_at' => $old ? (int) $old['reply_at'] : 0,
+            'created' => $old ? (int) $old['created'] : now_ms(), 'updated' => now_ms()], 'sub');
+        out(['summary' => review_summary()]);
+    }
+    case 'review_delete': {
+        if ($method !== 'POST') fail('POST only', 405);
+        limit('rv', 300, 3600);
+        $g = google_verify((string) ($IN['credential'] ?? ''));
+        q('DELETE FROM copa_reviews WHERE sub = ?', [$g['sub']]);
+        out(['summary' => review_summary()]);
+    }
+
     case 'student_logout':
         if ($method !== 'POST') fail('POST only', 405);
         if (is_string($IN['token'] ?? null)) q('DELETE FROM copa_tokens WHERE token = ?', [hash('sha256', $IN['token'])]);
@@ -494,7 +565,7 @@ switch ($action) {
     /* ---- visitors & users online (every page sends "hit" once and "ping" every 30 s) ---- */
     case 'hit': case 'ping': {
         if ($method !== 'POST') fail('POST only', 405);
-        limit('v', 3000, 3600);
+        limit('v', 30000, 3600);
         $vid = valid_id($IN['vid'] ?? '', 40);
         $ua = ua_info();
         if ($ua['bot'] && empty($CFG['track_bots'])) out(false);
@@ -634,6 +705,22 @@ switch ($action) {
         else q('INSERT INTO copa_auth (uid, pin_hash, created, last_login, logins) VALUES (?, ?, ?, 0, 0)', [$uid, password_hash($pin, PASSWORD_DEFAULT), now_ms()]);
         q('DELETE FROM copa_tokens WHERE uid = ?', [$uid]);   // log out all devices
         out(true);
+    }
+
+
+    case 'reviews_admin':
+        need_admin();
+        out(['summary' => review_summary(), 'items' => array_map(fn($r) => review_public($r, true), q('SELECT r.*, (SELECT COUNT(*) FROM copa_google g WHERE g.sub = r.sub) AS student FROM copa_reviews r ORDER BY r.updated DESC LIMIT 2000')->fetchAll())]);
+    case 'review_admin': {
+        if ($method !== 'POST') fail('POST only', 405);
+        need_admin();
+        $rid = valid_id($IN['id'] ?? '', 16);
+        $do = (string) ($IN['do'] ?? '');
+        if ($do === 'hide' || $do === 'show') q('UPDATE copa_reviews SET status = ? WHERE rid = ?', [$do === 'hide' ? 'hidden' : 'ok', $rid]);
+        elseif ($do === 'reply') { $t = review_text($IN['reply'] ?? '', 1000); q('UPDATE copa_reviews SET reply = ?, reply_at = ? WHERE rid = ?', [$t, $t === '' ? 0 : now_ms(), $rid]); }
+        elseif ($do === 'delete') q('DELETE FROM copa_reviews WHERE rid = ?', [$rid]);
+        else fail('Unknown action');
+        out(['summary' => review_summary()]);
     }
 
     case 'result_del':

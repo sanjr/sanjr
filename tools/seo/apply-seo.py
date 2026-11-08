@@ -168,6 +168,11 @@ d = "About COPA MCQ, the free ITI COPA learning platform by Sanjay Rathod (CI - 
 page("about.html", t, d, "about COPA MCQ, COPA MCQ contact, " + COMMON_KW,
      [webpage("about.html", t, d, "AboutPage"), crumbs(("Home", ""), ("About", "about.html")), ORG], prio="0.5", freq="monthly")
 
+t = "COPA MCQ Reviews & Ratings – What ITI COPA Trainees Say"
+d = "Read honest reviews and star ratings of COPA MCQ by ITI COPA trainees, and share your own experience with Google sign-in."
+page("reviews.html", t, d, "COPA MCQ reviews, COPA MCQ rating, ITI COPA online test review, COPA mock test review, " + COMMON_KW,
+     [webpage("reviews.html", t, d), crumbs(("Home", ""), ("Reviews", "reviews.html"))], prio="0.6", freq="daily")
+
 t = "Privacy Policy – COPA MCQ"
 d = "Privacy policy of COPA MCQ: what data is stored, how cookies, local storage and Google AdSense advertising are used, and your choices."
 page("privacy.html", t, d, "COPA MCQ privacy policy", [webpage("privacy.html", t, d), crumbs(("Home", ""), ("Privacy Policy", "privacy.html"))], prio="0.3", freq="yearly")

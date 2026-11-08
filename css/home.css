@@ -332,3 +332,22 @@
 .faq-item[open] summary i { transform: rotate(45deg); background: var(--p); color: #fff; }
 .faq-item p { margin: 0; padding: 0 20px 18px; color: var(--ink-2); font-size: 14.5px; line-height: 1.75; }
 @media (max-width: 720px) { .faq-item summary { padding: 14px 16px; font-size: 14.5px; } .faq-item p { padding: 0 16px 16px; font-size: 14px; } }
+
+/* website rating badge + reviews */
+.lp-rate { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 8px 16px; border-radius: 999px; background: #fff8e1; border: 1px solid #ffe08a; color: var(--ink); font-size: 13.5px; box-shadow: 0 6px 16px rgba(245, 168, 0, .15); transition: transform .2s; }
+.lp-rate:hover { transform: translateY(-2px); }
+.lp-rate b { font-size: 15px; }
+.lp-rate span:last-child { color: var(--ink-2); }
+.lp-stars { position: relative; display: inline-block; letter-spacing: 1px; line-height: 1; font-size: 16px; }
+.lp-stars .bg { color: #e3e6ef; } .lp-stars .fg { position: absolute; left: 0; top: 0; overflow: hidden; white-space: nowrap; color: #f5a800; }
+.lp-testi-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.lp-testi-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.lp-testi-card { position: relative; margin: 0; background: #fff; border-radius: 22px; padding: 24px 22px 20px; box-shadow: 0 10px 30px rgba(60, 40, 160, .08); border: 1px solid #ece8ff; display: flex; flex-direction: column; gap: 10px; }
+.lp-testi-card .q { position: absolute; right: 20px; top: 18px; font-size: 30px; color: #ece8ff; }
+.lp-testi-card h4 { margin: 0; font-size: 16px; }
+.lp-testi-card blockquote { margin: 0; color: var(--ink-2); line-height: 1.7; font-size: 14.5px; flex: 1; }
+.lp-testi-card figcaption { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.lp-testi-card figcaption img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+@media (max-width: 900px) { .lp-testi-grid { grid-template-columns: 1fr; } }
+.lp-testi-btns .lp-btn.w { background: #fff; border: 2px solid #d9d2ff; color: var(--p); box-shadow: 0 6px 16px rgba(91, 69, 224, .12); }
+.lp-testi-btns .lp-btn.w:hover { border-color: var(--p); }

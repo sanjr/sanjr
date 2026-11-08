@@ -9,6 +9,7 @@
       nav: ["Home", "Modules", "Mock Test", "Study", "Results", "About"],
       signin: "Sign in", start: "Start Mock Test",
       tg: [["Explore Technology, Master", "Computer Skills,", "Shape Your Future."], ["The Digital World Never Stops Evolving, So Keep", "Learning", "and Growing."], ["Every Click, Every Code, Every Skill Takes You Closer to the", "Digital", "Future."]],
+      testiH: "What our learners say", testiS: "Real reviews from ITI COPA trainees – written with Google sign-in.", allRev: "Read all reviews", writeRev: "Write a review", rateOf: "{a}/5 · {n} reviews",
       faqH: "Frequently asked questions about ITI COPA", faqS: "Everything you need to know about the COPA trade and COPA MCQ.",
       faq: [["What is the COPA trade in ITI?", "COPA (Computer Operator and Programming Assistant) is a one-year ITI trade under the Craftsmen Training Scheme. It covers computer fundamentals, Windows and Linux, MS Office, databases, networking, web design with HTML, CSS and JavaScript, e-commerce, cloud computing and Python."],
         ["How many COPA MCQ questions are available on COPA MCQ?", "COPA MCQ has 355 multiple-choice questions with correct answers and a one-line explanation, divided into 15 modules, in English, Hindi and Marathi."],
@@ -42,6 +43,7 @@
       nav: ["होम", "मॉड्यूल", "मॉक टेस्ट", "अध्ययन", "परिणाम", "परिचय"],
       signin: "लॉगिन", start: "मॉक टेस्ट शुरू करें",
       tg: [["तकनीक को जानें,", "कंप्यूटर कौशल में", "महारत पाएँ, अपना भविष्य बनाएँ।"], ["डिजिटल दुनिया कभी रुकती नहीं, इसलिए", "सीखते रहें", "और आगे बढ़ते रहें।"], ["हर क्लिक, हर कोड, हर कौशल आपको", "डिजिटल भविष्य के", "और करीब ले जाता है।"]],
+      testiH: "हमारे विद्यार्थी क्या कहते हैं", testiS: "ITI COPA प्रशिक्षुओं की असली समीक्षाएँ – Google साइन इन से लिखी गई।", allRev: "सभी समीक्षाएँ पढ़ें", writeRev: "समीक्षा लिखें", rateOf: "{a}/5 · {n} समीक्षाएँ",
       faqH: "ITI COPA के बारे में अक्सर पूछे जाने वाले प्रश्न", faqS: "COPA ट्रेड और COPA MCQ के बारे में ज़रूरी जानकारी।",
       faq: [["ITI में COPA ट्रेड क्या है?", "COPA (कंप्यूटर ऑपरेटर एंड प्रोग्रामिंग असिस्टेंट) क्राफ्ट्समेन ट्रेनिंग स्कीम के अंतर्गत एक वर्ष का ITI ट्रेड है। इसमें कंप्यूटर की मूल बातें, Windows और Linux, MS Office, डेटाबेस, नेटवर्किंग, HTML, CSS और JavaScript से वेब डिज़ाइन, ई-कॉमर्स, क्लाउड कंप्यूटिंग और Python पढ़ाए जाते हैं।"],
         ["COPA MCQ पर कितने प्रश्न उपलब्ध हैं?", "COPA MCQ पर 15 मॉड्यूल में 355 बहुविकल्पीय प्रश्न सही उत्तर और एक पंक्ति की व्याख्या के साथ अंग्रेज़ी, हिंदी और मराठी में उपलब्ध हैं।"],
@@ -75,6 +77,7 @@
       nav: ["होम", "मॉड्युल्स", "मॉक टेस्ट", "अभ्यास", "निकाल", "माहिती"],
       signin: "लॉगिन", start: "मॉक टेस्ट सुरू करा",
       tg: [["तंत्रज्ञान जाणून घ्या,", "संगणक कौशल्यांवर", "प्रभुत्व मिळवा, तुमचे भविष्य घडवा."], ["डिजिटल जग कधीच थांबत नाही, म्हणून", "शिकत राहा", "आणि प्रगती करत राहा."], ["प्रत्येक क्लिक, प्रत्येक कोड, प्रत्येक कौशल्य तुम्हाला", "डिजिटल भविष्याच्या", "अधिक जवळ नेते."]],
+      testiH: "आमचे विद्यार्थी काय म्हणतात", testiS: "ITI COPA प्रशिक्षणार्थींचे खरे रिव्ह्यू – Google साइन इनने लिहिलेले.", allRev: "सर्व रिव्ह्यू वाचा", writeRev: "रिव्ह्यू लिहा", rateOf: "{a}/5 · {n} रिव्ह्यू",
       faqH: "ITI COPA बद्दल वारंवार विचारले जाणारे प्रश्न", faqS: "COPA ट्रेड आणि COPA MCQ बद्दल आवश्यक माहिती.",
       faq: [["ITI मधील COPA ट्रेड म्हणजे काय?", "COPA (कॉम्प्युटर ऑपरेटर अँड प्रोग्रामिंग असिस्टंट) हा क्राफ्ट्समन ट्रेनिंग स्कीम अंतर्गत एक वर्षाचा ITI ट्रेड आहे. यात संगणकाच्या मूलभूत गोष्टी, Windows आणि Linux, MS Office, डेटाबेस, नेटवर्किंग, HTML, CSS आणि JavaScript ने वेब डिझाइन, ई-कॉमर्स, क्लाउड कॉम्प्युटिंग आणि Python शिकवले जाते."],
         ["COPA MCQ वर किती प्रश्न उपलब्ध आहेत?", "COPA MCQ वर 15 मॉड्यूल्समध्ये 355 बहुपर्यायी प्रश्न योग्य उत्तर आणि एका ओळीच्या स्पष्टीकरणासह इंग्रजी, हिंदी आणि मराठीमध्ये उपलब्ध आहेत."],
@@ -163,6 +166,7 @@
     '<div class="lp-cta rv"><span class="lp-arrow l"></span><span class="lp-arrow r"></span>' +
     '<a class="lp-btn o" href="modules.html"><i class="fa-solid fa-pen-to-square"></i> ' + X.joinI + '</a><a class="lp-btn p" href="exam.html"><i class="fa-solid fa-stopwatch"></i> ' + X.joinS + "</a></div>" +
     '<div class="lp-trust rv">' + X.trust.map((s) => '<span><i class="fa-solid fa-circle-check"></i>' + s + "</span>").join("") + "</div>" +
+    '<a class="lp-rate" id="lpRate" href="reviews.html" hidden></a>' +
     "</div>" +
     '<div class="lp-strip rv" aria-label="Topics covered"><span><i class="fa-brands fa-windows"></i>Windows</span><span><i class="fa-brands fa-linux"></i>Linux</span><span><i class="fa-brands fa-html5"></i>HTML5</span>' +
     '<span><i class="fa-brands fa-js"></i>JavaScript</span><span><i class="fa-brands fa-python"></i>Python</span><span><i class="fa-solid fa-database"></i>SQL</span><span><i class="fa-solid fa-cloud"></i>Cloud</span></div>' +
@@ -214,6 +218,9 @@
     "<ul><li>" + X.tests + ": <b>" + st.tests + "</b></li><li>" + X.avg + ": <b>" + st.avg + "%</b></li><li>" + X.prac + ": <b>" + st.practiced + "</b></li></ul></div>" +
     '<a class="lp-btn w sm" style="margin-top:16px;width:100%" href="dashboard.html">' + t("viewReport") + ' <i class="fa-solid fa-arrow-right"></i></a></div></div></div></section>' +
 
+    /* REVIEWS (filled from the server) */
+    '<section class="lp-sec lp-testi" id="lpTesti" hidden><div class="lp-wrap"><div class="lp-head rv"><div><h2>' + esc(X.testiH) + "</h2><p>" + esc(X.testiS) + '</p></div><div class="lp-testi-btns"><a class="lp-btn w sm" href="reviews.html#rvWrite"><i class="fa-solid fa-pen-to-square"></i> ' + esc(X.writeRev) + '</a><a class="lp-btn p sm" href="reviews.html">' + esc(X.allRev) + ' <i class="fa-solid fa-arrow-right"></i></a></div></div><div class="lp-testi-grid" id="lpTestiG"></div></div></section>' +
+
     /* FAQ */
     '<section class="lp-sec lp-faq" aria-labelledby="faqH"><div class="lp-wrap"><div class="lp-head rv"><h2 id="faqH">' + esc(X.faqH) + "</h2><p>" + esc(X.faqS) + "</p></div>" +
     '<div class="faq-list">' + X.faq.map((f, i) => '<details class="faq-item rv"' + (i ? "" : " open") + '><summary><span>' + esc(f[0]) + '</span><i class="fa-solid fa-plus"></i></summary><p>' + esc(f[1]) + "</p></details>").join("") + "</div></div></section>" +
@@ -232,6 +239,23 @@
     const io = new IntersectionObserver((ents) => ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { threshold: 0.12 });
     els.forEach((el) => io.observe(el));
   } else els.forEach((el) => el.classList.add("in"));
+
+  /* website rating + top reviews (MySQL mode) */
+  (function reviews() {
+    const SRV = C.server; if (!SRV || !SRV.reviews) return;
+    const stars = (v) => '<span class="lp-stars"><span class="bg">★★★★★</span><span class="fg" style="width:' + (v / 5) * 100 + '%">★★★★★</span></span>';
+    SRV.reviews({ sort: "top", limit: 3 }).then((d) => {
+      const S = d.summary; if (!S || !S.count) return;
+      const r = document.getElementById("lpRate");
+      r.innerHTML = stars(S.avg) + "<b>" + S.avg.toFixed(1) + "</b><span>" + esc(X.rateOf.replace("{a}", S.avg.toFixed(1)).replace("{n}", S.count)) + "</span>"; r.hidden = false;
+      const items = (d.items || []).filter((x) => x.rating >= 4); if (!items.length) return;
+      document.getElementById("lpTestiG").innerHTML = items.map((x) => '<figure class="lp-testi-card"><i class="fa-solid fa-quote-left q"></i>' + stars(x.rating) + (x.title ? "<h4>" + esc(x.title) + "</h4>" : "") +
+        "<blockquote>" + esc(x.body.length > 220 ? x.body.slice(0, 217) + "…" : x.body) + "</blockquote><figcaption>" +
+        (x.picture ? '<img src="' + esc(x.picture) + '" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">' : "") + "<b>" + esc(x.name) + "</b></figcaption></figure>").join("");
+      const sec = document.getElementById("lpTesti"); sec.hidden = false;
+      sec.querySelectorAll(".rv").forEach((e) => e.classList.add("in"));
+    }).catch(() => {});
+  })();
 
   /* headline: same design – the text is typed, erased and the next one typed */
   (function rotate() {

@@ -209,6 +209,13 @@
     studentLogout: (token) => call("student_logout", { token }),
     studentGoogle: (credential) => call("student_google", { credential }),
     studentGoogleLink: (d) => call("student_google_link", d),
+    /* website reviews */
+    reviews: (o) => call("reviews&sort=" + encodeURIComponent(o.sort || "top") + "&star=" + (+o.star || 0) + "&offset=" + (+o.offset || 0) + "&limit=" + (+o.limit || 10)),
+    reviewMine: (credential) => call("review_mine", { credential }),
+    reviewSave: (d) => call("review_save", d),
+    reviewDelete: (credential) => call("review_delete", { credential }),
+    adminReviews: () => call("reviews_admin"),
+    adminReview: (id, act, reply) => call("review_admin", { id, do: act, reply }),
     /* visitors & users online */
     hit: (d) => call("hit", d),
     ping: (d) => call("ping", d),
