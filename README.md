@@ -110,6 +110,9 @@ The site can store everything centrally in MySQL through a small PHP API (`api/i
 
 Students log in with Roll No + 4-digit PIN checked on the server (PIN stored with password_hash), so they can use any
 device and see their full result history and answer review. The admin can reset a forgotten PIN (Students tab).
+**Sign in with Google**: set `googleClientId` in `js/site-config.js` (Client ID only, never the secret; Authorized
+JavaScript origin `https://copamcq.com`). The ID token is verified in PHP with Google's public keys; on the first
+Google login the student adds the Roll No once (an existing Roll No needs its PIN to be linked).
 The **Visitors** tab shows users online now (page, location, device) and visits by city / state / country, pages,
 devices and referrers. Location is approximate, from the IP address (`geo_provider` in `api/config.php`); the IP
 itself is not stored.

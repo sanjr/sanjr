@@ -64,7 +64,7 @@ function db_driver(): string { global $CFG; return !empty($CFG['dsn']) ? explode
 
 function schema(PDO $pdo): void {
     global $CFG;
-    $flag = __DIR__ . '/.schema-v2-' . substr(md5(($CFG['dsn'] ?? '') . '|' . ($CFG['db_host'] ?? '') . '|' . ($CFG['db_name'] ?? '')), 0, 10);
+    $flag = __DIR__ . '/.schema-v3-' . substr(md5(($CFG['dsn'] ?? '') . '|' . ($CFG['db_host'] ?? '') . '|' . ($CFG['db_name'] ?? '')), 0, 10);
     if (is_file($flag)) return;
     $my = db_driver() === 'mysql';
     $tail = $my ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' : '';
@@ -84,12 +84,14 @@ function schema(PDO $pdo): void {
         // visitors: page views with approximate location (from the IP address – the IP itself is not stored)
         "CREATE TABLE IF NOT EXISTS copa_visits (id CHAR(16) NOT NULL PRIMARY KEY, vid VARCHAR(40) NOT NULL DEFAULT '', ts BIGINT NOT NULL DEFAULT 0, day CHAR(10) NOT NULL DEFAULT '', page VARCHAR(120) NOT NULL DEFAULT '', title VARCHAR(160) NOT NULL DEFAULT '', ref VARCHAR(120) NOT NULL DEFAULT '', uid VARCHAR(80) NOT NULL DEFAULT '', name VARCHAR(80) NOT NULL DEFAULT '', country VARCHAR(60) NOT NULL DEFAULT '', cc CHAR(2) NOT NULL DEFAULT '', region VARCHAR(80) NOT NULL DEFAULT '', city VARCHAR(80) NOT NULL DEFAULT '', device VARCHAR(10) NOT NULL DEFAULT '', os VARCHAR(20) NOT NULL DEFAULT '', browser VARCHAR(20) NOT NULL DEFAULT '', iph CHAR(16) NOT NULL DEFAULT '')$tail",
         "CREATE TABLE IF NOT EXISTS copa_online (vid VARCHAR(40) NOT NULL PRIMARY KEY, ts BIGINT NOT NULL DEFAULT 0, since BIGINT NOT NULL DEFAULT 0, page VARCHAR(120) NOT NULL DEFAULT '', title VARCHAR(160) NOT NULL DEFAULT '', uid VARCHAR(80) NOT NULL DEFAULT '', name VARCHAR(80) NOT NULL DEFAULT '', roll VARCHAR(40) NOT NULL DEFAULT '', country VARCHAR(60) NOT NULL DEFAULT '', cc CHAR(2) NOT NULL DEFAULT '', region VARCHAR(80) NOT NULL DEFAULT '', city VARCHAR(80) NOT NULL DEFAULT '', device VARCHAR(10) NOT NULL DEFAULT '', os VARCHAR(20) NOT NULL DEFAULT '', browser VARCHAR(20) NOT NULL DEFAULT '', iph CHAR(16) NOT NULL DEFAULT '')$tail",
+        // students who log in with Google (sub = Google's permanent user id)
+        "CREATE TABLE IF NOT EXISTS copa_google (sub VARCHAR(64) NOT NULL PRIMARY KEY, uid VARCHAR(80) NOT NULL, email VARCHAR(160) NOT NULL DEFAULT '', name VARCHAR(80) NOT NULL DEFAULT '', picture VARCHAR(300) NOT NULL DEFAULT '', created BIGINT NOT NULL DEFAULT 0, last_login BIGINT NOT NULL DEFAULT 0)$tail",
         "CREATE TABLE IF NOT EXISTS copa_geo (k CHAR(16) NOT NULL PRIMARY KEY, country VARCHAR(60) NOT NULL DEFAULT '', cc CHAR(2) NOT NULL DEFAULT '', region VARCHAR(80) NOT NULL DEFAULT '', city VARCHAR(80) NOT NULL DEFAULT '', ts BIGINT NOT NULL DEFAULT 0)$tail",
     ];
     foreach ($sql as $s) $pdo->exec($s);
     // indexes (ignore "already exists")
     foreach (['CREATE INDEX copa_results_date ON copa_results (date)', 'CREATE INDEX copa_results_uid ON copa_results (uid)', 'CREATE INDEX copa_live_ts ON copa_live (ts)',
-             'CREATE INDEX copa_visits_ts ON copa_visits (ts)', 'CREATE INDEX copa_visits_day ON copa_visits (day)', 'CREATE INDEX copa_online_ts ON copa_online (ts)', 'CREATE INDEX copa_tokens_uid ON copa_tokens (uid)'] as $s) {
+             'CREATE INDEX copa_visits_ts ON copa_visits (ts)', 'CREATE INDEX copa_visits_day ON copa_visits (day)', 'CREATE INDEX copa_online_ts ON copa_online (ts)', 'CREATE INDEX copa_tokens_uid ON copa_tokens (uid)', 'CREATE INDEX copa_google_uid ON copa_google (uid)'] as $s) {
         try { $pdo->exec($s); } catch (Throwable $e) { /* exists */ }
     }
     @file_put_contents($flag, date('c'));
@@ -214,6 +216,81 @@ function save_profile(string $uid, array $d): void {
 }
 function student_history(string $uid): array {
     return array_map(function ($r) { unset($r['token']); return $r; }, rows_data('SELECT data FROM copa_results WHERE uid = ? ORDER BY date DESC LIMIT 500', [$uid]));
+}
+
+
+/* ---------- Google sign-in: verify the ID token on the server ---------- */
+function google_client_id(): string {
+    global $CFG;
+    if (!empty($CFG['google_client_id'])) return (string) $CFG['google_client_id'];
+    // same value as in js/site-config.js (read from the server's own file, never from the browser)
+    $f = dirname(__DIR__) . '/js/site-config.js';
+    if (is_file($f) && preg_match('/googleClientId\s*:\s*"([A-Za-z0-9.\-_]+\.apps\.googleusercontent\.com)"/', (string) file_get_contents($f), $m)) return $m[1];
+    return '';
+}
+function b64url_dec(string $s): string { return (string) base64_decode(strtr($s, '-_', '+/') . str_repeat('=', (4 - strlen($s) % 4) % 4)); }
+function b64url_enc(string $s): string { return rtrim(strtr(base64_encode($s), '+/', '-_'), '='); }
+function der_len(int $n): string { if ($n < 128) return chr($n); $b = ltrim(pack('N', $n), "\0"); return chr(0x80 | strlen($b)) . $b; }
+function der_int(string $x): string { if (ord($x[0]) > 127) $x = "\0" . $x; return "\x02" . der_len(strlen($x)) . $x; }
+/* RSA public key (n, e from Google's JWKS) → PEM */
+function jwk_pem(array $k): string {
+    $seq = "\x30" . der_len(strlen($r = der_int(b64url_dec($k['n'])) . der_int(b64url_dec($k['e'])))) . $r;
+    $bits = "\x03" . der_len(strlen($seq) + 1) . "\0" . $seq;
+    $alg = "\x30\x0d\x06\x09\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01\x05\x00";
+    $spki = "\x30" . der_len(strlen($alg . $bits)) . $alg . $bits;
+    return "-----BEGIN PUBLIC KEY-----\n" . chunk_split(base64_encode($spki), 64, "\n") . "-----END PUBLIC KEY-----\n";
+}
+function google_keys(bool $refresh = false): array {
+    global $CFG;
+    if (!empty($CFG['google_jwks'])) return $CFG['google_jwks'];          // testing only
+    $r = q("SELECT data, updated FROM copa_settings WHERE id = 'gkeys'")->fetch();
+    if ($r && !$refresh && now_ms() - (int) $r['updated'] < 6 * 3600000) { $k = json_decode($r['data'], true); if (!empty($k['keys'])) return $k['keys']; }
+    $j = http_json('https://www.googleapis.com/oauth2/v3/certs');
+    if ($j && !empty($j['keys'])) { put('copa_settings', ['id' => 'gkeys', 'data' => json_encode($j), 'updated' => now_ms()]); return $j['keys']; }
+    if ($r) { $k = json_decode($r['data'], true); return $k['keys'] ?? []; }
+    return [];
+}
+/* returns the verified Google profile or fails */
+function google_verify(string $jwt): array {
+    $cid = google_client_id();
+    if ($cid === '') fail('Google sign-in is not set up.', 500);
+    $p = explode('.', $jwt);
+    if (count($p) !== 3) fail('Invalid Google sign-in.', 401);
+    $h = json_decode(b64url_dec($p[0]), true); $c = json_decode(b64url_dec($p[1]), true);
+    if (!is_array($h) || !is_array($c) || ($h['alg'] ?? '') !== 'RS256') fail('Invalid Google sign-in.', 401);
+    $ok = false;
+    foreach ([false, true] as $refresh) {
+        foreach (google_keys($refresh) as $k) {
+            if (($k['kid'] ?? '') !== ($h['kid'] ?? '') || empty($k['n'])) continue;
+            $ok = openssl_verify($p[0] . '.' . $p[1], b64url_dec($p[2]), jwk_pem($k), OPENSSL_ALGO_SHA256) === 1;
+            break 2;
+        }
+    }
+    if (!$ok) fail('Google sign-in could not be verified. Please try again.', 401);
+    $now = time();
+    if (!in_array($c['iss'] ?? '', ['accounts.google.com', 'https://accounts.google.com'], true)) fail('Invalid Google sign-in.', 401);
+    if (($c['aud'] ?? '') !== $cid) fail('Invalid Google sign-in.', 401);
+    if ((int) ($c['exp'] ?? 0) < $now - 60 || (int) ($c['iat'] ?? 0) > $now + 300) fail('Google sign-in expired. Please try again.', 401);
+    if (empty($c['sub']) || empty($c['email']) || empty($c['email_verified'])) fail('Your Google e-mail is not verified.', 401);
+    return ['sub' => (string) $c['sub'], 'email' => mb_substr((string) $c['email'], 0, 160), 'name' => mb_substr((string) ($c['name'] ?? ''), 0, 80), 'picture' => mb_substr((string) ($c['picture'] ?? ''), 0, 300)];
+}
+/* short-lived signed ticket so the next step (Roll No) cannot be faked */
+function ticket_make(array $g): string { $b = b64url_enc(json_encode($g + ['exp' => time() + 900])); return $b . '.' . b64url_enc(hash_hmac('sha256', $b, salt(), true)); }
+function ticket_read($t): array {
+    $p = is_string($t) ? explode('.', $t) : [];
+    if (count($p) !== 2 || !hash_equals(b64url_enc(hash_hmac('sha256', $p[0], salt(), true)), $p[1])) fail('Please sign in with Google again.', 401);
+    $g = json_decode(b64url_dec($p[0]), true);
+    if (!is_array($g) || (int) ($g['exp'] ?? 0) < time()) fail('Please sign in with Google again.', 401);
+    return $g;
+}
+function google_done(string $uid, array $g): void {   // log the student in and answer like student_login
+    put('copa_google', ['sub' => $g['sub'], 'uid' => $uid, 'email' => $g['email'], 'name' => $g['name'], 'picture' => $g['picture'], 'created' => now_ms(), 'last_login' => now_ms()], 'sub');
+    q('UPDATE copa_auth SET last_login = ?, logins = logins + 1 WHERE uid = ?', [now_ms(), $uid]);
+    $p = student_profile($uid);
+    $p['email'] = $g['email']; $p['picture'] = $g['picture']; $p['google'] = true; $p['lastLogin'] = now_ms(); $p['logins'] = (int) ($p['logins'] ?? 0) + 1;
+    if (empty($p['name'])) $p['name'] = $g['name'];
+    save_profile($uid, $p);
+    out(['token' => new_token($uid), 'uid' => $uid, 'profile' => student_profile($uid), 'results' => student_history($uid)]);
 }
 
 /* ---------- visitors: device and approximate location ---------- */
@@ -379,6 +456,36 @@ switch ($action) {
         if (!$uid) fail('Please log in again.', 401);
         out(['profile' => student_profile($uid), 'results' => student_history($uid)]);
     }
+
+    /* ---- "Sign in with Google" ---- */
+    case 'student_google': {
+        if ($method !== 'POST') fail('POST only', 405);
+        limit('slog', 30, 900);
+        $g = google_verify((string) ($IN['credential'] ?? ''));
+        $r = q('SELECT uid FROM copa_google WHERE sub = ?', [$g['sub']])->fetch();
+        if ($r && has_auth($r['uid'])) google_done($r['uid'], $g);
+        // first time with this Google account → the student must add the Roll No once
+        out(['need' => 'roll', 'ticket' => ticket_make($g), 'name' => $g['name'], 'email' => $g['email'], 'picture' => $g['picture']]);
+    }
+    case 'student_google_link': {
+        if ($method !== 'POST') fail('POST only', 405);
+        limit('slog', 30, 900);
+        $g = ticket_read($IN['ticket'] ?? null);
+        $uid = valid_uid($IN['uid'] ?? '');
+        if (has_auth($uid)) {
+            // this Roll No already has an account → only its owner (who knows the PIN) can link Google
+            $pin = (string) ($IN['pin'] ?? '');
+            if ($pin === '') fail('pin_required', 409);
+            $a = q('SELECT pin_hash FROM copa_auth WHERE uid = ?', [$uid])->fetch();
+            if (!$a || !password_verify($pin, $a['pin_hash'])) { usleep(300000); fail('wrongpin', 401); }
+        } else {
+            $name = str_in($IN, 'name', 60) ?: $g['name'];
+            q('INSERT INTO copa_auth (uid, pin_hash, created, last_login, logins) VALUES (?, ?, ?, ?, 0)', [$uid, '', now_ms(), now_ms()]);   // Google-only: no PIN yet
+            save_profile($uid, array_merge(student_profile($uid), ['name' => $name, 'roll' => str_in($IN, 'roll', 40), 'batch' => str_in($IN, 'batch', 40), 'created' => now_ms(), 'logins' => 0]));
+        }
+        google_done($uid, $g);
+    }
+
     case 'student_logout':
         if ($method !== 'POST') fail('POST only', 405);
         if (is_string($IN['token'] ?? null)) q('DELETE FROM copa_tokens WHERE token = ?', [hash('sha256', $IN['token'])]);

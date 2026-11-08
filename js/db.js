@@ -207,6 +207,8 @@
     studentLogin: (uid, pin) => call("student_login", { uid, pin }),
     studentResults: (token) => call("student_results", { token }),
     studentLogout: (token) => call("student_logout", { token }),
+    studentGoogle: (credential) => call("student_google", { credential }),
+    studentGoogleLink: (d) => call("student_google_link", d),
     /* visitors & users online */
     hit: (d) => call("hit", d),
     ping: (d) => call("ping", d),

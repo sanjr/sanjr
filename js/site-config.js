@@ -33,6 +33,11 @@ window.COPA_CONFIG = {
   backend: "mysql",
   apiUrl: "",          // leave empty → "api/" next to the pages (e.g. https://copamcq.com/api/)
 
+  /* "Sign in with Google" for students (MySQL mode). Google Cloud Console → Credentials →
+     OAuth client ID (Web application), Authorized JavaScript origin https://copamcq.com.
+     Only the Client ID goes here – never the client secret. Empty = Google button hidden. */
+  googleClientId: "825057989544-cd0j7vaij0rg1627o0223gf3suhlds86.apps.googleusercontent.com",
+
   firebase: null,
   /* example:
   firebase: {

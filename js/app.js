@@ -28,7 +28,7 @@
   /* ---------- UI strings ---------- */
   const I18N = {
     en: {
-      readNotes: "Read full notes", printNotes: "Print", netErr: "Could not connect to the server. Check your internet and try again.", sessionEnded: "Please log in again.",
+      readNotes: "Read full notes", printNotes: "Print", netErr: "Could not connect to the server. Check your internet and try again.", gOr: "or", gStep: "One more step", gStepNote: "Enter your Roll No once. Next time just tap “Sign in with Google”.", gLinkPin: "This Roll No already has an account. Enter its 4-digit PIN once to connect your Google account.", gContinue: "Continue", sessionEnded: "Please log in again.",
       noPrograms: "No practicals saved yet. Open Live Practice, write a program and click Save.", 
       livePractice: "Live Practice", myPracticals: "My Live Practicals", 
       whyAns: "Explanation", 
@@ -95,7 +95,7 @@
       selectOneModule: "Please select at least one module.", progress: "Progress", accuracy: "Accuracy"
     },
     hi: {
-      readNotes: "पूरे नोट्स पढ़ें", printNotes: "प्रिंट", netErr: "सर्वर से कनेक्ट नहीं हो सका। इंटरनेट जाँचें और फिर कोशिश करें।", sessionEnded: "कृपया फिर से लॉगिन करें।",
+      readNotes: "पूरे नोट्स पढ़ें", printNotes: "प्रिंट", netErr: "सर्वर से कनेक्ट नहीं हो सका। इंटरनेट जाँचें और फिर कोशिश करें।", gOr: "या", gStep: "बस एक कदम और", gStepNote: "एक बार अपना रोल नंबर लिखें। अगली बार सिर्फ “Google से साइन इन” दबाएँ।", gLinkPin: "इस रोल नंबर का खाता पहले से है। Google जोड़ने के लिए एक बार उसका 4 अंकों का PIN डालें।", gContinue: "आगे बढ़ें", sessionEnded: "कृपया फिर से लॉगिन करें।",
       noPrograms: "अभी कोई प्रैक्टिकल सेव नहीं। लाइव प्रैक्टिस खोलें, प्रोग्राम लिखें और Save दबाएँ।", 
       livePractice: "लाइव प्रैक्टिस", myPracticals: "मेरे लाइव प्रैक्टिकल", 
       whyAns: "व्याख्या", 
@@ -162,7 +162,7 @@
       selectOneModule: "कृपया कम से कम एक मॉड्यूल चुनें।", progress: "प्रगति", accuracy: "सटीकता"
     },
     mr: {
-      readNotes: "संपूर्ण नोट्स वाचा", printNotes: "प्रिंट", netErr: "सर्व्हरशी कनेक्ट होऊ शकले नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.", sessionEnded: "कृपया पुन्हा लॉगिन करा.",
+      readNotes: "संपूर्ण नोट्स वाचा", printNotes: "प्रिंट", netErr: "सर्व्हरशी कनेक्ट होऊ शकले नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.", gOr: "किंवा", gStep: "फक्त एक पायरी", gStepNote: "एकदा तुमचा रोल नंबर लिहा. पुढच्या वेळी फक्त “Google ने साइन इन” दाबा.", gLinkPin: "या रोल नंबरचे खाते आधीच आहे. Google जोडण्यासाठी एकदा त्याचा 4 अंकी PIN टाका.", gContinue: "पुढे जा", sessionEnded: "कृपया पुन्हा लॉगिन करा.",
       noPrograms: "अजून एकही प्रॅक्टिकल सेव्ह नाही. लाइव्ह प्रॅक्टिस उघडा, प्रोग्राम लिहा आणि Save दाबा.", 
       livePractice: "लाइव्ह प्रॅक्टिस", myPracticals: "माझे लाइव्ह प्रॅक्टिकल", 
       whyAns: "स्पष्टीकरण", 
@@ -410,6 +410,16 @@
   /* MySQL mode: accounts and result history live on the server, so a student can log in on any device */
   const SRV = window.COPA_DB && window.COPA_DB.mode === "mysql" ? window.COPA_DB.driver : null;
   const studentToken = () => { const p = getProfile(); return (p && p.token) || ""; };
+  /* "Sign in with Google" (needs the MySQL backend, a Client ID and https) */
+  const GCID = (window.COPA_CONFIG && window.COPA_CONFIG.googleClientId) || "";
+  const googleOn = () => !!(SRV && GCID && (location.protocol === "https:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname)));
+  let gsiP = null;
+  const loadGsi = () => gsiP || (gsiP = new Promise((res, rej) => {
+    if (window.google && window.google.accounts && window.google.accounts.id) return res(window.google.accounts.id);
+    const sc = document.createElement("script"); sc.src = "https://accounts.google.com/gsi/client"; sc.async = true;
+    sc.onload = () => res(window.google.accounts.id); sc.onerror = () => { gsiP = null; rej(new Error("gsi")); };
+    document.head.appendChild(sc);
+  }));
   function mergeResults(uid, list) {   // server history → this device (returns how many were new)
     const key = "results__" + uid, have = raw.get(key, []), ids = {};
     have.forEach((r) => (ids[r.id] = 1));
@@ -452,6 +462,7 @@
         '<h3><i class="fa-solid fa-user-graduate" style="color:var(--blue-600)"></i> ' + t("studentLogin") + "</h3>" +
         '<div class="auth-tabs"><button type="button" data-t="login" class="' + (!reg ? "on" : "") + '">' + t("login") + '</button><button type="button" data-t="register" class="' + (reg ? "on" : "") + '">' + t("register") + "</button></div>" +
         (err ? '<div class="auth-err"><i class="fa-solid fa-circle-exclamation"></i> ' + err + "</div>" : "") +
+        (googleOn() ? '<div class="g-wrap"><div id="gBtn" class="g-btn"></div></div><div class="auth-or"><span>' + t("gOr") + "</span></div>" : "") +
         '<form id="authForm" autocomplete="off">' +
         (reg ? '<div class="field"><label for="af-name">' + t("name") + ' *</label><input class="input" id="af-name" required maxlength="60"></div>' : "") +
         '<div class="field"><label for="af-roll">' + t("roll") + ' *</label><input class="input" id="af-roll" required maxlength="30"></div>' +
@@ -461,6 +472,11 @@
         '<button class="btn btn-primary btn-block" type="submit"><i class="fa-solid fa-' + (reg ? "user-plus" : "arrow-right-to-bracket") + '"></i> ' + t(reg ? "createAcc" : "login") + "</button></form>";
       box.querySelector("[data-x]").addEventListener("click", m.close);
       box.querySelectorAll("[data-t]").forEach((b) => b.addEventListener("click", () => { tab = b.getAttribute("data-t"); draw(); }));
+      if (googleOn()) loadGsi().then((gid) => {
+        const el = box.querySelector("#gBtn"); if (!el) return;
+        gid.initialize({ client_id: GCID, callback: (r) => googleCred(r.credential), ux_mode: "popup", auto_select: false, cancel_on_tap_outside: true });
+        gid.renderButton(el, { type: "standard", theme: "filled_blue", size: "large", shape: "pill", text: tab === "register" ? "signup_with" : "signin_with", logo_alignment: "left", locale: lang, width: Math.min(360, (box.clientWidth || 340) - 8) });
+      }).catch(() => { const w = box.querySelector(".g-wrap"); if (w) w.remove(); const o = box.querySelector(".auth-or"); if (o) o.remove(); });
       const first = box.querySelector("input"); if (first) first.focus();
       box.querySelector("#authForm").addEventListener("submit", (e) => {
         e.preventDefault();
@@ -482,6 +498,49 @@
           if (users[uid].pin !== hashPin(pin)) return draw(t("wrongPin"));
           signIn(uid); done();
         }
+      });
+    }
+    // save a server login on this device (also used by Google sign-in)
+    function finish(uid, d, pin) {
+      const users = getUsers(), p = d.profile || {};
+      users[uid] = Object.assign({}, users[uid] || {}, { name: p.name || (users[uid] && users[uid].name) || "", roll: p.roll || (users[uid] && users[uid].roll) || uid, batch: p.batch || "", created: p.created || Date.now(), token: d.token },
+        pin ? { pin: hashPin(pin) } : {}, p.email ? { email: p.email, picture: p.picture || "" } : {});
+      raw.set("users", users);
+      const server = d.results || [];
+      mergeResults(uid, server);
+      uploadResults(uid, d.token, raw.get("results__" + uid, []), server.map((r) => r.id));
+      signIn(uid); done();
+    }
+    function googleCred(credential) {
+      box.querySelectorAll("button, input").forEach((x) => (x.disabled = true));
+      SRV.studentGoogle(credential).then((d) => (d.need === "roll" ? rollStep(d) : finish(d.uid, d))).catch((er) => draw(esc((er && er.message) || t("netErr"))));
+    }
+    function rollStep(g, err, needPin) {
+      box.innerHTML =
+        '<button class="close" data-x aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
+        '<h3><i class="fa-brands fa-google" style="color:#4285f4"></i> ' + t("gStep") + "</h3>" +
+        '<div class="g-who">' + (g.picture ? '<img src="' + esc(g.picture) + '" alt="" referrerpolicy="no-referrer" onerror="this.outerHTML=\'<i class=&quot;fa-solid fa-circle-user&quot;></i>\'">' : '<i class="fa-solid fa-circle-user"></i>') + "<div><b>" + esc(g.name || "") + "</b><span>" + esc(g.email || "") + "</span></div></div>" +
+        (err ? '<div class="auth-err"><i class="fa-solid fa-circle-exclamation"></i> ' + err + "</div>" : "") +
+        '<form id="gForm" autocomplete="off"><p style="color:var(--ink-3);font-size:13px;margin:0 0 12px">' + t("gStepNote") + "</p>" +
+        '<div class="field"><label for="g-roll">' + t("roll") + ' *</label><input class="input" id="g-roll" required maxlength="30" value="' + esc(g.roll || "") + '"></div>' +
+        '<div class="field"><label for="g-batch">' + t("batch") + '</label><input class="input" id="g-batch" maxlength="30" placeholder="2025-26" value="' + esc(g.batch || "") + '"></div>' +
+        (needPin ? '<div class="field"><label for="g-pin">' + t("pin") + ' *</label><input class="input" id="g-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required placeholder="••••"></div>' : "") +
+        '<button class="btn btn-primary btn-block" type="submit"><i class="fa-solid fa-arrow-right"></i> ' + t("gContinue") + "</button></form>";
+      box.querySelector("[data-x]").addEventListener("click", m.close);
+      const f = box.querySelector("#gForm");
+      (box.querySelector(needPin ? "#g-pin" : "#g-roll") || {}).focus && box.querySelector(needPin ? "#g-pin" : "#g-roll").focus();
+      f.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const roll = f.querySelector("#g-roll").value.trim(), batch = f.querySelector("#g-batch").value.trim(), pinEl = f.querySelector("#g-pin"), pin = pinEl ? pinEl.value.trim() : "";
+        if (pinEl && !/^\d{4}$/.test(pin)) return rollStep(Object.assign(g, { roll, batch }), t("pinErr"), true);
+        f.querySelector("button[type=submit]").disabled = true;
+        SRV.studentGoogleLink({ ticket: g.ticket, uid: uidOf(roll), roll, batch, name: g.name, pin }).then((d) => finish(d.uid, d, pin)).catch((er) => {
+          const msg = (er && er.message) || "";
+          g.roll = roll; g.batch = batch;
+          if (msg === "pin_required") return rollStep(g, t("gLinkPin"), true);
+          if (msg === "wrongpin") return rollStep(g, t("wrongPin"), true);
+          rollStep(g, /sign in with Google/i.test(msg) ? esc(msg) : t("netErr"), needPin);
+        });
       });
     }
     function serverAuth(reg, uid, roll, pin, users) {

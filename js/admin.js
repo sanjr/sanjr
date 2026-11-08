@@ -290,12 +290,12 @@
       return Object.assign({}, s, { tests: rs.length, avg: rs.length ? Math.round(rs.reduce((a, r) => a + r.pct, 0) / rs.length) : 0, best: rs.length ? Math.max(...rs.map((r) => r.pct)) : 0, pass: rs.filter((r) => r.pct >= C.PASS).length, last: rs.length ? rs[0].date : 0 });
     }).sort((a, b) => (b.lastLogin || 0) - (a.lastLogin || 0));
     v.innerHTML = '<div class="adm-h"><div><h2>Students</h2><p>' + rows.length + ' registered students</p></div><button class="btn btn-ghost btn-sm" id="csvS"><i class="fa-solid fa-file-csv"></i> Export CSV</button></div>' +
-      '<div class="adm-tools"><input class="input grow" id="sS" placeholder="Search name, roll no. or batch"></div><div class="card" id="sT"></div>';
+      '<div class="adm-tools"><input class="input grow" id="sS" placeholder="Search name, roll no., batch or e-mail"></div><div class="card" id="sT"></div>';
     const render = () => {
       const s = v.querySelector("#sS").value.trim().toLowerCase();
-      const list = rows.filter((r) => !s || (r.name + " " + r.roll + " " + (r.batch || "")).toLowerCase().indexOf(s) > -1);
+      const list = rows.filter((r) => !s || (r.name + " " + r.roll + " " + (r.batch || "") + " " + (r.email || "")).toLowerCase().indexOf(s) > -1);
       v.querySelector("#sT").innerHTML = '<div class="table-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Batch</th><th>Registered</th><th>Last login</th><th>Tests</th><th>Passed</th><th>Average</th><th>Best</th>' + (DB.mode === "mysql" ? "<th>PIN</th>" : "") + "</tr></thead><tbody>" +
-        (list.length ? list.map((r) => "<tr><td><b>" + esc(r.name || "—") + '</b><span class="sub">Roll ' + esc(r.roll || "—") + "</span></td><td>" + esc(r.batch || "—") + "</td><td>" + fmtD(r.created) + "</td><td>" + fmtDT(r.lastLogin) + "</td><td><b>" + r.tests + '</b></td><td style="color:var(--green);font-weight:600">' + r.pass + "</td><td>" + r.avg + "%</td><td>" + r.best + "%</td>" + (DB.mode === "mysql" ? '<td><button class="btn btn-ghost btn-sm" data-pin="' + esc(r.uid) + '" data-nm="' + esc(r.name || r.roll || "") + '" title="Student forgot the PIN"><i class="fa-solid fa-key"></i> Reset</button></td>' : "") + "</tr>").join("")
+        (list.length ? list.map((r) => "<tr><td><b>" + esc(r.name || "—") + '</b><span class="sub">Roll ' + esc(r.roll || "—") + "</span>" + (r.email ? '<span class="sub"><i class="fa-brands fa-google" style="color:#4285f4"></i> ' + esc(r.email) + "</span>" : "") + "</td><td>" + esc(r.batch || "—") + "</td><td>" + fmtD(r.created) + "</td><td>" + fmtDT(r.lastLogin) + "</td><td><b>" + r.tests + '</b></td><td style="color:var(--green);font-weight:600">' + r.pass + "</td><td>" + r.avg + "%</td><td>" + r.best + "%</td>" + (DB.mode === "mysql" ? '<td><button class="btn btn-ghost btn-sm" data-pin="' + esc(r.uid) + '" data-nm="' + esc(r.name || r.roll || "") + '" title="Student forgot the PIN"><i class="fa-solid fa-key"></i> Reset</button></td>' : "") + "</tr>").join("")
           : '<tr class="empty-row"><td colspan="9">No students yet.</td></tr>') + "</tbody></table></div>";
     };
     v.querySelector("#sS").addEventListener("input", render);
