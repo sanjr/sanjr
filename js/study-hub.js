@@ -1,6 +1,6 @@
 /* =========================================================
    COPA MCQ – Study Material hub and its sections
-   <body data-section="hub|theory|practical|pdf|video|qbank|reference|papers">
+   <body data-section="hub|syllabus|theory|practical|pdf|video|qbank|reference|papers">
    Admin study material (js/admin.js → Study Material) has a "cat" (category);
    old items without a category count as Theory Notes.
    ========================================================= */
@@ -11,6 +11,8 @@
   C.renderShell("study");
 
   const S = [
+    { k: "syllabus", page: "trade-syllabus.html", icon: "fa-scroll", g: ["#0b1f4d", "#2a6df4"], feat: true,
+      t: { en: ["Trade Syllabus", "Official COPA syllabus (CTS 3.0 · NSQF 3.5) – duration, learning outcomes, trade practical & trade theory."], hi: ["ट्रेड सिलेबस", "आधिकारिक COPA सिलेबस (CTS 3.0 · NSQF 3.5) – अवधि, लर्निंग आउटकम, ट्रेड प्रैक्टिकल और ट्रेड थ्योरी।"], mr: ["ट्रेड अभ्यासक्रम", "अधिकृत COPA अभ्यासक्रम (CTS 3.0 · NSQF 3.5) – कालावधी, लर्निंग आउटकम, ट्रेड प्रॅक्टिकल आणि ट्रेड थिअरी."] } },
     { k: "theory", page: "theory-notes.html", icon: "fa-book-open-reader", g: ["#1554e0", "#4f8bff"],
       t: { en: ["Theory Notes", "Chapter-wise Notes"], hi: ["थ्योरी नोट्स", "अध्याय-वार नोट्स"], mr: ["थिअरी नोट्स", "प्रकरणनिहाय नोट्स"] } },
     { k: "practical", page: "practicals.html", icon: "fa-laptop-code", g: ["#16a34a", "#4ade80"],
@@ -30,15 +32,15 @@
     en: { hubT: "Study Material", hubS: "Everything you need for the ITI COPA trade – notes, practicals, PDFs, videos, question bank, shortcuts and old papers.", items: "items", item: "item", open: "Open",
       recent: "Recently added", all: "All modules", general: "General", search: "Search…", none: "Nothing here yet", noneS: "New material is added regularly. Meanwhile practise with the question bank.",
       goQ: "Open Question Bank", read: "Read", download: "Open / Download", watch: "Watch", openLive: "Open in Live Practice", assign: "Assignments from your instructor", ready: "Ready-made practicals (Live Practice Lab)",
-      web: "HTML · CSS · JavaScript", python: "Python", sections: "Study sections", back: "All study material", lesson: "Lesson", lessons: "lessons", part: "Part", readNotes: "Read notes", prev: "Previous", next: "Next", topics: "Topics", moduleW: "Module", fromAdmin: "More notes from your instructor", bookNote: "Study notes prepared lesson-wise as per the COPA Trade Theory syllabus (NSQF 2022).", qs: "questions", modules: "modules", print: "Print", copy: "Copied!" },
+      web: "HTML · CSS · JavaScript", python: "Python", sections: "Study sections", back: "All study material", lesson: "Lesson", lessons: "lessons", part: "Part", readNotes: "Read notes", prev: "Previous", next: "Next", topics: "Topics", moduleW: "Module", fromAdmin: "More notes from your instructor", bookNote: "Study notes prepared lesson-wise as per the COPA Trade Theory syllabus (NSQF 2022).", qs: "questions", modules: "modules", print: "Print", copy: "Copied!", sDl: "Download PDF", sView: "View PDF", sInfo: "Course at a glance", sHours: "Hours distribution", sLOs: "Learning outcomes & syllabus", sLO: "Learning Outcome", sRef: "Reference Learning Outcome", sDur: "Duration", sSkill: "Professional Skills (Trade Practical)", sKnow: "Professional Knowledge (Trade Theory)", sAssess: "Assessment criteria", sPr: "practicals", sEx: "Exercises", hrs: "hrs", sP: "Practical", sT: "Theory", sTot: "Total", sProj: "Industrial Visit / Project Work", sProjS: "Broad areas – any one project as per the syllabus", sES: "Employability Skills", sESs: "120 hrs – core skills common to all CTS trades (Bharat Skills / DGT).", sTools: "Tools & equipment (batch of 24)", sExp: "Expand all", sCol: "Collapse all", sNo: "No match – try another word.", sSrc: "Source: DGT – Ministry of Skill Development & Entrepreneurship, Govt. of India. Revised August 2025.", sQty: "Quantity", sItem: "Item" },
     hi: { hubT: "अध्ययन सामग्री", hubS: "ITI COPA ट्रेड के लिए सब कुछ – नोट्स, प्रैक्टिकल, PDF, वीडियो, प्रश्न बैंक, शॉर्टकट और पुराने प्रश्नपत्र।", items: "आइटम", item: "आइटम", open: "खोलें",
       recent: "हाल ही में जोड़ा गया", all: "सभी मॉड्यूल", general: "सामान्य", search: "खोजें…", none: "अभी यहाँ कुछ नहीं है", noneS: "नई सामग्री नियमित रूप से जोड़ी जाती है। तब तक प्रश्न बैंक से अभ्यास करें।",
       goQ: "प्रश्न बैंक खोलें", read: "पढ़ें", download: "खोलें / डाउनलोड", watch: "देखें", openLive: "लाइव प्रैक्टिस में खोलें", assign: "आपके प्रशिक्षक के असाइनमेंट", ready: "तैयार प्रैक्टिकल (लाइव प्रैक्टिस लैब)",
-      web: "HTML · CSS · JavaScript", python: "पायथन", sections: "अध्ययन विभाग", back: "सभी अध्ययन सामग्री", lesson: "पाठ", lessons: "पाठ", part: "भाग", readNotes: "नोट्स पढ़ें", prev: "पिछला", next: "अगला", topics: "विषय", moduleW: "मॉड्यूल", fromAdmin: "आपके प्रशिक्षक के और नोट्स", bookNote: "COPA ट्रेड थ्योरी पाठ्यक्रम (NSQF 2022) के अनुसार पाठ-वार तैयार किए गए अध्ययन नोट्स।", qs: "प्रश्न", modules: "मॉड्यूल", print: "प्रिंट", copy: "कॉपी हुआ!" },
+      web: "HTML · CSS · JavaScript", python: "पायथन", sections: "अध्ययन विभाग", back: "सभी अध्ययन सामग्री", lesson: "पाठ", lessons: "पाठ", part: "भाग", readNotes: "नोट्स पढ़ें", prev: "पिछला", next: "अगला", topics: "विषय", moduleW: "मॉड्यूल", fromAdmin: "आपके प्रशिक्षक के और नोट्स", bookNote: "COPA ट्रेड थ्योरी पाठ्यक्रम (NSQF 2022) के अनुसार पाठ-वार तैयार किए गए अध्ययन नोट्स।", qs: "प्रश्न", modules: "मॉड्यूल", print: "प्रिंट", copy: "कॉपी हुआ!", sDl: "PDF डाउनलोड करें", sView: "PDF देखें", sInfo: "कोर्स एक नज़र में", sHours: "घंटों का वितरण", sLOs: "लर्निंग आउटकम और सिलेबस", sLO: "लर्निंग आउटकम", sRef: "संदर्भ लर्निंग आउटकम", sDur: "अवधि", sSkill: "प्रोफेशनल स्किल (ट्रेड प्रैक्टिकल)", sKnow: "प्रोफेशनल नॉलेज (ट्रेड थ्योरी)", sAssess: "मूल्यांकन मानदंड", sPr: "प्रैक्टिकल", sEx: "अभ्यास", hrs: "घंटे", sP: "प्रैक्टिकल", sT: "थ्योरी", sTot: "कुल", sProj: "औद्योगिक भ्रमण / प्रोजेक्ट वर्क", sProjS: "मुख्य क्षेत्र – सिलेबस के अनुसार कोई भी एक प्रोजेक्ट", sES: "रोज़गार योग्यता कौशल", sESs: "120 घंटे – सभी CTS ट्रेड के लिए सामान्य कोर स्किल (भारत स्किल्स / DGT)।", sTools: "टूल्स और उपकरण (24 का बैच)", sExp: "सभी खोलें", sCol: "सभी बंद करें", sNo: "कुछ नहीं मिला – दूसरा शब्द आज़माएँ।", sSrc: "स्रोत: DGT – कौशल विकास और उद्यमिता मंत्रालय, भारत सरकार। संशोधित अगस्त 2025।", sQty: "मात्रा", sItem: "वस्तु" },
     mr: { hubT: "अभ्यास साहित्य", hubS: "ITI COPA ट्रेडसाठी सर्व काही – नोट्स, प्रॅक्टिकल, PDF, व्हिडिओ, प्रश्नपेढी, शॉर्टकट आणि जुन्या प्रश्नपत्रिका.", items: "आयटम", item: "आयटम", open: "उघडा",
       recent: "नुकतेच जोडलेले", all: "सर्व मॉड्यूल", general: "सामान्य", search: "शोधा…", none: "इथे अजून काही नाही", noneS: "नवीन साहित्य नियमितपणे जोडले जाते. तोपर्यंत प्रश्नपेढीतून सराव करा.",
       goQ: "प्रश्नपेढी उघडा", read: "वाचा", download: "उघडा / डाउनलोड", watch: "पहा", openLive: "लाइव्ह प्रॅक्टिसमध्ये उघडा", assign: "तुमच्या निदेशकांचे असाइनमेंट", ready: "तयार प्रॅक्टिकल (लाइव्ह प्रॅक्टिस लॅब)",
-      web: "HTML · CSS · JavaScript", python: "पायथन", sections: "अभ्यास विभाग", back: "सर्व अभ्यास साहित्य", lesson: "पाठ", lessons: "पाठ", part: "भाग", readNotes: "नोट्स वाचा", prev: "मागील", next: "पुढील", topics: "विषय", moduleW: "मॉड्यूल", fromAdmin: "तुमच्या निदेशकांच्या आणखी नोट्स", bookNote: "COPA ट्रेड थिअरी अभ्यासक्रमानुसार (NSQF 2022) पाठनिहाय तयार केलेल्या अभ्यास नोट्स.", qs: "प्रश्न", modules: "मॉड्यूल्स", print: "प्रिंट", copy: "कॉपी झाले!" }
+      web: "HTML · CSS · JavaScript", python: "पायथन", sections: "अभ्यास विभाग", back: "सर्व अभ्यास साहित्य", lesson: "पाठ", lessons: "पाठ", part: "भाग", readNotes: "नोट्स वाचा", prev: "मागील", next: "पुढील", topics: "विषय", moduleW: "मॉड्यूल", fromAdmin: "तुमच्या निदेशकांच्या आणखी नोट्स", bookNote: "COPA ट्रेड थिअरी अभ्यासक्रमानुसार (NSQF 2022) पाठनिहाय तयार केलेल्या अभ्यास नोट्स.", qs: "प्रश्न", modules: "मॉड्यूल्स", print: "प्रिंट", copy: "कॉपी झाले!", sDl: "PDF डाउनलोड करा", sView: "PDF पहा", sInfo: "कोर्स एका नजरेत", sHours: "तासांचे वाटप", sLOs: "लर्निंग आउटकम आणि अभ्यासक्रम", sLO: "लर्निंग आउटकम", sRef: "संदर्भ लर्निंग आउटकम", sDur: "कालावधी", sSkill: "प्रोफेशनल स्किल (ट्रेड प्रॅक्टिकल)", sKnow: "प्रोफेशनल नॉलेज (ट्रेड थिअरी)", sAssess: "मूल्यमापन निकष", sPr: "प्रॅक्टिकल", sEx: "सराव", hrs: "तास", sP: "प्रॅक्टिकल", sT: "थिअरी", sTot: "एकूण", sProj: "औद्योगिक भेट / प्रोजेक्ट वर्क", sProjS: "मुख्य क्षेत्रे – अभ्यासक्रमानुसार कोणताही एक प्रोजेक्ट", sES: "रोजगारक्षमता कौशल्ये", sESs: "120 तास – सर्व CTS ट्रेडसाठी समान कोअर स्किल (भारत स्किल्स / DGT).", sTools: "टूल्स आणि उपकरणे (24 जणांची बॅच)", sExp: "सर्व उघडा", sCol: "सर्व बंद करा", sNo: "काही सापडले नाही – दुसरा शब्द वापरा.", sSrc: "स्रोत: DGT – कौशल्य विकास आणि उद्योजकता मंत्रालय, भारत सरकार. सुधारित ऑगस्ट 2025.", sQty: "संख्या", sItem: "वस्तू" }
   };
   const X = TX[L] || TX.en;
   const tt = (s) => s.t[L] || s.t.en;
@@ -87,9 +89,9 @@
         '<div class="art" aria-hidden="true"><i class="fa-solid fa-book-open b1"></i><i class="fa-solid fa-file-pdf b2"></i><i class="fa-solid fa-circle-play b3"></i><i class="fa-solid fa-keyboard b4"></i></div></section>' +
       '<div class="sh-grid">' + S.map((s, i) => {
         const T = tt(s), n = count(s.k);
-        return '<a class="sh-card' + (s.k === "qbank" ? " wide" : "") + '" href="' + s.page + '" style="--g1:' + s.g[0] + ";--g2:" + s.g[1] + ";--d:" + i * 60 + 'ms">' +
+        return '<a class="sh-card' + (s.k === "qbank" ? " wide" : s.feat ? " feat" : "") + '" href="' + s.page + '" style="--g1:' + s.g[0] + ";--g2:" + s.g[1] + ";--d:" + i * 60 + 'ms">' +
           '<span class="ic"><i class="fa-solid ' + s.icon + '"></i></span><span class="tx"><b>' + esc(T[0]) + "</b><small>" + esc(T[1]) + "</small></span>" +
-          '<span class="ft"><span class="n">' + esc(s.k === "qbank" ? n + " " + X.qs : nItems(n)) + '</span><span class="go">' + esc(X.open) + ' <i class="fa-solid fa-arrow-right"></i></span></span>' +
+          '<span class="ft"><span class="n">' + esc(s.k === "qbank" ? n + " " + X.qs : s.k === "syllabus" ? "14 LO · 174 " + X.sPr + " · 1200 " + X.hrs : nItems(n)) + '</span><span class="go">' + esc(X.open) + ' <i class="fa-solid fa-arrow-right"></i></span></span>' +
           '<i class="fa-solid ' + s.icon + ' bg" aria-hidden="true"></i></a>';
       }).join("") + "</div>" +
       (recent.length ? '<section class="sh-recent"><h2><i class="fa-solid fa-clock-rotate-left"></i> ' + esc(X.recent) + '</h2><div class="list">' + recent.map((n) => {
@@ -247,11 +249,88 @@
     });
   }
 
+  /* ---------- TRADE SYLLABUS (js/syllabus-data.js, from the official DGT curriculum PDF) ---------- */
+  function syllabus() {
+    const D = window.COPA_SYLLABUS; if (!D) { root.innerHTML = head(sec("syllabus")) + empty(); return; }
+    const PDF = "assets/docs/COPA_CTS3.0_NSQF-3.5.pdf";
+    const LOS = D.los, totP = LOS.reduce((a, l) => a + l.p, 0), totT = LOS.reduce((a, l) => a + l.t, 0) + D.es;
+    const PAL = [["#1554e0", "#4f8bff"], ["#16a34a", "#4ade80"], ["#e5383b", "#ff7a59"], ["#c026d3", "#f472b6"], ["#7b3fe4", "#a78bfa"], ["#f59e0b", "#fbbf24"], ["#0fa3b1", "#5eead4"]];
+    const ICO = ["fa-desktop", "fa-file-word", "fa-person-chalkboard", "fa-table", "fa-chart-pie", "fa-database", "fa-network-wired", "fa-code", "fa-js", "fa-cart-shopping", "fa-cloud", "fa-shield-halved", "fa-robot", "fa-python"];
+    const ic = (i) => (i === 8 || i === 13 ? "fa-brands " : "fa-solid ") + ICO[i];
+    const exs = (l) => l.skills.reduce((a, s) => a.concat(s.items.filter((x) => x.n).map((x) => x.n)), []);
+    const max = Math.max.apply(null, LOS.map((l) => l.p + l.t));
+    const extra = '<div class="sy-chips"><span><i class="fa-solid fa-layer-group"></i> NSQF 3.5</span><span><i class="fa-regular fa-calendar"></i> 1 Year · 1200 ' + esc(X.hrs) + '</span><span><i class="fa-solid fa-bullseye"></i> 14 LO</span><span><i class="fa-solid fa-laptop-code"></i> 174 ' + esc(X.sPr) + "</span></div>" +
+      '<div class="sy-acts"><a class="btn sy-btn-w" href="' + PDF + '" download><i class="fa-solid fa-file-arrow-down"></i> ' + esc(X.sDl) + '</a><a class="btn sy-btn-o" href="' + PDF + '" target="_blank" rel="noopener"><i class="fa-regular fa-eye"></i> ' + esc(X.sView) + "</a></div>";
+
+    const info = '<section class="sy-card sy-info"><h2 class="sy-h"><i class="fa-solid fa-circle-info"></i> ' + esc(X.sInfo) + '</h2><div class="sy-kv">' +
+      D.info.map((r) => "<div><small>" + esc(r[0]) + "</small><b>" + esc(r[1]) + "</b></div>").join("") + "</div></section>";
+
+    const hours = '<section class="sy-card sy-hours"><h2 class="sy-h"><i class="fa-solid fa-clock"></i> ' + esc(X.sHours) + '</h2>' +
+      '<div class="sy-tot"><div class="p"><b>' + totP + "</b><small>" + esc(X.sP) + " (" + esc(X.hrs) + ')</small></div><div class="t"><b>' + totT + "</b><small>" + esc(X.sT) + " (" + esc(X.hrs) + ')</small></div><div class="a"><b>' + (totP + totT) + "</b><small>" + esc(X.sTot) + " (" + esc(X.hrs) + ")</small></div></div>" +
+      '<div class="sy-legend"><span class="p"></span> ' + esc(X.sP) + ' <span class="t"></span> ' + esc(X.sT) + "</div>" +
+      '<div class="sy-bars">' + LOS.map((l) => '<a class="sy-bar" href="#lo-' + l.n + '" title="LO ' + l.n + ": " + esc(l.p) + " + " + esc(l.t) + " " + esc(X.hrs) + '"><span class="n">LO ' + l.n + '</span><span class="tr"><span class="p" style="width:' + (l.p / max * 100).toFixed(2) + '%"></span><span class="t" style="width:' + (l.t / max * 100).toFixed(2) + '%"></span></span><span class="v">' + (l.p + l.t) + "</span></a>").join("") +
+      '<div class="sy-bar es"><span class="n">ES</span><span class="tr"><span class="t" style="width:' + (D.es / max * 100).toFixed(2) + '%"></span></span><span class="v">' + D.es + "</span></div></div></section>";
+
+    const skills = (l) => l.skills.map((s) => '<div class="sy-topic">' + (s.h ? "<h5>" + esc(s.h) + "</h5>" : "") + "<ol>" + s.items.map((x) =>
+      "<li" + (x.n ? ' value="' + x.n + '"' : ' class="nn"') + ">" + (x.n ? '<span class="xn">' + x.n + "</span>" : "") + "<div>" + (x.t ? "<p>" + esc(x.t) + "</p>" : "") +
+      (x.sub.length ? "<ul>" + x.sub.map((u) => "<li>" + esc(u) + "</li>").join("") + "</ul>" : "") + "</div></li>").join("") + "</ol></div>").join("");
+    const know = (l) => l.know.map((k) => '<div class="sy-topic">' + (k.h ? "<h5>" + esc(k.h) + "</h5>" : "") + (k.items.length ? "<ul>" + k.items.map((u) => "<li>" + esc(u) + "</li>").join("") + "</ul>" : "") + "</div>").join("");
+    const loCard = (l, i) => {
+      const c = PAL[i % PAL.length], e = exs(l), tot = l.p + l.t;
+      return '<article class="sy-lo" id="lo-' + l.n + '" style="--g1:' + c[0] + ";--g2:" + c[1] + '">' +
+        '<button type="button" class="sy-lo-h" aria-expanded="false"><span class="num"><small>LO</small>' + l.n + '</span><span class="tx"><b>' + esc(l.title) + "</b>" +
+        '<span class="meta"><span><i class="fa-solid fa-screwdriver-wrench"></i> ' + l.p + " " + esc(X.hrs) + '</span><span><i class="fa-solid fa-book"></i> ' + l.t + " " + esc(X.hrs) + "</span>" +
+        (e.length ? '<span><i class="fa-solid fa-list-ol"></i> ' + esc(X.sEx) + " " + Math.min.apply(null, e) + (e.length > 1 ? "–" + Math.max.apply(null, e) : "") + "</span>" : "") + '</span></span><i class="' + ic(i) + ' lic" aria-hidden="true"></i><span class="chev"><i class="fa-solid fa-chevron-down"></i></span></button>' +
+        '<div class="sy-lo-b" hidden><div class="sy-top">' +
+          '<div class="sy-dur"><h4><i class="fa-regular fa-clock"></i> ' + esc(X.sDur) + '</h4><div class="sy-ring" style="--pp:' + (l.p / tot * 100).toFixed(1) + '"><b>' + tot + "</b><small>" + esc(X.hrs) + '</small></div><ul><li class="p"><span></span>' + esc(X.sSkill.split(" (")[0]) + " <b>" + l.p + " " + esc(X.hrs) + '</b></li><li class="t"><span></span>' + esc(X.sKnow.split(" (")[0]) + " <b>" + l.t + " " + esc(X.hrs) + "</b></li></ul></div>" +
+          '<div class="sy-ref"><h4><i class="fa-solid fa-bullseye"></i> ' + esc(X.sRef) + '</h4><blockquote><span class="q"><i class="fa-solid fa-quote-left"></i></span>' + esc(l.title) + "</blockquote>" +
+          (l.assess.length ? '<h4 class="mt"><i class="fa-solid fa-clipboard-check"></i> ' + esc(X.sAssess) + '</h4><ul class="sy-check">' + l.assess.map((a) => '<li><i class="fa-solid fa-circle-check"></i>' + esc(a) + "</li>").join("") + "</ul>" : "") + "</div></div>" +
+        '<div class="sy-cols"><section class="sy-col sk"><h4><span class="b"><i class="fa-solid fa-screwdriver-wrench"></i></span>' + esc(X.sSkill) + "<small>" + l.p + " " + esc(X.hrs) + "</small></h4>" + skills(l) + "</section>" +
+        '<section class="sy-col kn"><h4><span class="b"><i class="fa-solid fa-book-open"></i></span>' + esc(X.sKnow) + "<small>" + l.t + " " + esc(X.hrs) + "</small></h4>" + know(l) + "</section></div></div></article>";
+    };
+
+    const proj = '<div class="sy-two"><section class="sy-card sy-proj"><h2 class="sy-h"><i class="fa-solid fa-diagram-project"></i> ' + esc(X.sProj) + '</h2><p class="sub">' + esc(X.sProjS) + '</p><div class="sy-plist">' +
+      D.project.map((p, i) => '<div><span class="l">' + "abcd"[i] + "</span><p>" + esc(p) + "</p></div>").join("") + "</div></section>" +
+      '<section class="sy-card sy-es"><span class="big"><i class="fa-solid fa-user-tie"></i></span><h2 class="sy-h">' + esc(X.sES) + "</h2><p>" + esc(X.sESs) + '</p><div class="sy-esh"><b>120</b> ' + esc(X.hrs) + "</div></section></div>";
+    const tools = '<section class="sy-card sy-tools"><h2 class="sy-h"><i class="fa-solid fa-toolbox"></i> ' + esc(X.sTools) + '</h2><div class="sy-ttabs" role="tablist">' +
+      D.tools.map((g, i) => '<button type="button" role="tab" data-tt="' + i + '" class="' + (i ? "" : "on") + '" aria-selected="' + !i + '">' + g[0] + ". " + esc(g[1]) + " <small>" + g[2].length + "</small></button>").join("") + "</div>" +
+      D.tools.map((g, i) => '<div class="sy-tgrid" data-tp="' + i + '"' + (i ? " hidden" : "") + ">" + g[2].map((r) => "<div><span>" + esc(r[0]) + "</span><b>" + esc(r[1]) + "</b></div>").join("") + "</div>").join("") + "</section>";
+
+    root.innerHTML = head(sec("syllabus"), extra) + '<div class="sy-wrap">' + '<div class="sy-two">' + info + hours + "</div>" +
+      '<div class="sy-bar-h"><h2 class="sy-h big"><i class="fa-solid fa-route"></i> ' + esc(X.sLOs) + '</h2><div class="sh-tools"><div class="sh-search grow"><i class="fa-solid fa-magnifying-glass"></i><input class="input" id="syS" placeholder="' + esc(X.search) + ' Excel, MySQL, Python …" aria-label="' + esc(X.search) + '"></div>' +
+      '<button type="button" class="btn btn-ghost btn-sm" id="syX"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> <span>' + esc(X.sExp) + '</span></button><button type="button" class="btn btn-ghost btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> ' + esc(X.print) + "</button></div>" +
+      '<div class="sy-jump">' + LOS.map((l, i) => '<a href="#lo-' + l.n + '" style="--c:' + PAL[i % PAL.length][0] + '">' + l.n + "</a>").join("") + "</div></div>" +
+      '<div class="sy-los" id="syL">' + LOS.map(loCard).join("") + '</div><p class="sy-none" id="syN" hidden>' + esc(X.sNo) + "</p>" + proj + tools +
+      '<p class="sy-src"><i class="fa-solid fa-landmark"></i> ' + esc(X.sSrc) + "</p></div>";
+
+    const cards = Array.from(root.querySelectorAll(".sy-lo"));
+    const setOpen = (c, on) => { c.classList.toggle("open", on); c.querySelector(".sy-lo-h").setAttribute("aria-expanded", on); c.querySelector(".sy-lo-b").hidden = !on; };
+    const xb = document.getElementById("syX");
+    const syncX = () => { const all = cards.filter((c) => !c.hidden).every((c) => c.classList.contains("open")); xb.querySelector("span").textContent = all ? X.sCol : X.sExp; xb.dataset.all = all ? 1 : ""; };
+    root.querySelector("#syL").addEventListener("click", (e) => { const h = e.target.closest(".sy-lo-h"); if (!h) return; const c = h.parentNode; setOpen(c, !c.classList.contains("open")); syncX(); });
+    xb.addEventListener("click", () => { const on = !xb.dataset.all; cards.forEach((c) => !c.hidden && setOpen(c, on)); syncX(); });
+    const txt = cards.map((c) => c.textContent.toLowerCase());
+    document.getElementById("syS").addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase(); let n = 0;
+      cards.forEach((c, i) => { const ok = !q || txt[i].indexOf(q) > -1; c.hidden = !ok; if (ok) n++; setOpen(c, !!q && ok); });
+      document.getElementById("syN").hidden = n > 0; syncX();
+    });
+    const goLo = (h) => { const m = /^#lo-(\d+)$/.exec(h || ""); if (!m) return; const c = document.getElementById("lo-" + m[1]); if (!c) return; c.hidden = false; setOpen(c, true); syncX(); setTimeout(() => c.scrollIntoView({ behavior: "smooth", block: "start" }), 30); };
+    root.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#lo-"]'); if (!a) return; e.preventDefault(); history.replaceState(null, "", a.getAttribute("href")); goLo(a.getAttribute("href")); });
+    root.querySelector(".sy-ttabs").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-tt]"); if (!b) return;
+      root.querySelectorAll("[data-tt]").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); });
+      root.querySelectorAll("[data-tp]").forEach((p) => { p.hidden = p.dataset.tp !== b.dataset.tt; });
+    });
+    window.addEventListener("beforeprint", () => cards.forEach((c) => setOpen(c, true)));
+    goLo(location.hash);
+  }
+
   /* ---------- QUESTION BANK: header only (list is drawn by js/question-bank.js) ---------- */
   function qbank() {
     const h = document.getElementById("qbHead"); if (h) h.innerHTML = head(sec("qbank"));
   }
 
-  ({ hub, theory, practical, pdf, video, reference, papers, qbank }[SEC] || hub)();
+  ({ hub, syllabus, theory, practical, pdf, video, reference, papers, qbank }[SEC] || hub)();
   window.COPA_STUDY = { sections: S, sec, tt };
 })();

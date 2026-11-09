@@ -159,8 +159,16 @@ d = "ITI COPA study material in one place: theory notes, practicals & assignment
 page("study.html", t, d, "ITI COPA study material, COPA notes, COPA notes PDF, COPA practical, COPA video lectures, COPA previous papers, COPA shortcut keys, " + COMMON_KW,
      [webpage("study.html", t, d, "CollectionPage"), crumbs(("Home", ""), ("Study Material", "study.html")),
       {"@type": "ItemList", "name": "ITI COPA study material", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": nm, "url": SITE + "/" + u} for i, (nm, u) in enumerate([
-          ("Theory Notes", "theory-notes.html"), ("Practical & Assignments", "practicals.html"), ("PDF Materials", "pdf-materials.html"), ("Video Tutorials", "video-tutorials.html"),
+          ("Trade Syllabus", "trade-syllabus.html"), ("Theory Notes", "theory-notes.html"), ("Practical & Assignments", "practicals.html"), ("PDF Materials", "pdf-materials.html"), ("Video Tutorials", "video-tutorials.html"),
           ("Question Bank", "question-bank.html"), ("Quick Reference", "quick-reference.html"), ("Previous Papers", "previous-papers.html")])]}],
+     prio="0.9")
+t = "ITI COPA Syllabus 2025 (CTS 3.0, NSQF 3.5) – Trade Practical & Theory | COPA MCQ"
+d = "Latest ITI COPA trade syllabus (DGT, revised Aug 2025): duration, 14 learning outcomes, professional skills (trade practical) and professional knowledge (trade theory). Free PDF download."
+page("trade-syllabus.html", t, d, "COPA syllabus, ITI COPA syllabus 2025, COPA syllabus PDF, COPA trade syllabus NSQF 3.5, COPA CTS 3.0 syllabus, COPA trade practical, COPA trade theory, COPA learning outcomes, " + COMMON_KW,
+     [webpage("trade-syllabus.html", t, d), crumbs(("Home", ""), ("Study Material", "study.html"), ("Trade Syllabus", "trade-syllabus.html")),
+      {"@type": "Course", "name": "Computer Operator and Programming Assistant (COPA) – CTS 3.0", "description": d, "educationalCredentialAwarded": "National Trade Certificate (NTC)",
+       "provider": {"@type": "GovernmentOrganization", "name": "Directorate General of Training (DGT), MSDE", "url": "https://dgt.gov.in"}, "timeRequired": "P1Y", "inLanguage": "en",
+       "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "Onsite", "courseWorkload": "PT1200H"}}],
      prio="0.9")
 for u, nm, t, d, kw in [
     ("theory-notes.html", "Theory Notes", "COPA Theory Notes – Chapter-wise ITI COPA Notes | COPA MCQ", "Chapter-wise ITI COPA theory notes for every module: computer basics, Windows, Linux, MS Office, DBMS, networking, HTML, JavaScript, Python.", "COPA theory notes, ITI COPA notes, COPA chapter wise notes, COPA notes in Hindi, COPA notes Marathi"),
