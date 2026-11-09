@@ -35,7 +35,7 @@ if (!is_file($cfgFile)) fail('api/config.php is missing.', 500);
 $CFG = require $cfgFile;
 if (!is_array($CFG)) fail('api/config.php is not valid.', 500);
 if (is_file(__DIR__ . '/config.local.php')) { $over = require __DIR__ . '/config.local.php'; if (is_array($over)) $CFG = array_merge($CFG, $over); }   // optional, for testing
-if (empty($CFG['dsn']) && (($CFG['db_pass'] ?? '') === '')) fail('Database password is not set in api/config.php.', 500);
+if (empty($CFG['dsn']) && (($CFG['db_pass'] ?? '') === '') && ($_GET['a'] ?? '') !== 'health') fail('Database password is not set in api/config.php.', 500);
 date_default_timezone_set((string) ($CFG['timezone'] ?? 'Asia/Kolkata'));
 
 /* ---------- database ---------- */
@@ -49,7 +49,7 @@ function db(): PDO {
         } else {
             $dsn = 'mysql:host=' . ($CFG['db_host'] ?? 'localhost') . (isset($CFG['db_port']) ? ';port=' . (int) $CFG['db_port'] : '') .
                    ';dbname=' . $CFG['db_name'] . ';charset=utf8mb4';
-            $pdo = new PDO($dsn, $CFG['db_user'], $CFG['db_pass'], [PDO::ATTR_EMULATE_PREPARES => false]);
+            $pdo = new PDO($dsn, $CFG['db_user'], $CFG['db_pass'], [PDO::ATTR_EMULATE_PREPARES => false, PDO::ATTR_TIMEOUT => 5]);
         }
     } catch (Throwable $e) {
         fail('Could not connect to the database. Check the name, user and password in api/config.php.', 500);
@@ -124,6 +124,27 @@ function rows_data(string $sql, array $args = []): array {
 $action = preg_replace('/[^a-z_]/', '', (string) ($_GET['a'] ?? ''));
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $IN = [];
+/* ---- health check: open  api/index.php?a=health  in the browser (no secrets are shown) ---- */
+if ($action === 'health') {
+    $r = ['php' => PHP_VERSION, 'php_ok' => version_compare(PHP_VERSION, '7.4', '>='),
+          'pdo_mysql' => extension_loaded('pdo_mysql'), 'openssl' => extension_loaded('openssl'), 'curl' => function_exists('curl_init'), 'mbstring' => extension_loaded('mbstring'),
+          'config_file' => is_file(__DIR__ . '/config.php'), 'db_password_set' => ($CFG['db_pass'] ?? '') !== '' || !empty($CFG['dsn']),
+          'folder_writable' => is_writable(__DIR__), 'google_client_id' => google_client_id() !== ''];
+    try {
+        $t = microtime(true);
+        if (!empty($CFG['dsn'])) new PDO($CFG['dsn']);
+        else new PDO('mysql:host=' . ($CFG['db_host'] ?? 'localhost') . ';dbname=' . ($CFG['db_name'] ?? '') . ';charset=utf8mb4', $CFG['db_user'] ?? '', $CFG['db_pass'] ?? '', [PDO::ATTR_TIMEOUT => 5]);
+        $r['database'] = 'OK (' . round((microtime(true) - $t) * 1000) . ' ms)';
+    } catch (Throwable $e) {
+        $m = $e->getMessage();
+        $r['database'] = 'FAILED: ' . (stripos($m, 'denied') !== false ? 'wrong user or password' : (stripos($m, 'Unknown database') !== false ? 'wrong database name' : (stripos($m, 'driver') !== false ? 'pdo_mysql missing' : 'cannot connect')));
+    }
+    $t = microtime(true); $g = http_json('https://www.googleapis.com/oauth2/v3/certs');
+    $r['google_keys'] = $g && !empty($g['keys']) ? 'OK (' . round((microtime(true) - $t) * 1000) . ' ms)' : 'FAILED – server cannot reach www.googleapis.com';
+    $r['all_ok'] = $r['php_ok'] && $r['pdo_mysql'] && $r['openssl'] && strpos($r['database'], 'OK') === 0 && strpos($r['google_keys'], 'OK') === 0;
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($r, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); exit;
+}
 if ($method === 'POST') {
     // CSRF guard: browsers only send this custom header from our own pages (no CORS is allowed)
     if (($_SERVER['HTTP_X_COPA'] ?? '') !== '1' && $action !== 'bye') fail('Bad request', 403);

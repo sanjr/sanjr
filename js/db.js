@@ -150,9 +150,16 @@
      MYSQL DRIVER (PHP API in /api – see api/index.php and api/config.php)
      ========================================================= */
   const apiBase = () => CFG.apiUrl || (((document.body && document.body.getAttribute("data-root")) || "") + "api/");
-  const call = (a, body) => fetch(apiBase() + "index.php?a=" + a, body === undefined
+  // one quiet retry when the connection drops ("Load failed" in Safari, "Failed to fetch" in Chrome)
+  const NET_MSG = "Could not reach the server (" + location.host + "/api). Please check your internet and try again. If it keeps happening, open " + location.origin + "/api/index.php?a=health";
+  const req = (a, body, n) => fetch(apiBase() + "index.php?a=" + a, body === undefined
       ? { credentials: "same-origin", cache: "no-store" }
       : { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json", "X-COPA": "1" }, body: JSON.stringify(body) })
+    .catch((e) => {
+      if (n < 1) return new Promise((ok) => setTimeout(ok, 1200)).then(() => req(a, body, n + 1));
+      throw new Error(NET_MSG);
+    });
+  const call = (a, body) => req(a, body, 0)
     .then((r) => r.text().then((t) => {
       let j = null; try { j = JSON.parse(t); } catch (e) { /* not JSON (PHP missing / 404) */ }
       if (!j) {
