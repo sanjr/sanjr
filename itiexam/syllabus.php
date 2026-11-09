@@ -7,11 +7,11 @@ $rows = db()->query("SELECT s.*, t.slug AS tslug FROM syllabi s LEFT JOIN trades
 $sectors = array_values(array_unique(array_filter(array_column($rows, 'sector'))));
 sort($sectors);
 $yr = date('Y');
-$cstari = setting('syllabus_source_url') ?: 'https://www.cstaricalcutta.gov.in/en/cts-syllabus';
+$cstari = setting('syllabus_source_url') ?: 'https://dgt.gov.in/en/cts-details';
 $intro = setting('syllabus_intro');
 
 $faq = [
-    ['Where can I download the ITI syllabus PDF?', 'This page lists the official NCVT CTS syllabus PDF for each ITI trade. Click "Download PDF" next to your trade. The files are published by DGT / CSTARI Kolkata, Government of India.'],
+    ['Where can I download the ITI syllabus PDF?', 'This page lists the official NCVT CTS syllabus PDF for each ITI trade. Click "Download PDF" next to your trade. The files are published by DGT (Directorate General of Training), Government of India.'],
     ['Is the ITI syllabus the same in every state?', 'Yes. NCVT (CTS) trades follow the same national syllabus made by DGT and CSTARI Kolkata, so ITIs in Maharashtra and every other state teach the same modules.'],
     ['What is NSQF level in the ITI syllabus?', 'NSQF (National Skills Qualifications Framework) level shows the skill level of the course. Most ITI trades are at NSQF level 3 to 5.'],
     ['Which syllabus is used for the ITI CBT exam?', 'The CBT exam questions are based on the latest CTS syllabus of your trade: Trade Theory, Workshop Calculation & Science, Engineering Drawing and Employability Skills.'],
@@ -90,7 +90,7 @@ require __DIR__ . '/includes/header.php';
           </div>
         </article>
 <?php endforeach; ?>
-        <p class="syl-none" hidden>No trade found. Try another name or <a href="<?= e($cstari) ?>" target="_blank" rel="noopener nofollow">search on CSTARI</a>.</p>
+        <p class="syl-none" hidden>No trade found. Try another name or <a href="<?= e($cstari) ?>" target="_blank" rel="noopener nofollow">see the full DGT list</a>.</p>
       </div>
 
       <?= ad('syllabus') ?>
@@ -108,7 +108,7 @@ require __DIR__ . '/includes/header.php';
 <?php endforeach; ?>
         </section>
       </div>
-      <p class="syl-note">Syllabus files are official Government of India documents hosted on DGT, BharatSkills and CSTARI websites. If a link stops working, check the latest file on <a href="<?= e($cstari) ?>" target="_blank" rel="noopener nofollow">CSTARI Kolkata</a>.</p>
+      <p class="syl-note">Syllabus files are official Government of India documents hosted on the DGT (Directorate General of Training) website. If a link stops working, check the latest file on the <a href="<?= e($cstari) ?>" target="_blank" rel="noopener nofollow">DGT CTS trade list</a>.</p>
     </div>
   </section>
 </main>

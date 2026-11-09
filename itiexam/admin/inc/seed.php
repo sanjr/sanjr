@@ -750,3 +750,74 @@ function seed_syllabi_more(): void
         $ins->execute([$name, $sector, $dur, $det, $url, 'CSTARI', 'published', ++$sort, now()]);
     }
 }
+
+/**
+ * Syllabus links from the current DGT CTS list (dgt.gov.in/en/cts-details, Nov 2026), run once.
+ * - a trade already on the page gets the DGT PDF, NSQF level and duration (renamed trades also get the new DGT name);
+ * - DGT trades not on the page yet are added;
+ * - old trades DGT no longer runs (no syllabus there) are hidden, not deleted (Admin → Syllabus can show them again).
+ * Rows the admin added that are not in the lists below are left as they are.
+ */
+function seed_syllabi_dgt(): void
+{
+    $dgt = require __DIR__ . '/syllabi-dgt.php';
+    $key = fn(string $s): string => preg_replace('/[^a-z0-9]/', '', strtolower(str_replace('&', 'and', $s)));
+    $byNo = []; $byName = [];
+    foreach ($dgt as $r) { $byNo[$r[0]] = $r; $byName[$key($r[1])] = $r[0]; }
+    // our older names → DGT S.No; 'keep' = keep our name (it already says the same, only longer)
+    $alias = [
+        'COPA (Computer Operator & Programming Assistant)' => ['93', 'keep'], 'Mechanic Motor Vehicle (MMV)' => ['15', 'keep'],
+        'ICTSM (Information & Communication Technology System Maintenance)' => ['89', 'keep'],
+        'Stenographer & Secretarial Assistant (English)' => ['110', 'keep'], 'Stenographer & Secretarial Assistant (Hindi)' => ['149', 'keep'],
+        'Driver cum Mechanic (Light Motor Vehicle)' => ['9', 'keep'], 'Software Testing Assistant' => ['98', 'keep'],
+        'Cutting & Sewing' => ['6', 'dgt'], 'Hair & Skin Care' => ['20', 'dgt'], 'Soil Testing and Crop Technician' => ['4', 'dgt'],
+        'Advanced CNC Machining Technician' => ['146', 'dgt'], 'Architectural Assistant' => ['28', 'dgt'],
+        'Basic Designer & Virtual Verifier (Mechanical)' => ['142', 'dgt'], 'Carpenter' => ['51', 'dgt'], 'Civil Engineer Assistant' => ['52', 'dgt'],
+        'Internet of Things Technician (Smart Agriculture)' => ['67', 'dgt'], 'Internet of Things Technician (Smart City)' => ['68', 'dgt'],
+        'Internet of Things Technician (Smart Healthcare)' => ['69', 'dgt'], 'Manufacturing Process Control & Automation' => ['145', 'dgt'],
+        'Mechanic Mechatronics' => ['135', 'dgt'], 'Mechanic Medical Electronics' => ['87', 'dgt'], 'Mechanic Motor Cycle' => ['17', 'dgt'],
+        'Mechanic Repair & Maintenance of Two Wheelers' => ['17', 'dgt'], 'Technician Power Electronics System' => ['71', 'dgt'],
+        'Welder (Gas & Electric)' => ['40', 'dgt'], 'Welder (TIG / MIG)' => ['42', 'dgt'], 'Basic Cosmetology' => ['19', 'dgt'],
+        'Craftsman Food Production (General)' => ['128', 'dgt'], 'Embroidery & Needle Worker' => ['124', 'dgt'], 'Milk & Milk Products' => ['79', 'dgt'],
+        'Old Age Care Assistant' => ['86', 'dgt'], 'Weaving of Silk & Woolen Fabric' => ['125', 'dgt'], 'Cane, Willow & Bamboo Worker' => ['81', 'dgt'],
+    ];
+    $aliasK = [];
+    foreach ($alias as $n => $v) $aliasK[$key($n)] = $v;
+    // trades no longer in the DGT CTS list – no current syllabus to link to
+    $gone = ['Building Maintenance', 'Furniture & Cabinet Maker', 'Mechanic Computer Hardware', 'Mechanic cum Operator Electronics Communication System',
+        'Mechanic Repair & Maintenance of Heavy Vehicles', 'Mechanic Repair & Maintenance of Light Vehicles', 'Water Technician',
+        'Corporate House Keeping', 'Domestic House Keeping', 'Institution House Keeping', 'Craftsman Food Production (Vegetarian)', 'Creche Management',
+        'Event Management Assistant', 'Hospital Waste Management', 'Insurance Agent', 'Library & Information Science', 'Litigation Assistant',
+        'Medical Transcription', 'Office Assistant cum Computer Operator', 'Plate Maker cum Impositor', 'Pre / Preparatory School Management (Assistant)',
+        'Printing Technology', 'Programming & Systems Administration Assistant', 'Sericulture', 'Weaving of Fancy Fabric', 'Yoga Assistant',
+        'Commercial Art', 'Web Designing & Computer Graphics', 'Computer Software Application', 'Jewellery Maker (Gold Smith)'];
+    $goneK = array_flip(array_map($key, $gone));
+
+    $pdo = db();
+    $rows = $pdo->query('SELECT id, trade_name, trade_id, is_featured, status FROM syllabi ORDER BY is_featured DESC, trade_id = 0, sort_order, id')->fetchAll();
+    // a row already named like the DGT trade wins over an older name of the same trade
+    usort($rows, fn($a, $b) => (isset($byName[$key($b['trade_name'])]) <=> isset($byName[$key($a['trade_name'])])) ?: ($b['is_featured'] <=> $a['is_featured']));
+    $upd = $pdo->prepare('UPDATE syllabi SET trade_name = ?, nsqf = ?, duration = ?, pdf_url = ?, source = ?, updated_at = ? WHERE id = ?');
+    $hide = $pdo->prepare("UPDATE syllabi SET status = 'draft', updated_at = ? WHERE id = ?");
+    $done = [];
+    foreach ($rows as $r) {
+        $k = $key($r['trade_name']);
+        if (isset($aliasK[$k])) [$no, $how] = $aliasK[$k];
+        elseif (isset($byName[$k])) { $no = $byName[$k]; $how = in_array($no, ['6', '20', '4'], true) ? 'dgt' : 'keep'; }
+        else { if (isset($goneK[$k]) && $r['status'] === 'published') $hide->execute([now(), $r['id']]); continue; }
+        if (isset($done[$no])) { if ($r['status'] === 'published') $hide->execute([now(), $r['id']]); continue; }   // a second row for the same DGT trade
+        $done[$no] = 1;
+        $d = $byNo[$no];
+        $upd->execute([$how === 'dgt' ? $d[1] : $r['trade_name'], $d[3], $d[4], $d[5], 'DGT', now(), $r['id']]);
+    }
+    $sort = (int)$pdo->query('SELECT COALESCE(MAX(sort_order), 0) FROM syllabi')->fetchColumn();
+    $ins = $pdo->prepare('INSERT INTO syllabi (trade_name, trade_id, sector, duration, nsqf, details, pdf_url, hindi_url, source, is_featured, status, sort_order, updated_at) VALUES (?, 0, ?, ?, ?, ?, ?, \'\', ?, 0, ?, ?, ?)');
+    foreach ($dgt as $d) {
+        if (isset($done[$d[0]])) continue;
+        $det = 'Eligibility: ' . rtrim($d[6], '. ');
+        if (mb_strlen($det) > 220) $det = mb_substr($det, 0, 217) . '…';
+        $ins->execute([$d[1], $d[2], $d[4], $d[3], $det, $d[5], 'DGT', 'published', ++$sort, now()]);
+    }
+    $src = setting('syllabus_source_url');
+    if ($src === '' || stripos($src, 'cstaricalcutta') !== false) setting_set('syllabus_source_url', 'https://dgt.gov.in/en/cts-details');
+}
