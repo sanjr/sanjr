@@ -87,7 +87,7 @@ final class PublicController extends Controller
         $result = null;
         if ($pcid !== '') {
             $_SESSION['verify_hits'] = array_filter($_SESSION['verify_hits'] ?? [], static fn ($t) => $t > time() - 60);
-            if (count($_SESSION['verify_hits']) >= 20) {
+            if (count($_SESSION['verify_hits']) >= 20 || !self::ipAllowed('verify', 120)) {
                 $result = ['state' => 'limit'];
             } else {
                 $_SESSION['verify_hits'][] = time();
@@ -97,5 +97,25 @@ final class PublicController extends Controller
             }
         }
         $this->page('public/verify', ['title' => 'Verify PCID', 'pcid' => $pcid, 'result' => $result]);
+    }
+
+    /** At most $max hits per minute from one IP address (also when the visitor drops the session cookie). */
+    private static function ipAllowed(string $what, int $max): bool
+    {
+        $dir = __DIR__ . '/../../storage/cache';
+        if (!is_dir($dir) && !@mkdir($dir, 0770, true)) {
+            return true;
+        }
+        $f = $dir . '/rl-' . $what . '-' . md5((string) ($_SERVER['REMOTE_ADDR'] ?? '')) . '-' . intdiv(time(), 60);
+        $n = (int) @file_get_contents($f) + 1;
+        @file_put_contents($f, (string) $n, LOCK_EX);
+        if (random_int(1, 200) === 1) {   // tidy up old counters now and then
+            foreach (glob($dir . '/rl-*') ?: [] as $old) {
+                if (filemtime($old) < time() - 300) {
+                    @unlink($old);
+                }
+            }
+        }
+        return $n <= $max;
     }
 }

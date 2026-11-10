@@ -40,6 +40,11 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: same-origin');
 header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; form-action 'self'; frame-ancestors 'none'");
 header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+header('Cross-Origin-Opener-Policy: same-origin');
+if (($_SERVER['HTTPS'] ?? '') === 'on' || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') {
+    header('Strict-Transport-Security: max-age=31536000');   // browsers always use HTTPS for this site
+}
+header_remove('X-Powered-By');
 
 $r = new Router();
 // --- auth
@@ -204,7 +209,7 @@ try {
     Auth::boot();
     $r->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', current_path());
 } catch (HttpException $e) {
-    http_response_code($e->status);
+    http_response_code($e->status === 419 ? 403 : $e->status);   // 419 is not standard: some servers turn it into 500
     View::render('errors/error', ['title' => 'Error ' . $e->status, 'status' => $e->status, 'message' => $e->getMessage()],
         Auth::role() ? 'app' : 'auth');
 } catch (\DomainException | \PDOException $e) {

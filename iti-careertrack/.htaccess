@@ -1,0 +1,10 @@
+# Private files in the package folder must never be downloadable from the web
+<FilesMatch "\.(xlsx|xls|csv|md|sql|gz|sh|log|bak|zip|py|json|lock|ini|env)$">
+    Require all denied
+</FilesMatch>
+# Hidden files (.gitignore, .env, .htaccess …)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+Options -Indexes
+ServerSignature Off

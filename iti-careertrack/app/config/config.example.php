@@ -8,6 +8,7 @@ return [
     'app' => [
         'name'                 => 'ITI CareerTrack',
         'env'                  => getenv('CT_ENV') ?: 'demo',          // demo | production  [CT_ENV]
+        'debug'                => false,   // true = show PHP errors on screen (only on your own computer, never on the live site)
         // Long random secret used for Aadhaar HMAC and tokens. MUST be changed. [CT_SECRET]
         'secret'               => getenv('CT_SECRET') ?: 'dev-only-secret-change-me-0f9a7c1e5b2d4a6f8e3c',
         'timezone'             => 'Asia/Kolkata',

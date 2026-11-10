@@ -46,7 +46,7 @@ abstract class Controller
     /** Small pagination helper. */
     protected function paginate(string $sql, array $params, int $perPage = 25, ?string $countSql = null): array
     {
-        $page = max(1, (int) input('page', 1));
+        $page = min(100000, max(1, (int) input('page', 1)));   // no overflow from ?page=99999999999…
         // The total is cached for a minute (same query + same scope parameters): paging through a big
         // list does not count lakhs of rows again on every click.
         $cq = $countSql ?? self::countSql($sql);
