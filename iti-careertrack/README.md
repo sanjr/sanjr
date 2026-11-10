@@ -9,7 +9,7 @@
 > **Capacity:** [docs/04-PERFORMANCE-AND-CAPACITY.md](docs/04-PERFORMANCE-AND-CAPACITY.md) — tested with 2.7 lakh students and 100 simultaneous users.
 >
 > Tested before release: web installer (Demo and Empty), Apache sub-folder install from the ZIP,
-> a real-browser walkthrough of every menu of all 8 roles (263 checks) and 196 end-to-end tests — all passing.
+> a real-browser walkthrough of every menu of all 8 roles (279 checks), 231 end-to-end tests and 56 security attack probes — all passing.
 
 
 **ITI Student Lifecycle & Career Tracking System — Maharashtra**
@@ -39,8 +39,8 @@ No framework, no CDN and no `composer`/`npm` install is needed, so it runs on a 
 | `python/seed_demo.py` | Creates DEMO data (36 districts, 46 ITIs, about 6,500 students with full career histories) |
 | `python/jobs/followup_job.py` | Nightly job that creates follow-up tasks for alumni who have not updated (it never changes their status) |
 | `python/reports/export_report.py` | Offline Excel/CSV report for the State or District office |
-| `python/tests/test_e2e.py` | **196 automated end-to-end acceptance and security tests** |
-| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (263 checks) |
+| `python/tests/test_e2e.py` | **231 automated end-to-end acceptance and security tests** |
+| `python/tests/browser_walkthrough.js` | Real-browser walkthrough: every menu of every role + key tasks (279 checks) |
 | `python/tools/load_test.py`, `scale_clone.py` | Load test with many simultaneous users; multiplies the demo data to state scale |
 | `python/tools/export_logins.py` | Writes LOGINS.xlsx and checks that every account can log in |
 | `app/public/install.php` | One-time web installer (Demo or Empty system); disabled automatically after installation |
@@ -176,7 +176,7 @@ mysql -uroot -p careertrack < database/mysql/05_regions_roles.sql
 CT_DB_USER=root CT_DB_PASS=yourpass python3 python/tests/test_e2e.py --base http://127.0.0.1:8080
 ```
 
-Expected result: `196 passed, 0 failed`.
+Expected result: `231 passed, 0 failed`. Security probes: `python3 python/tests/test_security.py <url>` → `56 passed`.
 
 ## Nightly follow-up job (cron)
 
@@ -192,7 +192,7 @@ On Windows, use Task Scheduler to run `python python\jobs\followup_job.py` daily
 
 - Official ITI, trade and district master data (replace the DEMO data).
 - MFA for privileged roles, and OTP login for students (needs an approved SMS provider).
-- SMS / WhatsApp / e-mail sending (the queue table exists; no provider is connected).
+- SMS sending (no provider connected). E-mail (SMTP) and WhatsApp work once configured in config.php.
 - Legal approval of: the PCID format, Aadhaar collection, guardian consent for minors, and data retention.
 - HTTPS, encrypted and tested backups, a security audit (e.g. a CERT-In empanelled auditor), and load testing.
 - Official branding (state emblem etc.) only with authorisation.

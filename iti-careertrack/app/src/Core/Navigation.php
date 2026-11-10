@@ -10,19 +10,19 @@ final class Navigation
     {
         return match ($role) {
             'STATE_ADMIN' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['ITIs Management', '/itis', 'building'], ['Students (State)', '/students', 'users'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['Email & Circulars', '/mail', 'mail'], ['ITIs Management', '/itis', 'building'], ['Students (State)', '/students', 'users'],
                 ['Transfers', '/transfers', 'transfer'], ['Student Outcomes', '/outcomes', 'target'], ['Companies', '/companies', 'briefcase'], ['Verification Queue', '/verifications', 'shield'],
                 ['Reports & Analytics', '/reports', 'chart'], ['Automatic Data Linking', '/integrations', 'transfer'], ['User & Role Mgmt', '/users', 'users'], ['Master Data', '/masters', 'layers'],
                 ['Audit Logs', '/audit', 'clipboard'], ['Database Backups', '/backups', 'shield'], ['Settings', '/settings', 'settings'],
             ],
             'RO_ADMIN' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['Email & Circulars', '/mail', 'mail'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
                 ['Training & Results', '/reports?type=result', 'book'], ['Student Outcomes', '/outcomes', 'target'], ['Apprenticeship', '/apprenticeships', 'tool'],
                 ['Placement', '/reports?type=placement', 'briefcase'], ['Verification Queue', '/verifications', 'shield'],
                 ['Reports', '/reports?type=outcome', 'chart'], ['Apprentice Advisors', '/users', 'users'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'DVTO' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['Email & Circulars', '/mail', 'mail'], ['ITIs', '/itis', 'building'], ['Students', '/students', 'users'],
                 ['Training & Results', '/reports?type=result', 'book'], ['Student Outcomes', '/outcomes', 'target'], ['Apprenticeship', '/apprenticeships', 'tool'],
                 ['Placement', '/reports?type=placement', 'briefcase'], ['Verification Queue', '/verifications', 'shield'],
                 ['Reports', '/reports?type=outcome', 'chart'], ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
@@ -34,7 +34,7 @@ final class Navigation
                 ['Audit Logs', '/audit', 'clipboard'], ['Settings', '/settings', 'settings'],
             ],
             'PRINCIPAL' => [
-                ['Dashboard', '/dashboard', 'dashboard'], ['Students', '/students', 'users'], ['Admission', '/admissions/new', 'user'], ['Bulk Admission (Excel)', '/admissions/bulk', 'upload'],
+                ['Dashboard', '/dashboard', 'dashboard'], ['Email & Circulars', '/mail', 'mail'], ['Students', '/students', 'users'], ['Admission', '/admissions/new', 'user'], ['Bulk Admission (Excel)', '/admissions/bulk', 'upload'],
                 ['Assign Trade & Instructor', '/students/assign', 'check-circle'], ['Trades & Batches', '/trades', 'layers'], ['Instructors', '/users', 'users'], ['Student Outcomes', '/outcomes', 'target'], ['WhatsApp Updates', '/whatsapp', 'phone'],
                 ['Examination', '/results', 'award'], ['Apprenticeship', '/apprenticeships', 'tool'], ['Placement', '/placements', 'briefcase'],
                 ['Transfer', '/transfers', 'transfer'], ['Companies & Jobs', '/companies', 'briefcase'], ['Follow-ups', '/follow-ups', 'phone'], ['Verification Queue', '/verifications', 'shield'], ['Reports', '/reports', 'chart'],

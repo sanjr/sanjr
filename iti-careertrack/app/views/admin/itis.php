@@ -54,7 +54,8 @@
     <div class="field"><label>Type <span class="req">*</span></label><select name="ownership_type" required><?= enum_options(['GOVERNMENT', 'PRIVATE'], old('ownership_type'), '') ?></select></div>
     <div class="field"><label>District <span class="req">*</span></label><select name="district_id" required><?= options($districts, 'id', 'name', old('district_id')) ?></select></div>
     <div class="field"><label>Pincode</label><input type="text" name="pincode" pattern="[1-9][0-9]{5}" maxlength="6"></div>
-    <div class="field span3"><label>Address</label><input type="text" name="address_line" maxlength="255"></div>
+    <div class="field span2"><label>Address</label><input type="text" name="address_line" maxlength="255"></div>
+    <div class="field"><label>ITI e-mail <span class="muted">(circulars are sent here)</span></label><input type="email" name="email" maxlength="190"></div>
     <div class="field span3"><label>Trades offered</label><div class="trade-pick">
       <?php foreach ($trades as $t): ?><label><input type="checkbox" name="trades[]" value="<?= (int) $t['id'] ?>"> <?= e($t['name']) ?></label><?php endforeach; ?></div></div>
     <div class="field"><button class="btn" type="submit"><?= icon('plus') ?> Add ITI</button></div>

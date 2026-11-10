@@ -275,3 +275,68 @@
     upd();
   }
 })();
+
+/* ---------- Email & Circulars: recipient picker with live count, e-mail sending progress ---------- */
+(function () {
+  var f = document.querySelector('form[data-mail-compose]');
+  if (f) {
+    var q = function (s) { return f.querySelector(s); }, qa = function (s) { return Array.prototype.slice.call(f.querySelectorAll(s)); };
+    var region = q('[data-ml-region]'), district = q('[data-ml-district]'), own = q('[data-ml-own]'), search = q('[data-ml-search]');
+    var grp = function (g) { var c = q('[data-ml-group="' + g + '"]'); return c && c.checked; };
+    var mode = function () { var r = q('[data-ml-mode]:checked'); return r ? r.value : 'all'; };
+    var match = function (el) {
+      var rg = +region.value, ds = +district.value, ow = own.value;
+      return (!rg || +el.getAttribute('data-region') === rg) && (!ds || +el.getAttribute('data-district') === ds) && (!ow || el.getAttribute('data-own') === ow);
+    };
+    var update = function () {
+      var rg = +region.value;
+      qa('[data-ml-district] option[data-region]').forEach(function (o) { o.hidden = !!rg && +o.getAttribute('data-region') !== rg; });
+      if (district.selectedOptions[0] && district.selectedOptions[0].hidden) district.value = '0';
+      var term = (search && search.value || '').toLowerCase().trim();
+      qa('[data-ml-row]').forEach(function (r) { r.hidden = !match(r) || (term && r.getAttribute('data-text').indexOf(term) < 0); });
+      q('[data-ml-iti]').hidden = !grp('iti');
+      q('[data-ml-pick]').hidden = mode() !== 'pick';
+      var ro = q('[data-ml-ro]'); if (ro) ro.hidden = !grp('ro');
+      var n = 0, parts = [];
+      if (grp('iti')) {
+        n = mode() === 'pick' ? qa('[data-ml-row] input:checked').length : qa('[data-ml-row]').filter(match).length;
+        parts.push(n + ' ITIs');
+      }
+      if (grp('ro')) { var k = qa('[data-ml-roid]:checked').length; n += k; parts.push(k + ' RO offices'); }
+      if (grp('dvto')) {
+        var ds = +district.value, k2 = qa('[data-ml-dvto]').filter(function (el) { return (!rg || +el.getAttribute('data-region') === rg) && (!ds || +el.getAttribute('data-district') === ds); }).length;
+        n += k2; parts.push(k2 + ' DVTO offices');
+      }
+      var t = q('[data-ml-total]');
+      t.textContent = 'Recipients: ' + (parts.length ? parts.join(' + ') + ' = ' + n + ' offices' : 'nobody chosen yet');
+      t.classList.toggle('zero', n === 0);
+    };
+    f.addEventListener('change', update);
+    if (search) search.addEventListener('input', update);
+    var all = q('[data-ml-all]'), none = q('[data-ml-none]');
+    if (all) all.addEventListener('click', function () { qa('[data-ml-row]').forEach(function (r) { if (!r.hidden) r.querySelector('input').checked = true; }); update(); });
+    if (none) none.addEventListener('click', function () { qa('[data-ml-row] input').forEach(function (i) { i.checked = false; }); update(); });
+    var send = q('[data-ml-send]');
+    if (send) send.addEventListener('click', function (ev) {
+      var t = q('[data-ml-total]').textContent;
+      if (!window.confirm('Send this message now?\n' + t)) ev.preventDefault();
+    });
+    update();
+  }
+  var pump = document.querySelector('[data-ml-pump]');
+  var url = pump && pump.getAttribute('data-ml-pump');
+  if (url) {
+    var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+    var tick = function () {
+      fetch(url, { method: 'POST', headers: { 'X-CSRF-Token': token, 'X-Requested-With': 'fetch' }, credentials: 'same-origin' })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          pump.querySelector('[data-ml-sent]').textContent = d.sent + ' / ' + d.total;
+          pump.querySelector('[data-ml-pumpnote]').textContent = d.queued ? 'e-mails sent — sending… (' + d.queued + ' left' + (d.note ? ': ' + d.note : '') + ')' : 'e-mails sent' + (d.failed ? ' · ' + d.failed + ' failed' : ' — all done');
+          if (d.queued && d.note !== 'hourly limit') setTimeout(tick, 1500);
+        })
+        .catch(function () { /* the cron job sends the rest */ });
+    };
+    setTimeout(tick, 800);
+  }
+})();

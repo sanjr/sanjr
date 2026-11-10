@@ -158,6 +158,37 @@ MySQL 8.0.16+ **or MariaDB 10.5+** (tested on MariaDB 10.11). PHP 8.1+ with `pdo
 
 अशा नोंदी profile वर **"Official record — EPFO (automatic)"** अशा दिसतात आणि लगेच *Verified* असतात. शासकीय API / data वापरण्यासाठी DVET/DGT कडून अधिकृत करारनामा (MoU) व विद्यार्थ्याची संमती आवश्यक आहे.
 
+## Email & Circulars — State Admin सर्व ITI ना एकाच वेळी, RO Admin आपल्या region मधील ITI ना
+
+Menu: **Email & Circulars** (State Admin, RO Admin, DVTO, Principal). न वाचलेल्या संदेशांची संख्या menu मध्ये लाल रंगात दिसते.
+
+| Login | काय करू शकतो |
+|---|---|
+| State Admin | संपूर्ण महाराष्ट्रातील **सर्व ITI** ना एकाच वेळी, किंवा region / जिल्हा / शासकीय-खाजगी निवडून, किंवा ITI एक-एक tick करून; RO offices व DVTO offices ना सुद्धा |
+| RO Admin | फक्त **आपल्या region** मधील ITI व DVTO offices ना (दुसऱ्या region चे ITI निवडताच येत नाहीत) |
+| Principal / DVTO | आलेले संदेश वाचणे, attachment download, **Reply** (attachment सह) |
+
+- **Inbox / Starred / Sent / Drafts / Archive**, शोध (search), Priority (Normal / Important / Urgent), "Reply required by" तारीख.
+- **Attachments:** PDF, Word, Excel, PowerPoint, JPG, PNG, CSV, ZIP — एका संदेशात 10 फाइल, प्रत्येकी 10 MB, एकूण 25 MB. फाइल्स वेबवरून थेट उघडत नाहीत; login करूनच download होतात.
+- **Sent** मधील संदेश उघडला की प्रत्येक ITI ची स्थिती: ई-मेल गेला / अयशस्वी, portal मध्ये उघडला का (कोणी, केव्हा), reply आला का. Filter (उघडला नाही / reply नाही / ई-मेल अयशस्वी), **Excel मध्ये download**, आणि "**Remind those who have not opened**" (न उघडलेल्यांना पुन्हा ई-मेल).
+- प्रत्येक ITI ला स्वतंत्र ई-मेल जातो (एका ITI ला दुसऱ्या ITI चे पत्ते दिसत नाहीत).
+- ई-मेल कोणाला जातो: ITI चा official ई-मेल (Principal स्वतः Email & Circulars page वर भरू शकतो; किंवा ITI Excel import मध्ये "Email" column) + Principal चा login ई-मेल.
+
+**ई-मेल पाठवणे सुरू करणे (Hostinger):** settings न भरल्यास सर्व संदेश portal Inbox मध्ये मिळतात, पण ई-मेल जात नाही (DEMO).
+1. hPanel → **Emails** → तुमच्या domain वर mailbox बनवा, उदा. `noreply@copamcq.com` (password लक्षात ठेवा).
+2. `app/config/config.php` मध्ये शेवटच्या `);` च्या आधी हे जोडा:
+```php
+  'mail' => [
+    'host' => 'smtp.hostinger.com', 'port' => 465, 'secure' => 'ssl',
+    'username' => 'noreply@copamcq.com', 'password' => 'mailbox चा password',
+    'from' => 'noreply@copamcq.com', 'from_name' => 'DVET Maharashtra — ITI CareerTrack',
+    'per_hour' => 300,
+  ],
+```
+3. hPanel → Advanced → **Cron Jobs** → दर 5 मिनिटांनी: `php /home/USER/public_html/app/app/bin/send_mail.php`
+   (page उघडे असताना ई-मेल लगेच जातात; उरलेले cron पाठवते. `per_hour` = hosting plan ची तासाची मर्यादा.)
+4. State Admin → Email & Circulars → **E-mail settings** → "Send test" ने स्वतःला test ई-मेल पाठवून तपासा (spam folder सुद्धा पाहा).
+
 ## WhatsApp Bot — विद्यार्थी फक्त क्रमांक पाठवून स्टेटस अपडेट करतात (Principal व Instructor)
 
 Menu: **WhatsApp Updates** (Principal: ITI चे विद्यार्थी; Instructor: फक्त assign केलेले).

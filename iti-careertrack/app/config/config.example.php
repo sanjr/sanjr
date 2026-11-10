@@ -28,6 +28,19 @@ return [
         'documents' => __DIR__ . '/../storage/documents',
         'max_upload_bytes' => 5 * 1024 * 1024,
     ],
+    // Email & Circulars: without 'host' the portal Inbox works, but no e-mails are sent (DEMO).
+    // Hostinger: create a mailbox in hPanel → Emails; cron every 5 min: php …/app/bin/send_mail.php
+    'mail' => [
+        'host'      => getenv('CT_MAIL_HOST') ?: '',          // e.g. smtp.hostinger.com
+        'port'      => (int) (getenv('CT_MAIL_PORT') ?: 465),
+        'secure'    => 'ssl',                                  // ssl (465) | tls (587)
+        'username'  => getenv('CT_MAIL_USER') ?: '',
+        'password'  => getenv('CT_MAIL_PASS') ?: '',
+        'from'      => getenv('CT_MAIL_FROM') ?: '',           // same as username on Hostinger
+        'from_name' => 'DVET Maharashtra — ITI CareerTrack',
+        'per_hour'  => 300,                                    // sending limit of the hosting plan
+        'max_file_mb' => 10, 'max_total_mb' => 25, 'attach_in_email_mb' => 10,
+    ],
     // Dashboard / report numbers are cached per data scope (seconds); list totals for count_ttl. 0 = off.
     'cache' => ['ttl' => 600, 'count_ttl' => 60],
 ];

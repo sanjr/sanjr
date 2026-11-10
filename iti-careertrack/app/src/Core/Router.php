@@ -42,6 +42,9 @@ final class Router
                 }
             }
             if ($method === 'POST') {
+                if (!$_POST && !$_FILES && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0 && str_starts_with((string) ($_SERVER['CONTENT_TYPE'] ?? ''), 'multipart/')) {
+                    throw new \DomainException('The files are too large for the server (limit ' . ini_get('post_max_size') . '). Attach fewer or smaller files.');
+                }
                 Csrf::verify();
                 if (Database::readOnly() && !in_array($path, ['/login', '/logout'], true)) {
                     throw new \DomainException('The main database is not available right now. The website shows the backup copy and nothing can be saved — please try again later.');

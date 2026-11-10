@@ -45,7 +45,7 @@ $bellCount = \App\Services\Stats::bellCount();
         }
       ?>
       <?php foreach ($menu as $i => [$labelText, $href, $ic]): ?>
-        <a href="<?= url($href) ?>" class="<?= $i === $activeIdx ? 'active' : '' ?>"><?= icon($ic) ?><span><?= e($labelText) ?></span></a>
+        <a href="<?= url($href) ?>" class="<?= $i === $activeIdx ? 'active' : '' ?>"><?= icon($ic) ?><span><?= e($labelText) ?></span><?php if ($href === '/mail' && ($mc = \App\Services\Mail::unreadCount())): ?><b class="nav-count"><?= $mc > 99 ? '99+' : $mc ?></b><?php endif; ?></a>
       <?php endforeach; ?>
     </nav>
     <div class="sidebar-foot">ITI Student Lifecycle &amp; Career Tracking System — Maharashtra</div>

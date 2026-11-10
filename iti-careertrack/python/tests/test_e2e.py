@@ -81,7 +81,8 @@ class Client:
                 for k, v in fields.items():
                     for item in (v if isinstance(v, list) else [v]):
                         parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{item}\r\n'.encode())
-                for k, (fname, content, ctype) in files.items():
+                for k, spec in files.items():
+                  for (fname, content, ctype) in (spec if isinstance(spec, list) else [spec]):
                     parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"; filename="{fname}"\r\nContent-Type: {ctype}\r\n\r\n'.encode() + content + b"\r\n")
                 parts.append(f"--{boundary}--\r\n".encode())
                 payload = b"".join(parts)
@@ -873,6 +874,92 @@ def main() -> int:
         ok(status == 200 and "CREATE TABLE `students`" in text and "-- @@COMPLETE" in text, "Backup file downloads, complete, with all tables")
     ok(sb.get("/backups/download?f=../config/config.php")[0] == 404, "Only backup files can be downloaded")
     ok(as_user(base, "principal.pune@demo.local").get("/backups")[0] == 403, "Only the State Admin sees backups")
+
+
+    print("\n[24] Email & Circulars: State Admin to all ITIs, RO Admin to own region, attachments, read / reply status")
+    ms = as_user(base, "state@demo.local")
+    status, body, _, _ = ms.get("/mail")
+    ok(status == 200 and "Email &amp; Circulars" in body and "New message" in body, "State Admin opens the Email & Circulars dashboard")
+    status, body, _, _ = ms.get("/mail/compose")
+    n_itis = val("SELECT COUNT(*) FROM itis WHERE status = 'ACTIVE'")
+    ok(status == 200 and body.count('name="iti_ids[]"') == n_itis, f"State Admin can choose from all {n_itis} ITIs of Maharashtra")
+    cur.execute("UPDATE itis SET email = 'gitipune@dvet-demo.in' WHERE iti_code = 'DEMO0001'")
+    pdf = b"%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n"
+    subj = "E2E circular " + rand_name()
+    _, body, url, _ = ms.post("/mail/compose", {"to_iti": "1", "iti_mode": "all", "region_id": "0", "district_id": "0", "ownership": "",
+                                                "subject": subj, "priority": "HIGH", "body": "Dear Principal,\nplease send the data. https://example.gov.in/form",
+                                                "action": "send"}, files={"attachments[]": [("Circular 12.pdf", pdf, "application/pdf"), ("data.csv", b"a,b\n1,2\n", "text/csv")]})
+    mid = val("SELECT id FROM mail_messages WHERE subject = %s", subj)
+    ok(bool(mid) and f"/mail/{mid}" in url and "Message sent to" in flash(body), "State Admin sends one message with 2 attachments to all ITIs at once")
+    ok(val("SELECT COUNT(*) FROM mail_recipients WHERE message_id = %s AND box_type = 'ITI'", mid) == n_itis, "Every ITI of Maharashtra received it")
+    ok(val("SELECT COUNT(*) FROM mail_attachments WHERE message_id = %s", mid) == 2, "Both attachments are stored")
+    ok(val("SELECT COUNT(*) FROM mail_deliveries WHERE message_id = %s AND status = 'DEMO'", mid) >= 1
+       and val("SELECT COUNT(*) FROM mail_deliveries WHERE message_id = %s AND email LIKE '%%.local'", mid) == 0, "E-mail rows made per address (DEMO mode; test addresses skipped)")
+    mp = as_user(base, "principal.pune@demo.local")
+    status, body, _, _ = mp.get("/mail")
+    ok(status == 200 and subj in body and "unread" in body, "Principal sees it unread in the Inbox")
+    ok('class="nav-count"' in mp.get("/dashboard")[1], "Unread count shows in the menu")
+    status, body, _, _ = mp.get(f"/mail/{mid}")
+    ok(status == 200 and "Circular 12.pdf" in body and 'href="https://example.gov.in/form"' in body and "Reply to DVET State Office" in body, "Principal opens it: text, link, attachments, reply box")
+    att = val("SELECT id FROM mail_attachments WHERE message_id = %s ORDER BY id LIMIT 1", mid)
+    status, _, _, raw = mp.get(f"/mail/attachment/{att}")
+    ok(status == 200 and raw.startswith(b"%PDF"), "Principal downloads the attachment")
+    ok(val("SELECT read_at IS NOT NULL FROM mail_recipients r JOIN itis i ON i.id = r.box_id WHERE r.message_id = %s AND r.box_type = 'ITI' AND i.iti_code = 'DEMO0001'", mid) == 1, "Opening marks it read for that ITI")
+    _, body, _, _ = mp.post(f"/mail/{mid}/reply", {"body": "Data attached."}, files={"attachments[]": ("reply.pdf", pdf, "application/pdf")})
+    ok("Reply sent" in flash(body), "Principal replies with an attachment")
+    _, body, _, _ = mp.post(f"/mail/{mid}/reply", {"body": "x"}, files={"attachments[]": ("photo.pdf", b"<?php echo 1; ?>", "application/pdf")})
+    ok("only PDF" in flash(body), "A PHP file disguised as PDF is refused")
+    status, body, _, _ = ms.get(f"/mail/{mid}")
+    ok(status == 200 and "Status of every office" in body and "View reply" in body and "Not opened" in body, "State Admin sees per-ITI opened / reply status")
+    status, body, _, _ = ms.get(f"/mail/{mid}?r=replied")
+    ok(body.count("View reply") == 1 and "Government ITI, Pune" in body, "Filter: replied offices")
+    status, _, _, raw = ms.get(f"/mail/{mid}/export")
+    ok(status == 200 and raw[:2] == b"PK", "Status downloads as Excel")
+    rid = val("SELECT id FROM mail_messages WHERE parent_id = %s", mid)
+    status, body, _, _ = ms.get("/mail")
+    ok("Re: " + subj in body, "The reply arrives in the State Admin Inbox")
+    _, body, _, _ = ms.post(f"/mail/{rid}/reply", {"body": "Received, thank you."})
+    ok("Reply sent" in flash(body) and "Received, thank you." in mp.get(f"/mail/{mid}")[1], "Conversation continues between State and that ITI only")
+    mn = as_user(base, "principal.nashik@demo.local")
+    ok(mn.get(f"/mail/{rid}")[0] == 404 and "Data attached." not in mn.get(f"/mail/{mid}")[1], "Another ITI does not see Pune's reply")
+    # RO Admin: own region only
+    mr = as_user(base, "ro.pun@demo.local")
+    status, body, _, _ = mr.get("/mail/compose")
+    pune_n = val("SELECT COUNT(*) FROM itis i JOIN districts d ON d.id = i.district_id WHERE d.region_id = 2 AND i.status = 'ACTIVE'")
+    ok(status == 200 and body.count('name="iti_ids[]"') == pune_n and "Government ITI, Nashik" not in body, f"RO Admin (Pune) can choose only the {pune_n} ITIs of the region")
+    subj2 = "E2E RO note " + rand_name()
+    nashik = val("SELECT id FROM itis WHERE iti_code = 'DEMO0002'")
+    satara = val("SELECT id FROM itis WHERE iti_code = 'DEMO0003'")
+    _, body, url, _ = mr.post("/mail/compose", {"to_iti": "1", "iti_mode": "pick", "iti_ids[]": [str(nashik), str(satara)], "region_id": "3",
+                                                "subject": subj2, "priority": "NORMAL", "body": "Regional note", "action": "send", "to_dvto": "1"})
+    m2 = val("SELECT id FROM mail_messages WHERE subject = %s", subj2)
+    ok(bool(m2) and val("SELECT GROUP_CONCAT(box_id) FROM mail_recipients WHERE message_id = %s AND box_type = 'ITI'", m2) == str(satara),
+       "RO Admin cannot reach an ITI of another region (forged form): only the own-region ITI got it")
+    ok(val("SELECT COUNT(*) FROM mail_recipients r JOIN districts d ON d.id = r.box_id WHERE r.message_id = %s AND r.box_type = 'DISTRICT' AND d.region_id <> 2", m2) == 0
+       and val("SELECT COUNT(*) FROM mail_recipients WHERE message_id = %s AND box_type = 'DISTRICT'", m2) >= 1, "RO Admin reaches the DVTO offices of the own region only")
+    subj3 = "E2E RO all " + rand_name()
+    mr.post("/mail/compose", {"to_iti": "1", "iti_mode": "all", "region_id": "3", "subject": subj3, "body": "All", "action": "send"})
+    m3 = val("SELECT id FROM mail_messages WHERE subject = %s", subj3)
+    ok(val("SELECT COUNT(*) FROM mail_recipients WHERE message_id = %s", m3) == pune_n, "RO Admin 'all ITIs' = all ITIs of the own region (region in the form ignored)")
+    ok(subj3 not in mn.get("/mail")[1] and subj3 in mp.get("/mail")[1], "Pune ITI got the RO message, Nashik ITI did not")
+    status, body, _, _ = as_user(base, "dvto.pune@demo.local").get("/mail")
+    ok(status == 200 and subj2 in body and "New message" not in body, "DVTO office receives (and can only reply)")
+    ok(mp.get("/mail/compose")[0] == 403, "Principal cannot write circulars")
+    ok(mn.get(f"/mail/attachment/{att}")[0] == 200 and as_user(base, "teacher.pune.ele@demo.local").get(f"/mail/attachment/{att}")[0] == 403, "Instructors have no mailbox")
+    ok(as_user(base, "rohit.deshmukh@demo.local").get("/mail")[0] == 403, "Students have no mailbox")
+    ok(mr.get(f"/mail/{mid}")[0] == 404, "RO Admin cannot open the State circular to ITIs")
+    # drafts
+    subj4 = "E2E draft " + rand_name()
+    _, body, url, _ = ms.post("/mail/compose", {"to_ro": "1", "subject": subj4, "body": "later", "action": "draft"}, files={"attachments[]": ("a.png", png, "image/png")})
+    did = val("SELECT id FROM mail_messages WHERE subject = %s AND status = 'DRAFT'", subj4)
+    ok(bool(did) and "Draft saved" in flash(body) and subj4 in ms.get("/mail?f=drafts")[1], "Draft is saved (with attachment) in Drafts")
+    ok(mp.get(f"/mail/{did}")[0] == 404 and subj4 not in mp.get("/mail")[1], "Nobody receives a draft")
+    _, body, _, _ = ms.post("/mail/compose", {"draft_id": str(did), "to_ro": "1", "ro_ids[]": ["1", "2"], "subject": subj4, "body": "now", "action": "send"})
+    ok(val("SELECT COUNT(*) FROM mail_recipients WHERE message_id = %s AND box_type = 'REGION'", did) == 2 and subj4 in mr.get("/mail")[1], "Draft sent to 2 RO offices; RO Pune receives it")
+    ok(mn.get(f"/mail/{did}")[0] == 404, "ITIs do not get a message sent to RO offices")
+    _, body, _, _ = mn.post("/mail/iti-email", {"email": "gitinashik@dvet-demo.in"})
+    ok("saved" in flash(body) and val("SELECT email FROM itis WHERE iti_code = 'DEMO0002'") == "gitinashik@dvet-demo.in", "Principal sets the ITI's official e-mail address")
+    ok(mr.post("/mail/iti-email", {"email": "x@dvet-demo.in"})[0] == 403, "Only a Principal can change the ITI e-mail")
 
     print(f"\n==== {RESULTS['pass']} passed, {RESULTS['fail']} failed ====")
     return 1 if RESULTS["fail"] else 0

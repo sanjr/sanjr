@@ -83,5 +83,17 @@ c.post('/logout', {}); s, _, url, _ = c.get('/dashboard'); chk('/login' in url, 
 # 12 webhook
 s, _, _, _ = t.Client(B).request('/webhooks/whatsapp', {'entry': '[]'}, csrf=False); chk(s == 403, 'unsigned WhatsApp webhook refused', str(s))
 s, _, _, _ = t.Client(B).get('/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=&hub.challenge=1'); chk(s == 403, 'webhook verify without token refused', str(s))
+# 13 email module: stored XSS in subject / body, HTML file disguised as PDF, other office's attachment
+sm = t.as_user(B, 'state@demo.local')
+_, body, url, _ = sm.request('/mail/compose', {'to_iti': '1', 'iti_mode': 'all', 'region_id': '2', 'subject': 'XSS ' + x, 'body': x, 'action': 'send'},
+                             files={'attachments[]': ('x.pdf', b'<html><script>alert(1)</script></html>', 'application/pdf')})
+chk('only PDF' in t.flash(body), 'HTML file disguised as PDF attachment refused', t.flash(body)[:70])
+_, body, url, _ = sm.request('/mail/compose', {'to_iti': '1', 'iti_mode': 'all', 'region_id': '2', 'subject': 'XSS ' + x, 'body': x, 'action': 'send'})
+mid = re.search(r'/mail/(\d+)', url)
+pm = t.as_user(B, 'principal.pune@demo.local')
+_, b1, _, _ = pm.get('/mail'); _, b2, _, _ = pm.get('/mail/' + (mid.group(1) if mid else '0'))
+chk(bool(mid) and '<script>alert(1)</script>' not in b1 + b2 and 'onerror=alert(1)>' not in b1 + b2, 'stored XSS in mail subject / body escaped')
+s2, _, _, _ = t.as_user(B, 'ro.mum@demo.local').get('/mail/' + (mid.group(1) if mid else '0'))
+chk(s2 == 404, 'RO of another region cannot open the message', str(s2))
 print('\n%d passed, %d failed' % (sum(1 for r in R if r[0]), sum(1 for r in R if not r[0])))
 sys.exit(1 if any(not r[0] for r in R if not r[1].startswith("Server header")) else 0)

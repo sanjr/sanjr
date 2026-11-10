@@ -67,7 +67,8 @@ final class AdminController extends Controller
         DB::tx(function () {
             $id = DB::insert('itis', ['iti_code' => strtoupper((string) input('iti_code')), 'name' => (string) input('name'),
                 'ownership_type' => input('ownership_type') === 'PRIVATE' ? 'PRIVATE' : 'GOVERNMENT', 'district_id' => (int) input('district_id'),
-                'address_line' => input('address_line') ?: null, 'pincode' => input('pincode') ?: null, 'created_by' => Auth::id()]);
+                'address_line' => input('address_line') ?: null, 'pincode' => input('pincode') ?: null,
+                'email' => filter_var(strtolower(trim((string) input('email', ''))), FILTER_VALIDATE_EMAIL) ?: null, 'created_by' => Auth::id()]);
             foreach ((array) ($_POST['trades'] ?? []) as $tid) {
                 DB::insert('iti_trades', ['iti_id' => $id, 'trade_id' => (int) $tid, 'sanctioned_units' => 1, 'seats_per_unit' => 24]);
             }

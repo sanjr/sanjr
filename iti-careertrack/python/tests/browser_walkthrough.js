@@ -218,6 +218,33 @@ const errorText = async p => (await p.locator('.alert-error').allTextContents())
   ok(/Instructor assigned to 1 students/.test(await successText(p)), 'Principal assigned an instructor');
   await p.context().close();
 
+  // State Admin: e-mail circular to a region with attachment; RO Admin sees only own region; Principal reads and replies
+  p = await login(b, 'STATE_ADMIN', 'DVET-ADMIN');
+  await p.goto(BASE + '/mail/compose');
+  await check(p, 'email compose page');
+  ok(/Recipients: \d+ ITIs = \d+ offices/.test(await p.textContent('[data-ml-total]')), 'compose shows the live recipient count');
+  await p.selectOption('[data-ml-region]', { label: 'Pune Region' });
+  const puneCount = +(await p.textContent('[data-ml-total]')).match(/(\d+) ITIs/)[1];
+  await p.check('input[name=iti_mode][value=pick]'); await p.fill('[data-ml-search]', 'satara');
+  ok(await p.locator('[data-ml-row]:visible').count() > 0 && await p.locator('[data-ml-row]:visible', { hasText: 'Nashik' }).count() === 0, 'ITI search filters the list');
+  await p.check('input[name=iti_mode][value=all]');
+  const wsubj = 'Walk circular ' + rnd;
+  await p.fill('input[name=subject]', wsubj); await p.fill('textarea[name=body]', 'Please send the apprenticeship list.');
+  await p.setInputFiles('input[name="attachments[]"]', { name: 'list.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\n%%EOF\n') });
+  await Promise.all([p.waitForNavigation(), p.click('[data-ml-send]')]);
+  ok(new RegExp('Message sent to ' + puneCount + ' offices').test(await successText(p)), `State Admin sent a circular to all ${puneCount} ITIs of Pune region`);
+  await check(p, 'sent message status page');
+  await p.context().close();
+  p = await login(b, 'PRINCIPAL', 'DEMO0001');
+  await p.goto(BASE + '/mail');
+  ok(await p.locator('.ml-row.unread', { hasText: wsubj }).count() === 1, 'Principal sees the circular unread in the Inbox');
+  await Promise.all([p.waitForNavigation(), p.click('.ml-row >> text=' + wsubj)]);
+  ok(await p.locator('.ml-att', { hasText: 'list.pdf' }).count() === 1, 'attachment listed in the message');
+  await p.fill('form[action$="/reply"] textarea', 'List attached.');
+  await Promise.all([p.waitForNavigation(), p.click('form[action$="/reply"] button[type=submit]')]);
+  ok(/Reply sent/.test(await successText(p)), 'Principal replied');
+  await p.context().close();
+
   // Public website and installer lock
   const ctx = await b.newContext(); p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));

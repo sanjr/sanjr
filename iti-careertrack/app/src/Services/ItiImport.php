@@ -40,7 +40,8 @@ final class ItiImport
             if ($codeCol !== null && $nameCol !== null) {
                 $map = ['code' => $codeCol, 'name' => $nameCol, 'type' => self::find($norm, ['ititype', 'type', 'ownership']),
                         'taluka' => self::find($norm, ['taluka', 'tehsil']), 'district' => self::find($norm, ['district']),
-                        'region' => self::find($norm, ['region', 'regionaloffice'])];
+                        'region' => self::find($norm, ['region', 'regionaloffice']),
+                        'email' => self::find($norm, ['email', 'emailid', 'itiemail', 'emailaddress', 'officialemail'])];
                 continue;
             }
             if ($map === null) {
@@ -64,7 +65,8 @@ final class ItiImport
                 $type = preg_match('/^G[RU]\d/', $code) || stripos($name, 'govt') !== false || stripos($name, 'government') !== false ? 'Government' : 'Private';
             }
             $out[] = ['code' => $code, 'name' => mb_substr($name, 0, 200), 'type' => $type, 'taluka' => $taluka,
-                      'district' => $get($map['district']), 'region' => $get($map['region']), 'row' => $i + 1];
+                      'district' => $get($map['district']), 'region' => $get($map['region']), 'row' => $i + 1,
+                      'email' => filter_var(strtolower($get($map['email'])), FILTER_VALIDATE_EMAIL) ?: null];
         }
         if (!$out) {
             throw new \DomainException('No ITIs found. The sheet needs a header row with "NCVT MIS ITI Code", "Institute Name" and "District".');
@@ -219,12 +221,12 @@ final class ItiImport
                 $existing = DB::one('SELECT id FROM itis WHERE iti_code = ?', [$it['code']]);
                 if ($existing) {
                     $itiId = (int) $existing['id'];
-                    DB::run('UPDATE itis SET name = ?, ownership_type = ?, district_id = ?, taluka_id = ?, updated_by = ? WHERE id = ?',
-                        [$it['name'], $type, $d['id'], $talukaId, $actor, $itiId]);
+                    DB::run('UPDATE itis SET name = ?, ownership_type = ?, district_id = ?, taluka_id = ?, email = COALESCE(?, email), updated_by = ? WHERE id = ?',
+                        [$it['name'], $type, $d['id'], $talukaId, $it['email'], $actor, $itiId]);
                     $res['itis_updated']++;
                 } else {
                     $itiId = DB::insert('itis', ['iti_code' => $it['code'], 'name' => $it['name'], 'ownership_type' => $type,
-                        'district_id' => $d['id'], 'taluka_id' => $talukaId, 'created_by' => $actor]);
+                        'district_id' => $d['id'], 'taluka_id' => $talukaId, 'email' => $it['email'], 'created_by' => $actor]);
                     $res['itis_added']++;
                 }
                 if (self::ensureUser($it['code'], 'Principal, ' . $it['name'], $hash, $mustChange, $actor, (int) $roles['PRINCIPAL'],
