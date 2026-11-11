@@ -7,6 +7,7 @@ function admin_header(string $title, string $active = ''): void
         'cbt'       => ['/admin/cbt.php', 'CBT Tests (HTML)', 'clip'],
         'visitors'  => ['/admin/visitors.php', 'Visitors', 'globe'],
         'students'  => ['/admin/students.php', 'Students', 'users'],
+        'notes'     => ['/admin/notes.php', 'Theory Notes', 'book'],
         'syllabus'  => ['/admin/syllabus.php', 'Syllabus PDFs', 'open'],
         'jobs'      => ['/admin/jobs.php', 'Jobs', 'brief'],
         'employers' => ['/admin/employers.php', 'Employers', 'building'],

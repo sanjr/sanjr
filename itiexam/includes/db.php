@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '23';
+const SCHEMA_VERSION = '24';
 
 function db(): PDO
 {
@@ -193,6 +193,20 @@ function db_migrate(PDO $pdo): void
         is_featured INT NOT NULL DEFAULT 0, status VARCHAR(20) NOT NULL DEFAULT 'published', sort_order INT NOT NULL DEFAULT 0,
         updated_at VARCHAR(20) NOT NULL)$engine");
 
+    // v24: Theory Notes – modules (per trade and year) and their lessons, written in the admin and read on /trades/<slug>/notes/
+    $pdo->exec("CREATE TABLE IF NOT EXISTS note_modules (
+        id $id, trade_id INT NOT NULL, year INT NOT NULL DEFAULT 1, num VARCHAR(10) NOT NULL DEFAULT '', title VARCHAR(200) NOT NULL,
+        summary VARCHAR(500) NOT NULL DEFAULT '', status VARCHAR(20) NOT NULL DEFAULT 'published', sort_order INT NOT NULL DEFAULT 0,
+        updated_at VARCHAR(20) NOT NULL)$engine");
+    try { $pdo->exec('CREATE INDEX note_modules_trade ON note_modules (trade_id, year)'); } catch (PDOException $e) { /* already there */ }
+    $pdo->exec("CREATE TABLE IF NOT EXISTS note_lessons (
+        id $id, module_id INT NOT NULL, trade_id INT NOT NULL, num VARCHAR(10) NOT NULL DEFAULT '', title VARCHAR(200) NOT NULL,
+        slug VARCHAR(160) NOT NULL, summary VARCHAR(300) NOT NULL DEFAULT '', body $txt, image VARCHAR(300) NOT NULL DEFAULT '',
+        minutes INT NOT NULL DEFAULT 0, status VARCHAR(20) NOT NULL DEFAULT 'published', sort_order INT NOT NULL DEFAULT 0,
+        created_at VARCHAR(20) NOT NULL, updated_at VARCHAR(20) NOT NULL)$engine");
+    try { $pdo->exec('CREATE INDEX note_lessons_module ON note_lessons (module_id)'); } catch (PDOException $e) { /* already there */ }
+    try { $pdo->exec('CREATE UNIQUE INDEX note_lessons_slug ON note_lessons (trade_id, slug)'); } catch (PDOException $e) { /* already there */ }
+
     require_once __DIR__ . '/../admin/inc/seed.php';
     if ((int)$pdo->query('SELECT COUNT(*) FROM syllabi')->fetchColumn() === 0 && !setting('syllabi_seeded')) { seed_syllabi(); setting_set('syllabi_seeded', '1'); }
     if (!setting('syllabi_more_seeded')) { seed_syllabi_more(); setting_set('syllabi_more_seeded', '1'); }
@@ -203,6 +217,7 @@ function db_migrate(PDO $pdo): void
         seed_starter();
     }
     if (!setting('es_subject_done')) { make_es_subject($pdo); setting_set('es_subject_done', '1'); }
+    if (!setting('notes_fitter_seeded') && seed_notes_fitter()) setting_set('notes_fitter_seeded', '1');   // Fitter 1st Year theory notes (modules 1–8)
     // One-time fixes for sites installed with an older version (missing starter pages, old menu links)
     if ((int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() > 0) upgrade_content();
     if (setting('footer_credit', "\0") === "\0") setting_set('footer_credit', 'Created & Developed by – Sanjay L. Rathod');

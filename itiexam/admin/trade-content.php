@@ -300,6 +300,8 @@ admin_header('Content: ' . $t['name'], 'trades');
 <?php else: ?>
       <form method="post" action="<?= $self ?>" enctype="multipart/form-data" class="box form" id="form">
         <h2><?= $edit['id'] ? 'Edit item' : 'Add item' ?></h2>
+<?php if ($sec === 'study_material'): ?>        <p class="flash">Want <b>module-wise &amp; lesson-wise notes</b> (1st / 2nd Year) that students can read in any language? <a href="/admin/notes.php?trade=<?= $id ?>">Write them in Theory Notes →</a> PDFs added here stay as downloads.</p>
+<?php endif; ?>
 <?php if ($sec === 'mock_tests'): ?>        <p class="flash">Have a test made as an HTML page? <a href="/admin/cbt.php?trade=<?= $id ?>#form">Upload it in CBT Tests</a> – it is added to this list automatically.</p>
 <?php endif; ?>
 <?php if ($err): ?><div class="flash err"><?= e($err) ?></div><?php endif; ?>

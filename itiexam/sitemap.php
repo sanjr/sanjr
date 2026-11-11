@@ -4,6 +4,15 @@ require __DIR__ . '/includes/functions.php';
 header('Content-Type: application/xml; charset=utf-8');
 $urls = [['/', date('Y-m-d'), 'daily', '1.0'], ['/trades/', date('Y-m-d'), 'weekly', '0.9']];
 foreach (array_merge(trades(), subjects()) as $t) $urls[] = [trade_url($t), substr($t['updated_at'], 0, 10), 'weekly', '0.9'];
+// Theory Notes: the module list of each trade and every lesson page
+foreach (array_merge(trades(), subjects()) as $t) {
+    $last = '';
+    foreach (notes_tree((int)$t['id']) as $mods) foreach ($mods as $m) foreach ($m['lessons'] as $l) {
+        $urls[] = [notes_url($t, $l['slug']), substr($l['updated_at'], 0, 10), 'monthly', '0.7'];
+        $last = max($last, substr($l['updated_at'], 0, 10));
+    }
+    if ($last) $urls[] = [notes_url($t), $last, 'weekly', '0.8'];
+}
 $urls[] = ['/jobs/', date('Y-m-d'), 'daily', '0.9'];
 $urls[] = ['/app/', date('Y-m-d'), 'monthly', '0.8'];
 foreach (array_keys(JOB_TYPES) as $k) $urls[] = ["/jobs/$k/", date('Y-m-d'), 'daily', '0.8'];

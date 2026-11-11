@@ -256,6 +256,12 @@ $nav = [['overview', 'Overview', 'home']];
 foreach ($sections as $k => $s) {
     if ($s['tab'] && ($items[$k] || $k === 'mock_tests')) $nav[] = [sec_id($k), $s['tab'], $s['icon']];
 }
+$notesN = notes_count((int)$t['id']);           // module-wise Theory Notes written in Admin → Theory Notes
+if ($notesN) {
+    foreach ($nav as &$n) if ($n[0] === 'study-material') $n[1] = 'Study Material';
+    unset($n);
+    array_splice($nav, 1, 0, [['theory-notes', 'Theory Notes', 'book']]);
+}
 if ($t['content']) array_splice($nav, 1, 0, [['about', 'About ' . $name, 'book']]);
 $nav[] = ['exam-guide', 'Exam Guide', 'target'];
 if (!$items['faq']) $nav[] = ['faq', 'FAQ', 'help'];
@@ -353,6 +359,24 @@ require __DIR__ . '/includes/header.php';
 <?php endif; ?>
       </section>
       <?= ad('trade_top') ?>
+<?php if ($notesN): $nTree = notes_tree((int)$t['id']); $nFirst = null; foreach ($nTree as $ms) { foreach ($ms as $m) { $nFirst = $nFirst ?? $m['lessons'][0]; } } ?>
+      <section class="card tsec tnotes" id="theory-notes" aria-labelledby="tn-h">
+        <div class="sec-head sm"><h2 id="tn-h"><?= icon('book') ?> <?= e($name) ?> Theory Notes</h2><a href="<?= e(notes_url($t)) ?>" class="view-all">All Notes <?= icon('arrow') ?></a></div>
+        <p class="tn-lead">Module-wise &amp; lesson-wise notes with diagrams and quick revision – read in English, हिंदी, मराठी or any Indian language.</p>
+<?php foreach ($nTree as $y => $ms): ?>
+<?php if ($years > 1): ?>        <h3 class="tn-year"><?= notes_year_label($y) ?></h3>
+<?php endif; ?>
+        <div class="tn-grid">
+<?php foreach ($ms as $i => $m): ?>
+          <a class="tn-mod" href="<?= e(notes_url($t)) ?><?= $y > 1 ? '#year-' . $y : '' ?>"><span class="tn-num <?= chip_color($i) ?>"><?= e($m['num'] ?: $i + 1) ?></span><span><b><?= e($m['title']) ?></b><small><?= count($m['lessons']) ?> lesson<?= count($m['lessons']) === 1 ? '' : 's' ?></small></span></a>
+<?php endforeach; ?>
+        </div>
+<?php endforeach; ?>
+<?php if ($years > 1 && count($nTree) < 2): ?>        <p class="tn-soon"><?= icon('clock') ?> <?= isset($nTree[1]) ? '2nd Year' : '1st Year' ?> notes are coming soon.</p>
+<?php endif; ?>
+        <a class="btn-sm" href="<?= e(notes_url($t, $nFirst['slug'])) ?>">Start reading <?= icon('arrow') ?></a>
+      </section>
+<?php endif; ?>
 
 <?php
 /* Rows of section cards; empty sections drop out and the row reflows. */

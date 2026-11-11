@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/student.php';
+require_once __DIR__ . '/notes.php';
 
 /* ---------- Safety for every request ---------- */
 
@@ -419,9 +420,10 @@ function render_shortcodes(string $html): string
             $anchor = isset($a['section']) ? '#' . slugify($a['section']) : '';
             echo '<div class="trades sc">';
             foreach (trades() as $t) {
-                echo '<a class="trade" href="' . e(trade_url($t) . $anchor) . '" style="--tbg:' . e($t['card_color']) . '">'
+                $notes = $anchor === '#study-material' && notes_count((int)$t['id']);   // a trade with Theory Notes opens its notes
+                echo '<a class="trade" href="' . e($notes ? notes_url($t) : trade_url($t) . $anchor) . '" style="--tbg:' . e($t['card_color']) . '">'
                     . ($t['image'] ? '<img class="timg" src="' . e(upload_url($t['image'])) . '" alt="" loading="lazy">' : '<span class="emo" aria-hidden="true">' . e($t['emoji'] ?: '🛠️') . '</span>')
-                    . '<b class="tt">' . e($t['name']) . '</b>' . ($t['short_desc'] !== '' ? '<small class="td">' . e($t['short_desc']) . '</small>' : '') . '<span class="go">' . icon('arrow') . '</span></a>';
+                    . '<b class="tt">' . e($t['name']) . '</b>' . ($t['short_desc'] !== '' ? '<small class="td">' . e($t['short_desc']) . '</small>' : '') . ($notes ? '<em class="tnb">Theory Notes</em>' : '') . '<span class="go">' . icon('arrow') . '</span></a>';
             }
             echo '</div>';
         } elseif ($m[1] === 'jobs') {

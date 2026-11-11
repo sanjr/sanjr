@@ -49,7 +49,9 @@ $stu = student();
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
   <?= adsense_head() ?>
-  <link rel="stylesheet" href="/assets/css/style.css?v=41">
+  <link rel="stylesheet" href="/assets/css/style.css?v=42">
+<?php foreach (($meta['css'] ?? []) as $css): /* extra stylesheet of one kind of page, e.g. Theory Notes */ ?>  <link rel="stylesheet" href="<?= e($css) ?>">
+<?php endforeach; ?>
   <script src="/assets/js/main.js?v=18" defer></script>
 <?php if (($ga = setting('ga4_id')) && preg_match('/^G-[A-Z0-9]{4,15}$/', $ga) && empty($_SESSION['admin'])): ?>
   <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($ga) ?>"></script>

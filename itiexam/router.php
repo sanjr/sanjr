@@ -18,6 +18,7 @@ if (preg_match('~^/admin(/.*)?$~', $path, $m)) {
     if (is_file($f)) { chdir(dirname($f)); require $f; return true; }
 }
 if (preg_match('~^/trades/?$~', $path)) { require __DIR__ . '/trades.php'; return true; }
+if (preg_match('~^/(?:trades/)?([a-z0-9-]+)/notes(?:/([a-z0-9-]+))?/?$~', $path, $m)) { $_GET['slug'] = $m[1]; $_GET['l'] = $m[2] ?? ''; require __DIR__ . '/notes.php'; return true; }
 if (preg_match('~^/trades/([a-z0-9-]+)/?$~', $path, $m)) { $_GET['slug'] = $m[1]; require __DIR__ . '/trade.php'; return true; }
 if (preg_match('~^/jobs/?$~', $path)) { require __DIR__ . '/jobs.php'; return true; }
 if (preg_match('~^/jobs/([a-z0-9-]+)/?$~', $path, $m)) { $_GET['seg'] = $m[1]; require __DIR__ . '/jobs.php'; return true; }

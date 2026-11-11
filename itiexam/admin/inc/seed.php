@@ -821,3 +821,29 @@ function seed_syllabi_dgt(): void
     $src = setting('syllabus_source_url');
     if ($src === '' || stripos($src, 'cstaricalcutta') !== false) setting_set('syllabus_source_url', 'https://dgt.gov.in/en/cts-details');
 }
+
+/** ITI Fitter 1st Year theory notes (Modules 1–8) as module cards with lesson pages. Returns false while there is no Fitter trade. */
+function seed_notes_fitter(): bool
+{
+    $pdo = db();
+    $tid = $pdo->query("SELECT id FROM trades WHERE slug = 'fitter'")->fetchColumn();
+    if (!$tid) return false;
+    $has = $pdo->prepare('SELECT COUNT(*) FROM note_modules WHERE trade_id = ? AND year = 1');
+    $has->execute([$tid]);
+    if ($has->fetchColumn()) return true;            // the admin already made notes for Fitter 1st Year
+    $now = date('Y-m-d H:i:s');
+    $mi = $pdo->prepare("INSERT INTO note_modules (trade_id, year, num, title, summary, status, sort_order, updated_at) VALUES (?, 1, ?, ?, ?, 'published', ?, ?)");
+    $li = $pdo->prepare("INSERT INTO note_lessons (module_id, trade_id, num, title, slug, summary, body, image, minutes, status, sort_order, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'published', ?, ?, ?)");
+    $pdo->beginTransaction();
+    foreach (require __DIR__ . '/notes-fitter.php' as $m => [$num, $title, $summary, $lessons]) {
+        $mi->execute([$tid, $num, $title, $summary, $m + 1, $now]);
+        $mid = (int)$pdo->lastInsertId();
+        foreach ($lessons as $k => [$lnum, $ltitle, $lsum, $img, $body]) {
+            $words = str_word_count(strip_tags(str_replace('<', ' <', $body)));
+            $li->execute([$mid, $tid, $lnum, $ltitle, slugify($ltitle), $lsum, $body, $img, max(1, (int)round($words / 100)), $k + 1, $now, $now]);
+        }
+    }
+    $pdo->commit();
+    return true;
+}
