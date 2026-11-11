@@ -835,15 +835,23 @@ function seed_notes_fitter(): bool
     $mi = $pdo->prepare("INSERT INTO note_modules (trade_id, year, num, title, summary, status, sort_order, updated_at) VALUES (?, 1, ?, ?, ?, 'published', ?, ?)");
     $li = $pdo->prepare("INSERT INTO note_lessons (module_id, trade_id, num, title, slug, summary, body, image, minutes, status, sort_order, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'published', ?, ?, ?)");
-    $pdo->beginTransaction();
-    foreach (require __DIR__ . '/notes-fitter.php' as $m => [$num, $title, $summary, $lessons]) {
-        $mi->execute([$tid, $num, $title, $summary, $m + 1, $now]);
-        $mid = (int)$pdo->lastInsertId();
-        foreach ($lessons as $k => [$lnum, $ltitle, $lsum, $img, $body]) {
-            $words = str_word_count(strip_tags(str_replace('<', ' <', $body)));
-            $li->execute([$mid, $tid, $lnum, $ltitle, slugify($ltitle), $lsum, $body, $img, max(1, (int)round($words / 100)), $k + 1, $now, $now]);
+    // On a live site two visitors can start this at the same moment: the second one's insert fails on the unique
+    // lesson address, its transaction is undone and the visitor still gets the page (the first one added the notes).
+    try {
+        $pdo->beginTransaction();
+        foreach (require __DIR__ . '/notes-fitter.php' as $m => [$num, $title, $summary, $lessons]) {
+            $mi->execute([$tid, $num, $title, $summary, $m + 1, $now]);
+            $mid = (int)$pdo->lastInsertId();
+            foreach ($lessons as $k => [$lnum, $ltitle, $lsum, $img, $body]) {
+                $words = str_word_count(strip_tags(str_replace('<', ' <', $body)));
+                $li->execute([$mid, $tid, $lnum, $ltitle, slugify($ltitle), $lsum, $body, $img, max(1, (int)round($words / 100)), $k + 1, $now, $now]);
+            }
         }
+        $pdo->commit();
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        $has->execute([$tid]);
+        return (bool)$has->fetchColumn();
     }
-    $pdo->commit();
     return true;
 }
