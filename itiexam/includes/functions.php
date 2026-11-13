@@ -478,6 +478,8 @@ const AD_PLACEMENTS = [
     'article'     => ['Articles & pages – inside content', 'After the first paragraph of pages and articles'],
     'sidebar'     => ['Sidebar', 'Right sidebar on jobs, job details and articles'],
     'footer_top'  => ['All pages – above footer', 'At the bottom of every page'],
+    'html_top'    => ['Uploaded HTML pages – top', 'Top of .html pages you upload yourself into the website folder'],
+    'html_bottom' => ['Uploaded HTML pages – bottom', 'Bottom of .html pages you upload yourself into the website folder'],
 ];
 
 /** AdSense publisher ID like "ca-pub-1234567890123456", or '' when ads are off. */

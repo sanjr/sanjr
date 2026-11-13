@@ -6,6 +6,7 @@ $segs = [];
 foreach (explode('/', $path) as $seg) { if ($seg === '..') array_pop($segs); elseif ($seg !== '.' && $seg !== '') $segs[] = $seg; }
 $path = '/' . implode('/', $segs) . (str_ends_with($path, '/') && $segs ? '/' : '');
 if (preg_match('~^/(data|includes|admin/inc)(/|$)|^/router\.php$|(^|/)\.(?!well-known/)~', $path)) { http_response_code(403); exit('Forbidden'); }
+if (preg_match('~^/(?!(admin|assets|uploads)/)(.+\.html?)$~i', $path, $m) && is_file(__DIR__ . $path)) { $_GET['_hp'] = $m[2]; require __DIR__ . '/html-page.php'; return true; }
 if ($path !== '/' && is_file(__DIR__ . $path)) {
     if (str_starts_with($path, '/uploads/') && preg_match('/\.php/i', $path)) { http_response_code(403); exit; }
     return false;

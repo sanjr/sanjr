@@ -17,6 +17,7 @@ if (is_post()) {
         setting_set('adsense_client', $client === '' ? '' : (str_starts_with($client, 'ca-') ? $client : 'ca-' . $client));
         setting_set('adsense_enabled', isset($_POST['adsense_enabled']) ? '1' : '0');
         setting_set('ad_article_fluid', isset($_POST['ad_article_fluid']) ? '1' : '0');
+        setting_set('ads_html_pages', isset($_POST['ads_html_pages']) ? '1' : '0');
         setting_set('ads_txt_extra', trim($_POST['ads_txt_extra'] ?? ''));
         foreach (AD_PLACEMENTS as $k => $_) setting_set('ad_slot_' . $k, post('ad_slot_' . $k));
         flash('Ad settings saved. Open the website in a private/incognito window to see ads (they are hidden while you are logged in).');
@@ -37,6 +38,7 @@ admin_header('Ads (Google AdSense)', 'ads');
             <input name="adsense_client" value="<?= e($v('adsense_client')) ?>" placeholder="ca-pub-1234567890123456"></label>
           <label class="check"><input type="checkbox" name="adsense_enabled"<?= $on('adsense_enabled') ?>> Show ads on the website</label>
           <p class="muted">When this is on, the AdSense code is added to every page. If <b>Auto ads</b> is switched on for this site in your AdSense account, Google places ads automatically. You can also add fixed ad units below.</p>
+          <label class="check"><input type="checkbox" name="ads_html_pages"<?= (is_post() ? isset($_POST['ads_html_pages']) : setting('ads_html_pages') !== '0') ? ' checked' : '' ?>> Also show ads on <b>.html pages you upload yourself</b> into the website folder (e.g. /fitter-mcq.html) – their links stay the same</label>
           <p class="muted">Ads are <b>not shown to you while you are logged in</b>, so you never click your own ads by mistake (that is against AdSense rules). Check them in a private/incognito window.</p>
         </section>
         <section class="box">
