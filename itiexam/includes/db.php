@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-const SCHEMA_VERSION = '24';
+const SCHEMA_VERSION = '25';
 
 function db(): PDO
 {
@@ -207,6 +207,11 @@ function db_migrate(PDO $pdo): void
     try { $pdo->exec('CREATE INDEX note_lessons_module ON note_lessons (module_id)'); } catch (PDOException $e) { /* already there */ }
     try { $pdo->exec('CREATE UNIQUE INDEX note_lessons_slug ON note_lessons (trade_id, slug)'); } catch (PDOException $e) { /* already there */ }
 
+    // v25: redirects – old addresses (old WordPress links still on Google, shared links) sent to the right page with a 301
+    $pdo->exec("CREATE TABLE IF NOT EXISTS redirects (
+        id $id, old_path VARCHAR(255) NOT NULL UNIQUE, new_url VARCHAR(500) NOT NULL, hits INT NOT NULL DEFAULT 0,
+        created_at VARCHAR(20) NOT NULL)$engine");
+
     require_once __DIR__ . '/../admin/inc/seed.php';
     if ((int)$pdo->query('SELECT COUNT(*) FROM syllabi')->fetchColumn() === 0 && !setting('syllabi_seeded')) { seed_syllabi(); setting_set('syllabi_seeded', '1'); }
     if (!setting('syllabi_more_seeded')) { seed_syllabi_more(); setting_set('syllabi_more_seeded', '1'); }
@@ -218,6 +223,8 @@ function db_migrate(PDO $pdo): void
     }
     if (!setting('es_subject_done')) { make_es_subject($pdo); setting_set('es_subject_done', '1'); }
     if (!setting('notes_fitter_seeded') && seed_notes_fitter()) setting_set('notes_fitter_seeded', '1');   // Fitter 1st Year theory notes (modules 1–8)
+    if (!setting('redirects_seeded')) { seed_redirects(); setting_set('redirects_seeded', '1'); }   // old WordPress links found on Google
+    if (!setting('seo_titles_2611')) { seo_titles_2611(); setting_set('seo_titles_2611', '1'); }   // search titles of the starter pages (only if never edited)
     // One-time fixes for sites installed with an older version (missing starter pages, old menu links)
     if ((int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() > 0) upgrade_content();
     if (setting('footer_credit', "\0") === "\0") setting_set('footer_credit', 'Created & Developed by – Sanjay L. Rathod');

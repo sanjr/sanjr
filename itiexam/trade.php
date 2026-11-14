@@ -207,8 +207,10 @@ function mock_card(string $name, array $list, int $years = 2): string
 
 /* ---------- SEO ---------- */
 $yr = date('Y');
-$title = $t['meta_title'] ?: "ITI $name Mock Test $yr – MCQ, Question Paper PDF & Syllabus | ITI Exam";
-$auto = trim("ITI $name" . ($t['full_name'] ? " ({$t['full_name']})" : '') . " $yr – free online CBT mock test, MCQ in English, Hindi & Marathi, NCVT syllabus, notes PDF, previous year question papers and important questions.");
+// What students type in Google: "ITI Fitter mock test", "fitter 1st year MCQ", "fitter notes PDF in Hindi", "fitter question paper"
+$title = $t['meta_title'] ?: "ITI $name Mock Test $yr" . ($years > 1 ? ' 1st & 2nd Year' : '') . " – CBT MCQ, Notes & Question Paper PDF | ITI Exam";
+$auto = trim("ITI $name" . ($t['full_name'] ? " ({$t['full_name']})" : '') . " $yr: free NCVT CBT mock test" . ($years > 1 ? ' for 1st & 2nd year' : '')
+    . ", MCQ in Hindi, Marathi & English, theory notes, syllabus PDF and previous year question papers with answers.");
 $desc = seo_desc($t['meta_description'], $auto);
 $keywords = $t['meta_keywords'] ?: "ITI $name mock test, ITI $name MCQ, ITI $name question paper PDF, ITI $name previous year paper, ITI $name online test, ITI $name CBT test, ITI $name syllabus $yr, ITI $name notes PDF, " . ($years > 1 ? "$name 1st year MCQ, $name 2nd year MCQ, " : '') . "$name 1st semester, ITI $name MCQ in Hindi, ITI $name MCQ in Marathi, NIMI $name question bank, " . ($isSubject ? "ITI $name MCQ all trades" : "ITI $name jobs") . ", {$t['full_name']}";
 

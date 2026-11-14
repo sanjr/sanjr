@@ -598,6 +598,74 @@ function log_not_found(): void
     } catch (PDOException $e) { /* logging must never break the page */ }
 }
 
+/** Key a redirect is saved under: "/old-page/" (lower case, ending in /), or "/?p=123" for an old WordPress post link. */
+function redirect_key(string $path, array $get = []): string
+{
+    $path = '/' . trim(strtolower(rawurldecode($path)), '/');
+    foreach (['p', 'page_id'] as $k) if ($path === '/' && isset($get[$k]) && ctype_digit((string)$get[$k])) return "/?$k=" . $get[$k];
+    return $path === '/' ? '/' : $path . '/';
+}
+
+/** Where an old address should go now ('' = nowhere): the admin's redirect list first, then old WordPress patterns
+    (posts ?p=…, /category/…, /turner/, /mmv-1-year/, /copa-qb/ …) matched to the trade or page they were about. */
+function find_redirect(string $path, array $get = []): string
+{
+    $key = redirect_key($path, $get);
+    try {
+        $st = db()->prepare('SELECT id, new_url FROM redirects WHERE old_path = ? OR old_path = ?');
+        $st->execute([$key, rtrim($key, '/')]);
+        if ($r = $st->fetch()) { db()->prepare('UPDATE redirects SET hits = hits + 1 WHERE id = ?')->execute([$r['id']]); return $r['new_url']; }
+    } catch (PDOException $e) { /* table not there yet */ }
+    if ($key !== '/' && str_starts_with($key, '/?')) return '/';                          // an unknown old post: the homepage
+    if ($path === '/' && isset($get['s']) && is_string($get['s'])) return '/search/?q=' . rawurlencode($get['s']);   // old WordPress search
+    $p = trim($key, '/');
+    if ($p === '' || preg_match('~^(wp-|xmlrpc)|\.(php|env|js|css|png|jpe?g|gif|webp|svg|ico|xml|txt|zip|pdf)$~', $p)) return '';
+    if (preg_match('~^(category|tag|author|page|comments|feed)(/|$)~', $p)) return '/';
+    $p = preg_replace('~/(amp|feed|embed)$~', '', $p);
+    $seg = basename($p);                                                                 // /2025/06/old-post/ → old-post
+    $pages = ['about-us' => '/about/', 'about' => '/about/', 'contact-us' => '/contact/', 'contact' => '/contact/', 'courses' => '/trades/',
+              'all-trades' => '/trades/', 'trades-list' => '/trades/', 'iti-trades' => '/trades/', 'jobs-2' => '/jobs/', 'iti-jobs' => '/jobs/',
+              'mock-tests' => '/mock-test/', 'online-test' => '/mock-test/', 'iti-mock-test' => '/mock-test/', 'cbt-test' => '/mock-test/',
+              'question-paper' => '/previous-papers/', 'question-papers' => '/previous-papers/', 'iti-question-paper' => '/previous-papers/',
+              'syllabus-pdf' => '/syllabus/', 'iti-syllabus' => '/syllabus/', 'study-materials' => '/study-material/', 'notes' => '/study-material/'];
+    $base = preg_replace('~-\d+$~', '', $seg);                                           // WordPress adds -2, -3 to repeated names
+    foreach ([$seg, $base] as $c) if (isset($pages[$c]) && "/$p/" !== $pages[$c]) return $pages[$c];
+    // a trade: strip "iti-" and endings like -1-year, -2nd-year, -qb, -mock-test, -mcq, -notes, -2026 until a trade name is left
+    $alias = ['mechanic-motor-vehicle' => 'mmv', 'motor-mechanic' => 'mmv', 'motor-vehicle' => 'mmv',
+              'computer-operator-and-programming-assistant' => 'copa', 'computer-operator' => 'copa',
+              'es' => 'employability-skills', 'employability' => 'employability-skills', 'employability-skill' => 'employability-skills',
+              'electronic-mechanic' => 'electronics-mechanic', 'electronics' => 'electronics-mechanic', 'diesel' => 'diesel-mechanic',
+              'mechanic-diesel' => 'diesel-mechanic', 'fashion-design' => 'fashion-design-technology', 'fdt' => 'fashion-design-technology',
+              'wiremen' => 'wireman', 'welding' => 'welder', 'fitting' => 'fitter', 'turning' => 'turner', 'machinist-trade' => 'machinist'];
+    $all = [];
+    foreach (array_merge(trades(), subjects()) as $t) {
+        $all[$t['slug']] = $t;
+        foreach ([$t['name'], $t['full_name']] as $n) if ($n !== '' && !isset($all[slugify($n)])) $all[slugify($n)] = $t;
+    }
+    $c = preg_replace('~^(iti|ncvt|nimi)-~', '', $base);
+    for ($i = 0; $i < 6 && $c !== ''; $i++) {
+        $hit = $all[$c] ?? (isset($alias[$c]) ? ($all[$alias[$c]] ?? null) : null);
+        if ($hit) return trade_url($hit);
+        $n = preg_replace('~-(?:(?:1st|2nd|first|second|1|2|i|ii)(?:-(?:year|yr|sem|semester))?|(?:year|yr|sem|semester)-?[1-4]|qb|question-bank|questions?|mock-tests?|mocktest|mcqs?|tests?|online-test|online|notes|theory|cbt|syllabus|nimi|exam|preparation|pdf|quiz|trade|hindi|english|marathi|\d{4})$~', '', $c);
+        if ($n === $c) break;
+        $c = $n;
+    }
+    return '';
+}
+
+/** Send the visitor (and Google) to the new address of an old one with a permanent 301; returns when there is none. */
+function legacy_redirect(): void
+{
+    $uri = (string)($_SERVER['REQUEST_URI'] ?? '/');
+    $path = (string)(parse_url($uri, PHP_URL_PATH) ?: '/');
+    parse_str((string)(parse_url($uri, PHP_URL_QUERY) ?? ''), $get);
+    $to = find_redirect($path, $get);
+    if ($to === '' || $to === $uri || !preg_match('~^(https?://|/)~i', $to) || redirect_key((string)parse_url($to, PHP_URL_PATH)) === redirect_key($path) && !str_contains($to, '?')) return;
+    header('Location: ' . $to, true, 301);
+    header('Cache-Control: max-age=3600');
+    exit;
+}
+
 /** True when an internal URL (starting with /) opens a real page on this site. */
 function internal_url_ok(string $url): bool
 {

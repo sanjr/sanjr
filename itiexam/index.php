@@ -1,5 +1,7 @@
 <?php
 require __DIR__ . '/includes/functions.php';
+// Old WordPress links (/?p=123, /?page_id=5, /?s=…) still on Google go to their new page with a 301
+if (array_intersect_key($_GET, ['p' => 1, 'page_id' => 1, 's' => 1, 'cat' => 1])) { legacy_redirect(); header('Location: /', true, 301); exit; }
 
 $faqs = [
     ['Are ITI mock tests on ITI Exam free?', 'Yes. All ITI mock tests, previous year question papers and study material are 100% free for students of every trade. No sign-up is needed.'],

@@ -138,11 +138,11 @@ function seed_pages(): void
     $ins = $pdo->prepare('INSERT INTO pages (slug, title, content, excerpt, category, meta_description, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $site = SITE_NAME;
     $pages = [
-        ['mock-test', 'ITI Mock Test – Free Online Test for All Trades', '', 'Choose your trade and start a free ITI mock test based on the latest NCVT CBT pattern.',
+        ['mock-test', 'ITI Mock Test – Free NCVT CBT Online Test for All Trades (Hindi & English)', '', 'Free ITI mock test for every trade in the NCVT CBT pattern – Trade Theory, Employability Skills and Workshop Calculation MCQ in Hindi & English, 1st and 2nd year.',
          "<p>Practise free <strong>ITI online mock tests</strong> for Trade Theory, Employability Skills and Workshop Calculation &amp; Science. Every test follows the NCVT CBT pattern with multiple choice questions and a timer.</p><h2>Latest online tests</h2>[tests limit=\"12\"]<h2>Select your trade</h2>[trades section=\"mock-tests\"]<h2>How to use mock tests</h2><ul><li>Take one full test every day and note the wrong answers.</li><li>Revise the topic from theory notes, then attempt the next set.</li><li>Before the exam, attempt previous year papers under the same time limit.</li></ul>"],
-        ['previous-papers', 'ITI Previous Year Question Papers with Answers', '', 'NCVT ITI previous year CBT question papers with solutions for every trade.',
+        ['previous-papers', 'ITI Previous Year Question Papers PDF with Answers – NCVT CBT', '', 'NCVT ITI previous year CBT question papers PDF with answers for every trade, 1st and 2nd year – practise them online like the real exam.',
          "<p>Solving <strong>ITI previous year question papers</strong> is the fastest way to understand the exam pattern and the topics that are asked again and again.</p><h2>Select your trade</h2>[trades section=\"previous-papers\"]"],
-        ['study-material', 'ITI Study Material – Theory Notes PDF, MCQ & Model Papers', '', 'Module-wise ITI theory notes, MCQ question bank and model papers for all trades.',
+        ['study-material', 'ITI Study Material – Theory Notes PDF in Hindi & English, MCQ & Model Papers', '', 'Module-wise ITI theory notes (read in Hindi, Marathi or English), MCQ question bank and model papers for all trades, 1st and 2nd year.',
          "<p>Read module-wise <strong>ITI theory notes</strong>, practise the <strong>MCQ question bank</strong> and download model papers for your trade.</p><h2>Select your trade</h2>[trades section=\"study-material\"]"],
         ['syllabus', 'ITI Syllabus – NCVT Trade-wise Syllabus & Modules', '', 'Latest NCVT syllabus and module list for each ITI trade.',
          "<p>Check the latest <strong>NCVT syllabus</strong> and module-wise topics for your trade.</p>[trades section=\"syllabus\"]"],
@@ -854,4 +854,32 @@ function seed_notes_fitter(): bool
         return (bool)$has->fetchColumn();
     }
     return true;
+}
+
+
+/** Old addresses of the earlier WordPress website that Google still shows (Nov 2026), sent to the matching new page. */
+function seed_redirects(): void
+{
+    $ins = db()->prepare('INSERT INTO redirects (old_path, new_url, created_at) VALUES (?, ?, ?)');
+    $has = db()->prepare('SELECT COUNT(*) FROM redirects WHERE old_path = ?');
+    foreach (['/?p=16' => '/', '/?p=21775' => '/trades/welder/', '/?p=18048' => '/trades/electrician/', '/?p=16655' => '/trades/electrician/',
+              '/?p=17764' => '/mock-test/', '/?p=20947' => '/employability-skills/', '/about-us-2/' => '/about/', '/courses/' => '/trades/',
+              '/copa-qb/' => '/trades/copa/'] as $old => $new) {
+        $has->execute([$old]);
+        if (!$has->fetchColumn()) $ins->execute([$old, $new, now()]);
+    }
+}
+
+/** Search-friendly titles for the starter pages – changed only while they still have the first starter text. */
+function seo_titles_2611(): void
+{
+    $up = db()->prepare('UPDATE pages SET title = ?, excerpt = ?, meta_description = ?, updated_at = ? WHERE slug = ? AND title = ?');
+    foreach ([
+        ['mock-test', 'ITI Mock Test – Free Online Test for All Trades', 'ITI Mock Test – Free NCVT CBT Online Test for All Trades (Hindi & English)',
+         'Free ITI mock test for every trade in the NCVT CBT pattern – Trade Theory, Employability Skills and Workshop Calculation MCQ in Hindi & English, 1st and 2nd year.'],
+        ['previous-papers', 'ITI Previous Year Question Papers with Answers', 'ITI Previous Year Question Papers PDF with Answers – NCVT CBT',
+         'NCVT ITI previous year CBT question papers PDF with answers for every trade, 1st and 2nd year – practise them online like the real exam.'],
+        ['study-material', 'ITI Study Material – Theory Notes PDF, MCQ & Model Papers', 'ITI Study Material – Theory Notes PDF in Hindi & English, MCQ & Model Papers',
+         'Module-wise ITI theory notes (read in Hindi, Marathi or English), MCQ question bank and model papers for all trades, 1st and 2nd year.'],
+    ] as [$slug, $old, $new, $excerpt]) $up->execute([$new, $excerpt, $excerpt, now(), $slug, $old]);
 }
