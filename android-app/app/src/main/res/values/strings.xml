@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ITI Exam</string>
+    <string name="splash_title">ITI Exam</string>
+    <string name="tagline">Learn • Test • Get Jobs</string>
+    <string name="splash_footer">Free Mock Tests for all ITI Trades</string>
+    <string name="offline_title">You are offline</string>
+    <string name="offline_text">Please check your mobile data or Wi-Fi.\nThe page will open again as soon as you are back online.</string>
+    <string name="offline_hint">Your saved test results are safe.</string>
+    <string name="retry">Try Again</string>
+    <string name="press_again">Press back again to exit</string>
+    <string name="downloading">Downloading %1$s…</string>
+    <string name="no_app">No app found to open this link</string>
+    <string name="no_browser">Please install Google Chrome to log in</string>
+    <string name="login_again">Login did not finish. Please try again.</string>
+    <string name="sc_tests">Mock Tests</string>
+    <string name="sc_dashboard">My Dashboard</string>
+    <string name="sc_jobs">ITI Jobs</string>
+</resources>

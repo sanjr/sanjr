@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- wifi with a slash -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="64dp" android:height="64dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#1F4FD6" android:pathData="M12,18.5m-1.6,0a1.6,1.6 0,1 1,3.2 0a1.6,1.6 0,1 1,-3.2 0" />
+    <path android:strokeColor="#1F4FD6" android:strokeWidth="2" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M8.5,14.8a5,5 0,0 1,7 0" />
+    <path android:strokeColor="#1F4FD6" android:strokeWidth="2" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M5.2,11.6a9.6,9.6 0,0 1,13.6 0" />
+    <path android:strokeColor="#1F4FD6" android:strokeWidth="2" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M2,8.4a14,14 0,0 1,20 0" />
+    <path android:strokeColor="#F7740F" android:strokeWidth="2.4" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M3.5,3.5L20.5,20.5" />
+</vector>

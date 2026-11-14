@@ -1,0 +1,11 @@
+# Uploaded files are images, PDFs and videos only – never run scripts from here
+<FilesMatch "\.(php\d?|phtml|phar|pl|py|cgi|sh)$">
+  Require all denied
+</FilesMatch>
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
+
+AddType video/mp4 .mp4 .m4v
+AddType video/webm .webm
+AddType video/ogg .ogv

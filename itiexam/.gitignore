@@ -1,0 +1,6 @@
+data/*.sqlite
+uploads/*
+!uploads/.htaccess
+data/tests/
+data/reset.txt
+data/db-config*.php
