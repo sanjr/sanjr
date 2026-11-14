@@ -134,6 +134,7 @@ $meta = [
     'title' => setting('home_title') ?: 'ITI Exam ' . date('Y') . ': Free ITI Mock Test, Question Paper PDF & Jobs | ITI Exam',
     'description' => setting('site_description'),
     'keywords' => setting('home_keywords'),
+    'image' => SITE_URL . '/assets/img/og-itiexam.jpg?v=1', 'image_size' => [1200, 628],   // link preview on WhatsApp, Facebook, X
     'path' => '/',
     'jsonld' => [$ld],
 ];

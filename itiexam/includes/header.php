@@ -34,7 +34,10 @@ $stu = student();
   <meta property="og:description" content="<?= e($desc) ?>">
   <meta property="og:url" content="<?= e($canonical) ?>">
   <meta property="og:image" content="<?= e($ogImage) ?>">
-  <meta name="twitter:card" content="summary_large_image">
+<?php if (!empty($meta['image_size'])): ?>  <meta property="og:image:width" content="<?= (int)$meta['image_size'][0] ?>">
+  <meta property="og:image:height" content="<?= (int)$meta['image_size'][1] ?>">
+  <meta property="og:image:alt" content="<?= e(SITE_NAME) ?> – ITI mock tests, study material, syllabus, previous papers and jobs">
+<?php endif; ?>  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="<?= e($title) ?>">
   <meta name="twitter:description" content="<?= e($desc) ?>">
   <meta name="twitter:image" content="<?= e($ogImage) ?>">

@@ -14,6 +14,7 @@ $meta = [
     'title' => 'All ITI Trades List 2026 – Mock Tests, Syllabus & Notes | ' . SITE_NAME,
     'description' => 'Complete list of ITI trades (NCVT): COPA, Electrician, Fitter, Turner, Welder, MMV and more. Choose your trade for free mock tests, syllabus, notes PDF and previous papers.',
     'keywords' => 'ITI trades list, all ITI trades, NCVT trades, ITI courses list, ITI trade names',
+    'image' => SITE_URL . '/assets/img/og-itiexam.jpg?v=1', 'image_size' => [1200, 628],   // link preview on WhatsApp, Facebook, X
     'path' => '/trades/',
     'jsonld' => [['@context' => 'https://schema.org', '@type' => 'ItemList', 'name' => 'ITI Trades',
         'itemListElement' => array_map(fn($t, $i) => ['@type' => 'ListItem', 'position' => $i + 1, 'name' => $t['name'], 'url' => SITE_URL . trade_url($t)], $all, array_keys($all))],
