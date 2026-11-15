@@ -165,7 +165,15 @@
   const segs = (s) => (window.Intl && Intl.Segmenter ? Array.from(new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(s), (x) => x.segment) : Array.from(s));
   const fmt = (sec) => Math.floor(sec / 60) + ":" + String(Math.floor(sec % 60)).padStart(2, "0");
   const LVLS = [["easy", "fa-seedling", "#16a34a"], ["medium", "fa-fire", "#f59e0b"], ["hard", "fa-bolt", "#e5383b"]];
-  const MODS = [["learn", "fa-keyboard", "#1554e0", "#7b3fe4"], ["test", "fa-stopwatch", "#f97316", "#e5383b"], ["race", "fa-flag-checkered", "#0d9488", "#22c55e"], ["pop", "fa-burst", "#c026d3", "#f472b6"], ["progress", "fa-chart-line", "#0b1f4d", "#2a6df4"]];
+  const MODS = [["learn", "fa-keyboard", "#0f766e", "#2dd4bf"], ["test", "fa-stopwatch", "#be123c", "#fb7185"], ["race", "fa-flag-checkered", "#a16207", "#facc15"], ["pop", "fa-burst", "#0369a1", "#38bdf8"], ["progress", "fa-chart-line", "#334155", "#94a3b8"]];
+  /* small live previews drawn on each module card */
+  const PV = {
+    learn: () => '<div class="pk">' + ["QWERT", "ASDFG", "ZXCVB"].map((r) => "<span>" + r.split("").map((c) => "<i" + (c === "F" ? ' class="on"' : "") + ">" + c + "</i>").join("") + "</span>").join("") + "</div>",
+    test: () => '<div class="pt"><span class="wr"><b>32</b><small>WPM</small></span><span class="ln"><i style="width:92%"></i><i style="width:70%"></i><i style="width:84%"></i></span></div>',
+    race: () => '<div class="pr">' + ["#a16207", "#64748b", "#94a3b8"].map((c, i) => '<span><i class="fa-solid fa-car-side" style="color:' + c + ";left:" + [62, 40, 22][i] + '%"></i><em class="fa-solid fa-flag-checkered"></em></span>').join("") + "</div>",
+    pop: () => '<div class="pp">' + [["k", 12, 0], ["जल", 44, 1], ["web", 74, 2]].map((b) => '<span style="left:' + b[1] + "%;animation-delay:-" + b[2] + 's">' + b[0] + "</span>").join("") + "</div>",
+    progress: () => '<div class="pg2">' + [30, 45, 40, 62, 78].map((h, i) => '<i style="height:' + h + '%' + (i === 4 ? ';background:var(--b)' : "") + '"></i>').join("") + '<span class="fa-solid fa-star"></span></div>'
+  };
   let cleanup = null;          // stops timers / listeners of the open module
 
   /* ---------- settings bar (language + difficulty) ---------- */
@@ -205,7 +213,10 @@
       settings() +
       '<div class="ty-goal"><span class="ic"><i class="fa-solid fa-bullseye"></i></span><div><b>' + esc(X.goal) + ": " + goal() + " " + esc(X.net) + "</b><small>" + esc(X.goalS) + " · " + esc(X[ST.lvl]) + " – " + esc(X[ST.lvl + "S"]) + "</small></div></div>" +
       '<h2 class="ty-h2">' + esc(X.modules) + "</h2>" +
-      '<div class="ty-mods">' + MODS.map((m, i) => '<a class="ty-mod m-' + m[0] + '" href="#' + m[0] + '" style="--g1:' + m[2] + ";--g2:" + m[3] + ";--d:" + i * 70 + 'ms"><span class="tag">' + esc(X.m[m[0]][2]) + '</span><span class="ic"><i class="fa-solid ' + m[1] + '"></i></span><b>' + esc(X.m[m[0]][0]) + "</b><small>" + esc(X.m[m[0]][1]) + '</small><span class="go">' + esc(X.start) + ' <i class="fa-solid fa-arrow-right"></i></span><i class="fa-solid ' + m[1] + ' bg"></i></a>').join("") + "</div>" +
+      '<div class="ty-mods">' + MODS.map((m, i) => '<a class="ty-mod m-' + m[0] + '" href="#' + m[0] + '" style="--a:' + m[2] + ";--b:" + m[3] + ";--d:" + i * 70 + 'ms">' +
+        '<div class="pv" aria-hidden="true">' + PV[m[0]]() + '<span class="no">0' + (i + 1) + "</span></div>" +
+        '<div class="bd"><span class="tag"><i class="fa-solid ' + m[1] + '"></i> ' + esc(X.m[m[0]][2]) + "</span><b>" + esc(X.m[m[0]][0]) + "</b><small>" + esc(X.m[m[0]][1]) + "</small>" +
+        '<span class="ft"><span class="cta">' + esc(X.start) + '</span><span class="arr"><i class="fa-solid fa-arrow-right"></i></span></span></div></a>').join("") + "</div>" +
       '<div class="ty-tips"><div><i class="fa-solid fa-hand"></i><p>' + esc(X.tip) + "</p></div><div><i class=\"fa-solid fa-language\"></i><p>" + esc(X.tipMr) + "</p></div></div>";
   }
 

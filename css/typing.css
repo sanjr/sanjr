@@ -49,18 +49,45 @@
 
 /* module cards */
 .ty-mods { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px; margin-bottom: 22px; }
-.ty-mod { grid-column: span 2; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 10px; padding: 22px; min-height: 220px; border-radius: 24px; color: #fff; background: linear-gradient(135deg, var(--g1), var(--g2)); box-shadow: 0 16px 34px color-mix(in srgb, var(--g1) 30%, transparent); transition: transform .3s, box-shadow .3s; animation: tyUp .5s both; animation-delay: var(--d); }
-.ty-mod:nth-child(4), .ty-mod:nth-child(5) { grid-column: span 3; }
+.ty-mod { grid-column: span 2; position: relative; display: flex; flex-direction: column; border-radius: 26px; background: #fff; color: var(--ink); border: 1px solid #e6e9f0; box-shadow: 0 2px 0 #eef0f5, 0 12px 28px rgba(30, 41, 59, .06); overflow: hidden; transition: transform .3s, box-shadow .3s, border-color .3s; animation: tyUp .5s both; animation-delay: var(--d); }
+.ty-mod:nth-child(1), .ty-mod:nth-child(2) { grid-column: span 3; }
 @keyframes tyUp { from { opacity: 0; transform: translateY(16px); } }
-.ty-mod:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 24px 44px color-mix(in srgb, var(--g1) 40%, transparent); color: #fff; }
-.ty-mod .tag { align-self: flex-start; font: 700 11px var(--font-head); letter-spacing: 1px; text-transform: uppercase; padding: 5px 11px; border-radius: 999px; background: rgba(255, 255, 255, .2); border: 1px solid rgba(255, 255, 255, .3); }
-.ty-mod .ic { position: absolute; right: 20px; top: 20px; width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; font-size: 25px; background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .3); transition: transform .3s; }
-.ty-mod:hover .ic { transform: rotate(-8deg) scale(1.08); }
-.ty-mod b { font: 800 23px var(--font-head); margin-top: 18px; }
-.ty-mod small { font-size: 14px; line-height: 1.55; color: rgba(255, 255, 255, .9); max-width: 400px; }
-.ty-mod .go { margin-top: auto; align-self: flex-start; display: inline-flex; gap: 8px; align-items: center; padding: 9px 18px; border-radius: 12px; background: #fff; color: var(--g1); font: 700 14px var(--font-head); box-shadow: 0 6px 16px rgba(0, 0, 0, .15); }
-.ty-mod .go i { transition: transform .25s; } .ty-mod:hover .go i { transform: translateX(4px); }
-.ty-mod .bg { position: absolute; right: -20px; bottom: -30px; font-size: 140px; opacity: .1; transform: rotate(-14deg); pointer-events: none; }
+.ty-mod:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--a) 40%, #fff); box-shadow: 0 2px 0 color-mix(in srgb, var(--a) 30%, #fff), 0 22px 40px color-mix(in srgb, var(--a) 18%, transparent); color: var(--ink); }
+.ty-mod .pv { position: relative; height: 128px; margin: 10px 10px 0; border-radius: 20px; overflow: hidden; display: grid; place-items: center;
+  background: radial-gradient(circle at 85% 20%, color-mix(in srgb, var(--b) 45%, transparent), transparent 55%), repeating-linear-gradient(45deg, color-mix(in srgb, var(--a) 7%, #fff) 0 10px, color-mix(in srgb, var(--a) 11%, #fff) 10px 20px); }
+.ty-mod .no { position: absolute; left: 14px; top: 10px; font: 800 13px var(--font-head); color: var(--a); opacity: .55; letter-spacing: 1px; }
+.ty-mod .bd { display: flex; flex-direction: column; gap: 8px; padding: 16px 20px 20px; flex: 1; }
+.ty-mod .tag { align-self: flex-start; display: inline-flex; gap: 7px; align-items: center; font: 700 11.5px var(--font-head); letter-spacing: .8px; text-transform: uppercase; color: var(--a); }
+.ty-mod .tag i { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; color: #fff; background: var(--a); }
+.ty-mod b { font: 800 21px var(--font-head); color: var(--ink); }
+.ty-mod small { font-size: 14px; line-height: 1.55; color: var(--ink-3); }
+.ty-mod .ft { margin-top: auto; padding-top: 8px; display: flex; align-items: center; justify-content: space-between; }
+.ty-mod .cta { font: 700 14px var(--font-head); color: var(--a); }
+.ty-mod .arr { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: var(--a); border: 2px solid color-mix(in srgb, var(--a) 25%, #fff); transition: all .3s; }
+.ty-mod:hover .arr { background: var(--a); border-color: var(--a); color: #fff; transform: rotate(-45deg); }
+/* previews */
+.pk span { display: flex; gap: 5px; margin-bottom: 5px; } .pk span:nth-child(2) { padding-left: 12px; } .pk span:nth-child(3) { padding-left: 24px; }
+.pk i { width: 30px; height: 28px; border-radius: 7px; display: grid; place-items: center; font: 700 12px var(--font-head); font-style: normal; background: #fff; color: #475569; box-shadow: 0 3px 0 #d5dae4; }
+.pk i.on { background: var(--a); color: #fff; box-shadow: 0 3px 0 color-mix(in srgb, var(--a) 60%, #000), 0 0 0 4px color-mix(in srgb, var(--b) 40%, transparent); animation: tyTap 1.6s ease-in-out infinite; }
+@keyframes tyTap { 50% { transform: translateY(3px); box-shadow: 0 0 0 #000, 0 0 0 7px color-mix(in srgb, var(--b) 25%, transparent); } }
+.pt { display: flex; gap: 18px; align-items: center; }
+.pt .wr { width: 86px; height: 86px; border-radius: 50%; display: grid; place-content: center; text-align: center; background: radial-gradient(closest-side, #fff 78%, transparent 80%), conic-gradient(var(--a) 72%, color-mix(in srgb, var(--a) 15%, #fff) 0); }
+.pt .wr b { font: 800 24px/1 var(--font-head); color: var(--a); } .pt .wr small { font-size: 10px; color: #64748b; }
+.pt .ln { display: flex; flex-direction: column; gap: 8px; width: 120px; } .pt .ln i { height: 8px; border-radius: 6px; background: color-mix(in srgb, var(--a) 22%, #fff); position: relative; overflow: hidden; }
+.pt .ln i::after { content: ""; position: absolute; inset: 0; width: 55%; background: var(--a); border-radius: 6px; animation: tyLine 2.4s ease-in-out infinite; } .pt .ln i:nth-child(2)::after { animation-delay: -.8s; } .pt .ln i:nth-child(3)::after { animation-delay: -1.6s; }
+@keyframes tyLine { 0% { width: 0; } 70%, 100% { width: 100%; } }
+.pr { width: 82%; display: flex; flex-direction: column; gap: 6px; } .pr span { position: relative; height: 30px; border-radius: 8px; background: #fff; box-shadow: inset 0 -2px 0 #e2e8f0; }
+.pr span i { position: absolute; top: 4px; font-size: 20px; animation: tyDrive 3s ease-in-out infinite alternate; } .pr span:nth-child(2) i { animation-delay: -1s; } .pr span:nth-child(3) i { animation-delay: -2s; }
+.pr span em { position: absolute; right: 8px; top: 7px; font-size: 15px; color: #334155; }
+@keyframes tyDrive { from { translate: -18px 0; } to { translate: 18px 0; } }
+.pp { position: relative; width: 100%; height: 100%; }
+.pp span { position: absolute; bottom: 14px; min-width: 44px; height: 52px; padding: 0 8px; border-radius: 50% 50% 46% 46%; display: grid; place-items: center; color: #fff; font: 700 15px "Noto Sans Devanagari", var(--font-head); background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, .6), transparent 32%), var(--a); box-shadow: inset -4px -6px 0 rgba(0, 0, 0, .12); animation: tyRise 3s ease-in-out infinite; }
+.pp span:nth-child(2) { background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, .6), transparent 32%), var(--b); }
+.pp span::after { content: ""; position: absolute; top: 100%; left: 50%; width: 1.5px; height: 18px; background: rgba(15, 23, 42, .25); }
+@keyframes tyRise { 50% { translate: 0 -14px; } }
+.pg2 { position: relative; display: flex; align-items: flex-end; gap: 8px; height: 86px; } .pg2 i { width: 20px; border-radius: 6px 6px 3px 3px; background: color-mix(in srgb, var(--a) 35%, #fff); }
+.pg2 span { position: absolute; right: -16px; top: -8px; color: #eab308; font-size: 20px; animation: tyFloat 2.4s ease-in-out infinite; }
+.m-progress .pg2 i:last-of-type { background: #eab308 !important; }
 .ty-tips { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .ty-tips div { display: flex; gap: 12px; align-items: flex-start; padding: 16px; border-radius: 18px; background: #fff; border: 1px solid #e3e9f8; }
 .ty-tips i { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex: none; background: #eef3ff; color: #1554e0; font-size: 17px; }
@@ -196,7 +223,7 @@
 .ty-hands .palm { position: absolute; left: 0; right: 0; bottom: 0; height: 56px; border-radius: 16px 16px 30px 30px; background: #f1f3f9; border: 2px solid #dfe4ef; }
 
 /* race */
-.ty-track { position: relative; padding: 14px; border-radius: 22px; margin-bottom: 14px; background: linear-gradient(180deg, #1f2937, #111827); box-shadow: 0 14px 30px rgba(17, 24, 39, .25); }
+.ty-track { position: relative; overflow: hidden; padding: 14px; border-radius: 22px; margin-bottom: 14px; background: linear-gradient(180deg, #1f2937, #111827); box-shadow: 0 14px 30px rgba(17, 24, 39, .25); }
 .ty-track .lane { display: grid; grid-template-columns: 110px 1fr 30px; align-items: center; gap: 10px; }
 .ty-track .lane + .lane { border-top: 2px dashed rgba(255, 255, 255, .18); }
 .ty-track .nm { font: 600 12.5px var(--font-head); color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -277,7 +304,7 @@
 /* responsive */
 @media (max-width: 1000px) {
   .ty-hero { grid-template-columns: 1fr; } .ty-art { display: none; }
-  .ty-mods { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ty-mod, .ty-mod:nth-child(4), .ty-mod:nth-child(5) { grid-column: auto; } .ty-mod:nth-child(5) { grid-column: 1 / -1; }
+  .ty-mods { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ty-mod, .ty-mod:nth-child(1), .ty-mod:nth-child(2) { grid-column: auto; } .ty-mod:nth-child(5) { grid-column: 1 / -1; }
   .ty-lsn { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ty-pstats { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ty-two { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
@@ -287,7 +314,7 @@
   .ty-set { padding: 12px; gap: 10px; } .ty-set .grp { width: 100%; } .ty-set .seg { width: 100%; } .seg button { flex: 1; justify-content: center; padding: 8px 6px; font-size: 13px; }
   .ty-snd { position: absolute; right: 12px; top: 8px; width: 34px; height: 34px; font-size: 14px; } .ty-set { position: relative; }
   .ty-mods { grid-template-columns: 1fr; gap: 12px; } .ty-mod:nth-child(5) { grid-column: auto; }
-  .ty-mod { min-height: 0; padding: 18px; } .ty-mod b { font-size: 20px; margin-top: 10px; } .ty-mod .ic { width: 46px; height: 46px; font-size: 20px; right: 16px; top: 16px; }
+  .ty-mod .pv { height: 110px; } .ty-mod .bd { padding: 14px 16px 16px; } .ty-mod b { font-size: 19px; }
   .ty-tips { grid-template-columns: 1fr; }
   .ty-mhead { padding: 14px; border-radius: 20px; } .ty-mt .ic { width: 44px; height: 44px; font-size: 19px; } .ty-mt p { font-size: 13px; } .ty-mtabs a span { display: none; } .ty-mtabs a { padding: 8px 12px; } .ty-mtabs a.on span { display: inline; }
   .ty-bar .acts { margin-left: 0; }
@@ -305,4 +332,4 @@
   .ty-hist .hr { grid-template-columns: 52px 1fr 70px; } .ty-hist .tg, .ty-hist .a { display: none; }
   .ty-badges { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-@media (prefers-reduced-motion: reduce) { .ty-mod, .ty-art span, .ty-art .r span, .ty-osk .k.hl, .ty-game .cloud, .ty-text .cur { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .ty-mod, .ty-mod .pv *, .ty-art span, .ty-art .r span, .ty-osk .k.hl, .ty-game .cloud, .ty-text .cur { animation: none !important; } }
