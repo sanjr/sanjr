@@ -180,6 +180,14 @@ for u, nm, t, d, kw in [
 ]:
     page(u, t, d, kw + ", " + COMMON_KW, [webpage(u, t, d), crumbs(("Home", ""), ("Study Material", "study.html"), (nm, u))], prio="0.8")
 
+t = "Typing Lab – English & Marathi Typing Test, Lessons & Games | COPA MCQ"
+d = "Free typing practice for ITI COPA: key trainer with finger guide, 1-5 minute typing test (Net WPM, accuracy), typing race and balloon game in English and Marathi (Inscript). Easy, Medium, Hard levels."
+page("typing-lab.html", t, d, "typing test, English typing test, Marathi typing test, Inscript typing, typing speed test WPM, typing practice online, typing tutor, COPA typing, typing games, " + COMMON_KW,
+     [webpage("typing-lab.html", t, d), crumbs(("Home", ""), ("Typing Lab", "typing-lab.html")),
+      {"@type": "WebApplication", "name": "COPA MCQ Typing Lab", "applicationCategory": "EducationalApplication", "operatingSystem": "Any", "inLanguage": ["en", "mr"],
+       "offers": {"@type": "Offer", "price": "0", "priceCurrency": "INR"}, "url": SITE + "/typing-lab.html"}],
+     prio="0.9")
+
 t = "COPA Practical Online – HTML, CSS, JS & Python Editor | COPA MCQ"
 d = "Do ITI COPA practicals online: write HTML, CSS, JavaScript & Python code with VS Code-style suggestions, see live output and save your programs."
 page("live-practice.html", t, d, "COPA practical, ITI COPA practical online, HTML online editor, Python online compiler, JavaScript online editor, CSS live preview, COPA lab, " + COMMON_KW,
