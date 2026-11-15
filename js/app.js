@@ -586,6 +586,58 @@
     draw();
   }
 
+
+  /* ---------- Social media links (Admin Panel → Social Media) + floating "Join" widget ---------- */
+  const SOC = [
+    ["youtube", "YouTube", /^https:\/\/((www|m)\.)?(youtube\.com|youtu\.be)\//i],
+    ["whatsapp", "WhatsApp", /^https:\/\/((www|chat)\.)?(wa\.me|whatsapp\.com)\//i],
+    ["telegram", "Telegram", /^https:\/\/(t\.me|telegram\.me)\//i],
+    ["instagram", "Instagram", /^https:\/\/(www\.)?instagram\.com\//i],
+    ["facebook", "Facebook", /^https:\/\/((www|m)\.)?(facebook\.com|fb\.com)\//i]
+  ];
+  const SC = { youtube: "yt", whatsapp: "wa", telegram: "tg", instagram: "ig", facebook: "fb" };
+  function socialCfg() {
+    let saved = null; try { saved = JSON.parse(localStorage.getItem("copa_db_settings") || "null"); } catch (e) { saved = null; }
+    const c = Object.assign({ popup: true, delay: 5 }, (window.COPA_CONFIG && window.COPA_CONFIG.social) || {}, (saved && saved.social) || {});
+    SOC.forEach((x) => { const u = String(c[x[0]] || "").trim(); c[x[0]] = x[2].test(u) && !/["'<>\s]/.test(u) ? u : ""; });
+    return c;
+  }
+  const YT_SVG = '<svg viewBox="0 0 28 20" aria-hidden="true"><path fill="#FF0000" d="M27.4 3.1A3.5 3.5 0 0 0 25 .6C22.8 0 14 0 14 0S5.2 0 3 .6A3.5 3.5 0 0 0 .6 3.1C0 5.3 0 10 0 10s0 4.7.6 6.9A3.5 3.5 0 0 0 3 19.4c2.2.6 11 .6 11 .6s8.8 0 11-.6a3.5 3.5 0 0 0 2.4-2.5c.6-2.2.6-6.9.6-6.9s0-4.7-.6-6.9z"/><path fill="#fff" d="M11.2 14.3 18.5 10l-7.3-4.3z"/></svg>';
+  const socLogo = (k) => k === "youtube" ? '<span class="sl yt">' + YT_SVG + "</span>" : '<span class="sl ' + SC[k] + '"><i class="fa-brands fa-' + k + '"></i></span>';
+  const JT = {
+    en: { t: "Get the latest COPA updates!", s: "Free MCQs, notes, videos & exam alerts", youtube: "Subscribe", whatsapp: "Join Now", telegram: "Join Now", close: "Close", open: "Join us on social media" },
+    hi: { t: "COPA के नए अपडेट पाएँ!", s: "मुफ़्त MCQ, नोट्स, वीडियो और परीक्षा सूचनाएँ", youtube: "सब्सक्राइब", whatsapp: "जॉइन करें", telegram: "जॉइन करें", close: "बंद करें", open: "सोशल मीडिया पर जुड़ें" },
+    mr: { t: "COPA चे नवीन अपडेट्स मिळवा!", s: "मोफत MCQ, नोट्स, व्हिडिओ आणि परीक्षा सूचना", youtube: "सबस्क्राईब", whatsapp: "जॉईन करा", telegram: "जॉईन करा", close: "बंद करा", open: "सोशल मीडियावर जोडा" }
+  };
+  function initJoin() {
+    const c = socialCfg(), path = location.pathname;
+    const keys = ["youtube", "whatsapp", "telegram"].filter((k) => c[k]);
+    if (!keys.length || c.popup === false || /admin\.html/.test(path) || document.getElementById("joinW")) return;
+    const J = JT[lang] || JT.en, name = { youtube: "YouTube", whatsapp: "WhatsApp", telegram: "Telegram" };
+    const quiet = /live-practice\.html|typing-lab\.html|exam\.html/.test(path);           // never pop up over work areas
+    const w = document.createElement("div");
+    w.id = "joinW"; w.className = "jn"; w.setAttribute("role", "complementary"); w.setAttribute("aria-label", J.open);
+    const logos = keys.map((k, i) => '<span class="jl' + (i ? "" : " on") + '">' + socLogo(k) + "</span>").join("");
+    w.innerHTML = '<div class="jn-card" role="dialog" aria-label="' + esc(J.t) + '"><button type="button" class="jn-x" aria-label="' + esc(J.close) + '"><i class="fa-solid fa-xmark"></i></button>' +
+      '<div class="jn-top"><span class="jn-logo">' + logos + '</span><span class="jn-tx"><b>' + esc(J.t) + "</b><small>" + esc(J.s) + "</small></span></div>" +
+      '<div class="jn-btns">' + keys.map((k) => '<a class="jn-b ' + SC[k] + '" href="' + esc(c[k]) + '" target="_blank" rel="noopener">' + socLogo(k) + "<span><b>" + name[k] + "</b><small>" + esc(J[k]) + '</small></span><i class="fa-solid fa-arrow-up-right-from-square ex"></i></a>').join("") + "</div></div>" +
+      '<button type="button" class="jn-fab" aria-label="' + esc(J.open) + '">' + logos + '<span class="pulse"></span></button>';
+    document.body.appendChild(w);
+    let ss = ""; try { ss = sessionStorage.getItem("copa_join") || ""; } catch (e) { /* */ }
+    let auto = 0;
+    const set = (st) => { w.className = "jn " + st; clearTimeout(auto); if (st === "open") auto = setTimeout(() => { if (!w.matches(":hover") && !w.contains(document.activeElement)) set("mini"); }, 15000); };
+    const busy = () => document.body.classList.contains("cbt") || !!document.querySelector(".cbt-top");
+    setTimeout(() => { if (busy()) return w.remove(); set(ss === "closed" || quiet ? "mini" : "open"); }, Math.max(1, +c.delay || 5) * 1000);
+    w.querySelector(".jn-x").addEventListener("click", () => { set("mini"); try { sessionStorage.setItem("copa_join", "closed"); } catch (e) { /* */ } });
+    w.querySelector(".jn-fab").addEventListener("click", () => set("open"));
+    w.querySelectorAll(".jn-b").forEach((a) => a.addEventListener("click", () => { try { sessionStorage.setItem("copa_join", "closed"); } catch (e) { /* */ } setTimeout(() => set("mini"), 400); }));
+    // gently swap the logos
+    if (keys.length > 1 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      let i = 0;
+      setInterval(() => { if (document.hidden) return; i = (i + 1) % keys.length; w.querySelectorAll(".jn-logo, .jn-fab").forEach((box) => box.querySelectorAll(".jl").forEach((l, j) => l.classList.toggle("on", j === i))); }, 2600);
+    }
+  }
+
   /* ---------- Layout ---------- */
   const LOGO = '<img class="brand-logo" src="' + ROOT + 'assets/img/logo.webp" width="256" height="205" alt="COPA MCQ logo">';
 
@@ -629,11 +681,10 @@
         '<footer class="site-footer"><div class="f-copy">© 2019 - ' + Math.max(2026, new Date().getFullYear()) + " <b>COPA MCQ</b>. " + t("footerRights") +
         '<br><span class="f-dev">Developed &amp; Designed by : <b>Sanjay Rathod</b> (CI - COPA)</span></div>' +
         '<nav class="f-links" aria-label="Footer"><a href="' + ROOT + 'about.html">' + t("about") + '</a><a href="' + ROOT + 'privacy.html">Privacy Policy</a><a href="' + ROOT + 'terms.html">Terms</a><a href="' + ROOT + 'admin.html"><i class="fa-solid fa-user-shield"></i> Admin</a><a href="' + ROOT + 'about.html#contact">' + t("contact") + "</a></nav>" +
-        '<div class="socials"><a class="yt" href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>' +
-        '<a class="tg" href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>' +
-        '<a class="wa" href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></footer>';
+        '<div class="socials">' + (function () { const c = socialCfg(); return SOC.filter((x) => c[x[0]]).map((x) => '<a class="' + SC[x[0]] + '" href="' + esc(c[x[0]]) + '" target="_blank" rel="noopener" aria-label="' + x[1] + '"><i class="fa-brands fa-' + x[0] + '"></i></a>').join(""); })() + "</div></footer>";
     }
     fitHeader();
+    initJoin();
     const sel = document.getElementById("langSel");
     if (sel) { sel.value = lang; sel.addEventListener("change", () => setLang(sel.value)); }
     const lb = document.getElementById("loginBtn");
@@ -712,6 +763,7 @@
     get lang() { return lang; },
     t, modName, esc, fmtTime, shuffle, pad, store, toast, modal,
     google: { on: () => googleOn(), load: () => loadGsi(), clientId: GCID }, server: SRV,
+    social: { cfg: socialCfg, list: SOC, logo: socLogo },
     PASS, explain, renderNotes, notesFor, sanitizeHTML, noteHTML, renderShell, setLang, onLang, applyStatic, getProfile, openLogin, logout, getStats, moduleProgress, qBlock, optText
   };
 

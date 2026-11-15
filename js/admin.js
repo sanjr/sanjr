@@ -84,6 +84,7 @@
     ["reviews", "fa-star", "Reviews"],
     ["questions", "fa-circle-question", "Questions"],
     ["notes", "fa-book-open", "Study Material"],
+    ["social", "fa-share-nodes", "Social Media"],
     ["settings", "fa-rectangle-ad", "Ads & Settings"]
   ];
   function shell() {
@@ -111,7 +112,7 @@
   }
   function draw() {
     const v = document.getElementById("view");
-    ({ overview, visitors, results, students, reviews: reviewsAdmin, questions, notes, settings }[tab] || overview)(v);
+    ({ overview, visitors, results, students, reviews: reviewsAdmin, questions, notes, social, settings }[tab] || overview)(v);
   }
   function setLive(list) {
     state.live = (list || []).filter(DB.isLive).sort((a, b) => b.startAt - a.startAt);
@@ -488,6 +489,43 @@
     });
   }
 
+
+  /* ================= SOCIAL MEDIA ================= */
+  function social(v) {
+    const S = Object.assign({ popup: true, delay: 5 }, CFG.social || {}, (state.settings && state.settings.social) || {});
+    const L = C.social.list, PH = { youtube: "https://www.youtube.com/@yourchannel", whatsapp: "https://whatsapp.com/channel/… or https://chat.whatsapp.com/…", telegram: "https://t.me/yourchannel", instagram: "https://www.instagram.com/yourpage", facebook: "https://www.facebook.com/yourpage" };
+    const HELP = { youtube: "Channel link", whatsapp: "WhatsApp Channel / Group invite link, or wa.me/91XXXXXXXXXX", telegram: "Channel or group link", instagram: "Profile link", facebook: "Page link" };
+    v.innerHTML = '<div class="adm-h"><div><h2>Social Media</h2><p>Links shown in the website footer and in the “Join” popup on every page</p></div></div>' +
+      '<div class="adm-grid2"><section class="card adm-card"><h3><i class="fa-solid fa-link" style="color:var(--blue-600)"></i> Your social media links</h3><form id="soF">' +
+      L.map((x) => '<div class="field"><label for="so_' + x[0] + '" style="display:flex;align-items:center;gap:8px">' + C.social.logo(x[0]) + " " + x[1] + ' <small style="color:var(--ink-3);font-weight:400">– ' + HELP[x[0]] + '</small></label><input class="input" id="so_' + x[0] + '" type="url" inputmode="url" placeholder="' + esc(PH[x[0]]) + '" value="' + esc(S[x[0]] || "") + '"></div>').join("") +
+      '<h3 style="margin-top:18px"><i class="fa-solid fa-bell" style="color:var(--orange)"></i> “Join Now” popup</h3>' +
+      '<label class="switch" style="margin-bottom:12px"><input type="checkbox" id="soP"' + (S.popup !== false ? " checked" : "") + "> Show the Join popup (YouTube / WhatsApp / Telegram) on all pages</label>" +
+      '<div class="field"><label for="soD">Show popup after</label><select class="input" id="soD">' + [3, 5, 8, 10, 15, 20].map((n) => '<option value="' + n + '"' + (+S.delay === n ? " selected" : "") + ">" + n + " seconds</option>").join("") + "</select></div>" +
+      '<p style="font-size:12.5px;color:var(--ink-3);margin:0 0 12px">The popup closes by itself after 15 seconds and becomes a small round button at the bottom-right, so it never blocks reading. On Live Practice, Typing Lab and the exam page only the small button is shown; nothing is shown during a running CBT exam or on this admin panel.</p>' +
+      '<button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save social media</button></form>' +
+      (DB.mode === "local" ? '<p class="note-pill" style="margin-top:14px"><i class="fa-solid fa-triangle-exclamation"></i> Local mode: saved only in this browser.</p>' : '<p class="note-pill" style="margin-top:14px;background:var(--green-100);color:#0e7a3e"><i class="fa-solid fa-cloud"></i> Saved online – visitors see the new links within ~10 minutes.</p>') +
+      '</section><section class="card adm-card"><h3><i class="fa-solid fa-eye" style="color:var(--purple)"></i> Preview</h3><div id="soPrev"></div>' +
+      '<p style="font-size:12.5px;color:var(--ink-3)">Only links you fill in are shown. Footer icons: all 5 networks. Popup: YouTube, WhatsApp and Telegram.</p></section></div>';
+    const f = v.querySelector("#soF");
+    const read = () => { const o = { popup: f.querySelector("#soP").checked, delay: +f.querySelector("#soD").value }; L.forEach((x) => (o[x[0]] = f.querySelector("#so_" + x[0]).value.trim())); return o; };
+    const prev = () => {
+      const o = read(), on = L.filter((x) => x[2].test(o[x[0]]));
+      v.querySelector("#soPrev").innerHTML = on.length ? '<div class="jn open" style="position:static;pointer-events:auto"><div class="jn-card" style="width:100%;max-width:320px">' +
+        '<div class="jn-top"><span class="jn-logo"><span class="jl on">' + C.social.logo(on[0][0]) + '</span></span><span class="jn-tx"><b>Get the latest COPA updates!</b><small>Free MCQs, notes, videos & exam alerts</small></span></div><div class="jn-btns">' +
+        on.filter((x) => ["youtube", "whatsapp", "telegram"].indexOf(x[0]) > -1).map((x) => '<a class="jn-b ' + { youtube: "yt", whatsapp: "wa", telegram: "tg" }[x[0]] + '" href="' + esc(o[x[0]]) + '" target="_blank" rel="noopener">' + C.social.logo(x[0]) + "<span><b>" + x[1] + "</b><small>" + (x[0] === "youtube" ? "Subscribe" : "Join Now") + "</small></span></a>").join("") + "</div></div></div>" +
+        '<p style="margin:14px 0 6px;font-weight:600">Footer icons</p><div class="socials" style="padding:10px;border-radius:12px;background:#0b1f4d;display:inline-flex">' + on.map((x) => '<a class="' + { youtube: "yt", whatsapp: "wa", telegram: "tg", instagram: "ig", facebook: "fb" }[x[0]] + '" href="' + esc(o[x[0]]) + '" target="_blank" rel="noopener"><i class="fa-brands fa-' + x[0] + '"></i></a>').join("") + "</div>"
+        : '<p class="adm-empty" style="color:var(--ink-3)">Add at least one link to see the preview.</p>';
+    };
+    f.addEventListener("input", prev); prev();
+    f.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const o = read();
+      for (const x of L) if (o[x[0]] && !x[2].test(o[x[0]])) { f.querySelector("#so_" + x[0]).focus(); return toast(x[1] + ": please paste the full link starting with https://" + (x[0] === "whatsapp" ? " (wa.me / whatsapp.com)" : "")); }
+      const s = Object.assign({}, state.settings || {}, { social: o });
+      D.saveSettings(s).then(() => { state.settings = s; DB.cache.setSettings(s); toast("Social media saved"); }).catch((er) => toast("Error: " + er.message));
+    });
+  }
+
   /* ================= ADS & SETTINGS ================= */
   function currentAds() {
     const base = CFG.adsense || {}, s = (state.settings && state.settings.adsense) || {};
@@ -534,12 +572,12 @@
     const read = () => ({ adsense: { enabled: f.querySelector("#sEn").checked, client: f.querySelector("#sCl").value.trim(), autoAds: f.querySelector("#sAuto").checked, slots: { top: f.querySelector("#sT").value.trim(), middle: f.querySelector("#sM").value.trim(), bottom: f.querySelector("#sB").value.trim() } }, siteUrl: f.querySelector("#sU").value.trim() });
     f.addEventListener("submit", (e) => {
       e.preventDefault();
-      const s = read();
+      const s = Object.assign({}, state.settings || {}, read());
       if (s.adsense.enabled && !/^ca-pub-\d{10,20}$/.test(s.adsense.client)) return toast("Enter a valid publisher ID (ca-pub-…)");
       D.saveSettings(s).then(() => { state.settings = s; DB.cache.setSettings(s); toast("Ad settings saved"); settings(v); }).catch((er) => toast("Error: " + er.message));
     });
     v.querySelector("#dCfg").addEventListener("click", () => {
-      const s = read(), out = Object.assign({}, CFG, { siteUrl: s.siteUrl, adsense: s.adsense });
+      const s = read(), out = Object.assign({}, CFG, { siteUrl: s.siteUrl, adsense: s.adsense, social: (state.settings && state.settings.social) || CFG.social });
       download("site-config.js", "/* COPA MCQ – Site configuration (generated by Admin Panel " + new Date().toLocaleString() + ").\n   See README / previous file for Firebase setup steps. */\nwindow.COPA_CONFIG = " + JSON.stringify(out, null, 2) + ";\n", "text/javascript");
     });
     v.querySelector("#dAds").addEventListener("click", () => {

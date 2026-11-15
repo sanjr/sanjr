@@ -97,7 +97,7 @@
       '<div class="section-title" id="contact"><h2>' + t("contactTitle") + '</h2></div>' +
       '<div class="card card-pad" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><span class="stat"><span class="ic" style="background:var(--blue-600)"><i class="fa-solid fa-envelope"></i></span></span>' +
       '<div style="flex:1;min-width:220px"><b>COPA MCQ</b><p style="margin:4px 0 0;color:var(--ink-2)">' + X.contact + '</p></div>' +
-      '<div class="socials"><a class="yt" href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a class="tg" href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a><a class="wa" href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></div>';
+      '<div class="socials">' + (function () { var c = window.COPA.social.cfg(), M = { youtube: 'yt', whatsapp: 'wa', telegram: 'tg', instagram: 'ig', facebook: 'fb' }; return window.COPA.social.list.filter(function (x) { return c[x[0]]; }).map(function (x) { return '<a class="' + M[x[0]] + '" href="' + window.COPA.esc(c[x[0]]) + '" target="_blank" rel="noopener" aria-label="' + x[1] + '"><i class="fa-brands fa-' + x[0] + '"></i></a>'; }).join(''); })() + '</div></div>';
     if (location.hash === "#contact") setTimeout(function () { document.getElementById("contact").scrollIntoView(); }, 50);
   })();
   </script>

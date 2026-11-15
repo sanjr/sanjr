@@ -227,7 +227,7 @@
 
     /* FOOTER */
     '<footer class="lp-foot"><div class="lp-wrap"><div class="cols"><div><a class="lp-logo" href="index.html"><img class="mk-img" src="assets/img/logo.webp" width="256" height="205" alt="COPA MCQ logo"><span>COPA<b> MCQ</b>.</span></a><p>' + X.footP + "</p>" +
-    '<div class="lp-soc"><a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a><a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a><a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a></div></div>' +
+    '<div class="lp-soc">' + (function () { const c = C.social.cfg(); return C.social.list.filter((x) => c[x[0]]).map((x) => '<a href="' + C.esc(c[x[0]]) + '" target="_blank" rel="noopener" aria-label="' + x[1] + '"><i class="fa-brands fa-' + x[0] + '"></i></a>').join(""); })() + "</div></div>" +
     "<div><h5>" + X.fh[0] + "</h5><ul>" + [["modules.html", 0], ["study.html", 1], [C.modulePage(15), 2], [C.modulePage(11), 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl1[a[1]] + "</a></li>").join("") + "</ul></div>" +
     "<div><h5>" + X.fh[1] + "</h5><ul>" + [["exam.html", 0], ["exam.html", 1], ["dashboard.html", 2], ["dashboard.html", 3]].map((a) => '<li><a href="' + a[0] + '">' + X.fl2[a[1]] + "</a></li>").join("") + "</ul></div>" +
     "<div><h5>" + X.fh[2] + "</h5><ul>" + [["about.html", X.fl3[0]], ["about.html#contact", X.fl3[1]], ["privacy.html", "Privacy Policy"], ["terms.html", "Terms & Conditions"], ["admin.html", '<i class="fa-solid fa-user-shield"></i> Admin Login']].map((a) => '<li><a href="' + a[0] + '">' + a[1] + "</a></li>").join("") + "</ul></div></div>" +
