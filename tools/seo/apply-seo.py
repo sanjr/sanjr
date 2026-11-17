@@ -159,7 +159,7 @@ d = "ITI COPA study material in one place: theory notes, practicals & assignment
 page("study.html", t, d, "ITI COPA study material, COPA notes, COPA notes PDF, COPA practical, COPA video lectures, COPA previous papers, COPA shortcut keys, " + COMMON_KW,
      [webpage("study.html", t, d, "CollectionPage"), crumbs(("Home", ""), ("Study Material", "study.html")),
       {"@type": "ItemList", "name": "ITI COPA study material", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": nm, "url": SITE + "/" + u} for i, (nm, u) in enumerate([
-          ("Trade Syllabus", "trade-syllabus.html"), ("Theory Notes", "theory-notes.html"), ("Practical & Assignments", "practicals.html"), ("PDF Materials", "pdf-materials.html"), ("Video Tutorials", "video-tutorials.html"),
+          ("Trade Syllabus", "trade-syllabus.html"), ("Excel Formula Lab", "excel-lab.html"), ("Theory Notes", "theory-notes.html"), ("Practical & Assignments", "practicals.html"), ("PDF Materials", "pdf-materials.html"), ("Video Tutorials", "video-tutorials.html"),
           ("Question Bank", "question-bank.html"), ("Quick Reference", "quick-reference.html"), ("Previous Papers", "previous-papers.html")])]}],
      prio="0.9")
 t = "ITI COPA Syllabus 2025 (CTS 3.0, NSQF 3.5) – Trade Practical & Theory | COPA MCQ"
@@ -171,6 +171,7 @@ page("trade-syllabus.html", t, d, "COPA syllabus, ITI COPA syllabus 2025, COPA s
        "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "Onsite", "courseWorkload": "PT1200H"}}],
      prio="0.9")
 for u, nm, t, d, kw in [
+    ("excel-lab.html", "Excel Formula Lab", "MS Excel Formulas with Examples – Live Excel Formula Lab | COPA MCQ", "Learn 49 MS Excel formulas on a live sheet: SUM, IF, VLOOKUP, SUMIFS, DATEDIF, NETWORKDAYS and more – meaning in English, Hindi & Marathi with exercises.", "Excel formulas with examples, MS Excel formula list, VLOOKUP example, IF formula in Excel, DATEDIF age formula, Excel formulas in Hindi, Excel formulas in Marathi, COPA Excel practical"),
     ("theory-notes.html", "Theory Notes", "COPA Theory Notes – Chapter-wise ITI COPA Notes | COPA MCQ", "Chapter-wise ITI COPA theory notes for every module: computer basics, Windows, Linux, MS Office, DBMS, networking, HTML, JavaScript, Python.", "COPA theory notes, ITI COPA notes, COPA chapter wise notes, COPA notes in Hindi, COPA notes Marathi"),
     ("practicals.html", "Practical & Assignments", "COPA Practical List & Assignments – HTML, JS, Python | COPA MCQ", f"ITI COPA practicals and assignments: ready-made HTML, CSS, JavaScript and Python programs you can run and edit online in the Live Practice Lab.", "COPA practical list, ITI COPA practical, COPA practical programs, HTML practical, Python practical, COPA assignments"),
     ("pdf-materials.html", "PDF Materials", "COPA Notes PDF Download – ITI COPA Study Material | COPA MCQ", "Download ITI COPA notes and study material as PDF, module-wise – free for all COPA trainees.", "COPA notes PDF, ITI COPA PDF, COPA book PDF, COPA study material PDF download"),
