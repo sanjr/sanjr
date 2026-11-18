@@ -5,7 +5,12 @@
   "use strict";
   const C = window.COPA, DB = window.COPA_DB, D = DB.driver, CFG = window.COPA_CONFIG || {};
   const esc = C.esc, root = document.getElementById("adm");
-  const BUILTIN = (window.COPA_QUESTIONS || []).slice();
+  const BUILTIN = (window.COPA_QUESTIONS || []).concat(window.COPA_ES_QUESTIONS || []);
+  const ESTP = (window.COPA_ES && window.COPA_ES.topics) || [];
+  const esName = (id) => { const t = ESTP.find((x) => x.id === +id); return t ? t.t.en[0] : "Topic " + id; };
+  const qLab = (m) => (+m > 100 ? "ES" + (m - 100) : "M" + m);
+  const modOpts = (sel) => C.MODULES.map((md) => '<option value="' + md.id + '"' + (md.id === +sel ? " selected" : "") + ">M" + md.id + " " + esc(md.en) + "</option>").join("") +
+    (ESTP.length ? '<optgroup label="ES – Employability Skills">' + ESTP.map((t) => '<option value="' + (100 + t.id) + '"' + (100 + t.id === +sel ? " selected" : "") + ">ES" + t.id + " " + esc(t.t.en[0]) + "</option>").join("") + "</optgroup>" : "");
   const BUILTIN_IDS = {}; BUILTIN.forEach((q) => (BUILTIN_IDS[q.id] = q));
   const modName = (m) => (+m ? "M" + m + " – " + C.MODULES[m - 1].en : "General / All modules");
   const fmtDT = (d) => (d ? new Date(d).toLocaleString(undefined, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—");
@@ -84,6 +89,7 @@
     ["reviews", "fa-star", "Reviews"],
     ["questions", "fa-circle-question", "Questions"],
     ["notes", "fa-book-open", "Study Material"],
+    ["es", "fa-user-tie", "ES"],
     ["social", "fa-share-nodes", "Social Media"],
     ["settings", "fa-rectangle-ad", "Ads & Settings"]
   ];
@@ -112,7 +118,7 @@
   }
   function draw() {
     const v = document.getElementById("view");
-    ({ overview, visitors, results, students, reviews: reviewsAdmin, questions, notes, social, settings }[tab] || overview)(v);
+    ({ overview, visitors, results, students, reviews: reviewsAdmin, questions, notes, es: esAdmin, social, settings }[tab] || overview)(v);
   }
   function setLive(list) {
     state.live = (list || []).filter(DB.isLive).sort((a, b) => b.startAt - a.startAt);
@@ -362,7 +368,7 @@
     v.innerHTML = '<div class="adm-h"><div><h2>Questions</h2><p>Add new MCQs, edit or hide existing ones. Changes appear on the website for students.</p></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" id="qExp"><i class="fa-solid fa-download"></i> Export</button><label class="btn btn-ghost btn-sm" style="cursor:pointer"><i class="fa-solid fa-upload"></i> Import<input type="file" id="qImp" accept=".json" hidden></label>' +
       '<button class="btn btn-primary btn-sm" id="qAdd"><i class="fa-solid fa-plus"></i> Add question</button></div></div>' +
-      '<div class="adm-tools"><input class="input grow" id="qS" placeholder="Search question text"><select class="input" id="qM"><option value="">All modules</option>' + C.MODULES.map((m) => '<option value="' + m.id + '">M' + m.id + " " + esc(m.en) + "</option>").join("") + '</select>' +
+      '<div class="adm-tools"><input class="input grow" id="qS" placeholder="Search question text"><select class="input" id="qM"><option value="">All modules</option>' + modOpts(0) + '</select>' +
       '<select class="input" id="qF"><option value="">All</option><option value="new">Added by admin</option><option value="edit">Edited</option><option value="hid">Hidden</option></select></div><div class="card" id="qL"></div>';
     const render = () => {
       const s = v.querySelector("#qS").value.trim().toLowerCase(), m = +v.querySelector("#qM").value, f = v.querySelector("#qF").value;
@@ -370,7 +376,7 @@
       const list = all.filter((q) => (!m || q.m === m) && (!f || q._status === f) && (!s || (q.en.q + " " + q.en.o.join(" ")).toLowerCase().indexOf(s) > -1));
       const shown = list.slice(0, 200);
       v.querySelector("#qL").innerHTML = '<div style="padding:12px 16px;font-size:13px;color:var(--ink-3);border-bottom:1px solid var(--line)">' + list.length + " of " + all.length + " questions" + (list.length > 200 ? " (showing first 200 – use search/filter)" : "") + "</div>" +
-        (shown.length ? shown.map((q) => '<div class="q-row"><div class="qi"><b>M' + q.m + " • " + esc(q.id) + "</b>" +
+        (shown.length ? shown.map((q) => '<div class="q-row"><div class="qi"><b>' + qLab(q.m) + " • " + esc(q.id) + "</b>" +
           (q._status === "new" ? '<span class="badge new">NEW</span>' : q._status === "edit" ? '<span class="badge edit">EDITED</span>' : q._status === "hid" ? '<span class="badge hid">HIDDEN</span>' : "") +
           '<div style="margin-top:4px">' + esc(q.en.q) + "</div>" + '<div class="ans"><i class="fa-solid fa-check"></i> ' + "ABCD"[q.a] + ". " + esc(q.en.o[q.a]) + "</div></div>" +
           '<div class="acts"><button class="icon-btn" data-ed="' + esc(q.id) + '" title="Edit"><i class="fa-solid fa-pen"></i></button>' +
@@ -403,9 +409,9 @@
     });
     render();
   }
-  function qForm(q, done) {
+  function qForm(q, done, preM) {
     const isNew = !q;
-    q = q || { id: "c-" + DB.uid(), m: +((document.getElementById("qM") || {}).value) || 1, a: 0, en: { q: "", o: ["", "", "", ""] }, hi: { q: "", o: ["", "", "", ""] }, mr: { q: "", o: ["", "", "", ""] }, x: { en: "", hi: "", mr: "" }, code: "" };
+    q = q || { id: (preM > 100 ? "es-c-" : "c-") + DB.uid(), m: preM || +((document.getElementById("qM") || {}).value) || 1, a: 0, en: { q: "", o: ["", "", "", ""] }, hi: { q: "", o: ["", "", "", ""] }, mr: { q: "", o: ["", "", "", ""] }, x: { en: "", hi: "", mr: "" }, code: "" };
     const same = (l) => q[l] && q.en && q[l].q === q.en.q && !isNew; // translation copied from English → leave empty in form
     const val = (l, k, i) => { if (l !== "en" && same(l)) return ""; const L = q[l] || {}; return esc(i == null ? L[k] || "" : (L.o || [])[i] || ""); };
     const block = (l, title, req) => '<div class="lang-block"><h4>' + title + (req ? "" : " <small>optional – English is used if empty</small>") + "</h4>" +
@@ -414,7 +420,7 @@
       '<div class="field" style="margin:6px 0 0"><label>One-line explanation of the answer</label><input class="input" data-l="' + l + '" data-k="x" value="' + esc((q.x && q.x[l]) || "") + '"></div></div>';
     const m = C.modal(
       '<button class="close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button><h3><i class="fa-solid fa-' + (isNew ? "plus" : "pen") + '" style="color:var(--blue-600)"></i> ' + (isNew ? "Add question" : "Edit question " + esc(q.id)) + "</h3>" +
-      '<form id="qf"><div class="form-grid"><div class="field"><label>Module</label><select class="input" id="qfM">' + C.MODULES.map((md) => '<option value="' + md.id + '"' + (md.id === q.m ? " selected" : "") + ">M" + md.id + " " + esc(md.en) + "</option>").join("") + "</select></div>" +
+      '<form id="qf"><div class="form-grid"><div class="field"><label>Module / ES topic</label><select class="input" id="qfM">' + modOpts(q.m) + "</select></div>" +
       '<div class="field"><label>Correct answer</label><div class="ans-pick">' + [0, 1, 2, 3].map((i) => '<label><input type="radio" name="qa" value="' + i + '"' + (i === q.a ? " checked" : "") + "><span>" + "ABCD"[i] + "</span></label>").join("") + "</div></div>" +
       '<div class="field full"><label>Code / table (optional, shown in a code box)</label><textarea class="input" id="qfCode" style="font-family:Consolas,monospace">' + esc(q.code || "") + "</textarea></div></div>" +
       block("en", "English", true) + block("hi", "हिंदी (Hindi)", false) + block("mr", "मराठी (Marathi)", false) +
@@ -441,7 +447,9 @@
     ["pdf", "PDF Materials – download notes", "Put the PDF / Google Drive link in “Link”. Students get an Open / Download button. (Google Drive: share as “Anyone with the link”.)"],
     ["video", "Video Tutorials – video lessons", "Put the YouTube link in “Link” (youtube.com/watch?v=… or youtu.be/…). The video plays inside the website."],
     ["reference", "Quick Reference – shortcuts & commands", "Extra shortcut / command lists. Built-in tables (Windows, Word, Excel, DOS, Linux …) are already on the page."],
-    ["papers", "Previous Papers – old question papers", "Put the paper PDF / Drive link in “Link”. Tip: start the title with the year, e.g. “2025 – Semester 1 – COPA Theory”."]
+    ["papers", "Previous Papers – old question papers", "Put the paper PDF / Drive link in “Link”. Tip: start the title with the year, e.g. “2025 – Semester 1 – COPA Theory”."],
+    ["es", "ES Notes – Employability Skills notes", "Notes for an Employability Skills topic. Shown on the ES page → topic → Notes. Choose the ES topic above."],
+    ["es-video", "ES Videos – Employability Skills YouTube videos", "Put the YouTube link in “Link”. The video plays on the ES page → topic → Videos. Choose the ES topic above."]
   ];
   let nCat = "all";
   function notes(v) {
@@ -450,7 +458,7 @@
     const catName = (c) => (NCATS.find((x) => x[0] === (c || "theory")) || NCATS[0])[1].split(" – ")[0];
     v.innerHTML = '<div class="adm-h"><div><h2>Study Material</h2><p>Theory notes, practicals, PDFs, YouTube videos, quick reference and previous papers – shown in the 7 sections of the Study Material page and in each module.</p></div><button class="btn btn-primary btn-sm" id="nAdd"><i class="fa-solid fa-plus"></i> Add study material</button></div>' +
       '<div class="adm-tools">' + [["all", "All (" + all.length + ")"]].concat(NCATS.map((c) => [c[0], c[1].split(" – ")[0] + " (" + all.filter((n) => (n.cat || "theory") === c[0]).length + ")"])).map((c) => '<button class="btn btn-sm ' + (nCat === c[0] ? "btn-primary" : "btn-ghost") + '" data-nc="' + c[0] + '">' + c[1] + "</button>").join("") + "</div>" +
-      '<div class="card">' + (list.length ? list.map((n) => '<div class="q-row"><div class="qi"><b>' + esc(n.title) + '</b><span class="badge">' + esc(catName(n.cat)) + "</span>" + (n.hidden ? '<span class="badge hid">HIDDEN</span>' : "") + '<span class="sub" style="display:block;font-size:12.5px;color:var(--ink-3)">' + esc(modName(n.m)) + (n.link ? ' • <a href="' + esc(n.link) + '" target="_blank" rel="noopener">' + esc(n.linkLabel || n.link) + "</a>" : "") + "</span>" +
+      '<div class="card">' + (list.length ? list.map((n) => '<div class="q-row"><div class="qi"><b>' + esc(n.title) + '</b><span class="badge">' + esc(catName(n.cat)) + "</span>" + (n.hidden ? '<span class="badge hid">HIDDEN</span>' : "") + '<span class="sub" style="display:block;font-size:12.5px;color:var(--ink-3)">' + esc(/^es/.test(n.cat || "") ? "ES" + n.m + " – " + esName(n.m) : modName(n.m)) + (n.link ? ' • <a href="' + esc(n.link) + '" target="_blank" rel="noopener">' + esc(n.linkLabel || n.link) + "</a>" : "") + "</span>" +
         '<div style="margin-top:4px;font-size:13.5px;color:var(--ink-2)">' + esc(plain(n).slice(0, 180)) + (plain(n).length > 180 ? "…" : "") + "</div></div>" +
         '<div class="acts"><button class="icon-btn" data-ned="' + esc(n.id) + '" title="Edit"><i class="fa-solid fa-pen"></i></button><button class="icon-btn del" data-ndel="' + esc(n.id) + '" title="Delete"><i class="fa-solid fa-trash"></i></button></div></div>').join("")
         : '<p class="empty"><i class="fa-solid fa-book-open" style="font-size:30px"></i><br>No study material yet. Click “Add study material”.</p>') + "</div>";
@@ -465,7 +473,7 @@
     const isNew = !n || !n.id;
     n = Object.assign({ id: "n-" + DB.uid(), m: 0, title: "", body: "", link: "", linkLabel: "", order: 0, created: Date.now() }, isNew ? n || {} : n);
     const m = C.modal('<button class="close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button><h3><i class="fa-solid fa-book-open" style="color:var(--purple)"></i> ' + (isNew ? "Add" : "Edit") + " study material</h3>" +
-      '<form id="nf"><div class="form-grid"><div class="field"><label>Module</label><select class="input" id="nfM"><option value="0">General / All modules</option>' + C.MODULES.map((md) => '<option value="' + md.id + '"' + (md.id === +n.m ? " selected" : "") + ">M" + md.id + " " + esc(md.en) + "</option>").join("") + "</select></div>" +
+      '<form id="nf"><div class="form-grid"><div class="field"><label id="nfML">Module</label><select class="input" id="nfM"></select></div>' +
       '<div class="field"><label>Section (where it is shown)</label><select class="input" id="nfC">' + NCATS.map((c) => '<option value="' + c[0] + '"' + ((n.cat || "theory") === c[0] ? " selected" : "") + ">" + c[1] + "</option>").join("") + "</select></div>" +
       '<div class="field"><label>Order (small numbers first)</label><input class="input" id="nfO" type="number" value="' + (+n.order || 0) + '"></div>' +
       '<p class="full nf-hint" id="nfHint"></p>' +
@@ -477,7 +485,16 @@
       '<div class="modal-acts"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button></div></form>', { wide: true, sticky: true });
     m.el.querySelector(".modal").classList.add("modal-xl");
     const rte = window.COPA_RTE ? window.COPA_RTE.create(m.el.querySelector("#nfB"), { html: C.noteHTML(n), margin: n.margin }) : null;
-    const hint = () => { const c = m.el.querySelector("#nfC").value; m.el.querySelector("#nfHint").innerHTML = '<i class="fa-solid fa-circle-info"></i> ' + (NCATS.find((x) => x[0] === c) || NCATS[0])[2]; };
+    let lastEs = null;
+    const hint = () => {
+      const c = m.el.querySelector("#nfC").value, es = /^es/.test(c), sel = m.el.querySelector("#nfM");
+      m.el.querySelector("#nfHint").innerHTML = '<i class="fa-solid fa-circle-info"></i> ' + (NCATS.find((x) => x[0] === c) || NCATS[0])[2];
+      if (es === lastEs) return;
+      const cur = lastEs === null ? +n.m : +sel.value; lastEs = es;
+      m.el.querySelector("#nfML").textContent = es ? "ES topic" : "Module";
+      sel.innerHTML = es ? ESTP.map((t) => '<option value="' + t.id + '"' + (t.id === cur ? " selected" : "") + ">ES" + t.id + " " + esc(t.t.en[0]) + "</option>").join("")
+        : '<option value="0">General / All modules</option>' + C.MODULES.map((md) => '<option value="' + md.id + '"' + (md.id === cur ? " selected" : "") + ">M" + md.id + " " + esc(md.en) + "</option>").join("");
+    };
     m.el.querySelector("#nfC").addEventListener("change", hint); hint();
     m.el.querySelector("#nf").addEventListener("submit", (e) => {
       e.preventDefault();
@@ -489,6 +506,27 @@
     });
   }
 
+
+
+  /* ================= ES – EMPLOYABILITY SKILLS ================= */
+  function esAdmin(v) {
+    const qs = mergedQuestions().filter((q) => +q.m > 100);
+    const nOf = (id, cat) => state.notes.filter((n) => n.cat === cat && +n.m === id);
+    v.innerHTML = '<div class="adm-h"><div><h2>ES – Employability Skills</h2><p>Add notes, YouTube videos and MCQs for each ES topic. Students see them on the ES page (menu → ES); the MCQs are also used in the ES CBT test.</p></div><a class="btn btn-ghost btn-sm" href="es.html" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open ES page</a></div>' +
+      '<div class="card" style="overflow-x:auto"><table class="adm-es" style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr><th style="text-align:left;padding:10px 14px">Topic</th><th>Notes</th><th>Videos</th><th>MCQs</th><th style="text-align:right;padding-right:14px">Add</th></tr></thead><tbody>' +
+      ESTP.map((t) => { const q = qs.filter((x) => x.m === 100 + t.id && x._status !== "hid").length;
+        return '<tr style="border-top:1px solid var(--line)"><td style="padding:10px 14px"><b style="color:' + t.c + '">ES' + t.id + "</b> " + esc(t.t.en[0]) + '</td><td style="text-align:center">' + (nOf(t.id, "es").length + 1) + '</td><td style="text-align:center">' + nOf(t.id, "es-video").length + '</td><td style="text-align:center"><button class="btn btn-ghost btn-sm" data-esq="' + t.id + '" title="Show these MCQs">' + q + "</button></td>" +
+          '<td style="text-align:right;white-space:nowrap;padding:8px 14px"><button class="btn btn-ghost btn-sm" data-esn="' + t.id + '"><i class="fa-solid fa-book-open"></i> Notes</button> <button class="btn btn-ghost btn-sm" data-esv="' + t.id + '"><i class="fa-brands fa-youtube" style="color:#f00"></i> Video</button> <button class="btn btn-primary btn-sm" data-esm="' + t.id + '"><i class="fa-solid fa-plus"></i> MCQ</button></td></tr>'; }).join("") +
+      '</tbody></table></div><p style="font-size:12.5px;color:var(--ink-3)">The Notes count includes the built-in “Key points”. To edit or delete ES notes and videos use Study Material (filter “ES”); for MCQs use Questions (choose the ES topic in the filter).</p>';
+    const back = (msg) => { toast(msg); D.listNotes().then((n) => { state.notes = n || []; return DB.refreshCache(true); }).then(() => esAdmin(v)); };
+    v.querySelectorAll("[data-esn]").forEach((b) => b.addEventListener("click", () => nForm({ cat: "es", m: +b.dataset.esn }, back)));
+    v.querySelectorAll("[data-esv]").forEach((b) => b.addEventListener("click", () => nForm({ cat: "es-video", m: +b.dataset.esv }, back)));
+    v.querySelectorAll("[data-esm]").forEach((b) => b.addEventListener("click", () => qForm(null, () => esAdmin(v), 100 + +b.dataset.esm)));
+    v.querySelectorAll("[data-esq]").forEach((b) => b.addEventListener("click", () => {
+      const tb = document.querySelector('[data-tab="questions"]'); if (tb) tb.click();
+      setTimeout(() => { const s = document.getElementById("qM"); if (s) { s.value = String(100 + +b.dataset.esq); s.dispatchEvent(new Event("input")); } }, 200);
+    }));
+  }
 
   /* ================= SOCIAL MEDIA ================= */
   function social(v) {

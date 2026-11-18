@@ -30,7 +30,7 @@
     en: {
       readNotes: "Read full notes", printNotes: "Print", netErr: "Could not connect to the server. Check your internet and try again.", gOr: "or", gStep: "One more step", gStepNote: "Enter your Roll No once. Next time just tap “Sign in with Google”.", gLinkPin: "This Roll No already has an account. Enter its 4-digit PIN once to connect your Google account.", gContinue: "Continue", sessionEnded: "Please log in again.",
       noPrograms: "No practicals saved yet. Open Live Practice, write a program and click Save.", 
-      livePractice: "Live Practice", typing: "Typing Lab", reviews: "Reviews", myPracticals: "My Live Practicals", 
+      livePractice: "Live Practice", typing: "Typing Lab", es: "ES", reviews: "Reviews", myPracticals: "My Live Practicals", 
       whyAns: "Explanation", 
       pin: "4-digit PIN", pinNote: "Remember your Roll No. and PIN – you need them to log in again on this computer.", createAcc: "Create Account", pinErr: "PIN must be exactly 4 digits.", rollExists: "This Roll No. is already registered. Please login.", noAccount: "No account found for this Roll No. Please register first.", wrongPin: "Wrong PIN. Please try again.",
       myDash: "My Dashboard", hello: "Hello", memberSince: "Member since", lastLogin: "Last login", passed: "Passed", failed: "Failed", passRate: "Pass Rate", lastScore: "Last Score",
@@ -97,7 +97,7 @@
     hi: {
       readNotes: "पूरे नोट्स पढ़ें", printNotes: "प्रिंट", netErr: "सर्वर से कनेक्ट नहीं हो सका। इंटरनेट जाँचें और फिर कोशिश करें।", gOr: "या", gStep: "बस एक कदम और", gStepNote: "एक बार अपना रोल नंबर लिखें। अगली बार सिर्फ “Google से साइन इन” दबाएँ।", gLinkPin: "इस रोल नंबर का खाता पहले से है। Google जोड़ने के लिए एक बार उसका 4 अंकों का PIN डालें।", gContinue: "आगे बढ़ें", sessionEnded: "कृपया फिर से लॉगिन करें।",
       noPrograms: "अभी कोई प्रैक्टिकल सेव नहीं। लाइव प्रैक्टिस खोलें, प्रोग्राम लिखें और Save दबाएँ।", 
-      livePractice: "लाइव प्रैक्टिस", typing: "टाइपिंग लैब", reviews: "समीक्षाएँ", myPracticals: "मेरे लाइव प्रैक्टिकल", 
+      livePractice: "लाइव प्रैक्टिस", typing: "टाइपिंग लैब", es: "ES", reviews: "समीक्षाएँ", myPracticals: "मेरे लाइव प्रैक्टिकल", 
       whyAns: "व्याख्या", 
       pin: "4 अंकों का PIN", pinNote: "अपना रोल नं. और PIN याद रखें – इस कंप्यूटर पर दोबारा लॉगिन के लिए इनकी ज़रूरत होगी।", createAcc: "अकाउंट बनाएँ", pinErr: "PIN ठीक 4 अंकों का होना चाहिए।", rollExists: "यह रोल नं. पहले से रजिस्टर है। कृपया लॉगिन करें।", noAccount: "इस रोल नं. का कोई अकाउंट नहीं मिला। पहले रजिस्टर करें।", wrongPin: "गलत PIN। फिर से कोशिश करें।",
       myDash: "मेरा डैशबोर्ड", hello: "नमस्ते", memberSince: "सदस्य बने", lastLogin: "पिछला लॉगिन", passed: "उत्तीर्ण", failed: "अनुत्तीर्ण", passRate: "उत्तीर्ण दर", lastScore: "पिछला स्कोर",
@@ -164,7 +164,7 @@
     mr: {
       readNotes: "संपूर्ण नोट्स वाचा", printNotes: "प्रिंट", netErr: "सर्व्हरशी कनेक्ट होऊ शकले नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.", gOr: "किंवा", gStep: "फक्त एक पायरी", gStepNote: "एकदा तुमचा रोल नंबर लिहा. पुढच्या वेळी फक्त “Google ने साइन इन” दाबा.", gLinkPin: "या रोल नंबरचे खाते आधीच आहे. Google जोडण्यासाठी एकदा त्याचा 4 अंकी PIN टाका.", gContinue: "पुढे जा", sessionEnded: "कृपया पुन्हा लॉगिन करा.",
       noPrograms: "अजून एकही प्रॅक्टिकल सेव्ह नाही. लाइव्ह प्रॅक्टिस उघडा, प्रोग्राम लिहा आणि Save दाबा.", 
-      livePractice: "लाइव्ह प्रॅक्टिस", typing: "टायपिंग लॅब", reviews: "रिव्ह्यू", myPracticals: "माझे लाइव्ह प्रॅक्टिकल", 
+      livePractice: "लाइव्ह प्रॅक्टिस", typing: "टायपिंग लॅब", es: "ES", reviews: "रिव्ह्यू", myPracticals: "माझे लाइव्ह प्रॅक्टिकल", 
       whyAns: "स्पष्टीकरण", 
       pin: "4 अंकी PIN", pinNote: "तुमचा रोल नं. आणि PIN लक्षात ठेवा – या संगणकावर पुन्हा लॉगिनसाठी ते लागतील.", createAcc: "अकाउंट तयार करा", pinErr: "PIN बरोबर 4 अंकांचा असावा.", rollExists: "हा रोल नं. आधीच नोंदणीकृत आहे. कृपया लॉगिन करा.", noAccount: "या रोल नं. चे अकाउंट सापडले नाही. आधी नोंदणी करा.", wrongPin: "चुकीचा PIN. पुन्हा प्रयत्न करा.",
       myDash: "माझा डॅशबोर्ड", hello: "नमस्कार", memberSince: "सदस्य झाल्यापासून", lastLogin: "शेवटचे लॉगिन", passed: "उत्तीर्ण", failed: "अनुत्तीर्ण", passRate: "उत्तीर्ण दर", lastScore: "शेवटचे गुण",
@@ -267,17 +267,21 @@
     if (xe || (c.x && (c.x.hi || c.x.mr))) q.x = { en: xe || "", hi: (c.x.hi || xe || ""), mr: (c.x.mr || xe || "") };
     return q;
   }
-  const QUESTIONS = (function () {
-    const base = (window.COPA_QUESTIONS || []).slice();
+  /* COPA questions use m = 1…15; Employability Skills (ES) questions use m = 101…112 */
+  const isES = (c) => +c.m > 100;
+  function mergeQ(builtin, mine) {
+    const base = builtin.slice();
     const idx = {}; base.forEach((q, i) => (idx[q.id] = i));
     readCache("questions", []).forEach((c) => {
-      if (!c || !c.id) return;
+      if (!c || !c.id || isES(c) !== mine) return;
       if (c.hidden) { if (idx[c.id] != null) base[idx[c.id]] = null; return; }
       const q = normQ(c);
       if (idx[c.id] != null) base[idx[c.id]] = q; else base.push(q);
     });
     return base.filter(Boolean);
-  })();
+  }
+  const QUESTIONS = mergeQ(window.COPA_QUESTIONS || [], false);
+  const ES_QUESTIONS = mergeQ(window.COPA_ES_QUESTIONS || [], true);
   const NOTES = readCache("notes", []).filter((n) => n && !n.hidden).sort((a, b) => (a.m - b.m) || ((a.order || 0) - (b.order || 0)) || ((a.created || 0) - (b.created || 0)));
   const byModule = (m) => QUESTIONS.filter((q) => q.m === m);
   const qById = {}; QUESTIONS.forEach((q) => (qById[q.id] = q));
@@ -354,7 +358,7 @@
   const noteLink = (n) => (n.link ? '<a class="btn btn-ghost btn-sm" href="' + esc(n.link) + '" target="_blank" rel="noopener"><i class="fa-solid fa-' + (/\.pdf($|\?)/i.test(n.link) ? "file-pdf" : "link") + '"></i> ' + esc(n.linkLabel || "Open") + "</a>" : "");
   function renderNotes(list) {
     if (!list.length) return "";
-    return '<div class="notes-grid">' + list.map((n) => '<article class="card note-card"><div class="nc-head"><span class="chip ' + (n.m ? "" : "purple") + '">' + (n.m ? "M" + n.m : "COPA") + "</span><h3>" + esc(n.title || "") + "</h3></div>" +
+    return '<div class="notes-grid">' + list.map((n) => '<article class="card note-card"><div class="nc-head"><span class="chip ' + (n.m ? "" : "purple") + '">' + (/^es/.test(n.cat || "") ? "ES · " + n.m : n.m ? "M" + n.m : "COPA") + "</span><h3>" + esc(n.title || "") + "</h3></div>" +
       (n.fmt === "html"
         ? '<div class="nc-body rich rte-content">' + noteHTML(n) + '</div><button type="button" class="btn btn-primary btn-sm nc-read" data-note-open="' + esc(n.id) + '"><i class="fa-solid fa-book-open-reader"></i> ' + t("readNotes") + "</button>"
         : '<div class="nc-body">' + noteHTML(n) + "</div>") +
@@ -362,7 +366,7 @@
   }
   function openNote(n) {
     const m = modal('<button class="close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
-      '<div class="note-view"><div class="nv-head"><span class="chip ' + (n.m ? "" : "purple") + '">' + (n.m ? "M" + n.m : "COPA") + "</span><h2>" + esc(n.title || "") + "</h2>" +
+      '<div class="note-view"><div class="nv-head"><span class="chip ' + (n.m ? "" : "purple") + '">' + (/^es/.test(n.cat || "") ? "ES · " + n.m : n.m ? "M" + n.m : "COPA") + "</span><h2>" + esc(n.title || "") + "</h2>" +
       '<button type="button" class="btn btn-ghost btn-sm" data-nprint><i class="fa-solid fa-print"></i> ' + t("printNotes") + "</button></div>" +
       '<div class="rte-page rte-content" data-margin="' + esc(n.margin || "normal") + '">' + noteHTML(n) + "</div>" + (n.link ? '<div style="margin-top:14px">' + noteLink(n) + "</div>" : "") + "</div>", { wide: true });
     m.el.querySelector(".modal").classList.add("note-modal");
@@ -378,7 +382,7 @@
     const b = e.target.closest && e.target.closest("[data-note-open]"); if (!b) return;
     const n = NOTES.find((x) => x.id === b.getAttribute("data-note-open")); if (n) openNote(n);
   });
-  const notesFor = (m) => NOTES.filter((n) => !m || +n.m === +m || !+n.m);
+  const notesFor = (m) => NOTES.filter((n) => !/^es/.test(n.cat || "") && (!m || +n.m === +m || !+n.m));
 
   /* one-line explanation of the correct answer */
   const explain = (q, l) => (q.x ? '<div class="explain"><i class="fa-solid fa-lightbulb"></i><div><b>' + t("whyAns") + ":</b> " + esc(q.x[l] || q.x.en) + "</div></div>" : "");
@@ -648,6 +652,7 @@
     { k: "livePractice", href: "live-practice.html", icon: "fa-laptop-code" },
     { k: "typing", href: "typing-lab.html", icon: "fa-keyboard" },
     { k: "study", href: "study.html", icon: "fa-book-open" },
+    { k: "es", href: "es.html", icon: "fa-user-tie" },
     { k: "dashboard", href: "dashboard.html", icon: "fa-gauge-high" },
     { k: "reviews", href: "reviews.html", icon: "fa-star" },
     { k: "about", href: "about.html", icon: "fa-circle-info" }
@@ -656,7 +661,7 @@
     if (active === "results") active = "dashboard";
     if (active === "contact") active = "about";
     const prof = getProfile();
-    const links = (cls) => NAV.map((n) => '<a href="' + ROOT + n.href + '" class="' + (active === n.k ? "active" : "") + '"><i class="fa-solid ' + n.icon + '"></i><span class="lbl">' + t(n.k) + "</span></a>").join("");
+    const links = (cls) => NAV.map((n) => '<a href="' + ROOT + n.href + '" class="' + (active === n.k ? "active" : "") + '"' + (n.k === "es" ? ' title="Employability Skills"' : "") + '><i class="fa-solid ' + n.icon + '"></i><span class="lbl">' + t(n.k) + "</span></a>").join("");
     const header = document.getElementById("app-header");
     if (header) {
       header.outerHTML =
@@ -759,7 +764,7 @@
   document.body.setAttribute("data-lang", lang);
 
   window.COPA = {
-    ROOT, MODULES, I18N, QUESTIONS, NOTES, normQ, qById, byModule, modulePage, iconCls,
+    ROOT, MODULES, I18N, QUESTIONS, ES_QUESTIONS, NOTES, normQ, qById, byModule, modulePage, iconCls,
     get lang() { return lang; },
     t, modName, esc, fmtTime, shuffle, pad, store, toast, modal,
     google: { on: () => googleOn(), load: () => loadGsi(), clientId: GCID }, server: SRV,

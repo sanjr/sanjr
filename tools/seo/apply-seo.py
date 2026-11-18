@@ -181,6 +181,11 @@ for u, nm, t, d, kw in [
 ]:
     page(u, t, d, kw + ", " + COMMON_KW, [webpage(u, t, d), crumbs(("Home", ""), ("Study Material", "study.html"), (nm, u))], prio="0.8")
 
+t = "Employability Skills (ES) – Notes, MCQ, Videos & CBT Test | COPA MCQ"
+d = "ITI Employability Skills (ES) for all trades: topic-wise notes, YouTube video lessons, MCQ practice in English, Hindi & Marathi and a free CBT mock test."
+page("es.html", t, d, "employability skills MCQ, ITI employability skills, ES CBT test, employability skills notes, employability skills in Hindi, employability skills Marathi, ITI ES online test, " + COMMON_KW,
+     [webpage("es.html", t, d), crumbs(("Home", ""), ("Employability Skills", "es.html"))], prio="0.9")
+
 t = "Typing Lab – English & Marathi Typing Test, Lessons & Games | COPA MCQ"
 d = "Free typing practice for ITI COPA: key trainer with finger guide, 1-5 minute typing test (Net WPM, accuracy), typing race and balloon game in English and Marathi (Inscript). Easy, Medium, Hard levels."
 page("typing-lab.html", t, d, "typing test, English typing test, Marathi typing test, Inscript typing, typing speed test WPM, typing practice online, typing tutor, COPA typing, typing games, " + COMMON_KW,

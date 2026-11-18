@@ -84,7 +84,7 @@
 
   /* ---------- HUB ---------- */
   function hub() {
-    const recent = C.NOTES.slice().sort((a, b) => (b.updated || b.created || 0) - (a.updated || a.created || 0)).slice(0, 6);
+    const recent = C.NOTES.filter((n) => sec(catOf(n))).slice().sort((a, b) => (b.updated || b.created || 0) - (a.updated || a.created || 0)).slice(0, 6);
     root.innerHTML =
       '<section class="sh-hub-hero"><div class="in"><span class="kick"><i class="fa-solid fa-graduation-cap"></i> ITI COPA</span><h1>' + esc(X.hubT) + "</h1><p>" + esc(X.hubS) + "</p>" +
         '<div class="stats"><span><b>' + C.QUESTIONS.length + "</b> " + esc(X.qs) + "</span><span><b>15</b> " + esc(X.modules) + "</span><span><b>" + PR.length + "</b> " + esc(tt(sec("practical"))[0]) + "</span></div></div>" +
